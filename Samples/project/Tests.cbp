@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Tests" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Win32Debug">
+				<Option platforms="Windows;" />
+				<Option output="../bin/Testsd" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../src/Tests" />
+				<Option object_output="../obj/Debug" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DWIN32" />
+				</Compiler>
+				<Linker>
+					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add library="win32exd" />
+					<Add library="ws2_32" />
+					<Add library="shell32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+				</Linker>
+			</Target>
+			<Target title="Win32Release">
+				<Option platforms="Windows;" />
+				<Option output="../bin/Tests" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../src/Tests" />
+				<Option object_output="../obj/Release" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DWIN32" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add library="win32ex" />
+					<Add library="ws2_32" />
+					<Add library="shell32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+				</Linker>
+			</Target>
+			<Target title="Linux32Debug">
+				<Option platforms="Unix;" />
+				<Option output="../bin/Testsd" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../src/Tests" />
+				<Option object_output="../obj/Debug" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-m32" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-m32" />
+					<Add library="win32exd" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+			<Target title="Linux32Release">
+				<Option platforms="Unix;" />
+				<Option output="../bin/Tests" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../src/Tests" />
+				<Option object_output="../obj/Release" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-m32" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-m32" />
+					<Add library="win32ex" />
+					<Add library="pthread" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-pedantic" />
+			<Add option="-Wall" />
+			<Add option="-std=c99" />
+			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long" />
+			<Add directory="../../win32ex/include" />
+		</Compiler>
+		<Linker>
+			<Add directory="../../win32ex/lib" />
+		</Linker>
+		<Unit filename="../src/Tests/src/Tests.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ZzTestHeap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ZzTools.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ZzTools.h" />
+		<Unit filename="../src/Tests/src/ttatomic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttchar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttencoding.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttevent.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttfilesystem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttinitialization.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttlist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttmemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttproperties.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttsocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ttthread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tttypes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -1,0 +1,9 @@
+my_key=my_value
+=value_without_key
+key_with_empty_value=
+key_without_value
+my_other_key=my_other_value
+key_with_number=12
+key_with_zero=0
+key_with_true=true
+key_with_false=truen
