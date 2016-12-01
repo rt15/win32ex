@@ -15,7 +15,7 @@
 
 #### TODO :
 
-Implement an index system for lists.
+Implement an index system for lists (b-tree?).
 
 Check structure values and flag values against operating system (Like AF_INET).
 
