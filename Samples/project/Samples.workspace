@@ -9,5 +9,6 @@
 		<Project filename="XdbmScriptsLister.cbp" />
 		<Project filename="Climbing.cbp" />
 		<Project filename="ReplaceInFile.cbp" />
+		<Project filename="ClimbingContest.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

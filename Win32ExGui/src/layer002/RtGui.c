@@ -7,6 +7,26 @@ RT_FAST_INITIALIZATION rt_guiOsVersionInitialization = RT_FAST_INITIALIZATION_ST
 RT_UN32 rt_nGuiMajorOsVersion;
 RT_UN32 rt_nGuiMinorOsVersion;
 
+RT_B RT_API RtInitCommonControls(RT_UN32 nClasses)
+{
+  INITCOMMONCONTROLSEX rtInitCommonControls;
+  RT_B bResult;
+
+  rtInitCommonControls.dwSize = sizeof(rtInitCommonControls);
+  rtInitCommonControls.dwICC = nClasses;
+
+  if (!InitCommonControlsEx(&rtInitCommonControls)) goto handle_error;
+  bResult = RT_TRUE;
+free_resources:
+  return bResult;
+
+handle_error:
+  /* InitCommonControlsEx might not call SetLastError. */
+  RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+  bResult = RT_FALSE;
+  goto free_resources;
+}
+
 RT_H RT_API RtGetInstance()
 {
   return GetModuleHandle(NULL);

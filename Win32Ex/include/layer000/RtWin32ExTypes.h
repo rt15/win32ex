@@ -121,6 +121,10 @@ typedef void* RT_H;                  /* HANDLE.  */
 /* RT_UN = UINT_PTR, ULONG_PTR, WPARAM. */
 
 /* Maximum and minimum values for types. */
+
+
+#define RT_TYPE_MAX_N16    32767
+#define RT_TYPE_MIN_N16    (-RT_TYPE_MAX_N16 - 1)
 #define RT_TYPE_MAX_UN16   ((RT_UN16)-1)
 #define RT_TYPE_MAX_N32    2147483647
 #define RT_TYPE_MIN_N32    (-RT_TYPE_MIN_N32 - 1)

@@ -110,6 +110,40 @@ typedef struct _RT_GUI_RECT {
 } RT_GUI_RECT;
 
 /**
+ * Must be called before using particular control classes.
+ *
+ * <p>
+ * <tt>nClasses</tt> is a combination of:
+ * </p>
+ *
+ * <li>
+ *   <ul>ICC_ANIMATE_CLASS      Load animate control class.</ul>
+ *   <ul>ICC_BAR_CLASSES        Load toolbar, status bar, trackbar, and tooltip control classes.</ul>
+ *   <ul>ICC_COOL_CLASSES       Load rebar control class.</ul>
+ *   <ul>ICC_DATE_CLASSES       Load date and time picker control class.</ul>
+ *   <ul>ICC_HOTKEY_CLASS       Load hot key control class.</ul>
+ *   <ul>ICC_INTERNET_CLASSES   Load IP address class.</ul>
+ *   <ul>ICC_LINK_CLASS         Load a hyperlink control class.</ul>
+ *   <ul>ICC_LISTVIEW_CLASSES   Load list-view and header control classes.</ul>
+ *   <ul>ICC_NATIVEFNTCTL_CLASS Load a native font control class.</ul>
+ *   <ul>ICC_PAGESCROLLER_CLASS Load pager control class.</ul>
+ *   <ul>ICC_PROGRESS_CLASS     Load progress bar control class.</ul>
+ *   <ul>ICC_STANDARD_CLASSES   Load one of the intrinsic User32 control classes. The user controls include button, edit, static, listbox, combobox, and scroll bar.</ul>
+ *   <ul>ICC_TAB_CLASSES        Load tab and tooltip control classes.</ul>
+ *   <ul>ICC_TREEVIEW_CLASSES   Load tree-view and tooltip control classes.</ul>
+ *   <ul>ICC_UPDOWN_CLASS       Load up-down control class.</ul>
+ *   <ul>ICC_USEREX_CLASSES     Load ComboBoxEx class.</ul>
+ *   <ul>ICC_WIN95_CLASSES      Load animate control, header, hot key, list-view, progress bar, status bar, tab, tooltip, toolbar, trackbar, tree-view, and up-down control classes.</ul>
+ * </li>
+ *
+ * <p>
+ * A classical cause of failure seems to be the manifest file.
+ * </p>
+ *
+ */
+RT_B RT_API RtInitCommonControls(RT_UN32 nClasses);
+
+/**
  * Initialize a command menu item manager given an array of RT_GUI_COMMAND_MENU_ITEM.
  *
  * <p>
@@ -169,14 +203,18 @@ RT_H RT_API RtCreateMenuBar(RT_UN unMenusCount, RT_CHAR* lpTexts[], RT_H* hMenus
 
 /**
  *
+ * <p>
+ * All window classes that an application registers are unregistered when it terminates.<br>
+ * No window classes registered by a DLL are unregistered when the DLL is unloaded. A DLL must explicitly unregister its classes when it is unloaded.
+ * </p>
+ *
  * @param nStyle See CreateWindow documentation. WS_OVERLAPPEDWINDOW is a classical values.
  * @param nExStyle See CreateWindowEx documentation. O is a classical value.
- * @param lpRect Use CW_USEDEFAULT 0x80000000 for nX or default position (nY is not used in that case).
- * @param nY Not used if nX is CW_USEDEFAULT.
+ * @param lpRect Use CW_USEDEFAULT 0x80000000 as nX for default position (nY is not used in that case).
  * @param hIcon If RT_NULL, a default application icon is used.
  * @param hMenuBar If RT_NULL, the window won't have a menu bar.
  * @param lpUserData Associated to the window using SetWindowLongPtr/GWLP_USERDATA.
- * @return RT_NULL in case of error, the window handle otherwise.
+ * @return RT_NULL in case of error, the window handle otherwise. Not need to call CloseHandle on it.
  */
 RT_H RT_API RtCreateMainWindow(RT_CHAR* lpText, RT_CHAR* lpClassName, RT_UN32 unStyle, RT_UN32 unExStyle, RT_GUI_RECT* lpRect, RT_WINDOW_PROC_CALLBACK lpWindowProc, RT_H hIcon, RT_H hMenuBar, void* lpUserData, RT_H hInstance);
 
