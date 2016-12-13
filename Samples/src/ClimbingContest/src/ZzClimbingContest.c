@@ -39,6 +39,7 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
 
       RtMoveWindow(lpAppContext->hLeftTab, ZzComputeLeftTabPosition(&rtRect, lpAppContext));
       RtMoveWindow(lpAppContext->hVerticalSplitter, ZzComputeVerticalSplitterPosition(&rtRect, lpAppContext));
+      RtMoveWindow(lpAppContext->hListBox, ZzComputeListBoxPosition(&rtRect, lpAppContext));
       break;
 
     case WM_LBUTTONDOWN:
@@ -76,6 +77,7 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
         lpAppContext->nVerticalSplitterX = rtCursorPosition.x - lpAppContext->nSplitterCursorOffset;
         RtMoveWindow(lpAppContext->hLeftTab, ZzComputeLeftTabPosition(&rtRect, lpAppContext));
         RtMoveWindow(lpAppContext->hVerticalSplitter, ZzComputeVerticalSplitterPosition(&rtRect, lpAppContext));
+        RtMoveWindow(lpAppContext->hListBox, ZzComputeListBoxPosition(&rtRect, lpAppContext));
       }
       else
       {
@@ -105,14 +107,16 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   return nResult;
 }
 
-RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+RT_B RT_CALL RtMainWithBoolean(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   ZZ_APP_CONTEXT rtAppContext;
+  RT_B bMainWindowCreated;
   RT_B bAppContextCreated;
   RT_GUI_RECT rtRect;
-  RT_UN16 unResult;
+  RT_B bResult;
 
   bAppContextCreated = RT_FALSE;
+  bMainWindowCreated = RT_FALSE;
 
   if (!RtInitCommonControls(ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES )) goto handle_error;
 
@@ -125,45 +129,51 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   rtRect.nHeight = ZZ_RESOURCES_DEFAULT_WINDOW_HEIGHT;
 
   rtAppContext.hMainWindow = RtCreateMainWindow(ZzGetString(ZZ_STRINGS_APPLICATION_NAME), _R("MainWindow"),
-                                                WS_OVERLAPPEDWINDOW, 0, &rtRect, &ZzMainWindowProc, RT_NULL, RT_NULL,
+                                                WS_OVERLAPPEDWINDOW, WS_EX_COMPOSITED, &rtRect, &ZzMainWindowProc, RT_NULL, RT_NULL,
                                                 &rtAppContext, rtAppContext.hInstance);
   if (!rtAppContext.hMainWindow) goto handle_error;
+  bMainWindowCreated = RT_TRUE;
 
   /* Status bar. */
   rtAppContext.hStatusBar = RtCreateStatusBar(RT_TRUE, _R(""), rtAppContext.hMainWindow, ZZ_RESOURCES_STATUS_BAR_CTRL_ID, rtAppContext.hInstance);
-  if (!rtAppContext.hStatusBar)
-  {
-    DestroyWindow(rtAppContext.hMainWindow);
-    goto handle_error;
-  }
+  if (!rtAppContext.hStatusBar) goto handle_error;
 
   rtAppContext.hLeftTab = ZzCreateLeftTab(ZzComputeLeftTabPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, rtAppContext.hInstance, rtAppContext.hFont);
-  if (!rtAppContext.hLeftTab)
-  {
-    DestroyWindow(rtAppContext.hMainWindow);
-    goto handle_error;
-  }
+  if (!rtAppContext.hLeftTab) goto handle_error;
 
   rtAppContext.hVerticalSplitter = RtCreateStaticWindow(ZzComputeVerticalSplitterPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, ZZ_RESOURCES_VERTICAL_SPLITTER_CTRL_ID, rtAppContext.hInstance);
-  if (!rtAppContext.hVerticalSplitter)
-  {
-    DestroyWindow(rtAppContext.hMainWindow);
-    goto handle_error;
-  }
+  if (!rtAppContext.hVerticalSplitter) goto handle_error;
+
+  rtAppContext.hListBox = ZzCreateListBox(ZzComputeListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance);
+  if (!rtAppContext.hListBox) goto handle_error;
 
   /* No way to check success of ShowWindow. */
   ShowWindow(rtAppContext.hMainWindow, SW_SHOWNORMAL);
 
-  unResult = RtDefaultMessageLoop();
+  /* The main window is destroyed when it is closed. */
+  bMainWindowCreated = RT_FALSE;
+
+  /* RtDefaultMessageLoop returns an exit code. */
+  bResult = !RtDefaultMessageLoop();
 free_resources:
+  if (bMainWindowCreated)
+  {
+    bMainWindowCreated = RT_FALSE;
+    if (!DestroyWindow(rtAppContext.hMainWindow) && bResult) goto handle_error;
+  }
   if (bAppContextCreated)
   {
     bAppContextCreated = RT_FALSE;
-    if (!ZzFreeAppContext(&rtAppContext) && unResult) goto handle_error;
+    if (!ZzFreeAppContext(&rtAppContext) && bResult) goto handle_error;
   }
-  return unResult;
+  return bResult;
 
 handle_error:
-  unResult = 1;
+  bResult = RT_FALSE;
   goto free_resources;
+}
+
+RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+{
+  return (RtMainWithBoolean(nArgC, lpArgV) ? 0 : 1);
 }

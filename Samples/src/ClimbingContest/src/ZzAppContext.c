@@ -28,6 +28,7 @@ RT_B RT_CALL ZzCreateAppContext(ZZ_APP_CONTEXT* lpAppContext)
   lpAppContext->hStatusBar = RT_NULL;
   lpAppContext->hLeftTab = RT_NULL;
   lpAppContext->hVerticalSplitter = RT_NULL;
+  lpAppContext->hListBox = RT_NULL;
 
   bResult = RT_TRUE;
 free_resources:

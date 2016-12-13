@@ -4,6 +4,9 @@
 #include "ZzStrings.h"
 #include "ZzWindows.h"
 
+#define ZZ_GUI_BORDER 5
+#define ZZ_GUI_TAB_HEIGHT 18
+
 RT_GUI_RECT* RT_CALL ZzComputeVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
 {
   RT_GUI_RECT rtRect;
@@ -13,13 +16,31 @@ RT_GUI_RECT* RT_CALL ZzComputeVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_A
   lpRect->nY = 0;
   lpRect->nWidth = ZZ_RESOURCES_SPLITTER_SIZE; /* Fixed width. */
 
- /* Available height in main window. */
+  /* Available height in main window. */
   GetClientRect(lpAppContext->hMainWindow, (RECT*)&rtRect);
   lpRect->nHeight = rtRect.nHeight;
 
   /* Remove status bar height. */
   RtGetWindowSize(lpAppContext->hStatusBar, &rtRect);
   lpRect->nHeight = lpRect->nHeight - rtRect.nHeight;
+
+  return lpRect;
+}
+
+RT_GUI_RECT* RT_CALL ZzComputeListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
+{
+  RT_GUI_RECT rtRect;
+
+  /* We base size on tab control client area. */
+  GetClientRect(lpAppContext->hLeftTab, (RECT*)&rtRect);
+
+  /* Skeep tabs. */
+  rtRect.nY += ZZ_GUI_TAB_HEIGHT;
+
+  lpRect->nX = rtRect.nX + ZZ_GUI_BORDER;
+  lpRect->nY = rtRect.nY + ZZ_GUI_BORDER;
+  lpRect->nWidth = rtRect.nWidth - rtRect.nX - ZZ_GUI_BORDER * 2;
+  lpRect->nHeight = rtRect.nHeight - rtRect.nY - ZZ_GUI_BORDER * 2;
 
   return lpRect;
 }
@@ -57,6 +78,43 @@ RT_GUI_RECT* RT_CALL ZzComputeLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEX
   return lpRect;
 }
 
+RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hMainWindow, RT_H hInstance)
+{
+  RT_H hResult;
+
+  hResult = CreateWindowEx(0,                                         /* ExStyle. */
+                           _R("LISTBOX"),                             /* Tab class name. */
+                           lpName,                                    /* Window name. */
+                           WS_VISIBLE | WS_CHILD |                    /* Style. */
+                           WS_VSCROLL | WS_BORDER |
+                           LBS_NOTIFY | LBS_DISABLENOSCROLL |
+                           LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT,
+                           lpPosition->nX, lpPosition->nY,            /* Position. */
+                           lpPosition->nWidth, lpPosition->nHeight,   /* Size. */
+                           hMainWindow,                               /* Parent Window. */
+                           (HMENU)nControlId,                         /* Control id. */
+                           hInstance,                                 /* Application instance. */
+                           RT_NULL);
+
+  if (!hResult) goto handle_error;
+
+/*
+LB_ADDSTRING
+LBN_SELCHANGE
+*/
+
+free_resources:
+  return hResult;
+
+handle_error:
+  if (hResult)
+  {
+    DestroyWindow(hResult);
+    hResult = RT_NULL;
+  }
+  goto free_resources;
+}
+
 RT_H RT_CALL ZzCreateLeftTab(RT_GUI_RECT* lpPosition, RT_H hMainWindow, RT_H hInstance, RT_H hFont)
 {
   TC_ITEM rtItem;
@@ -77,7 +135,7 @@ RT_H RT_CALL ZzCreateLeftTab(RT_GUI_RECT* lpPosition, RT_H hMainWindow, RT_H hIn
   if (!hResult) goto handle_error;
 
   /* Cannot check errors. */
-  TabCtrl_SetItemSize(hResult, 60, 18);
+  TabCtrl_SetItemSize(hResult, 60, ZZ_GUI_TAB_HEIGHT);
   /* Cannot check errors. */
   SendMessage(hResult, WM_SETFONT, (WPARAM)hFont, TRUE);
 

@@ -4,6 +4,8 @@
 #include <RtWin32Ex.h>
 #include <RtWin32ExGui.h>
 
+#include "ZzResources.h"
+
 typedef struct _ZZ_APP_CONTEXT
 {
   RT_H hInstance;
@@ -22,6 +24,7 @@ typedef struct _ZZ_APP_CONTEXT
   RT_H hStatusBar;
   RT_H hLeftTab;
   RT_H hVerticalSplitter;
+  RT_H hListBox;
 }
 ZZ_APP_CONTEXT;
 
