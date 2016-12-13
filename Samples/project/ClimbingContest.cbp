@@ -55,6 +55,9 @@
 			<Add directory="../../Win32ExGui/include" />
 			<Add directory="../src/ClimbingContest/include" />
 		</Compiler>
+		<ResourceCompiler>
+			<Add directory="../src/ClimbingContest/include" />
+		</ResourceCompiler>
 		<Linker>
 			<Add directory="../../Win32Ex/lib" />
 			<Add directory="../../Win32ExGui/lib" />
@@ -64,6 +67,9 @@
 		<Unit filename="../src/ClimbingContest/include/ZzResources.h" />
 		<Unit filename="../src/ClimbingContest/include/ZzStrings.h" />
 		<Unit filename="../src/ClimbingContest/include/ZzWindows.h" />
+		<Unit filename="../src/ClimbingContest/resources/resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="../src/ClimbingContest/src/ZzAppContext.c">
 			<Option compilerVar="CC" />
 		</Unit>
