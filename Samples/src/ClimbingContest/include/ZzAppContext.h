@@ -25,6 +25,8 @@ typedef struct _ZZ_APP_CONTEXT
   RT_H hLeftTab;
   RT_H hVerticalSplitter;
   RT_H hListBox;
+  RT_H hAddButton;
+  RT_H hDeleteButton;
 }
 ZZ_APP_CONTEXT;
 

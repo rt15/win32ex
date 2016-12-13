@@ -4,9 +4,6 @@
 #include "ZzStrings.h"
 #include "ZzWindows.h"
 
-#define ZZ_GUI_BORDER 5
-#define ZZ_GUI_TAB_HEIGHT 18
-
 RT_GUI_RECT* RT_CALL ZzComputeVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
 {
   RT_GUI_RECT rtRect;
@@ -38,9 +35,9 @@ RT_GUI_RECT* RT_CALL ZzComputeListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEX
   rtRect.nY += ZZ_GUI_TAB_HEIGHT;
 
   lpRect->nX = rtRect.nX + ZZ_GUI_BORDER;
-  lpRect->nY = rtRect.nY + ZZ_GUI_BORDER;
+  lpRect->nY = rtRect.nY + ZZ_GUI_BORDER * 2 + ZZ_GUI_BUTTON_HEIGHT;
   lpRect->nWidth = rtRect.nWidth - rtRect.nX - ZZ_GUI_BORDER * 2;
-  lpRect->nHeight = rtRect.nHeight - rtRect.nY - ZZ_GUI_BORDER * 2;
+  lpRect->nHeight = rtRect.nHeight - rtRect.nY - ZZ_GUI_BORDER * 3 - ZZ_GUI_BUTTON_HEIGHT;
 
   return lpRect;
 }
@@ -78,12 +75,12 @@ RT_GUI_RECT* RT_CALL ZzComputeLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEX
   return lpRect;
 }
 
-RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hMainWindow, RT_H hInstance)
+RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hParentWindow, RT_H hInstance)
 {
   RT_H hResult;
 
   hResult = CreateWindowEx(0,                                         /* ExStyle. */
-                           _R("LISTBOX"),                             /* Tab class name. */
+                           _R("LISTBOX"),                             /* List box class name. */
                            lpName,                                    /* Window name. */
                            WS_VISIBLE | WS_CHILD |                    /* Style. */
                            WS_VSCROLL | WS_BORDER |
@@ -91,7 +88,7 @@ RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nCon
                            LBS_HASSTRINGS | LBS_NOINTEGRALHEIGHT,
                            lpPosition->nX, lpPosition->nY,            /* Position. */
                            lpPosition->nWidth, lpPosition->nHeight,   /* Size. */
-                           hMainWindow,                               /* Parent Window. */
+                           hParentWindow,                             /* Parent Window. */
                            (HMENU)nControlId,                         /* Control id. */
                            hInstance,                                 /* Application instance. */
                            RT_NULL);
@@ -113,6 +110,47 @@ handle_error:
     hResult = RT_NULL;
   }
   goto free_resources;
+}
+
+RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_N nControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont)
+{
+  RT_H hResult;
+
+  hResult = CreateWindowEx(0,                                         /* ExStyle. */
+                           _R("BUTTON"),                              /* Button class name. */
+                           lpText,                                    /* Window name. */
+                           WS_VISIBLE | WS_CHILD |                    /* Style. */
+                           BS_PUSHBUTTON | BS_TEXT |
+                           BS_CENTER | BS_VCENTER | BS_NOTIFY,
+                           lpPosition->nX, lpPosition->nY,            /* Position. */
+                           lpPosition->nWidth, lpPosition->nHeight,   /* Size. */
+                           hParentWindow,                             /* Parent Window. */
+                           (HMENU)nControlId,                         /* Control id. */
+                           hInstance,                                 /* Application instance. */
+                           RT_NULL);
+
+  /* Cannot check errors. */
+  SendMessage(hResult, WM_SETFONT, (WPARAM)hFont, TRUE);
+
+  return hResult;
+}
+
+
+/**
+ * Forward left tab messages to main window.
+ */
+RT_N RT_CALL ZzLeftTabSubclassProc(HWND hWindow, UINT unMsg, WPARAM unWParam, LPARAM nLParam, UINT_PTR unIdSubclass, DWORD_PTR unRefData)
+{
+  RT_H hParent;
+
+  switch (unMsg)
+  {
+    case WM_COMMAND:
+      hParent = GetParent(hWindow);
+      SendMessage(hParent, unMsg, unWParam, nLParam);
+      break;
+  }
+  return DefSubclassProc(hWindow, unMsg, unWParam, nLParam);
 }
 
 RT_H RT_CALL ZzCreateLeftTab(RT_GUI_RECT* lpPosition, RT_H hMainWindow, RT_H hInstance, RT_H hFont)
@@ -152,6 +190,10 @@ RT_H RT_CALL ZzCreateLeftTab(RT_GUI_RECT* lpPosition, RT_H hMainWindow, RT_H hIn
   rtItem.pszText = ZzGetString(ZZ_STRINGS_GRADES);
   rtItem.lParam = ZZ_RESOURCES_GRADES;
   if (SendMessage(hResult, TCM_INSERTITEM, 3, (LPARAM)&rtItem) == -1) goto handle_error;
+
+
+
+  if (!SetWindowSubclass(hResult, &ZzLeftTabSubclassProc, 0, 0)) goto handle_error;
 
 free_resources:
   return hResult;

@@ -26,6 +26,18 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   bCallDefault = RT_TRUE;
   switch (unMsg)
   {
+    case WM_COMMAND:
+      if (HIWORD(unWParam) == BN_CLICKED)
+      {
+        switch (LOWORD(unWParam))
+        {
+          case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
+            break;
+          case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
+            break;
+        }
+      }
+      break;
     case WM_GETMINMAXINFO:
       /* Apply a minimum size to the window. */
       lpMinMaxInfo = (MINMAXINFO*)nLParam;
@@ -146,6 +158,19 @@ RT_B RT_CALL RtMainWithBoolean(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
   rtAppContext.hListBox = ZzCreateListBox(ZzComputeListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance);
   if (!rtAppContext.hListBox) goto handle_error;
+
+  rtRect.nX = ZZ_GUI_BORDER;
+  rtRect.nY = ZZ_GUI_TAB_HEIGHT + ZZ_GUI_BORDER;
+  rtRect.nWidth = ZZ_GUI_BUTTON_WIDTH;
+  rtRect.nHeight = ZZ_GUI_BUTTON_HEIGHT;
+
+  rtAppContext.hAddButton = ZzCreateButton(&rtRect, ZzGetString(ZZ_STRINGS_ADD), ZZ_RESOURCES_ADD_BUTTON_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
+  if (!rtAppContext.hAddButton) goto handle_error;
+
+  rtRect.nX = ZZ_GUI_BORDER * 2 + ZZ_GUI_BUTTON_WIDTH;
+
+  rtAppContext.hDeleteButton = ZzCreateButton(&rtRect, ZzGetString(ZZ_STRINGS_DELETE), ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
+  if (!rtAppContext.hDeleteButton) goto handle_error;
 
   /* No way to check success of ShowWindow. */
   ShowWindow(rtAppContext.hMainWindow, SW_SHOWNORMAL);

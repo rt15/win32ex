@@ -24,12 +24,6 @@ RT_B RT_CALL ZzCreateAppContext(ZZ_APP_CONTEXT* lpAppContext)
   lpAppContext->hFont = GetStockObject(DEFAULT_GUI_FONT);
   if (!lpAppContext->hFont) goto handle_error;
 
-  lpAppContext->hMainWindow = RT_NULL;
-  lpAppContext->hStatusBar = RT_NULL;
-  lpAppContext->hLeftTab = RT_NULL;
-  lpAppContext->hVerticalSplitter = RT_NULL;
-  lpAppContext->hListBox = RT_NULL;
-
   bResult = RT_TRUE;
 free_resources:
   return bResult;

@@ -118,7 +118,7 @@ typedef unsigned __int64 RT_UN64;
 typedef void* RT_H;                  /* HANDLE.  */
 
 /* RT_N = LRESULT, LONG_PTR, LPARAM. */
-/* RT_UN = UINT_PTR, ULONG_PTR, WPARAM. */
+/* RT_UN = UINT_PTR, ULONG_PTR, DWORD_PTR, WPARAM. */
 
 /* Maximum and minimum values for types. */
 
