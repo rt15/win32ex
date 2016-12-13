@@ -17,7 +17,7 @@ RT_GUI_RECT* RT_CALL ZzComputeLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEX
 
 RT_GUI_RECT* RT_CALL ZzComputeListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext);
 
-RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hParentWindow, RT_H hInstance);
+RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont);
 
 RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_N nControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont);
 

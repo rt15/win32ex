@@ -32,6 +32,7 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
         switch (LOWORD(unWParam))
         {
           case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
+            SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)_R("New item"));
             break;
           case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
             break;
@@ -156,7 +157,7 @@ RT_B RT_CALL RtMainWithBoolean(RT_N32 nArgC, RT_CHAR* lpArgV[])
   rtAppContext.hVerticalSplitter = RtCreateStaticWindow(ZzComputeVerticalSplitterPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, ZZ_RESOURCES_VERTICAL_SPLITTER_CTRL_ID, rtAppContext.hInstance);
   if (!rtAppContext.hVerticalSplitter) goto handle_error;
 
-  rtAppContext.hListBox = ZzCreateListBox(ZzComputeListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance);
+  rtAppContext.hListBox = ZzCreateListBox(ZzComputeListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
   if (!rtAppContext.hListBox) goto handle_error;
 
   rtRect.nX = ZZ_GUI_BORDER;

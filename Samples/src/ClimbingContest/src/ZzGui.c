@@ -75,7 +75,7 @@ RT_GUI_RECT* RT_CALL ZzComputeLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEX
   return lpRect;
 }
 
-RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hParentWindow, RT_H hInstance)
+RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont)
 {
   RT_H hResult;
 
@@ -95,8 +95,10 @@ RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nCon
 
   if (!hResult) goto handle_error;
 
+  /* Cannot check errors. */
+  SendMessage(hResult, WM_SETFONT, (WPARAM)hFont, TRUE);
+
 /*
-LB_ADDSTRING
 LBN_SELCHANGE
 */
 
@@ -114,6 +116,7 @@ handle_error:
 
 RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_N nControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont)
 {
+  DWORD unStyle;
   RT_H hResult;
 
   hResult = CreateWindowEx(0,                                         /* ExStyle. */
@@ -129,10 +132,27 @@ RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_N nCont
                            hInstance,                                 /* Application instance. */
                            RT_NULL);
 
+  if (!hResult) goto handle_error;
+
   /* Cannot check errors. */
   SendMessage(hResult, WM_SETFONT, (WPARAM)hFont, TRUE);
 
+  /* Remove CS_DBLCLKS style to not care about double clicks. */
+  unStyle = GetClassLong(hResult, GCL_STYLE);
+  if (!unStyle) goto handle_error;
+  unStyle &= (~CS_DBLCLKS);
+  if (!SetClassLong(hResult, GCL_STYLE, unStyle)) goto handle_error;
+
+free_resources:
   return hResult;
+
+handle_error:
+  if (hResult)
+  {
+    DestroyWindow(hResult);
+    hResult = RT_NULL;
+  }
+  goto free_resources;
 }
 
 
@@ -190,8 +210,6 @@ RT_H RT_CALL ZzCreateLeftTab(RT_GUI_RECT* lpPosition, RT_H hMainWindow, RT_H hIn
   rtItem.pszText = ZzGetString(ZZ_STRINGS_GRADES);
   rtItem.lParam = ZZ_RESOURCES_GRADES;
   if (SendMessage(hResult, TCM_INSERTITEM, 3, (LPARAM)&rtItem) == -1) goto handle_error;
-
-
 
   if (!SetWindowSubclass(hResult, &ZzLeftTabSubclassProc, 0, 0)) goto handle_error;
 
