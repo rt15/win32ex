@@ -18,6 +18,7 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   MINMAXINFO* lpMinMaxInfo;
   RT_GUI_RECT rtRect;
   POINT rtCursorPosition;
+  LONG_PTR nSendMessageResult;
   RT_H hChild;
   RT_N nResult;
 
@@ -35,7 +36,22 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
             SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)_R("New item"));
             break;
           case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
+            nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+            if (nSendMessageResult != LB_ERR)
+            {
+              SendMessage(lpAppContext->hListBox, LB_DELETESTRING, nSendMessageResult, 0);
+              EnableWindow(lpAppContext->hDeleteButton, FALSE);
+            }
             break;
+        }
+      }
+      else if (HIWORD(unWParam) == LBN_SELCHANGE)
+      {
+        nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+        if (nSendMessageResult != LB_ERR)
+        {
+          /* An item is selected, enable delete button. */
+          EnableWindow(lpAppContext->hDeleteButton, TRUE);
         }
       }
       break;
@@ -172,6 +188,9 @@ RT_B RT_CALL RtMainWithBoolean(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
   rtAppContext.hDeleteButton = ZzCreateButton(&rtRect, ZzGetString(ZZ_STRINGS_DELETE), ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
   if (!rtAppContext.hDeleteButton) goto handle_error;
+
+  /* Delete button is disabled by default. */
+  EnableWindow(rtAppContext.hDeleteButton, FALSE);
 
   /* No way to check success of ShowWindow. */
   ShowWindow(rtAppContext.hMainWindow, SW_SHOWNORMAL);
