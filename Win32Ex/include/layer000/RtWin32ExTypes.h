@@ -77,6 +77,7 @@
 typedef char RT_CHAR8;
 typedef unsigned char RT_UCHAR8;      /* BYTE             */
 typedef unsigned short RT_UN16;       /* WORD             */
+typedef short RT_N16;
 
 /* Use 16 bits characters under windows, 8 bits otherwise. */
 /* RT_CHAR is most likely to be signed (or not) RT_CHAR8 under Linux and unsigned RT_UN16 under Windows. */
