@@ -53,6 +53,6 @@ void* RT_API RtNewListItem(void** lpList, void** lpItem);
  */
 RT_N RT_API RtNewListItemIndex(void** lpList, RT_N* lpItemIndex);
 
-RT_B RT_API RtFreeList(void* lpList);
+RT_B RT_API RtFreeList(void** lpList);
 
 #endif /* RT_LIST_H */

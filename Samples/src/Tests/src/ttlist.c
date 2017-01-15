@@ -145,7 +145,7 @@ RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
 
   if (!RtGetListItem(lpList, nItemIndex, (void**)&lpItem)) goto the_end;
 
-  if (!RtFreeList(lpList)) goto the_end;
+  if (!RtFreeList(&lpList)) goto the_end;
 
   unResult = 0;
 the_end:

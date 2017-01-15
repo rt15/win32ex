@@ -194,8 +194,7 @@ void* RT_API RtSetListSize(void** lpList, RT_UN32 unSize)
 handle_error:
   if (*lpList)
   {
-    RtFreeList(*lpList);
-    *lpList = RT_NULL;
+    RtFreeList(lpList);
   }
 free_resources:
   return *lpList;
@@ -270,7 +269,7 @@ free_resources:
 }
 
 
-RT_B RT_API RtFreeList(void* lpList)
+RT_B RT_API RtFreeList(void** lpList)
 {
   RT_LIST_HEADER* lpListHeader;
   RT_UN32 unChunksCount;
@@ -281,16 +280,16 @@ RT_B RT_API RtFreeList(void* lpList)
 
   bResult = RT_TRUE;
 
-  if (lpList)
+  if (*lpList)
   {
-    lpListHeader = lpList;
+    lpListHeader = *lpList;
     lpListHeader--;
 
     unChunksCount = lpListHeader->rtArrayHeader.unSize;
     lpHeap = lpListHeader->rtArrayHeader.lpHeap;
 
     /* Free all chunks. */
-    lpChunks = (void**)lpList;
+    lpChunks = (void**)*lpList;
     for (unI = 0; unI < unChunksCount; unI++)
     {
       if (!(*lpHeap)->lpFree(lpHeap, &lpChunks[unI]))
@@ -300,7 +299,7 @@ RT_B RT_API RtFreeList(void* lpList)
     }
 
     /* Free pointers array. */
-    if (!RtFreeArray(&lpList))
+    if (!RtFreeArray(lpList))
     {
       bResult = RT_FALSE;
     }
