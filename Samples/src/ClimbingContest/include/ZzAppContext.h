@@ -20,6 +20,14 @@ typedef struct _ZZ_APP_CONTEXT
 
   RT_H hFont;
 
+  /* Current entity tab. */
+  RT_N nCurrentEntity;
+
+  void* lpLists[ZZ_RESOURCES_ENTITIES_COUNT];
+
+  RtRuntimeHeap rtRuntimeHeap;
+  RT_B bHeapCreated;
+
   RT_H hMainWindow;
   RT_H hStatusBar;
   RT_H hLeftTab;

@@ -440,6 +440,7 @@ RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath)
   RT_B bResult;
 #ifdef RT_DEFINE_WINDOWS
   /* Returns zero if failed, set last error. */
+  /* TODO: Needs RtComputeLongPath? */
   bResult = SetCurrentDirectory(lpPath);
 #else
   /* Returns zero in case of success, set errno. */

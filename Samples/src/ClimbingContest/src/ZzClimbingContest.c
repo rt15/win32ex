@@ -10,6 +10,48 @@
 #include "ZzGui.h"
 #include "ZzWindows.h"
 
+/**
+ * TODO
+ * Manage deletion in the list.
+ * Add a refresh list procedure.
+ * The display of the list should be sorted.
+ * I need random numbers generation.
+ */
+
+/**
+ * Generate a new resource name.
+ */
+void RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
+{
+  RT_N nWritten;
+  
+  nWritten = 0;
+  RtCopyString(_R("New item"), lpBuffer, ZZ_RESOURCES_NAME_SIZE, &nWritten);
+}
+
+/**
+ * Load into the list-box the content of the RtList.
+ */
+void RT_CALL ZzRefreshList(ZZ_APP_CONTEXT* lpAppContext)
+{  
+  RT_UN32 nListSize;
+  RT_CHAR* lpItem;
+  RT_N nI;
+
+  /* Clear the list. */
+  SendMessage(lpAppContext->hListBox, LB_RESETCONTENT, 0, 0);
+
+  /* Fill the list. */
+  nListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->nCurrentEntity]);
+  for (nI = 0; nI < nListSize; nI++)
+  {
+    RtGetListItem(lpAppContext->lpLists[lpAppContext->nCurrentEntity], nI, &lpItem);
+    SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)lpItem);
+  }
+
+  /* Nothing selected, disable delete button. */
+  EnableWindow(lpAppContext->hDeleteButton, FALSE);
+}
 
 RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N nLParam)
 {
@@ -19,6 +61,9 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   RT_GUI_RECT rtRect;
   POINT rtCursorPosition;
   LONG_PTR nSendMessageResult;
+  RT_CHAR* lpItem;
+  NMHDR* lpNotifyMessageInfo;
+  RT_N nWritten;
   RT_H hChild;
   RT_N nResult;
 
@@ -27,32 +72,53 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   bCallDefault = RT_TRUE;
   switch (unMsg)
   {
-    case WM_COMMAND:
-      if (HIWORD(unWParam) == BN_CLICKED)
+    case WM_NOTIFY:
+      switch (unWParam)
       {
-        switch (LOWORD(unWParam))
-        {
-          case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
-            SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)_R("New item"));
-            break;
-          case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
-            nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
-            if (nSendMessageResult != LB_ERR)
-            {
-              SendMessage(lpAppContext->hListBox, LB_DELETESTRING, nSendMessageResult, 0);
-              EnableWindow(lpAppContext->hDeleteButton, FALSE);
-            }
-            break;
-        }
+        case ZZ_RESOURCES_LEFT_TAB_CTRL_ID:
+          lpNotifyMessageInfo = (NMHDR*)nLParam;
+          switch (lpNotifyMessageInfo->code)
+          {
+            case TCN_SELCHANGE:
+              /* Set current entity in context. */
+              lpAppContext->nCurrentEntity = TabCtrl_GetCurSel(lpAppContext->hLeftTab);
+
+              /* Load list content. */
+              ZzRefreshList(lpAppContext);
+              break;
+          }
+          break;
       }
-      else if (HIWORD(unWParam) == LBN_SELCHANGE)
+      break;
+    case WM_COMMAND:
+      switch (HIWORD(unWParam))
       {
-        nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
-        if (nSendMessageResult != LB_ERR)
-        {
-          /* An item is selected, enable delete button. */
-          EnableWindow(lpAppContext->hDeleteButton, TRUE);
-        }
+        case BN_CLICKED:
+          switch (LOWORD(unWParam))
+          {
+            case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
+              RtNewListItem(&lpAppContext->lpLists[lpAppContext->nCurrentEntity], &lpItem);
+              ZzGenerateResourceName(lpItem);
+              ZzRefreshList(lpAppContext);
+              break;
+            case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
+              nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+              if (nSendMessageResult != LB_ERR)
+              {
+                RtDeleteListItemIndex(&lpAppContext->lpLists[lpAppContext->nCurrentEntity], nSendMessageResult);
+                ZzRefreshList(lpAppContext);
+              }
+              break;
+          }
+          break;
+        case LBN_SELCHANGE:
+          nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+          if (nSendMessageResult != LB_ERR)
+          {
+            /* An item is selected, enable delete button. */
+            EnableWindow(lpAppContext->hDeleteButton, TRUE);
+          }
+          break;
       }
       break;
     case WM_GETMINMAXINFO:
