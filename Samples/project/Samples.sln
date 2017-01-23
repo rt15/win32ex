@@ -8,6 +8,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test", "Test.vcproj", "{E91
 		{5FAF20B8-9C9D-4B63-B661-B8A4931D4428} = {5FAF20B8-9C9D-4B63-B661-B8A4931D4428}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClimbingContest", "ClimbingContest.vcproj", "{02498908-EBD9-4812-A6C3-AD8B07A0A13F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7E9F1B31-8774-482E-87F6-832781D90031} = {7E9F1B31-8774-482E-87F6-832781D90031}
+		{5FAF20B8-9C9D-4B63-B661-B8A4931D4428} = {5FAF20B8-9C9D-4B63-B661-B8A4931D4428}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Win32ExGui", "..\..\Win32ExGui\project\Win32ExGui.vcproj", "{7E9F1B31-8774-482E-87F6-832781D90031}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -22,6 +30,14 @@ Global
 		{E9109A59-87B1-457F-93A0-D5DD9B5C2DE7}.Debug|Win32.Build.0 = Debug|Win32
 		{E9109A59-87B1-457F-93A0-D5DD9B5C2DE7}.Release|Win32.ActiveCfg = Release|Win32
 		{E9109A59-87B1-457F-93A0-D5DD9B5C2DE7}.Release|Win32.Build.0 = Release|Win32
+		{02498908-EBD9-4812-A6C3-AD8B07A0A13F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{02498908-EBD9-4812-A6C3-AD8B07A0A13F}.Debug|Win32.Build.0 = Debug|Win32
+		{02498908-EBD9-4812-A6C3-AD8B07A0A13F}.Release|Win32.ActiveCfg = Release|Win32
+		{02498908-EBD9-4812-A6C3-AD8B07A0A13F}.Release|Win32.Build.0 = Release|Win32
+		{7E9F1B31-8774-482E-87F6-832781D90031}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7E9F1B31-8774-482E-87F6-832781D90031}.Debug|Win32.Build.0 = Debug|Win32
+		{7E9F1B31-8774-482E-87F6-832781D90031}.Release|Win32.ActiveCfg = Release|Win32
+		{7E9F1B31-8774-482E-87F6-832781D90031}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

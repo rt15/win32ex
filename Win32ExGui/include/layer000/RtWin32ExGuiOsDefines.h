@@ -1151,6 +1151,7 @@ typedef void GpSolidFill;
 typedef void GpStringFormat;
 typedef void GpTexture;
 
+/* This header is provided with "&" operators that must be replaced by "*". */
 #include <GdiPlusFlat.h>
 
 #endif
