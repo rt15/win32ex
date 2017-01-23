@@ -67,7 +67,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32Ex.lib ws2_32.lib shell32.lib user32.lib"
+				AdditionalDependencies="Win32Exd.lib ws2_32.lib shell32.lib user32.lib"
+				OutputFile="$(OutDir)\$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
