@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32Ex.lib user32.lib shell32.lib"
+				AdditionalDependencies="Win32Ex.lib ws2_32.lib shell32.lib user32.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
@@ -153,7 +153,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32Ex.lib user32.lib shell32.lib"
+				AdditionalDependencies="Win32Ex.lib ws2_32.lib user32.lib shell32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
@@ -216,6 +216,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\Tests\src\ttevent.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\Tests\src\ttfilesystem.c"
 				>
 			</File>
@@ -236,11 +240,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\Tests\src\ttsocket.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\Tests\src\ttthread.c"
 				>
 			</File>
 			<File
 				RelativePath="..\src\Tests\src\tttypes.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTestHeap.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTools.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTools.h"
 				>
 			</File>
 		</Filter>
