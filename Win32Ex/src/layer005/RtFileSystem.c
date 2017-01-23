@@ -435,6 +435,19 @@ free_resources:
   return bResult;
 }
 
+RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath)
+{
+  RT_B bResult;
+#ifdef RT_DEFINE_WINDOWS
+  /* Returns zero if failed, set last error. */
+  bResult = SetCurrentDirectory(lpPath);
+#else
+  /* Returns zero in case of success, set errno. */
+  bResult = !chdir(lpPath);
+#endif
+  return bResult;
+}
+
 /**
  * Return -1 in case of error.
  */

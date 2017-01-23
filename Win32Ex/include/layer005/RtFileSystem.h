@@ -41,6 +41,11 @@ typedef RT_B (RT_CALL *RT_FILE_SYSTEM_BROWSE_CALLBACK)(RT_CHAR* lpPath, RT_N nTy
 
 RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, void* lpContext);
 
+/**
+ * <p>
+ * <tt>lpBuffer</tt> can be equals to <tt>lpPath</tt>.
+ * </p>
+ */
 RT_B RT_API RtExtractParentPath(RT_CHAR* lpPath, RT_N nPathSize, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N *lpWritten);
 
 /**
@@ -84,6 +89,8 @@ RT_B RT_API RtCopyFile(RT_CHAR* lpSource, RT_CHAR* lpDestination);
 RT_B RT_API RtDeleteFile(RT_CHAR* lpFilePath);
 
 RT_B RT_API RtGetCurrentDirectory(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N *lpWritten);
+
+RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath);
 
 RT_N RT_API RtGetFileSize(RT_CHAR* lpPath);
 
