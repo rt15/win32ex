@@ -55,6 +55,7 @@
 
 #include <windows.h>
 #include <commctrl.h>
+#include <shellapi.h>
 #include <shlobj.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
