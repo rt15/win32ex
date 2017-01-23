@@ -15,6 +15,8 @@
 
 #### TODO :
 
+Use RT_SUCCESS/RT_FAILURE.
+
 Implement an index system for lists (b-tree?).
 
 Check structure values and flag values against operating system (Like AF_INET).

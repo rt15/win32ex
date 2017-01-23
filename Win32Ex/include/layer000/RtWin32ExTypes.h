@@ -145,6 +145,9 @@ typedef void* RT_H;                  /* HANDLE.  */
 /* Never use RT_TRUE in comparisons. RT_B is a zero or non-zero value. */
 #define RT_FALSE 0
 #define RT_TRUE 1
+#define RT_FAILURE RT_FALSE
+#define RT_SUCCESS RT_TRUE
+
 
 #ifdef __cplusplus
   #define RT_NULL 0
