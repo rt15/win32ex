@@ -236,6 +236,41 @@ RT_B RT_CALL ZzTestEvent();
 RT_UN16 RT_CALL TtTestSocket();
 RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap);
 
+/**
+ * The tests must be executed in the right directory.
+ */
+RT_B RT_CALL ZzAdjustDirectory()
+{
+  RT_CHAR lpPath[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_N nWritten;
+  RT_N nPathSize;
+  RT_B bResult;
+
+  nWritten = 0;
+  if (!RtGetExecutableFilePath(lpPath, RT_CHAR_HALF_BIG_STRING_SIZE, &nWritten)) goto handle_error;
+
+  nPathSize = nWritten;
+  nWritten = 0;
+  if (!RtExtractParentPath(lpPath, nPathSize, lpPath, RT_CHAR_HALF_BIG_STRING_SIZE, &nWritten)) goto handle_error;
+
+  nPathSize = nWritten;
+  nWritten = 0;
+  if (!RtExtractParentPath(lpPath, nPathSize, lpPath, RT_CHAR_HALF_BIG_STRING_SIZE, &nWritten)) goto handle_error;
+
+  if (!RtBuildPath(lpPath, nWritten, _R("src"), RT_CHAR_HALF_BIG_STRING_SIZE - nWritten, &nWritten)) goto handle_error;
+
+  if (!RtBuildPath(lpPath, nWritten, _R("Tests"), RT_CHAR_HALF_BIG_STRING_SIZE - nWritten, &nWritten)) goto handle_error;
+
+  if (!RtSetCurrentDirectory(lpPath)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   RT_UN16 unResult;
@@ -254,6 +289,12 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   if (!RtRuntimeHeapCreate(&runtimeHeap))
   {
     unResult = WriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    goto the_end;
+  }
+
+  if (!ZzAdjustDirectory())
+  {
+    unResult = WriteLastErrorMessage(_R("Directory adjustement failed: "));
     goto the_end;
   }
 
