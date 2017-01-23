@@ -70,7 +70,7 @@
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\Win32ExGui\lib;..\..\Win32Ex\lib"
 				GenerateManifest="false"
-				ManifestFile="..\src\$(ProjectName)\resources\app.manifest"
+				ManifestFile=""
 				IgnoreAllDefaultLibraries="true"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -81,6 +81,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="..\src\$(ProjectName)\resources\app.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -154,7 +155,7 @@
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\Win32ExGui\lib;..\..\Win32Ex\lib"
 				GenerateManifest="false"
-				ManifestFile="..\src\$(ProjectName)\resources\app.manifest"
+				ManifestFile=""
 				IgnoreAllDefaultLibraries="true"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -167,6 +168,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="..\src\$(ProjectName)\resources\app.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -244,6 +246,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\src\ClimbingContest\resources\app.manifest"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
