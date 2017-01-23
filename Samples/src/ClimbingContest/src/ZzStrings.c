@@ -1,4 +1,4 @@
-#include "zzstrings.h"
+#include "zzStrings.h"
 
 RT_CHAR* zz_lpStrings[] = {
   /* ZZ_STRINGS_APPLICATION_NAME             */ _R("Climbing Contest"),
