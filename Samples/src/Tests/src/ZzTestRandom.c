@@ -29,6 +29,8 @@ RT_B RT_CALL ZzTestRandom()
   RT_B bResult;
 
   if (!ZzTestGetRandomNumberWithBoundaries(-1, 0)) goto handle_error;
+  if (!ZzTestGetRandomNumberWithBoundaries(-1, -1)) goto handle_error;
+  if (!ZzTestGetRandomNumberWithBoundaries(-1, 0)) goto handle_error;
   if (!ZzTestGetRandomNumberWithBoundaries(-3, 3)) goto handle_error;
   if (!ZzTestGetRandomNumberWithBoundaries(12, 15)) goto handle_error;
   if (!ZzTestGetRandomNumberWithBoundaries(-1000000000, 1000000000)) goto handle_error;
