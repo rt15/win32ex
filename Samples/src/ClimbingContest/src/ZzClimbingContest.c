@@ -12,8 +12,6 @@
 
 /**
  * TODO
- * Manage deletion in the list.
- * Add a refresh list procedure.
  * The display of the list should be sorted.
  * I need random numbers generation.
  */
@@ -37,7 +35,7 @@ void RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
  * Load into the list-box the content of the RtList.
  */
 void RT_CALL ZzRefreshList(ZZ_APP_CONTEXT* lpAppContext)
-{  
+{
   RT_UN32 nListSize;
   RT_CHAR* lpItem;
   RT_N nI;
@@ -57,6 +55,12 @@ void RT_CALL ZzRefreshList(ZZ_APP_CONTEXT* lpAppContext)
   EnableWindow(lpAppContext->hDeleteButton, FALSE);
 }
 
+void RT_CALL ZzItemSelected(ZZ_APP_CONTEXT* lpAppContext)
+{
+  /* An item is selected, enable delete button. */
+  EnableWindow(lpAppContext->hDeleteButton, TRUE);
+}
+
 RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N nLParam)
 {
   ZZ_APP_CONTEXT* lpAppContext;
@@ -64,7 +68,8 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   MINMAXINFO* lpMinMaxInfo;
   RT_GUI_RECT rtRect;
   POINT rtCursorPosition;
-  LONG_PTR nSendMessageResult;
+  LONG_PTR nSelectedItem;
+  RT_UN32 nListSize;
   RT_CHAR* lpItem;
   NMHDR* lpNotifyMessageInfo;
   RT_N nWritten;
@@ -104,23 +109,39 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
               RtNewListItem(&lpAppContext->lpLists[lpAppContext->nCurrentEntity], &lpItem);
               ZzGenerateResourceName(lpItem);
               ZzRefreshList(lpAppContext);
+              
+              /* Select created entity. */
+              nListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->nCurrentEntity]);
+              SendMessage(lpAppContext->hListBox, LB_SETCURSEL, nListSize - 1, 0);
+              ZzItemSelected(lpAppContext);
               break;
             case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
-              nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
-              if (nSendMessageResult != LB_ERR)
+              nSelectedItem = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+              if (nSelectedItem != LB_ERR)
               {
-                RtDeleteListItemIndex(&lpAppContext->lpLists[lpAppContext->nCurrentEntity], nSendMessageResult);
+                RtDeleteListItemIndex(&lpAppContext->lpLists[lpAppContext->nCurrentEntity], nSelectedItem);
                 ZzRefreshList(lpAppContext);
+
+                nListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->nCurrentEntity]);
+
+                /* Select last item if it has been removed. */
+                if (nSelectedItem >= nListSize) nSelectedItem = nListSize - 1;
+
+                /* Select next/last item if available. */
+                if (nSelectedItem >= 0)
+                {
+                  SendMessage(lpAppContext->hListBox, LB_SETCURSEL, nSelectedItem, 0);
+                  ZzItemSelected(lpAppContext);
+                }
               }
               break;
           }
           break;
         case LBN_SELCHANGE:
-          nSendMessageResult = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
-          if (nSendMessageResult != LB_ERR)
+          nSelectedItem = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+          if (nSelectedItem != LB_ERR)
           {
-            /* An item is selected, enable delete button. */
-            EnableWindow(lpAppContext->hDeleteButton, TRUE);
+            ZzItemSelected(lpAppContext);
           }
           break;
       }
