@@ -13,7 +13,7 @@
 /**
  * TODO
  * The display of the list should be sorted.
- * I need random numbers generation.
+ * Put references in place.
  */
 
 /**
