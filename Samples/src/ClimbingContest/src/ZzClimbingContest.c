@@ -23,10 +23,14 @@
  */
 void RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
 {
+  RT_N nResourceIndex;
   RT_N nWritten;
-  
+
   nWritten = 0;
-  RtCopyString(_R("New item"), lpBuffer, ZZ_RESOURCES_NAME_SIZE, &nWritten);
+  RtCopyString(_R("New item "), lpBuffer, ZZ_RESOURCES_NAME_SIZE, &nWritten);
+
+  RtGetRandomNumberWithBoundaries(1, 20, &nResourceIndex);
+  RtConvertNumberToString(nResourceIndex, &lpBuffer[nWritten], ZZ_RESOURCES_NAME_SIZE - nWritten, &nWritten);
 }
 
 /**
