@@ -257,6 +257,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\Tests\src\ZzTestRandom.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\Tests\src\ZzTools.c"
 				>
 			</File>

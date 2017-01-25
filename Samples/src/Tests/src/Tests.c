@@ -224,6 +224,7 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_N nEncoding, RT_N nBomSize, R
 
 RT_UN16 RT_CALL TtTestTypes();
 RT_UN16 RT_CALL TtTestMemory();
+RT_B RT_CALL ZzTestRandom();
 RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap);
 RT_UN16 RT_CALL TtTestFileSystem();
 RT_UN16 RT_CALL TtTestChar();
@@ -300,6 +301,7 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
   if (TtTestTypes()) goto tests_failed;
   if (TtTestMemory()) goto tests_failed;
+  if (!ZzTestRandom()) goto tests_failed;
   if (!ZzTestHeap(&runtimeHeap.lpHeap)) goto tests_failed;
   if (TtTestFileSystem()) goto tests_failed;
   if (TtTestChar()) goto tests_failed;

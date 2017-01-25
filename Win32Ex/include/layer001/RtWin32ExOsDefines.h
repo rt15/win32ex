@@ -83,6 +83,7 @@
 #include <langinfo.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <openssl/rand.h>
 
 #endif
 

@@ -320,6 +320,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer005/RtErrorMessage.h"
 #include "layer005/RtFileSystem.h"
 #include "layer005/RtHeap.h"
+#include "layer005/RtRandom.h"
 #include "layer005/RtStaticHeap.h"
 
 #include "layer006/RtConsole.h"

@@ -92,12 +92,12 @@ typedef short RT_N16;
 #endif
 
 /* Fixed size types */
-typedef int RT_B;                    /* BOOL             */
-typedef int RT_N32;                  /* INT/INT32/LONG   */
+typedef int RT_B;                    /* BOOL               */
+typedef int RT_N32;                  /* INT/INT32/LONG     */
 #if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_64)
-  typedef unsigned int RT_UN32;      /* DWORD, UINT      */
+  typedef unsigned int RT_UN32;      /* DWORD, UINT        */
 #else
-  typedef unsigned long RT_UN32;     /* DWORD            */
+  typedef unsigned long RT_UN32;     /* DWORD, ULONG       */
 #endif
 
 #ifdef RT_DEFINE_GCC
@@ -128,7 +128,7 @@ typedef void* RT_H;                  /* HANDLE.  */
 #define RT_TYPE_MIN_N16    (-RT_TYPE_MAX_N16 - 1)
 #define RT_TYPE_MAX_UN16   ((RT_UN16)-1)
 #define RT_TYPE_MAX_N32    2147483647
-#define RT_TYPE_MIN_N32    (-RT_TYPE_MIN_N32 - 1)
+#define RT_TYPE_MIN_N32    (-RT_TYPE_MAX_N32 - 1)
 #define RT_TYPE_MAX_UN32   ((RT_UN32)-1)
 #define RT_TYPE_MAX_N64    9223372036854775807
 #define RT_TYPE_MIN_N64    (-RT_TYPE_MAX_N64 - 1)
