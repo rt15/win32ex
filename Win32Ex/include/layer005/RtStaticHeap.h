@@ -14,7 +14,7 @@
 
 void* RT_API RtAlloc(void** lpArea, RT_UN unSize);
 
-void* RT_API RtReAlloc(void** lpArea, RT_UN unSize);
+void* RT_API RtReAlloc(void** lpArea, void* lpCurrentArea, RT_UN unSize);
 
 RT_B RT_API RtFree(void** lpArea);
 

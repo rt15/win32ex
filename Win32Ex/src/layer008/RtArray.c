@@ -51,7 +51,8 @@ void* RT_API RtSetArraySize(void** lpArray, RT_UN32 unSize)
   lpArea = (RT_CHAR8*)*lpArray - unHeaderSize;
 
   *lpArray = RT_NULL;
-  if ((*lpArrayHeader->lpHeap)->lpReAlloc(lpArrayHeader->lpHeap, &lpArea, unHeaderSize + unSize * lpArrayHeader->unItemSize))
+  /* TODO: Fix unavoidable memory leak if the array is an array of pointers... */
+  if ((*lpArrayHeader->lpHeap)->lpReAlloc(lpArrayHeader->lpHeap, &lpArea, lpArea, unHeaderSize + unSize * lpArrayHeader->unItemSize))
   {
     *lpArray = (RT_CHAR8*)lpArea + unHeaderSize;
     lpArrayHeader = *lpArray;

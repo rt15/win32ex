@@ -15,6 +15,9 @@
 
 #### TODO :
 
+Ensure that there cannot be memory leaks while setting array/list size.
+The items must remain accessible and untouched.
+
 Use RT_SUCCESS/RT_FAILURE.
 
 Implement an index system for lists (b-tree?).
@@ -62,8 +65,6 @@ Take care of alignement for atomic usage.
 See __attribute__ ((aligned (16))) et  __declspec(align(#)), I might define a macro in RtWin32ExTypes.h.
 
 Fix memory leaks in RtList.c (See TODOs in this file).
-(Study realloc behavior and document).
-Perhaps realloc should return a boolean.
 
 Complete ttmemorytest.
 

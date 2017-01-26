@@ -15,7 +15,7 @@ void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_N nBufferSize, void** lp
     }
   }
 
-  /* lpBuffer is RT_NULL or nBufferSize is not enough. Try to use buffer heap. */
+  /* lpBuffer is RT_NULL or nBufferSize is not enough. Try to use heap buffer. */
   if ((lpHeapBufferSize) && (unSize <= (RT_UN)*lpHeapBufferSize))
   {
     /* Given heap buffer is enough. */
@@ -35,7 +35,11 @@ void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_N nBufferSize, void** lp
     /* If a too small heap buffer exists, realloc. */
     if (*lpHeapBuffer)
     {
-      *lpArea = (*lpHeap)->lpReAlloc(lpHeap, lpHeapBuffer, unSize);
+      if ((*lpHeap)->lpReAlloc(lpHeap, lpArea, *lpHeapBuffer, unSize))
+      {
+        /* Reallocation was a success, use new area as heap buffer. */
+        *lpHeapBuffer = *lpArea;
+      }
     }
     else
     {

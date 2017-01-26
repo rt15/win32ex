@@ -6,10 +6,14 @@
 /**
  * @file
  * Declares the method of an heap.
+ *
+ * <p>
+ * If ReAlloc fails, lpCurrentArea is not deallocated and its content remains unchanged.
+ * </p>
  */
 
 typedef void* (RT_CALL *RT_HEAP_ALLOC)(void* lpThis, void** lpArea, RT_UN unSize, RT_CHAR* lpName);
-typedef void* (RT_CALL *RT_HEAP_RE_ALLOC)(void* lpThis, void** lpArea, RT_UN unSize);
+typedef void* (RT_CALL *RT_HEAP_RE_ALLOC)(void* lpThis, void** lpArea, void* lpCurrentArea, RT_UN unSize);
 typedef RT_B (RT_CALL *RT_HEAP_FREE)(void* lpThis, void** lpArea);
 typedef RT_B (RT_CALL *RT_HEAP_CLOSE)(void* lpThis);
 

@@ -47,14 +47,14 @@ free_resources:
   return *lpArea;
 }
 
-void* RT_API RtReAlloc(void** lpArea, RT_UN unSize)
+void* RT_API RtReAlloc(void** lpArea, void* lpCurrentArea, RT_UN unSize)
 {
 #ifdef RT_DEFINE_WINDOWS
-  /* HeapReAlloc return NULL and call SetLastError in case of failure. */
-  *lpArea = HeapReAlloc(rt_hStaticHeapProcessHeap, 0, *lpArea, unSize);
+  /* HeapReAlloc return NULL and call SetLastError in case of failure. lpCurrentArea is left unchanged. */
+  *lpArea = HeapReAlloc(rt_hStaticHeapProcessHeap, 0, lpCurrentArea, unSize);
 #else
-  /* realloc set errno. */
-  *lpArea = realloc(*lpArea, unSize);
+  /* realloc set errno. lpCurrentArea is left unchanged. */
+  *lpArea = realloc(lpCurrentArea, unSize);
 #endif
   return *lpArea;
 }
@@ -98,7 +98,11 @@ void* RT_API RtAllocIfNeeded(void* lpBuffer, RT_N nBufferSize, void** lpHeapBuff
     {
       if (*lpHeapBuffer)
       {
-        *lpArea = RtReAlloc(lpHeapBuffer, unSize);
+        if (RtReAlloc(lpArea, *lpHeapBuffer, unSize))
+        {
+          /* Realloc was a success, use new lpArea as heap buffer. */
+          *lpHeapBuffer = *lpArea;
+        }
       }
       else
       {

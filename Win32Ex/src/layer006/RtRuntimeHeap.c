@@ -5,7 +5,7 @@
 #include "layer005/RtStaticHeap.h"
 
 void* RT_API RtRuntimeHeapAlloc(void* lpThis, void** lpArea, RT_UN unSize, RT_CHAR* lpName);
-void* RT_API RtRuntimeHeapReAlloc(void* lpThis, void** lpArea, RT_UN unSize);
+void* RT_API RtRuntimeHeapReAlloc(void* lpThis, void** lpArea, void* lpCurrentArea, RT_UN unSize);
 RT_B RT_API RtRuntimeHeapFree(void* lpThis, void** lpArea);
 RT_B RT_API RtRuntimeHeapClose(void* lpThis);
 
@@ -22,9 +22,9 @@ void* RT_API RtRuntimeHeapAlloc(void* lpThis, void** lpArea, RT_UN unSize, RT_CH
   return RtAlloc(lpArea, unSize);
 }
 
-void* RT_API RtRuntimeHeapReAlloc(void* lpThis, void** lpArea, RT_UN unSize)
+void* RT_API RtRuntimeHeapReAlloc(void* lpThis, void** lpArea, void* lpCurrentArea, RT_UN unSize)
 {
-  return RtReAlloc(lpArea, unSize);
+  return RtReAlloc(lpArea, lpCurrentArea, unSize);
 }
 
 RT_B RT_API RtRuntimeHeapFree(void* lpThis, void** lpArea)
