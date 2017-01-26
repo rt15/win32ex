@@ -62,6 +62,7 @@
 					<Add option="-m32" />
 					<Add library="win32exd" />
 					<Add library="pthread" />
+					<Add library="crypto" />
 				</Linker>
 			</Target>
 			<Target title="Linux32Release">
@@ -80,6 +81,7 @@
 					<Add option="-m32" />
 					<Add library="win32ex" />
 					<Add library="pthread" />
+					<Add library="crypto" />
 				</Linker>
 			</Target>
 		</Build>

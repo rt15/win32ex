@@ -47,7 +47,7 @@ void RT_CALL ZzRefreshList(ZZ_APP_CONTEXT* lpAppContext)
   nListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->nCurrentEntity]);
   for (nI = 0; nI < nListSize; nI++)
   {
-    RtGetListItem(lpAppContext->lpLists[lpAppContext->nCurrentEntity], nI, &lpItem);
+    RtGetListItem(lpAppContext->lpLists[lpAppContext->nCurrentEntity], nI, (void**)&lpItem);
     SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)lpItem);
   }
 
@@ -72,7 +72,6 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   RT_UN32 nListSize;
   RT_CHAR* lpItem;
   NMHDR* lpNotifyMessageInfo;
-  RT_N nWritten;
   RT_H hChild;
   RT_N nResult;
 
@@ -106,10 +105,10 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
           switch (LOWORD(unWParam))
           {
             case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
-              RtNewListItem(&lpAppContext->lpLists[lpAppContext->nCurrentEntity], &lpItem);
+              RtNewListItem(&lpAppContext->lpLists[lpAppContext->nCurrentEntity], (void**)&lpItem);
               ZzGenerateResourceName(lpItem);
               ZzRefreshList(lpAppContext);
-              
+
               /* Select created entity. */
               nListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->nCurrentEntity]);
               SendMessage(lpAppContext->hListBox, LB_SETCURSEL, nListSize - 1, 0);

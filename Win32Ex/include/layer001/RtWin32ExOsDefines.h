@@ -83,6 +83,8 @@
 #include <langinfo.h>
 #include <sys/socket.h>
 #include <netdb.h>
+/* sudo apt-get install libssl-dev */
+/* sudo apt-get install libssl-dev:i386 */
 #include <openssl/rand.h>
 
 #endif

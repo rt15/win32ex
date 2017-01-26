@@ -84,7 +84,7 @@ RT_B RT_API RtGetRandomBytes(void* lpArea, RT_N32 nSize)
 #else /* NOT RT_DEFINE_WINDOWS */
     if (!RAND_bytes(lpArea, nSize))
     {
-      /* RAND_bytes uses err_get_error and does not set errno so we use RtSetLastError. */ 
+      /* RAND_bytes uses err_get_error and does not set errno so we use RtSetLastError. */
       RtSetLastError(RT_ERROR_FUNCTION_FAILED);
       goto handle_error;
     }
@@ -109,7 +109,7 @@ RT_B RT_API RtGetRandomNumberWithBoundaries(RT_N nLowerBound, RT_N nUpperBound, 
   RT_UN unUnsigned;
   RT_B bResult;
 
-  if (!RtGetRandomNumber(&unUnsigned)) goto handle_error;
+  if (!RtGetRandomNumber((RT_N*)&unUnsigned)) goto handle_error;
   unUnsigned = unUnsigned % (RT_UN)(nUpperBound + 1 - nLowerBound);
   *lpResult = unUnsigned + nLowerBound;
 
