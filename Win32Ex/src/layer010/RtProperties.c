@@ -231,7 +231,7 @@ RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey,
     }
 
     /* Find the right item by checking the key. */
-    while ((nIndex < RT_TYPE_MAX_N) && (nIndex < unSize) && (lpPropertiesEntries[nIndex].nHash == nHash))
+    while ((nIndex < RT_TYPE_MAX_N) && (nIndex < (RT_N)unSize) && (lpPropertiesEntries[nIndex].nHash == nHash))
     {
       if (!RtCompareStrings(lpPropertiesEntries[nIndex].lpKey, lpKey))
       {

@@ -166,7 +166,7 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
     unFlags = WSA_FLAG_OVERLAPPED;
   }
   /* WSA_FLAG_NO_HANDLE_INHERIT flag is in early versions of Windows only. */
-  lpSocket->unSocket = WSASocket(unAddressFamily, unType, unProtocol, RT_NULL, 0, unFlags);
+  lpSocket->unSocket = (RT_UN)WSASocket(unAddressFamily, unType, unProtocol, RT_NULL, 0, unFlags);
   if (lpSocket->unSocket == INVALID_SOCKET) goto handle_error;
 
 #else /* NOT RT_DEFINE_WINDOWS */
@@ -204,7 +204,7 @@ void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, R
 {
   RtZeroMemory(lpSocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV4));
   lpSocketAddress->unAddressFamily = RT_SOCKET_ADDRESS_FAMILY_IPV4;
-  lpSocketAddress->unPort = htons(unPort);
+  lpSocketAddress->unPort = htons((RT_UN16)unPort);
   RtCopyMemory(lpAddress, &lpSocketAddress->rtAddress, sizeof(RT_ADDRESS_IPV4));
 }
 
@@ -275,7 +275,7 @@ RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPo
       RtSetLastError(RT_ERROR_FUNCTION_FAILED);
       goto handle_error;
   }
-  lpSocketAddress->unAddressFamily = unAddressFamily;
+  lpSocketAddress->unAddressFamily = (RT_UN16)unAddressFamily;
 
   bResult = RtConnectSocketWithAddress(lpSocket, lpSocketAddress);
   goto free_resources;
@@ -367,7 +367,7 @@ RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort)
       RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
       goto handle_error;
   }
-  lpSocketAddress->sa_family = lpSocket->unAddressFamily;
+  lpSocketAddress->sa_family = (RT_UN16)lpSocket->unAddressFamily;
 
 #ifdef RT_DEFINE_WINDOWS
   /* On success bind returns zero, -1 and set last error otherwise. */
@@ -488,7 +488,7 @@ RT_B RT_API RtAcceptSocketConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedS
   nSocketAddressSize = sizeof(RT_SOCKET_ADDRESS);
 
 #ifdef RT_DEFINE_WINDOWS
-  lpAcceptedSocket->unSocket = accept(lpSocket->unSocket, (struct sockaddr*)lpActualSocketAddress, &nSocketAddressSize);
+  lpAcceptedSocket->unSocket = (RT_UN)accept(lpSocket->unSocket, (struct sockaddr*)lpActualSocketAddress, &nSocketAddressSize);
   if (lpAcceptedSocket->unSocket == INVALID_SOCKET) goto handle_error;
 #else
   lpAcceptedSocket->nSocket = accept(lpSocket->nSocket, (struct sockaddr*)lpActualSocketAddress, &nSocketAddressSize);

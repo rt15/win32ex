@@ -42,14 +42,14 @@ RT_B RT_API RtMoveWindow(RT_H hWindow, RT_GUI_RECT* lpRect)
   return MoveWindow(hWindow, lpRect->nX, lpRect->nY, lpRect->nWidth, lpRect->nHeight, TRUE);
 }
 
-RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT_N32 nControlId, RT_H hInstance)
+RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT_N nControlId, RT_H hInstance)
 {
   return CreateWindowEx(0, _R("Static"), _R(""),
                         WS_CHILD | WS_VISIBLE,
                         lpPosition->nX, lpPosition->nY,
                         lpPosition->nWidth, lpPosition->nHeight,
                         hParentWindow,
-                        (HMENU)nControlId,
+                        (HMENU)(LONG_PTR)nControlId,
                         hInstance,
                         RT_NULL);
 }
@@ -70,19 +70,19 @@ RT_UN16 RT_CALL RtDefaultMessageLoop()
   return message.wParam;
 }
 
-RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_N32 nControlId, RT_H hInstance)
+RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_N nControlId, RT_H hInstance)
 {
   RT_N nI;
   RT_H hResult;
 
 
-  hResult = CreateWindowEx(0,                           /* Extended style. */
-                            TOOLBARCLASSNAME,           /* Class name. */
-                            _R("ToolBar"),              /* Window name. */
-                            WS_CHILD | WS_VISIBLE,      /* Style. */
+  hResult = CreateWindowEx(0,                             /* Extended style. */
+                            TOOLBARCLASSNAME,             /* Class name. */
+                            _R("ToolBar"),                /* Window name. */
+                            WS_CHILD | WS_VISIBLE,        /* Style. */
                             0, 0, 0, 0,
-                            hParentWindow,              /* Parent. */
-                            (HMENU)nControlId,          /* Control id. */
+                            hParentWindow,                /* Parent. */
+                            (HMENU)(LONG_PTR)nControlId,  /* Control id. */
                             hInstance,
                             RT_NULL);
 
@@ -453,7 +453,7 @@ RT_H RT_API RtCreateMenuBar(RT_UN unMenusCount, RT_CHAR* lpTexts[], RT_H* hMenus
   return hResult;
 }
 
-RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow, RT_N32 nControlId, RT_H hInstance)
+RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow, RT_N nControlId, RT_H hInstance)
 {
   RT_H hResult;
 
@@ -463,7 +463,7 @@ RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow,
                            WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP,   /* Grip at the right.            */
                            0, 0, 0, 0,                               /* Position and size.            */
                            hParentWindow,                            /* Parent window.                */
-                           (HMENU)nControlId,                        /* Child window identifier.      */
+                           (HMENU)(LONG_PTR)nControlId,              /* Child window identifier.      */
                            hInstance,                                /* Instance.                     */
                            RT_NULL);                                 /* No window creation data.      */
 
@@ -717,7 +717,7 @@ RT_B RT_API RtGetWindowSize(RT_H hWindow, RT_GUI_RECT* lpRect)
 
 void* RT_API RtGetWindowUserData(RT_H hWindow)
 {
-  return (void*)GetWindowLongPtr(hWindow, GWLP_USERDATA);
+  return (void*)(LONG_PTR)GetWindowLongPtr(hWindow, GWLP_USERDATA);
 }
 
 

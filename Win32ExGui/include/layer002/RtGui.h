@@ -157,7 +157,7 @@ RT_B RT_API RtFreeGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* lp
 /**
  * @param lpButtons Buffer.
  */
-RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_N32 nControlId, RT_H hInstance);
+RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_N nControlId, RT_H hInstance);
 
 /**
  * GetClientRect returns the size of the client area.<br>
@@ -175,7 +175,7 @@ RT_B RT_API RtGetWindowSize(RT_H hWindow, RT_GUI_RECT* lpRect);
  */
 RT_B RT_API RtMoveWindow(RT_H hWindow, RT_GUI_RECT* lpRect);
 
-RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT_N32 nControlId, RT_H hInstance);
+RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT_N nControlId, RT_H hInstance);
 
 /**
  * Returns an handle to the application instance (hInstance).
@@ -238,7 +238,7 @@ RT_H RT_API RtCreateDialogBox(RT_CHAR* lpText, RT_CHAR* lpClassName, RT_B bSizab
 /**
  * Be sure to dispatch the WM_SIZE to the status bar in the parent window proc.
  */
-RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow, RT_N32 nControlId, RT_H hInstance);
+RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow, RT_N nControlId, RT_H hInstance);
 
 void RT_API RtSetSimpleStatusBarText(RT_H hStatusBar, RT_CHAR* lpText);
 

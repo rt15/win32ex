@@ -1151,6 +1151,10 @@ typedef void GpSolidFill;
 typedef void GpStringFormat;
 typedef void GpTexture;
 
+/* From GdiPlusInit.h. */
+GpStatus WINAPI GdiplusStartup(OUT ULONG_PTR *token, const GdiplusStartupInput *input, OUT GdiplusStartupOutput *output);
+VOID WINAPI GdiplusShutdown(ULONG_PTR token);
+
 /* This header is provided with "&" operators that must be replaced by "*". */
 #include <GdiPlusFlat.h>
 
