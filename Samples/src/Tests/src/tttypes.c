@@ -29,22 +29,22 @@ void RT_CALL TtDisplayFlags()
 #endif
 }
 
-RT_UN16 RT_CALL TtTestType(RT_CHAR* lpTypeName, RT_N nSize, RT_B bSigned, RT_N nExpectedSize, RT_B bExpectedSignedness)
+RT_UN16 RT_CALL TtTestType(RT_CHAR* lpTypeName, RT_UN unSize, RT_B bSigned, RT_UN unExpectedSize, RT_B bExpectedSignedness)
 {
   RT_CHAR lpBuffer[RT_CHAR_THIRD_BIG_STRING_SIZE];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
   unResult = 1;
 
-  nWritten = 0;
-  RtCopyString(lpTypeName,                                        &lpBuffer[nWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - nWritten, &nWritten);
-  RtCopyString(_R(" size = "),                                    &lpBuffer[nWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - nWritten, &nWritten);
-  RtConvertNumberToString(nSize,                                  &lpBuffer[nWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - nWritten, &nWritten);
-  RtCopyString(bSigned ? _R(", signed.\n") : _R(", unsigned.\n"), &lpBuffer[nWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - nWritten, &nWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, nWritten);
+  unWritten = 0;
+  RtCopyString(lpTypeName,                                        &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtCopyString(_R(" size = "),                                    &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtConvertIntegerToString(unSize,                                  &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtCopyString(bSigned ? _R(", signed.\n") : _R(", unsigned.\n"), &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
-  if (nSize != nExpectedSize) goto the_end;
+  if (unSize != unExpectedSize) goto the_end;
   if ((bExpectedSignedness && !bSigned) || (!bExpectedSignedness && bSigned)) goto the_end;
 
   unResult = 0;
@@ -54,8 +54,8 @@ the_end:
 
 RT_UN16 RT_CALL TtTestTypesSizes()
 {
-  RT_N nExpectedCharSize;
-  RT_N nExpectedArchiSize;
+  RT_UN unExpectedCharSize;
+  RT_UN unExpectedArchiSize;
 
   RT_CHAR8 cChar8;
   RT_UCHAR8 ucUChar8;
@@ -74,15 +74,15 @@ RT_UN16 RT_CALL TtTestTypesSizes()
   unResult = 1;
 
 #ifdef RT_DEFINE_WINDOWS
-  nExpectedCharSize = 16;
+  unExpectedCharSize = 16;
 #else
-  nExpectedCharSize = 8;
+  unExpectedCharSize = 8;
 #endif
 
 #ifdef RT_DEFINE_32
-  nExpectedArchiSize = 32;
+  unExpectedArchiSize = 32;
 #else
-  nExpectedArchiSize = 64;
+  unExpectedArchiSize = 64;
 #endif
 
   cChar8 = -1;
@@ -95,10 +95,10 @@ RT_UN16 RT_CALL TtTestTypesSizes()
   if (TtTestType(_R("RT_UN16"), sizeof(RT_UN16) * 8, unUn16 < 0, 16, RT_FALSE)) goto the_end;
 
   cChar = -1;
-  if (TtTestType(_R("RT_CHAR"), sizeof(RT_CHAR) * 8, cChar < 0, nExpectedCharSize, cChar < 0)) goto the_end;
+  if (TtTestType(_R("RT_CHAR"), sizeof(RT_CHAR) * 8, cChar < 0, unExpectedCharSize, cChar < 0)) goto the_end;
 
   ucUChar = -1;
-  if (TtTestType(_R("RT_UCHAR"), sizeof(RT_UCHAR) * 8, ucUChar < 0, nExpectedCharSize, RT_FALSE)) goto the_end;
+  if (TtTestType(_R("RT_UCHAR"), sizeof(RT_UCHAR) * 8, ucUChar < 0, unExpectedCharSize, RT_FALSE)) goto the_end;
 
   nN32 = -1;
   if (TtTestType(_R("RT_N32"), sizeof(RT_N32) * 8, nN32 < 0, 32, RT_TRUE)) goto the_end;
@@ -113,10 +113,10 @@ RT_UN16 RT_CALL TtTestTypesSizes()
   if (TtTestType(_R("RT_UN64"), sizeof(RT_UN64) * 8, unUn64 < 0, 64, RT_FALSE)) goto the_end;
 
   nN = -1;
-  if (TtTestType(_R("RT_N"), sizeof(RT_N) * 8, nN < 0, nExpectedArchiSize, RT_TRUE)) goto the_end;
+  if (TtTestType(_R("RT_N"), sizeof(RT_N) * 8, nN < 0, unExpectedArchiSize, RT_TRUE)) goto the_end;
 
   unUn = -1;
-  if (TtTestType(_R("RT_UN"), sizeof(RT_UN) * 8, unUn < 0, nExpectedArchiSize, RT_FALSE)) goto the_end;
+  if (TtTestType(_R("RT_UN"), sizeof(RT_UN) * 8, unUn < 0, unExpectedArchiSize, RT_FALSE)) goto the_end;
 
   unResult = 0;
 the_end:

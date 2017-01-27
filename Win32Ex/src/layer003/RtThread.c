@@ -49,7 +49,7 @@ RT_B RT_API RtCreateThread(RT_THREAD* lpThread, RT_THREAD_CALLBACK lpThreadCallb
 RT_B RT_API RtJoinThread(RT_THREAD* lpThread)
 {
 #ifndef RT_DEFINE_WINDOWS
-  RT_N nReturnedValue;
+  int nReturnedValue;
 #endif
   RT_B bResult;
 

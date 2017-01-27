@@ -15,6 +15,9 @@
 
 #### TODO :
 
+Better hash map implementation (Java like)? Use it in Properties?
+http://javahungry.blogspot.com/2013/08/hashing-how-hash-map-works-in-java-or.html
+
 Use unsigned when possible as DWORD on Windows and size_t on Linux are widely used.
 
 Ensure that there cannot be memory leaks while setting array/list size.
@@ -46,14 +49,6 @@ Propose setsockopt usage. See available options in RtSocket.c.
 
 Signals management under Linux.
 "When SO_KEEPALIVE is enabled on the socket the protocol checks in a protocol-specific manner if the other end is still alive. A SIGPIPE signal is raised if a process sends or receives on a broken stream; this causes naive processes, which do not handle the signal, to exit."
-
-Check that Test is launched in right directory as it is not saved in VC project.
-(Maybe switch from .exe directory !?)
-
-Use signed RT_N/RT_N32 values in place of RT_UN/RT_UN32 when possible.
-The goal is to limit overflow possibilities.
-Do it in heaps?
-Also, why using fixed size types? For example in array/list headers?
 
 Create an "Hello, world!" sample project.
 
@@ -211,7 +206,7 @@ It should also contain a pointer on the key and a pointer on the value.
 The sorted array is alimented with pointers on all the values.
 Then it is sorted if required.
 
-## Better implementation for RtConvertNumberToString
+## Better implementation for RtConvertIntegerToString
 
 ## A code lines counter.
 
@@ -220,7 +215,7 @@ Taking a list of extensions as parameters.
 ## Build rtchar8.h/rtchar8.c
 
 I must get ride of "win32exosdefines".
-It remains necessary for RtConvertNumberToString.
+It remains necessary for RtConvertIntegerToString.
 
 Then I must be able to produce a rtchar8 from RtChar.
 
@@ -259,7 +254,7 @@ Perhaps should I build my own defines.
 
 ## Test case writing small file with two encodings, checking of content.
 
-## Test case on encoding conversion with -1 or not as input size.
+## Test case on encoding conversion with RT_TYPE_MAX_UN or not as input size.
 
 ## Test the various flags to open a file.
 

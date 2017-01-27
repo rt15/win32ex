@@ -3,7 +3,7 @@
 #include "layer001/RtWin32ExOsDefines.h"
 #include "layer002/RtErrorCode.h"
 
-RT_B RT_API RtConvertNumberToString(RT_N nInput, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtConvertIntegerToString(RT_N nInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   /* TODO: Better implementation. */
 
@@ -16,25 +16,31 @@ RT_B RT_API RtConvertNumberToString(RT_N nInput, RT_CHAR* lpBuffer, RT_N nBuffer
   return RT_TRUE;
 }
 
-RT_B RT_API RtConvertStringToNumber(RT_CHAR* lpInput, RT_N* lpResult)
+RT_B RT_API RtConvertUIntegerToString(RT_UN unInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
-  RT_N nI;
+  /* TODO: Better implementation. */
+  return RtConvertIntegerToString((RT_N)unInput, lpBuffer, unBufferSize, lpWritten);
+}
+
+RT_B RT_API RtConvertStringToInteger(RT_CHAR* lpInput, RT_N* lpResult)
+{
+  RT_UN unI;
   RT_N nResult;
   RT_B bResult;
 
   nResult = 0;
-  nI = 0;
-  while (lpInput[nI])
+  unI = 0;
+  while (lpInput[unI])
   {
-    if ((lpInput[nI] < _R('0')) || (lpInput[nI] > _R('9')))
+    if ((lpInput[unI] < _R('0')) || (lpInput[unI] > _R('9')))
     {
       goto handle_error;
     }
     else
     {
-      nResult = nResult * 10 + lpInput[nI] - _R('0');
+      nResult = nResult * 10 + lpInput[unI] - _R('0');
     }
-    nI++;
+    unI++;
   }
   *lpResult = nResult;
 
@@ -47,7 +53,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_N RT_API RtGetStringSize(RT_CHAR* lpInput)
+RT_UN RT_API RtGetStringSize(RT_CHAR* lpInput)
 {
   RT_CHAR* lpInInput;
   RT_UN unResult;
@@ -56,7 +62,7 @@ RT_N RT_API RtGetStringSize(RT_CHAR* lpInput)
 
   while (*lpInInput++);
 
-  unResult = (RT_N)(lpInInput - lpInput - 1);
+  unResult = (RT_UN)(lpInInput - lpInput - 1);
 
   return unResult;
 }
@@ -76,140 +82,140 @@ RT_N RT_API RtCompareStrings(RT_CHAR* lpString1, RT_CHAR* lpString2)
   return nResult;
 }
 
-RT_N RT_API RtSearchString(RT_CHAR* lpString, RT_CHAR* lpSearched)
+RT_UN RT_API RtSearchString(RT_CHAR* lpString, RT_CHAR* lpSearched)
 {
   RT_CHAR nChar;
   RT_CHAR nSearched;
-  RT_N nInSearched;
-  RT_N nI, nJ;
-  RT_N nResult;
+  RT_UN unInSearched;
+  RT_UN unI, unJ;
+  RT_UN unResult;
 
-  nResult = -1;
-  nI = 0;
+  unResult = RT_TYPE_MAX_UN;
+  unI = 0;
   while (1)
   {
-    nChar = lpString[nI];
+    nChar = lpString[unI];
     if (!nChar)
     {
       break;
     }
-    if (lpString[nI] == lpSearched[0])
+    if (lpString[unI] == lpSearched[0])
     {
-      nInSearched = 1;
-      nJ = nI + 1;
+      unInSearched = 1;
+      unJ = unI + 1;
       while (1)
       {
-        nSearched = lpSearched[nInSearched];
+        nSearched = lpSearched[unInSearched];
         if (!nSearched)
         {
-          nResult = nI;
+          unResult = unI;
           break;
         }
-        nChar = lpString[nJ];
+        nChar = lpString[unJ];
         if ((!nChar) || (nChar != nSearched))
         {
           break;
         }
-        nJ++;
-        nInSearched++;
+        unJ++;
+        unInSearched++;
       }
-      if (nResult != -1)
+      if (unResult != RT_TYPE_MAX_UN)
       {
         /* Searched found, breaking. */
         break;
       }
     }
-    nI++;
+    unI++;
   }
 
-  return nResult;
+  return unResult;
 }
 
-RT_N RT_API RtCountStringOccurrences(RT_CHAR* lpString, RT_CHAR* lpSearched)
+RT_UN RT_API RtCountStringOccurrences(RT_CHAR* lpString, RT_CHAR* lpSearched)
 {
-  RT_N nResult;
   RT_CHAR* lpInString;
-  RT_N nIndex;
-  RT_N nSearchedSize;
+  RT_UN unIndex;
+  RT_UN unSearchedSize;
+  RT_UN unResult;
 
-  nResult = 0;
+  unResult = 0;
   lpInString = lpString;
-  nSearchedSize = RtGetStringSize(lpSearched);
+  unSearchedSize = RtGetStringSize(lpSearched);
   do
   {
-    nIndex = RtSearchString(lpInString, lpSearched);
-    if (nIndex != -1)
+    unIndex = RtSearchString(lpInString, lpSearched);
+    if (unIndex != RT_TYPE_MAX_UN)
     {
-      nResult++;
-      lpInString = &lpInString[nIndex + nSearchedSize];
+      unResult++;
+      lpInString = &lpInString[unIndex + unSearchedSize];
     }
   }
-  while (nIndex != -1);
+  while (unIndex != RT_TYPE_MAX_UN);
 
-  return nResult;
+  return unResult;
 }
 
-RT_B RT_API RtReplaceString(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtReplaceString(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
-  RT_N nIndex;
-  RT_N nWritten;
+  RT_UN unIndex;
+  RT_UN unWritten;
   RT_CHAR* lpInString;
-  RT_N nSearchedSize;
+  RT_UN unSearchedSize;
   RT_B bResult;
 
   lpInString = lpString;
-  nWritten = 0;
-  nSearchedSize = RtGetStringSize(lpSearched);
+  unWritten = 0;
+  unSearchedSize = RtGetStringSize(lpSearched);
   while (1)
   {
-    nIndex = RtSearchString(lpInString, lpSearched);
-    if (nIndex == -1) break;
+    unIndex = RtSearchString(lpInString, lpSearched);
+    if (unIndex == RT_TYPE_MAX_UN) break;
     /* Copy all characters until found string. */
-    if (!RtCopyStringWithSize(lpInString, nIndex, &lpBuffer[nWritten], nBufferSize - nWritten, &nWritten)) goto handle_error;
+    if (!RtCopyStringWithSize(lpInString, unIndex, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
     /* Copy replacement string. */
-    if (!RtCopyString(lpReplacement, &lpBuffer[nWritten], nBufferSize - nWritten, &nWritten)) goto handle_error;
+    if (!RtCopyString(lpReplacement, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
     /* Continue reading the input String. */
-    lpInString = &lpInString[nIndex + nSearchedSize];
+    lpInString = &lpInString[unIndex + unSearchedSize];
   }
 
   /* Copy remaining characters. */
-  if (!RtCopyString(lpInString, &lpBuffer[nWritten], nBufferSize - nWritten, &nWritten)) goto handle_error;
+  if (!RtCopyString(lpInString, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
   bResult = RT_TRUE;
   goto free_resources;
 handle_error:
   bResult = RT_FALSE;
 free_resources:
-  *lpWritten += nWritten;
+  *lpWritten += unWritten;
   return bResult;
 }
 
-RT_B RT_API RtCopyStringWithSize(RT_CHAR* lpSource, RT_N nSize, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtCopyStringWithSize(RT_CHAR* lpSource, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_B bResult;
-  RT_N nI;
+  RT_UN unI;
 
   /* Manage negative size. */
-  if (nSize < 0)
+  if (unSize < 0)
   {
     RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
     goto handle_error;
   }
 
   /* Manage negative or zero buffer sizes. */
-  if (nBufferSize <= 0)
+  if (unBufferSize <= 0)
   {
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
     goto handle_error;
   }
 
-  /* Copy only nBufferSize - 1 if the buffer is too small. */
-  if (nSize > nBufferSize - 1)
+  /* Copy only unBufferSize - 1 if the buffer is too small. */
+  if (unSize > unBufferSize - 1)
   {
     bResult = RT_FALSE;
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
-    nSize = nBufferSize - 1;
+    unSize = unBufferSize - 1;
   }
   else
   {
@@ -219,21 +225,21 @@ RT_B RT_API RtCopyStringWithSize(RT_CHAR* lpSource, RT_N nSize, RT_CHAR* lpBuffe
   /* Manage overlapping. */
   if (lpBuffer <= lpSource)
   {
-    for (nI = 0; nI < nSize; nI++)
+    for (unI = 0; unI < unSize; unI++)
     {
-      lpBuffer[nI] = lpSource[nI];
+      lpBuffer[unI] = lpSource[unI];
     }
   }
   else
   {
-    for (nI = nSize - 1; nI >= 0; nI--)
+    for (unI = unSize - 1; unI < RT_TYPE_MAX_UN; unI--)
     {
-      lpBuffer[nI] = lpSource[nI];
+      lpBuffer[unI] = lpSource[unI];
     }
   }
-  lpBuffer[nSize] = 0;
+  lpBuffer[unSize] = 0;
 
-  *lpWritten += nSize;
+  *lpWritten += unSize;
 free_resources:
   return bResult;
 
@@ -242,10 +248,10 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtCopyChar(RT_CHAR nChar, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtCopyChar(RT_CHAR nChar, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_B bResult;
-  if (nBufferSize < 2)
+  if (unBufferSize < 2)
   {
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
     goto handle_error;
@@ -263,44 +269,44 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtCopyString(RT_CHAR* lpSource, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtCopyString(RT_CHAR* lpSource, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
-  RT_N nI;
+  RT_UN unI;
   RT_B bResult;
 
   /* Manage negative or zero buffer sizes. */
-  if (nBufferSize <= 0)
+  if (unBufferSize <= 0)
   {
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
     goto handle_error;
   }
 
   /* Manage all characters until zero trailing character. */
-  nI = 0;
-  while (lpSource[nI])
+  unI = 0;
+  while (lpSource[unI])
   {
-    if (nI >= nBufferSize)
+    if (unI >= unBufferSize)
     {
       RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
-      lpBuffer[nBufferSize - 1] = 0;
-      *lpWritten += nBufferSize - 1;
+      lpBuffer[unBufferSize - 1] = 0;
+      *lpWritten += unBufferSize - 1;
       goto handle_error;
     }
-    lpBuffer[nI] = lpSource[nI];
-    nI++;
+    lpBuffer[unI] = lpSource[unI];
+    unI++;
   }
 
   /* Manage zero trailing character. */
-  if (nI >= nBufferSize)
+  if (unI >= unBufferSize)
   {
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
-    lpBuffer[nBufferSize - 1] = 0;
-    *lpWritten += nBufferSize - 1;
+    lpBuffer[unBufferSize - 1] = 0;
+    *lpWritten += unBufferSize - 1;
     goto handle_error;
   }
-  lpBuffer[nI] = 0;
+  lpBuffer[unI] = 0;
 
-  *lpWritten += nI;
+  *lpWritten += unI;
   bResult = RT_TRUE;
 free_resources:
   return bResult;
@@ -310,7 +316,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_N RT_API RtFastLowerString(RT_CHAR* lpString)
+RT_UN RT_API RtFastLowerString(RT_CHAR* lpString)
 {
   RT_CHAR nCurrentChar;
   RT_UN unResult;
@@ -343,82 +349,82 @@ RT_CHAR RT_API RtFastLowerChar(RT_CHAR nChar)
   return nResult;
 }
 
-RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten, RT_UN unStringsCount, ...)
+RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, RT_UN unStringsCount, ...)
 {
   va_list vaList;
   RT_B bResult;
 
   va_start(vaList, unStringsCount);
-  bResult = RtVConcatStrings(vaList, unStringsCount, lpBuffer, nBufferSize, lpWritten);
+  bResult = RtVConcatStrings(vaList, unStringsCount, lpBuffer, unBufferSize, lpWritten);
   va_end(vaList);
 
   return bResult;
 }
 
-RT_B RT_CDECL_API RtVConcatStrings(va_list vaList, RT_UN unStringsCount, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_CDECL_API RtVConcatStrings(va_list vaList, RT_UN unStringsCount, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_CHAR* lpString;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_B bResult;
   RT_UN unI;
 
-  nWritten = 0;
+  unWritten = 0;
   bResult = RT_TRUE;
   for (unI = 0; unI < unStringsCount; unI++)
   {
     lpString = va_arg(vaList, RT_CHAR*);
-    bResult = RtCopyString(lpString, &lpBuffer[nWritten], nBufferSize - nWritten, &nWritten);
+    bResult = RtCopyString(lpString, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten);
     if (!bResult)
     {
       break;
     }
   }
 
-  *lpWritten += nWritten;
+  *lpWritten += unWritten;
 
   return bResult;
 }
 
-RT_B RT_API RtLeftPadString(RT_CHAR* lpInput, RT_CHAR nChar, RT_N nSize, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtLeftPadString(RT_CHAR* lpInput, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
-  return RtLeftPadStringWithSize(lpInput, RtGetStringSize(lpInput), nChar, nSize, lpBuffer, nBufferSize, lpWritten);
+  return RtLeftPadStringWithSize(lpInput, RtGetStringSize(lpInput), nChar, unSize, lpBuffer, unBufferSize, lpWritten);
 }
 
-RT_B RT_API RtLeftPadStringWithSize(RT_CHAR* lpInput, RT_N nInputSize, RT_CHAR nChar, RT_N nSize, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtLeftPadStringWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
-  RT_N nPaddingSize;
-  RT_N nI;
-  RT_N nWritten;
+  RT_UN unPaddingSize;
+  RT_UN unI;
+  RT_UN unWritten;
   RT_B bResult;
 
-  if (nBufferSize <= 0)
+  if (unBufferSize <= 0)
   {
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
     goto handle_error;
   }
 
-  if (nInputSize < nSize)
+  if (unInputSize < unSize)
   {
-    nPaddingSize = nSize - nInputSize;
+    unPaddingSize = unSize - unInputSize;
 
     /* Copy lpInput after the padding characters. */
-    nWritten = 0;
-    RtCopyStringWithSize(lpInput, nInputSize, &lpBuffer[nPaddingSize], nBufferSize - nPaddingSize, &nWritten);
-    if (nPaddingSize > nBufferSize - 1)
+    unWritten = 0;
+    RtCopyStringWithSize(lpInput, unInputSize, &lpBuffer[unPaddingSize], unBufferSize - unPaddingSize, &unWritten);
+    if (unPaddingSize > unBufferSize - 1)
     {
-      nPaddingSize = nBufferSize - 1;
+      unPaddingSize = unBufferSize - 1;
     }
     /* Add padding characters at the left of lpInput. Must be done in a second time to avoid overwriting. */
-    for (nI = 0; nI < nPaddingSize; nI++)
+    for (unI = 0; unI < unPaddingSize; unI++)
     {
-      lpBuffer[nI] = nChar;
+      lpBuffer[unI] = nChar;
     }
     /* RtCopyStringWithSize might not have added the zero termination. */
-    if (nWritten == 0)
+    if (unWritten == 0)
     {
-      lpBuffer[nI] = 0;
+      lpBuffer[unI] = 0;
     }
-    nWritten = nWritten + nPaddingSize;
+    unWritten = unWritten + unPaddingSize;
   }
   else
   {
@@ -426,16 +432,16 @@ RT_B RT_API RtLeftPadStringWithSize(RT_CHAR* lpInput, RT_N nInputSize, RT_CHAR n
     if (lpBuffer == lpInput)
     {
       /* If the same buffer is used for input and result, nothing to do. */
-      nWritten = nInputSize;
+      unWritten = unInputSize;
     }
     else
     {
       /* We must copy the complete input to the result. */
-      RtCopyString(lpInput, lpBuffer, nBufferSize, &nWritten);
+      RtCopyString(lpInput, lpBuffer, unBufferSize, &unWritten);
     }
   }
 
-  *lpWritten = nWritten;
+  *lpWritten = unWritten;
   bResult = RT_TRUE;
 free_resources:
   return bResult;
@@ -450,19 +456,19 @@ RT_B RT_API RtStringEndsWith(RT_CHAR* lpString, RT_CHAR* lpSearched)
   return RtStringEndsWithWithSize(lpString, RtGetStringSize(lpString), lpSearched, RtGetStringSize(lpSearched));
 }
 
-RT_B RT_API RtStringEndsWithWithSize(RT_CHAR* lpString, RT_N nStringSize, RT_CHAR* lpSearched, RT_N nSearchedSize)
+RT_B RT_API RtStringEndsWithWithSize(RT_CHAR* lpString, RT_UN unStringSize, RT_CHAR* lpSearched, RT_UN unSearchedSize)
 {
   RT_CHAR* lpStringEnd;
-  RT_N nI;
+  RT_UN unI;
   RT_B bResult;
 
-  if (nStringSize >= nSearchedSize)
+  if (unStringSize >= unSearchedSize)
   {
-    lpStringEnd = &lpString[nStringSize - nSearchedSize];
+    lpStringEnd = &lpString[unStringSize - unSearchedSize];
     bResult = RT_TRUE;
-    for (nI = 0; nI < nSearchedSize; nI++)
+    for (unI = 0; unI < unSearchedSize; unI++)
     {
-      if (lpStringEnd[nI] != lpSearched[nI])
+      if (lpStringEnd[unI] != lpSearched[unI])
       {
         bResult = RT_FALSE;
         break;
@@ -476,27 +482,27 @@ RT_B RT_API RtStringEndsWithWithSize(RT_CHAR* lpString, RT_N nStringSize, RT_CHA
   return bResult;
 }
 
-RT_N RT_API RtComputeStringHash(RT_CHAR* lpString)
+RT_UN RT_API RtComputeStringHash(RT_CHAR* lpString)
 {
   /* TODO: Make a better implementation. */
   return lpString[0];
 }
 
-RT_B RT_API RtRightTrimString(RT_CHAR* lpString, RT_N *lpWritten)
+RT_B RT_API RtRightTrimString(RT_CHAR* lpString, RT_UN *lpWritten)
 {
   return RtRightTrimStringWithSize(lpString, RtGetStringSize(lpString), lpWritten);
 }
 
-RT_B RT_API RtRightTrimStringWithSize(RT_CHAR* lpString, RT_N nStringSize, RT_N *lpWritten)
+RT_B RT_API RtRightTrimStringWithSize(RT_CHAR* lpString, RT_UN unStringSize, RT_UN *lpWritten)
 {
-  if (nStringSize <= 0)
+  if (!unStringSize)
   {
     *lpWritten = 0;
   }
   else
   {
-    *lpWritten = nStringSize - 1;
-    while (*lpWritten >= 0)
+    *lpWritten = unStringSize - 1;
+    while (*lpWritten < RT_TYPE_MAX_UN)
     {
       if (lpString[*lpWritten] <= _R(' '))
       {

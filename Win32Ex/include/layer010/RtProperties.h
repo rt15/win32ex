@@ -11,7 +11,7 @@
 
 typedef struct _RT_PROPERTY_ENTRY
 {
-  RT_N nHash;
+  RT_UN unHash;
   RT_CHAR* lpKey;
   RT_CHAR* lpValue;
 }
@@ -25,11 +25,11 @@ typedef struct _RT_PROPERTIES
 }
 RT_PROPERTIES;
 
-RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_N nEncoding, RT_HEAP** lpHeap);
+RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_UN unEncoding, RT_HEAP** lpHeap);
 
 RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue);
 
-RT_N RT_API RtGetNumberProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue);
+RT_N RT_API RtGetIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue);
 
 RT_B RT_API RtGetBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue);
 

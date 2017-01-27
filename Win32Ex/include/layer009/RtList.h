@@ -14,9 +14,9 @@
 
 typedef struct _RT_LIST_HEADER
 {
-  RT_UN32 unSize;                 /* Count of items. The rtArrayHeader contains the count of chunks. */
-  RT_UN32 unChunkSize;
-  RT_UN32 unItemSize;             /* Size of an item in the list. The rtArrayHeader nItemSize is sizeof(void*).  */
+  RT_UN unSize;                     /* Count of items. The rtArrayHeader contains the count of chunks. */
+  RT_UN unChunkSize;
+  RT_UN unItemSize;               /* Size of an item in the list. The rtArrayHeader unItemSize is sizeof(void*).  */
   RT_ARRAY_HEADER rtArrayHeader;
 }
 RT_LIST_HEADER;
@@ -24,34 +24,34 @@ RT_LIST_HEADER;
 /**
  * Allocate a list using given parameters.
  *
- * @param nSize Total items count in the list.
- * @param nItemSize Size of an item.
- * @param nChunkSize Maximum items count in a chunk.
+ * @param unSize Total items count in the list.
+ * @param unItemSize Size of an item.
+ * @param unChunkSize Maximum items count in a chunk.
  */
-void* RT_API RtCreateList(void** lpList, RT_HEAP** lpHeap, RT_UN32 unSize, RT_UN32 unItemSize, RT_UN32 unChunkSize);
+void* RT_API RtCreateList(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_UN unChunkSize);
 
 /**
  * @return Total items count in the list.
  */
-RT_UN32 RT_API RtGetListSize(void* lpList);
+RT_UN RT_API RtGetListSize(void* lpList);
 
-void* RT_API RtGetListItem(void* lpList, RT_UN32 unItemIndex, void** lpItem);
+void* RT_API RtGetListItem(void* lpList, RT_UN unItemIndex, void** lpItem);
 
-void* RT_API RtSetListSize(void** lpList, RT_UN32 unSize);
+void* RT_API RtSetListSize(void** lpList, RT_UN unSize);
 
 /**
  * This function moves the last item if it is not the item to delete.
  * As a result, indexes on the list items might become invalid.
  */
-void* RT_API RtDeleteListItemIndex(void** lpList, RT_UN32 unItemIndex);
+void* RT_API RtDeleteListItemIndex(void** lpList, RT_UN unItemIndex);
 
 void* RT_API RtNewListItem(void** lpList, void** lpItem);
 
 /**
  *
- * @return -1 in case of failure.
+ * @return RT_TYPE_MAX_UN in case of failure.
  */
-RT_N RT_API RtNewListItemIndex(void** lpList, RT_N* lpItemIndex);
+RT_UN RT_API RtNewListItemIndex(void** lpList, RT_UN* lpItemIndex);
 
 RT_B RT_API RtFreeList(void** lpList);
 

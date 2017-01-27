@@ -17,6 +17,6 @@
  *
  * @return RT_FALSE in case of error.
  */
-RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N *lpWritten);
+RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 #endif /* RT_ERROR_MESSAGE_H */

@@ -2,9 +2,9 @@
 
 RT_UN32 RT_CALL TtSimpleThreadCallback(void* lpParameter)
 {
-  RT_N nI;
+  RT_UN unI;
 
-  for (nI = 0; nI < 5; nI++)
+  for (unI = 0; unI < 5; unI++)
   {
     RtWriteStringToConsole((RT_CHAR*)lpParameter);
     RtSleep(1);

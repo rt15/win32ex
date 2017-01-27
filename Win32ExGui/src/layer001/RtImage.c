@@ -19,7 +19,7 @@ RT_H RT_API RtCreateDcFromBitmap(RT_H hBitmap)
   return hResult;
 }
 
-RT_B RT_API RtFillDc(RT_H hDc, RT_N nWidth, RT_N nHeight, RT_UN32 unColor)
+RT_B RT_API RtFillDc(RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_UN32 unColor)
 {
   HBRUSH hBrush;
   RECT rect;
@@ -51,7 +51,7 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtStretchImage(RT_H hSourceDc, RT_N nSourceWidth, RT_N nSourceHeight, RT_H hDestinationDc, RT_N nDestinationWidth, RT_N nDestinationHeight)
+RT_B RT_API RtStretchImage(RT_H hSourceDc, RT_N32 nSourceWidth, RT_N32 nSourceHeight, RT_H hDestinationDc, RT_N32 nDestinationWidth, RT_N32 nDestinationHeight)
 {
   RT_B bResult;
 
@@ -67,12 +67,12 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtDrawImageList(RT_H hImageList, RT_H hDc, RT_N nX, RT_N nY)
+RT_B RT_API RtDrawImageList(RT_H hImageList, RT_H hDc, RT_N32 nX, RT_N32 nY)
 {
   RT_N32 nImagesCount;
   RT_N32 nWidth;
   RT_N32 nHeight;
-  RT_N nI;
+  RT_N32 nI;
   RT_B bResult;
 
   nImagesCount = ImageList_GetImageCount(hImageList);
@@ -92,7 +92,7 @@ RT_B RT_API RtDrawImageList(RT_H hImageList, RT_H hDc, RT_N nX, RT_N nY)
   return bResult;
 }
 
-RT_H RT_API RtConvertIconToBitmap(RT_H hIcon, RT_N nWidth, RT_N nHeight, RT_UN32 unBackgroundColor)
+RT_H RT_API RtConvertIconToBitmap(RT_H hIcon, RT_N32 nWidth, RT_N32 nHeight, RT_UN32 unBackgroundColor)
 {
   HDC hBitmapDc;
   RT_H hResult;
@@ -134,7 +134,7 @@ free_resources:
   return hResult;
 }
 
-RT_B RT_API RtGetPixels(RT_H hBitmap, RT_N nWidth, RT_N nHeight, RT_UN32* lpBuffer, RT_H hDc)
+RT_B RT_API RtGetPixels(RT_H hBitmap, RT_N32 nWidth, RT_N32 nHeight, RT_UN32* lpBuffer, RT_H hDc)
 {
   BITMAPINFO bitmapInfo;
 
@@ -149,7 +149,7 @@ RT_B RT_API RtGetPixels(RT_H hBitmap, RT_N nWidth, RT_N nHeight, RT_UN32* lpBuff
   return GetDIBits(hDc, hBitmap, 0, nHeight, lpBuffer, &bitmapInfo, DIB_RGB_COLORS);
 }
 
-RT_H RT_API RtCreateBitmap(RT_N nWidth, RT_N nHeight, RT_UN32** lpPixels, RT_H hDc)
+RT_H RT_API RtCreateBitmap(RT_N32 nWidth, RT_N32 nHeight, RT_UN32** lpPixels, RT_H hDc)
 {
   BITMAPINFO bitmapInfo;
 
@@ -186,14 +186,14 @@ RT_UN32 RT_API RtConvertArgbColorToPargbColor(RT_UN32 unColor)
   return unResult;
 }
 
-RT_H RT_API RtConvertIconToPargbBitmap(RT_H hIcon, RT_N nWidth, RT_N nHeight, RT_UN32* lpMaskBuffer, RT_UN32* lpColorBuffer, RT_H hDc)
+RT_H RT_API RtConvertIconToPargbBitmap(RT_H hIcon, RT_N32 nWidth, RT_N32 nHeight, RT_UN32* lpMaskBuffer, RT_UN32* lpColorBuffer, RT_H hDc)
 {
   ICONINFO iconInfo;
   BITMAP maskBitmap;
   BITMAP colorBitmap;
   RT_UN32* lpPixels;
   RT_B bIsArgb;
-  RT_N nI;
+  RT_N32 nI;
   RT_H hResult;
 
   iconInfo.hbmMask = RT_NULL;
@@ -282,8 +282,8 @@ free_resources:
   return hResult;
 }
 
-RT_H RT_API RtLoadIcon(RT_N nResourceIndex, RT_H hInstance)
+RT_H RT_API RtLoadIcon(RT_UN unResourceIndex, RT_H hInstance)
 {
-  return LoadImage(hInstance, MAKEINTRESOURCE(nResourceIndex), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
+  return LoadImage(hInstance, MAKEINTRESOURCE(unResourceIndex), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
 }
 

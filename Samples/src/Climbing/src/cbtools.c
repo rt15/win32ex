@@ -3,14 +3,14 @@
 RT_UN16 RT_CALL CbWriteLastErrorMessage(RT_CHAR* lpLabel)
 {
   RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_N nWritten;
+  RT_UN unWritten;
 
-  nWritten = 0;
-  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &nWritten);
-  RtGetLastErrorMessage(&lpBuffer[nWritten], RT_CHAR_BIG_STRING_SIZE - nWritten, &nWritten);
-  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[nWritten], RT_CHAR_BIG_STRING_SIZE - nWritten, &nWritten);
+  unWritten = 0;
+  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten);
+  RtGetLastErrorMessage(&lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
 
-  RtWriteStringToConsoleWithSize(lpBuffer, nWritten);
+  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   return 1;
 }

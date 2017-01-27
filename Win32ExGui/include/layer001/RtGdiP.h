@@ -45,7 +45,7 @@ RT_B RT_API RtGdipCleanUp();
  * hBitmap must not be in use in a device context.
  * </p>
  */
-RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N nWidth, RT_N nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode);
+RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode);
 
 /**
  * Call RtSetLastError with the appropriate error code from GpStatus <tt>nStatus</tt> value.

@@ -49,7 +49,7 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
  * @param nNumberOfBytesToRead Nombre d'octets à lire
  * @return Zero en cas d'échec
  */
-RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN32 unBytesToRead);
+RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead);
 
 /**
  * Ecrit un certain nombre d'octets dans un fichier
@@ -58,14 +58,14 @@ RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN32 unBytesT
  * @param nNumberOfBytesToWrite Nombre d'octets à écrire
  * @return Zero en cas d'échec
  */
-RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN32 unBytesToWrite);
+RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite);
 
 /**
  * Compute the size of an open file.
  *
- * @return -1 in case of error (And the file pointer might be corrupted).
+ * @return RT_TYPE_MAX_UN in case of error (And the file pointer might be corrupted).
  */
-RT_N RT_API RtComputeFileSize(RT_FILE* lpFile);
+RT_UN RT_API RtComputeFileSize(RT_FILE* lpFile);
 
 /**
  * Déplace le pointeur dans le fichier
@@ -79,9 +79,9 @@ RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom);
 /**
  * Récupère la position courante dans le fichier
  *
- * @return La position courante, -1 en cas de problème.
+ * @return La position courante, RT_TYPE_MAX_UN en cas de problème.
  */
-RT_N RT_API RtGetFilePointer(RT_FILE* lpFile);
+RT_UN RT_API RtGetFilePointer(RT_FILE* lpFile);
 
 /**
  * Ferme le fichier spécifié

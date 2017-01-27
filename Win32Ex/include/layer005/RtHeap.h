@@ -37,6 +37,6 @@ RT_HEAP;
  * @param lpHeap Can be <tt>RT_NULL</tt>. In that case we rely only <tt>lpBuffer</tt>
  * @return <tt>*lpArea</tt>.
  */
-void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, void** lpArea, RT_UN unSize, RT_CHAR* lpName, RT_HEAP** lpHeap);
+void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea, RT_UN unSize, RT_CHAR* lpName, RT_HEAP** lpHeap);
 
 #endif /* RT_HEAP_H */

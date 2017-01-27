@@ -19,8 +19,8 @@
 
 typedef struct _RT_FAST_INITIALIZATION
 {
-  RT_N nInitialized;
-  RT_N nInitializing;
+  RT_UN unInitialized;
+  RT_UN unInitializing;
 }
 RT_FAST_INITIALIZATION;
 

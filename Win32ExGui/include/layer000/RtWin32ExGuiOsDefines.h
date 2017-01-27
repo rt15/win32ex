@@ -1005,7 +1005,7 @@ typedef enum ColorChannelFlags {
 
 typedef struct tagENHMETAHEADER3 {
 	DWORD iType;
-	DWORD nSize;
+	DWORD unSize;
 	RECTL rclBounds;
 	RECTL rclFrame;
 	DWORD dSignature;

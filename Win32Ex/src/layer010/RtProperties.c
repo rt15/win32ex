@@ -11,19 +11,19 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
   RT_PROPERTY_ENTRY* lpPropertyEntry;
   RT_CHAR* lpKey;
   RT_CHAR* lpValue;
-  RT_N nCurrentIndex;
+  RT_UN unCurrentIndex;
   RT_CHAR nCurrentChar;
-  RT_N nContext; /* 0 = in end of lines, 1 = in key, 2 = in separator, 3 = in value. */
+  RT_UN unContext; /* 0 = in end of lines, 1 = in key, 2 = in separator, 3 = in value. */
   RT_B bResult;
 
   bResult = RT_FALSE;
 
-  nCurrentIndex = 0;
-  nContext = 0;
-  while (lpData[nCurrentIndex])
+  unCurrentIndex = 0;
+  unContext = 0;
+  while (lpData[unCurrentIndex])
   {
-    nCurrentChar = lpData[nCurrentIndex];
-    if (nContext == 0)
+    nCurrentChar = lpData[unCurrentIndex];
+    if (unContext == 0)
     {
       /* Manage end of lines. */
       switch (nCurrentChar)
@@ -32,27 +32,27 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
         case _R('\n'):
         case _R(' '):
           /* Skip all end of line until something interesting is found. */
-          lpData[nCurrentIndex] = 0;
+          lpData[unCurrentIndex] = 0;
           break;
         case _R('='):
-          nContext = 2;
-          lpData[nCurrentIndex] = 0;
-          lpKey = &lpData[nCurrentIndex];
+          unContext = 2;
+          lpData[unCurrentIndex] = 0;
+          lpKey = &lpData[unCurrentIndex];
           break;
         default:
-          nContext = 1;
-          lpKey = &lpData[nCurrentIndex];
+          unContext = 1;
+          lpKey = &lpData[unCurrentIndex];
       }
     }
-    else if (nContext == 1)
+    else if (unContext == 1)
     {
       /* Manage key and spaces until '='. */
       switch (nCurrentChar)
       {
         case _R('='):
-          nContext = 2;
+          unContext = 2;
         case _R(' '):
-          lpData[nCurrentIndex] = 0;
+          lpData[unCurrentIndex] = 0;
           break;
         case _R('\n'):
         case _R('\r'):
@@ -61,34 +61,34 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
             goto the_end;
           }
           /* Fill the new entry. */
-          lpData[nCurrentIndex] = 0;
-          lpValue = &lpData[nCurrentIndex];
-          lpPropertyEntry->nHash = RtComputeStringHash(lpKey);
+          lpData[unCurrentIndex] = 0;
+          lpValue = &lpData[unCurrentIndex];
+          lpPropertyEntry->unHash = RtComputeStringHash(lpKey);
           lpPropertyEntry->lpKey = lpKey;
           lpPropertyEntry->lpValue = lpValue;
-          nContext = 0;
+          unContext = 0;
           break;
       }
     }
-    else if (nContext == 2)
+    else if (unContext == 2)
     {
       /* Manage spaces between '=' and value. */
       switch (nCurrentChar)
       {
         case _R(' '):
           /* Skip all spaces after '='. */
-          lpData[nCurrentIndex] = 0;
+          lpData[unCurrentIndex] = 0;
           break;
         case _R('\r'):
         case _R('\n'):
-          lpData[nCurrentIndex] = 0;
+          lpData[unCurrentIndex] = 0;
         default:
           /* Beginning of the value. */
-          lpValue = &lpData[nCurrentIndex];
-          nContext = 3;
+          lpValue = &lpData[unCurrentIndex];
+          unContext = 3;
       }
     }
-    else if (nContext == 3)
+    else if (unContext == 3)
     {
       /* Manage value. */
       switch (nCurrentChar)
@@ -100,30 +100,30 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
             goto the_end;
           }
           /* Fill the new entry. */
-          lpPropertyEntry->nHash = RtComputeStringHash(lpKey);
+          lpPropertyEntry->unHash = RtComputeStringHash(lpKey);
           lpPropertyEntry->lpKey = lpKey;
           lpPropertyEntry->lpValue = lpValue;
-          lpData[nCurrentIndex] = 0;
-          nContext = 0;
+          lpData[unCurrentIndex] = 0;
+          unContext = 0;
           break;
       }
     }
 
-    nCurrentIndex++;
+    unCurrentIndex++;
   }
 
-  switch (nContext)
+  switch (unContext)
   {
     case 1:
     case 2:
-      lpValue = &lpData[nCurrentIndex];
+      lpValue = &lpData[unCurrentIndex];
     case 3:
       if (!RtNewArrayItem((void**)lpPropertiesEntries, (void**)&lpPropertyEntry))
       {
         goto the_end;
       }
       /* Fill the new entry. */
-      lpPropertyEntry->nHash = RtComputeStringHash(lpKey);
+      lpPropertyEntry->unHash = RtComputeStringHash(lpKey);
       lpPropertyEntry->lpKey = lpKey;
       lpPropertyEntry->lpValue = lpValue;
       break;
@@ -163,14 +163,14 @@ the_end:
   return bResult;
 }
 
-RT_B RT_CALL RtCreatePropertiesFromBuffer(RT_PROPERTIES* lpProperties, RT_CHAR8* lpBuffer, RT_N nBufferSize, RT_N nEncoding, RT_HEAP** lpHeap)
+RT_B RT_CALL RtCreatePropertiesFromBuffer(RT_PROPERTIES* lpProperties, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN unEncoding, RT_HEAP** lpHeap)
 {
   RT_CHAR* lpData;
   RT_B bResult;
 
   bResult = RT_FALSE;
 
-  if (RtDecodeWithHeap(lpBuffer, nBufferSize, nEncoding, &lpData, lpHeap) == -1)
+  if (RtDecodeWithHeap(lpBuffer, unBufferSize, unEncoding, &lpData, lpHeap) == RT_TYPE_MAX_UN)
   {
     goto the_end;
   }
@@ -184,21 +184,21 @@ the_end:
   return bResult;
 }
 
-RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_N nEncoding, RT_HEAP** lpHeap)
+RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_UN unEncoding, RT_HEAP** lpHeap)
 {
   RT_CHAR8* lpFileContent;
-  RT_N nFileSize;
+  RT_UN unFileSize;
   RT_B bResult;
 
   bResult = RT_FALSE;
 
-  nFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent, lpHeap);
-  if (nFileSize == -1)
+  unFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent, lpHeap);
+  if (unFileSize == RT_TYPE_MAX_UN)
   {
     goto the_end;
   }
 
-  bResult = RtCreatePropertiesFromBuffer(lpProperties, lpFileContent, nFileSize, nEncoding, lpHeap);
+  bResult = RtCreatePropertiesFromBuffer(lpProperties, lpFileContent, unFileSize, unEncoding, lpHeap);
 
   bResult = bResult && (*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent);
 the_end:
@@ -207,52 +207,52 @@ the_end:
 
 RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue)
 {
-  RT_N nHash;
+  RT_UN unHash;
   RT_PROPERTY_ENTRY* lpPropertiesEntries;
-  RT_N nIndex;
-  RT_UN32 unSize;
+  RT_UN unIndex;
+  RT_UN unSize;
   RT_CHAR* lpResult;
 
   lpResult = lpDefaultValue;
 
-  nHash = RtComputeStringHash(lpKey);
+  unHash = RtComputeStringHash(lpKey);
   lpPropertiesEntries = lpProperties->lpPropertiesEntries;
 
   unSize = RtGetArraySize(lpPropertiesEntries);
 
   /* No need to check result as the comparison function cannot trigger error. */
-  RtSearchSortableArrayItemIndex(lpPropertiesEntries, &nHash, &nIndex);
-  if (nIndex != -1)
+  RtSearchSortableArrayItemIndex(lpPropertiesEntries, &unHash, &unIndex);
+  if (unIndex != RT_TYPE_MAX_UN)
   {
     /* Find the first item with the given hash. */
-    while (nIndex > 0 && (lpPropertiesEntries[nIndex - 1].nHash == nHash))
+    while (unIndex > 0 && (lpPropertiesEntries[unIndex - 1].unHash == unHash))
     {
-      nIndex--;
+      unIndex--;
     }
 
     /* Find the right item by checking the key. */
-    while ((nIndex < RT_TYPE_MAX_N) && (nIndex < (RT_N)unSize) && (lpPropertiesEntries[nIndex].nHash == nHash))
+    while ((unIndex < RT_TYPE_MAX_N) && (unIndex < unSize) && (lpPropertiesEntries[unIndex].unHash == unHash))
     {
-      if (!RtCompareStrings(lpPropertiesEntries[nIndex].lpKey, lpKey))
+      if (!RtCompareStrings(lpPropertiesEntries[unIndex].lpKey, lpKey))
       {
-        lpResult = lpPropertiesEntries[nIndex].lpValue;
+        lpResult = lpPropertiesEntries[unIndex].lpValue;
         break;
       }
-      nIndex++;
+      unIndex++;
     }
   }
 
   return lpResult;
 }
 
-RT_N RT_API RtGetNumberProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue)
+RT_N RT_API RtGetIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue)
 {
   RT_CHAR* lpStringProperty;
   RT_N nResult;
 
   lpStringProperty = RtGetStringProperty(lpProperties, lpKey, RT_NULL);
   if (!lpStringProperty) goto handle_error;
-  if (!RtConvertStringToNumber(lpStringProperty, &nResult)) goto handle_error;
+  if (!RtConvertStringToInteger(lpStringProperty, &nResult)) goto handle_error;
 
   goto free_resources;
 handle_error:
@@ -265,7 +265,7 @@ RT_B RT_API RtGetBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT
 {
   RT_CHAR* lpStringProperty;
   RT_CHAR lpLowerCaseValue[8];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_B bResult;
 
   lpStringProperty = RtGetStringProperty(lpProperties, lpKey, RT_NULL);
@@ -275,7 +275,7 @@ RT_B RT_API RtGetBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT
     bResult = RT_FALSE;
     goto free_resources;
   }
-  if (!RtCopyString(lpStringProperty, lpLowerCaseValue, 8, &nWritten)) goto handle_error;
+  if (!RtCopyString(lpStringProperty, lpLowerCaseValue, 8, &unWritten)) goto handle_error;
   RtFastLowerString(lpLowerCaseValue);
   bResult = (!RtCompareStrings(lpLowerCaseValue, _R("true")) ||
              !RtCompareStrings(lpLowerCaseValue, _R("yes")) ||

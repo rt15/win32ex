@@ -3,21 +3,21 @@
 #include "layer002/RtErrorCode.h"
 #include "layer006/RtFile.h"
 
-RT_N RT_API RtReadFromSmallFile(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtReadFromSmallFile(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
 {
   void* lpHeapBuffer;
-  RT_N nHeapBufferSize;
+  RT_UN unHeapBufferSize;
 
   lpHeapBuffer = RT_NULL;
-  nHeapBufferSize = 0;
-  return RtReadFromSmallFileWithBuffer(lpFilePath, RT_NULL, 0, &lpHeapBuffer, &nHeapBufferSize, lpOutput, lpHeap);
+  unHeapBufferSize = 0;
+  return RtReadFromSmallFileWithBuffer(lpFilePath, RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, lpOutput, lpHeap);
 }
 
-RT_N RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
 {
   RT_FILE rtFile;
   RT_B bFreeFile;
-  RT_N nResult;
+  RT_UN unResult;
 
   bFreeFile = RT_FALSE;
 
@@ -25,36 +25,36 @@ RT_N RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffe
   bFreeFile = RT_TRUE;
 
   /* Retrieve the size of the file. */
-  nResult = RtComputeFileSize(&rtFile);
-  if (nResult == -1) goto handle_error;
+  unResult = RtComputeFileSize(&rtFile);
+  if (unResult == RT_TYPE_MAX_UN) goto handle_error;
 
   /* Allocate a space of size of file + 1 for trailing zero. */
-  if (!RtAllocIfNeededWithHeap(lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, nResult + 1, _R("File buffer"), lpHeap)) goto handle_error;
+  if (!RtAllocIfNeededWithHeap(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unResult + 1, _R("File buffer"), lpHeap)) goto handle_error;
 
   /* Write file content into buffer. */
-  if (!RtReadFromFile(&rtFile, *lpOutput, nResult)) goto handle_error;
+  if (!RtReadFromFile(&rtFile, *lpOutput, unResult)) goto handle_error;
 
   /* Add trailing zero. */
-  (*lpOutput)[nResult] = 0;
+  (*lpOutput)[unResult] = 0;
 
   goto free_resources;
 handle_error:
   *lpOutput = RT_NULL;
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
 free_resources:
   if (bFreeFile)
   {
-    if (!RtFreeFile(&rtFile) && nResult != -1)
+    if (!RtFreeFile(&rtFile) && unResult != RT_TYPE_MAX_UN)
     {
       bFreeFile = RT_FALSE;
       goto handle_error;
     }
     bFreeFile = RT_FALSE;
   }
-  return nResult;
+  return unResult;
 }
 
-RT_B RT_API RtWriteToSmallFile(RT_CHAR8* lpInput, RT_N nDataSize, RT_CHAR* lpFilePath, RT_UN unMode)
+RT_B RT_API RtWriteToSmallFile(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpFilePath, RT_UN unMode)
 {
   RT_FILE rtFile;
   RT_B bFileOpen;
@@ -86,7 +86,7 @@ RT_B RT_API RtWriteToSmallFile(RT_CHAR8* lpInput, RT_N nDataSize, RT_CHAR* lpFil
   {
     if (!RtSetFilePointer(&rtFile, 0, RT_FILE_POS_END)) goto handle_error;
   }
-  if (!RtWriteToFile(&rtFile, lpInput, nDataSize)) goto handle_error;
+  if (!RtWriteToFile(&rtFile, lpInput, unDataSize)) goto handle_error;
 
   bResult = RT_TRUE;
 free_resources:

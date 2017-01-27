@@ -208,7 +208,7 @@
  * </p>
  *
  * <p>
- * The <tt>nEncoding</tt> parameter can be 0 or RT_CHAR_ENCODING_XXXX.<br>
+ * The <tt>unEncoding</tt> parameter can be 0 or RT_CHAR_ENCODING_XXXX.<br>
  * If <tt>nEconding</tt> is zero then:
  * </p>
  * <ul>
@@ -218,21 +218,21 @@
  *
  * <p>
  * Under Windows, the encoding of <tt>lpOutput</tt> is UTF-16.<br>
- * Under Linux the encoding of <tt>lpOutput</tt> is system encoding if <tt>nEncoding</tt> is non-zero, lpInput otherwise.
+ * Under Linux the encoding of <tt>lpOutput</tt> is system encoding if <tt>unEncoding</tt> is non-zero, lpInput otherwise.
  * </p>
  *
- * @param nInputSize Input size, in bytes. If -1, lpInput is considered NULL terminated.
- * @param nEncoding Encoding of lpInput, 0 or RT_CHAR_ENCODING_XXXX.
- * @param nBufferSize Buffer size in characters.
+ * @param unInputSize Input size, in bytes. If RT_TYPE_MAX_UN, lpInput is considered NULL terminated.
+ * @param unEncoding Encoding of lpInput, 0 or RT_CHAR_ENCODING_XXXX.
+ * @param unBufferSize Buffer size in characters.
  * @param lpHeapBufferSize Heap buffer size in bytes.
  * @param lpOutput Can be lpInput if no decoding is required.
- * @return The character count or -1 in case of failure.
+ * @return The character count or RT_TYPE_MAX_UN in case of failure.
  */
-RT_N RT_API RtDecode(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR** lpOutput, RT_HEAP** lpHeap);
+RT_UN RT_API RtDecode(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpOutput, RT_HEAP** lpHeap);
 
-RT_N RT_API RtDecodeWithHeap(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR** lpOutput, RT_HEAP** lpHeap);
+RT_UN RT_API RtDecodeWithHeap(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR** lpOutput, RT_HEAP** lpHeap);
 
-RT_N RT_API RtDecodeWithBuffer(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR* lpBuffer, RT_N nBufferSize);
+RT_UN RT_API RtDecodeWithBuffer(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR* lpBuffer, RT_UN unBufferSize);
 
 
 /**
@@ -243,7 +243,7 @@ RT_N RT_API RtDecodeWithBuffer(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncodin
  * </p>
  *
  * <p>
- * The <tt>nEncoding</tt> parameter can be 0 or RT_CHAR_ENCODING_XXXX.<br>
+ * The <tt>unEncoding</tt> parameter can be 0 or RT_CHAR_ENCODING_XXXX.<br>
  * If <tt>nEconding</tt> is zero then:
  * </p>
  * <ul>
@@ -256,18 +256,18 @@ RT_N RT_API RtDecodeWithBuffer(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncodin
  * Under Linux the encoding of <tt>lpInput</tt> is system encoding.
  * </p>
  *
- * @param nInputSize Input size, in characters. If -1, lpInput is considered NULL terminated.
- * @param nEncoding Encoding for lpOutput, 0 or RT_CHAR_ENCODING_XXXX.
- * @param nBufferSize Buffer size in bytes.
+ * @param unInputSize Input size, in characters. If RT_TYPE_MAX_UN, lpInput is considered NULL terminated.
+ * @param unEncoding Encoding for lpOutput, 0 or RT_CHAR_ENCODING_XXXX.
+ * @param unBufferSize Buffer size in bytes.
  * @param lpHeapBufferSize Heap buffer size in bytes.
  * @param lpOutput Can be lpInput if no decoding is required.
  * @return The written bytes count in <tt>lpBuffer</tt>, not including the terminating zero bytes.
  */
-RT_N RT_API RtEncode(RT_CHAR* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
+RT_UN RT_API RtEncode(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
 
-RT_N RT_API RtEncodeWithHeap(RT_CHAR* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
+RT_UN RT_API RtEncodeWithHeap(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
 
-RT_N RT_API RtEncodeWithBuffer(RT_CHAR* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize);
+RT_UN RT_API RtEncodeWithBuffer(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize);
 
 /**
  * Compute the size of the terminating zero in bytes.
@@ -278,15 +278,15 @@ RT_N RT_API RtEncodeWithBuffer(RT_CHAR* lpInput, RT_N nInputSize, RT_N nEncoding
  * Same thing apply to UTF-32 which require 4 zero bytes.
  * </p>
  *
- * @return Size of zero bytes to terminate a string in given <tt>nEncoding</tt>: 1, 2 or 4.
+ * @return Size of zero bytes to terminate a string in given <tt>unEncoding</tt>: 1, 2 or 4.
  */
-RT_N RT_API RtGetTerminatingZeroSize(RT_N nEncoding);
+RT_UN RT_API RtGetTerminatingZeroSize(RT_UN unEncoding);
 
 /**
  * The UTF-16 encoding terminates with 2 zero bytes and the UTF-32 encoding terminates with 4.<br>
  * Terminating zeros must be aligned.
  * @return The size of the buffer in byte, not including the terminating zero bytes.
  */
-RT_N RT_API RtGetDataSize(RT_CHAR8* lpData, RT_N nTerminatingZeroSize);
+RT_UN RT_API RtGetDataSize(RT_CHAR8* lpData, RT_UN unTerminatingZeroSize);
 
 #endif /* RT_ENCODING_H */

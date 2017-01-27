@@ -10,15 +10,15 @@ TT_LIST_ITEM;
 void RT_CALL TtDisplayList(void* lpList)
 {
   RT_CHAR lpBuffer[512];
-  RT_UN32 unSize;
+  RT_UN unSize;
   TT_LIST_ITEM* lpItem;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_B bFirst;
-  RT_UN32 unI;
+  RT_UN unI;
 
   bFirst = RT_TRUE;
   unSize = RtGetListSize(lpList);
-  nWritten = 0;
+  unWritten = 0;
   for (unI = 0; unI < unSize; unI++)
   {
     if (bFirst)
@@ -27,26 +27,26 @@ void RT_CALL TtDisplayList(void* lpList)
     }
     else
     {
-      RtCopyString(_R(", "), &lpBuffer[nWritten], 512 - nWritten, &nWritten);
+      RtCopyString(_R(", "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
     }
 
     RtGetListItem(lpList, unI, (void**)&lpItem);
-    RtConvertNumberToString(lpItem->unValue, &lpBuffer[nWritten], 512 - nWritten, &nWritten);
+    RtConvertIntegerToString(lpItem->unValue, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   }
 
-  RtCopyString(_R("\n"), &lpBuffer[nWritten], 512 - nWritten, &nWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, nWritten);
+  RtCopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 }
 
-RT_UN16 RT_CALL TtCheckList(void* lpList, RT_N nExpectedSize, RT_N nExpectedItemSize, RT_N nExpectedChunkSize, RT_N nExpectedChunksCount)
+RT_UN16 RT_CALL TtCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpectedItemSize, RT_UN unExpectedChunkSize, RT_UN unExpectedChunksCount)
 {
-  RT_N nSize;
-  RT_N nItemSize;
-  RT_N nChunkSize;
-  RT_N nChunksCount;
+  RT_UN unSize;
+  RT_UN unItemSize;
+  RT_UN unChunkSize;
+  RT_UN unChunksCount;
   RT_LIST_HEADER* lpListHeader;
   RT_CHAR lpBuffer[512];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
   unResult = 1;
@@ -54,31 +54,31 @@ RT_UN16 RT_CALL TtCheckList(void* lpList, RT_N nExpectedSize, RT_N nExpectedItem
   lpListHeader = lpList;
   lpListHeader--;
 
-  nSize = lpListHeader->unSize;
-  nItemSize = lpListHeader->unItemSize;
-  nChunkSize = lpListHeader->unChunkSize;
-  nChunksCount = lpListHeader->rtArrayHeader.unSize;
+  unSize = lpListHeader->unSize;
+  unItemSize = lpListHeader->unItemSize;
+  unChunkSize = lpListHeader->unChunkSize;
+  unChunksCount = lpListHeader->rtArrayHeader.unSize;
 
-  nWritten = 0;
-  RtCopyString(_R("List size = "), lpBuffer, 512, &nWritten);
-  RtConvertNumberToString(nSize, &lpBuffer[nWritten], 512 - nWritten, &nWritten);
+  unWritten = 0;
+  RtCopyString(_R("List size = "), lpBuffer, 512, &unWritten);
+  RtConvertIntegerToString(unSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R(", itemSize = "), &lpBuffer[nWritten], 512 - nWritten, &nWritten);
-  RtConvertNumberToString(nItemSize, &lpBuffer[nWritten], 512 - nWritten, &nWritten);
+  RtCopyString(_R(", itemSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtConvertIntegerToString(unItemSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R(", chunkSize = "), &lpBuffer[nWritten], 512 - nWritten, &nWritten);
-  RtConvertNumberToString(nChunkSize, &lpBuffer[nWritten], 512 - nWritten, &nWritten);
+  RtCopyString(_R(", chunkSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtConvertIntegerToString(unChunkSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R(", chunksCount = "), &lpBuffer[nWritten], 512 - nWritten, &nWritten);
-  RtConvertNumberToString(nChunksCount, &lpBuffer[nWritten], 512 - nWritten, &nWritten);
+  RtCopyString(_R(", chunksCount = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtConvertIntegerToString(unChunksCount, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R("\n"), &lpBuffer[nWritten], 512 - nWritten, &nWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, nWritten);
+  RtCopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
-  if (nExpectedSize != nSize) goto the_end;
-  if (nExpectedItemSize != nItemSize) goto the_end;
-  if (nExpectedChunkSize != nChunkSize) goto the_end;
-  if (nExpectedChunksCount != nChunksCount) goto the_end;
+  if (unExpectedSize != unSize) goto the_end;
+  if (unExpectedItemSize != unItemSize) goto the_end;
+  if (unExpectedChunkSize != unChunkSize) goto the_end;
+  if (unExpectedChunksCount != unChunksCount) goto the_end;
 
   unResult = 0;
 the_end:
@@ -88,26 +88,26 @@ the_end:
 RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
 {
   void* lpList;
-  RT_N nI;
+  RT_UN32 unI;
   TT_LIST_ITEM* lpItem;
-  RT_N nItemIndex;
+  RT_UN unItemIndex;
   RT_UN16 unResult;
-  RT_N nWritten;
-  RT_N nItemSize;
+  RT_UN unWritten;
+  RT_UN unItemSize;
 
   unResult = 1;
 
-  nItemSize = sizeof(RT_UN32) + 32 * sizeof(RT_CHAR);
+  unItemSize = sizeof(RT_UN32) + 32 * sizeof(RT_CHAR);
 
   if (!RtCreateList(&lpList, lpHeap, 23, sizeof(TT_LIST_ITEM), 10)) goto the_end;
 
-  if (TtCheckList(lpList, 23, nItemSize, 10, 3)) goto the_end;
+  if (TtCheckList(lpList, 23, unItemSize, 10, 3)) goto the_end;
 
-  for (nI = 0; nI < 23; nI++)
+  for (unI = 0; unI < 23; unI++)
   {
-    RtGetListItem(lpList, nI, (void**)&lpItem);
-    lpItem->unValue = nI;
-    RtCopyString(_R("This is item characters."), lpItem->lpValue, 32, &nWritten);
+    RtGetListItem(lpList, unI, (void**)&lpItem);
+    lpItem->unValue = unI;
+    RtCopyString(_R("This is item characters."), lpItem->lpValue, 32, &unWritten);
   }
 
   TtDisplayList(lpList);
@@ -116,18 +116,18 @@ RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
   if (!RtSetListSize(&lpList, 17)) goto the_end;
 
 
-  if (TtCheckList(lpList, 17, nItemSize, 10, 2)) goto the_end;
+  if (TtCheckList(lpList, 17, unItemSize, 10, 2)) goto the_end;
   TtDisplayList(lpList);
 
   /* Increase the size of the list. */
   if (!RtSetListSize(&lpList, 31)) goto the_end;
 
-  if (TtCheckList(lpList, 31, nItemSize, 10, 4)) goto the_end;
+  if (TtCheckList(lpList, 31, unItemSize, 10, 4)) goto the_end;
 
-  for (nI = 0; nI < 31; nI++)
+  for (unI = 0; unI < 31; unI++)
   {
-    RtGetListItem(lpList, nI, (void**)&lpItem);
-    lpItem->unValue = nI;
+    RtGetListItem(lpList, unI, (void**)&lpItem);
+    lpItem->unValue = unI;
   }
 
   TtDisplayList(lpList);
@@ -141,9 +141,9 @@ RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
 
   TtDisplayList(lpList);
 
-  if (RtNewListItemIndex(&lpList, &nItemIndex) == -1) goto the_end;
+  if (RtNewListItemIndex(&lpList, &unItemIndex) == RT_TYPE_MAX_UN) goto the_end;
 
-  if (!RtGetListItem(lpList, nItemIndex, (void**)&lpItem)) goto the_end;
+  if (!RtGetListItem(lpList, unItemIndex, (void**)&lpItem)) goto the_end;
 
   if (!RtFreeList(&lpList)) goto the_end;
 

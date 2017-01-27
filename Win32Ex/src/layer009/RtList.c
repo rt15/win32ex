@@ -3,7 +3,7 @@
 #include "layer002/RtErrorCode.h"
 #include "layer003/RtMemory.h"
 
-void* RT_API RtCreateList(void** lpList, RT_HEAP** lpHeap, RT_UN32 unSize, RT_UN32 unItemSize, RT_UN32 unChunkSize)
+void* RT_API RtCreateList(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_UN unChunkSize)
 {
   RT_LIST_HEADER* lpHeader;
   RT_UN unChunksCount;
@@ -75,7 +75,7 @@ free_resources:
   return *lpList;
 }
 
-RT_UN32 RT_API RtGetListSize(void* lpList)
+RT_UN RT_API RtGetListSize(void* lpList)
 {
   RT_LIST_HEADER* lpListHeader;
 
@@ -84,15 +84,15 @@ RT_UN32 RT_API RtGetListSize(void* lpList)
   return lpListHeader->unSize;
 }
 
-void* RT_API RtGetListItem(void* lpList, RT_UN32 unItemIndex, void** lpItem)
+void* RT_API RtGetListItem(void* lpList, RT_UN unItemIndex, void** lpItem)
 {
   RT_LIST_HEADER* lpListHeader;
   void** lpChunks;
-  RT_UN32 unChunksCount;
-  RT_UN32 unChunkIndex;
-  RT_UN32 unChunkSize;
-  RT_UN32 unItemSize;
-  RT_UN32 unItemIndexInChunk;
+  RT_UN unChunksCount;
+  RT_UN unChunkIndex;
+  RT_UN unChunkSize;
+  RT_UN unItemSize;
+  RT_UN unItemIndexInChunk;
 
   lpListHeader = lpList;
   lpListHeader--;
@@ -118,13 +118,13 @@ free_resources:
   return *lpItem;
 }
 
-void* RT_API RtSetListSize(void** lpList, RT_UN32 unSize)
+void* RT_API RtSetListSize(void** lpList, RT_UN unSize)
 {
-  RT_UN32 unCurrentChunksCount;
+  RT_UN unCurrentChunksCount;
   RT_LIST_HEADER* lpListHeader;
-  RT_UN32 unChunkSize;
-  RT_UN32 unNewChunksCount;
-  RT_UN32 unItemSize;
+  RT_UN unChunkSize;
+  RT_UN unNewChunksCount;
+  RT_UN unItemSize;
   RT_HEAP** lpHeap;
   void** lpChunks;
   RT_UN unI;
@@ -200,11 +200,11 @@ free_resources:
   return *lpList;
 }
 
-void* RT_API RtDeleteListItemIndex(void** lpList, RT_UN32 unItemIndex)
+void* RT_API RtDeleteListItemIndex(void** lpList, RT_UN unItemIndex)
 {
   RT_LIST_HEADER* lpListHeader;
-  RT_UN32 unItemSize;
-  RT_UN32 unLastItemIndex;
+  RT_UN unItemSize;
+  RT_UN unLastItemIndex;
   void* lpLastItem;
   void* lpItemToDelete;
 
@@ -246,7 +246,7 @@ free_resources:
   return *lpItem;
 }
 
-RT_N RT_API RtNewListItemIndex(void** lpList, RT_N* lpItemIndex)
+RT_UN RT_API RtNewListItemIndex(void** lpList, RT_UN* lpItemIndex)
 {
   RT_LIST_HEADER* lpListHeader;
   RT_UN unSize;
@@ -258,7 +258,7 @@ RT_N RT_API RtNewListItemIndex(void** lpList, RT_N* lpItemIndex)
   unSize = lpListHeader->unSize;
   if (!RtSetListSize(lpList, unSize + 1))
   {
-    *lpItemIndex = -1;
+    *lpItemIndex = RT_TYPE_MAX_UN;
     goto free_resources;
   }
 
@@ -272,7 +272,7 @@ free_resources:
 RT_B RT_API RtFreeList(void** lpList)
 {
   RT_LIST_HEADER* lpListHeader;
-  RT_UN32 unChunksCount;
+  RT_UN unChunksCount;
   void** lpChunks;
   RT_HEAP** lpHeap;
   RT_UN unI;

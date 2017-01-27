@@ -21,6 +21,6 @@ RT_B RT_API RtFree(void** lpArea);
 /**
  * Perform an heap allocation only if lpBuffer is too small.
  */
-void* RT_API RtAllocIfNeeded(void* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, void** lpArea, RT_UN unSize);
+void* RT_API RtAllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea, RT_UN unSize);
 
 #endif /* RT_STATIC_HEAP_H */

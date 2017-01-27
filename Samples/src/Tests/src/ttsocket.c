@@ -36,7 +36,7 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
   bAcceptedSocketCreated = RT_TRUE;
 
   lpMsg = "Hello, world!";
-  if (RtSendThroughSocket(&rtAcceptedSocket, lpMsg, RtGetString8Size(lpMsg) + 1, 0) == -1) goto handle_error;
+  if (RtSendThroughSocket(&rtAcceptedSocket, lpMsg, RtGetString8Size(lpMsg) + 1, 0) == RT_TYPE_MAX_UN) goto handle_error;
 
   if (!RtShutdownSocket(&rtAcceptedSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
 
@@ -74,7 +74,7 @@ RT_B RT_CALL TtTestSockets()
   RT_B bSocketCreated;
   RT_CHAR8 lpBuffer[RT_CHAR_BIG_STRING_SIZE];
   RT_SOCKET rtSocket;
-  RT_N nReceived;
+  RT_UN unReceived;
   RT_ADDRESS_IPV4 rtAddress;
   RT_SOCKET_ADDRESS_IPV4 rtSocketAddress;
   RT_B bResult;
@@ -102,9 +102,9 @@ RT_B RT_CALL TtTestSockets()
 
   if (!RtConnectSocketWithAddress(&rtSocket, (RT_SOCKET_ADDRESS*)&rtSocketAddress)) goto handle_error;
 
-  nReceived = RtReceiveFromSocket(&rtSocket, lpBuffer, RT_CHAR_BIG_STRING_SIZE, 0);
-  if (nReceived == -1) goto handle_error;
-  if (nReceived != RtGetString8Size("Hello, world!") + 1) goto handle_error;
+  unReceived = RtReceiveFromSocket(&rtSocket, lpBuffer, RT_CHAR_BIG_STRING_SIZE, 0);
+  if (unReceived == RT_TYPE_MAX_UN) goto handle_error;
+  if (unReceived != RtGetString8Size("Hello, world!") + 1) goto handle_error;
   if (RtCompareString8s(lpBuffer, "Hello, world!")) goto handle_error;
   if (!RtShutdownSocket(&rtSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
 

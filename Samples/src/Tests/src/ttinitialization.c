@@ -4,12 +4,12 @@ RT_INITIALIZATION tt_Initialization;
 
 void RT_CALL TtCommonFunction()
 {
-  RT_N nI;
+  RT_UN unI;
 
   RtWriteStringToConsole(_R("Initialize?\n"));
   if (RtInitializationRequired(&tt_Initialization))
   {
-    for (nI = 0; nI < 5; nI++)
+    for (unI = 0; unI < 5; unI++)
     {
       RtWriteStringToConsole(_R("Initializing...\n"));
       RtSleep(1);

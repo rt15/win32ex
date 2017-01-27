@@ -2,12 +2,12 @@
 
 #include "layer002/RtErrorCode.h"
 
-void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, void** lpArea,  RT_UN unSize, RT_CHAR* lpName, RT_HEAP** lpHeap)
+void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea,  RT_UN unSize, RT_CHAR* lpName, RT_HEAP** lpHeap)
 {
   /* If a buffer is provided, attempt to use it. */
-  if (lpBuffer && nBufferSize > 0)
+  if (lpBuffer && unBufferSize > 0)
   {
-    if (unSize <= (RT_UN)nBufferSize)
+    if (unSize <= (RT_UN)unBufferSize)
     {
       /* The buffer is enough, don't go any further. */
       *lpArea = lpBuffer;
@@ -15,7 +15,7 @@ void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_N nBufferSize, void** lp
     }
   }
 
-  /* lpBuffer is RT_NULL or nBufferSize is not enough. Try to use heap buffer. */
+  /* lpBuffer is RT_NULL or unBufferSize is not enough. Try to use heap buffer. */
   if ((lpHeapBufferSize) && (unSize <= (RT_UN)*lpHeapBufferSize))
   {
     /* Given heap buffer is enough. */

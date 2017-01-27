@@ -8,16 +8,16 @@ RT_N tt_StringSizeSizes[] =       { 8        ,      0      };
 RT_UN16 RT_CALL TtGetStringSize()
 {
   RT_CHAR* lpBigString;
-  RT_N nI;
+  RT_UN unI;
   RT_UN16 unResult;
 
   unResult = 1;
 
   /* Testing various strings sizes. */
-  for (nI = 0; nI < TT_STRING_SIZE_COUNT; nI++)
+  for (unI = 0; unI < TT_STRING_SIZE_COUNT; unI++)
   {
-    RtWriteStringsToConsole(3, _R("Testing \""), tt_StringSizeStrings[nI], _R("\" size...\n"));
-    if (RtGetStringSize(tt_StringSizeStrings[nI]) != tt_StringSizeSizes[nI]) goto the_end;
+    RtWriteStringsToConsole(3, _R("Testing \""), tt_StringSizeStrings[unI], _R("\" size...\n"));
+    if (RtGetStringSize(tt_StringSizeStrings[unI]) != tt_StringSizeSizes[unI]) goto the_end;
   }
 
   RtWriteStringToConsole(_R("Testing big string size...\n"));
@@ -29,9 +29,9 @@ RT_UN16 RT_CALL TtGetStringSize()
   }
 
   /* Fill the allocated memory with some 'a'. */
-  for (nI = 0; nI < TT_BIG_STRING_SIZE - 1; nI++)
+  for (unI = 0; unI < TT_BIG_STRING_SIZE - 1; unI++)
   {
-    lpBigString[nI] = _R('a');
+    lpBigString[unI] = _R('a');
   }
   lpBigString[TT_BIG_STRING_SIZE - 1] = 0;
 
@@ -73,32 +73,32 @@ the_end:
 }
 
 /**
- * @param lpReference If RT_NULL, then lpSource is assumed as the reference. Not used if nBufferSize is negative or zero.
+ * @param lpReference If RT_NULL, then lpSource is assumed as the reference. Not used if unBufferSize is negative or zero.
  */
-RT_UN16 RT_CALL TtTestCopyString(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_CHAR* lpSource, RT_N nReference, RT_CHAR* lpReference)
+RT_UN16 RT_CALL TtTestCopyString(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_CHAR* lpSource, RT_UN unReference, RT_CHAR* lpReference)
 {
   RT_CHAR lpLocalBuffer[200];
   RT_CHAR* lpLocalReference;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
-  RtConvertNumberToString(nBufferSize, lpLocalBuffer, 200, &nWritten);
+  RtConvertIntegerToString(unBufferSize, lpLocalBuffer, 200, &unWritten);
   RtWriteStringsToConsole(5, _R("Testing RtCopyString with input string = \""), lpSource, _R("\" and buffer size = "), lpLocalBuffer, _R("...\n"));
 
-  nWritten = 0;
-  RtCopyString(lpSource, lpBuffer, nBufferSize, &nWritten);
+  unWritten = 0;
+  RtCopyString(lpSource, lpBuffer, unBufferSize, &unWritten);
 
   /* Check function result. */
-  if (nWritten != nReference)
+  if (unWritten != unReference)
   {
-    RtConvertNumberToString(nWritten, lpLocalBuffer, 200, &nWritten);
+    RtConvertIntegerToString(unWritten, lpLocalBuffer, 200, &unWritten);
     RtWriteStringsToConsole(3, _R("Wrong result = "), lpLocalBuffer, _R(".\n"));
     unResult = 1;
     goto the_end;
   }
 
   /* If something has been written to the buffer. */
-  if (nReference > 0)
+  if (unReference > 0)
   {
     /* Use lpSource as reference if lpReference is RT_NULL. */
     if (lpReference)
@@ -129,7 +129,6 @@ RT_UN16 RT_CALL TtCopyString()
   RT_UN16 unResult;
 
   unResult = 1;
-  if (TtTestCopyString(lpBuffer, -1, _R("FOO"), 0, RT_NULL)) goto the_end;
   if (TtTestCopyString(lpBuffer, 0, _R("FOO"), 0, RT_NULL)) goto the_end;
   if (TtTestCopyString(lpBuffer, 1, _R("FOO"), 0, _R(""))) goto the_end;
   if (TtTestCopyString(lpBuffer, 2, _R("FOO"), 1, _R("F"))) goto the_end;
@@ -144,31 +143,31 @@ the_end:
   return unResult;
 }
 
-RT_UN16 RT_CALL TtTestCopyStringWithSize(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_CHAR* lpSource, RT_N nSize, RT_N nReference, RT_CHAR* lpReference)
+RT_UN16 RT_CALL TtTestCopyStringWithSize(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_CHAR* lpSource, RT_UN unSize, RT_UN unReference, RT_CHAR* lpReference)
 {
   RT_CHAR lpLocalBuffer1[200];
   RT_CHAR lpLocalBuffer2[200];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
-  RtConvertNumberToString(nBufferSize, lpLocalBuffer1, 200, &nWritten);
-  RtConvertNumberToString(nSize, lpLocalBuffer2, 200, &nWritten);
+  RtConvertIntegerToString(unBufferSize, lpLocalBuffer1, 200, &unWritten);
+  RtConvertIntegerToString(unSize, lpLocalBuffer2, 200, &unWritten);
   RtWriteStringsToConsole(7, _R("Testing RtCopyStringWithSize with input string = \""), lpSource, _R("\", buffer size = "), lpLocalBuffer1, _R(" and size = "), lpLocalBuffer2, _R("...\n"));
 
-  nWritten = 0;
-  RtCopyStringWithSize(lpSource, nSize, lpBuffer, nBufferSize, &nWritten);
+  unWritten = 0;
+  RtCopyStringWithSize(lpSource, unSize, lpBuffer, unBufferSize, &unWritten);
 
  /* Check function result. */
-  if (nWritten != nReference)
+  if (unWritten != unReference)
   {
-    RtConvertNumberToString(nWritten, lpLocalBuffer1, 200, &nWritten);
+    RtConvertIntegerToString(unWritten, lpLocalBuffer1, 200, &unWritten);
     RtWriteStringsToConsole(3, _R("Wrong result = "), lpLocalBuffer1, _R(".\n"));
     unResult = 1;
     goto the_end;
   }
 
   /* If something has been written to the buffer. */
-  if (nReference > 0)
+  if (unReference > 0)
   {
     if (RtCompareStrings(lpReference, lpBuffer))
     {
@@ -201,31 +200,31 @@ the_end:
 }
 
 
-RT_UN16 RT_CALL TtTestLeftPadString(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_CHAR* lpInput, RT_CHAR nChar, RT_N nSize, RT_N nReference, RT_CHAR* lpReference)
+RT_UN16 RT_CALL TtTestLeftPadString(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_CHAR* lpInput, RT_CHAR nChar, RT_UN unSize, RT_UN unReference, RT_CHAR* lpReference)
 {
   RT_CHAR lpLocalBuffer1[200];
   RT_CHAR lpLocalBuffer2[200];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
-  RtConvertNumberToString(nBufferSize, lpLocalBuffer1, 200, &nWritten);
-  RtConvertNumberToString(nSize, lpLocalBuffer2, 200, &nWritten);
+  RtConvertIntegerToString(unBufferSize, lpLocalBuffer1, 200, &unWritten);
+  RtConvertIntegerToString(unSize, lpLocalBuffer2, 200, &unWritten);
   RtWriteStringsToConsole(7, _R("Testing RtLeftPadString with input string = \""), lpInput, _R("\", buffer size = "), lpLocalBuffer1, _R(" and size = "), lpLocalBuffer2, _R("...\n"));
 
-  nWritten = 0;
-  RtLeftPadString(lpInput, nChar, nSize, lpBuffer, nBufferSize, &nWritten);
+  unWritten = 0;
+  RtLeftPadString(lpInput, nChar, unSize, lpBuffer, unBufferSize, &unWritten);
 
  /* Check function result. */
-  if (nWritten != nReference)
+  if (unWritten != unReference)
   {
-    RtConvertNumberToString(nWritten, lpLocalBuffer1, 200, &nWritten);
+    RtConvertIntegerToString(unWritten, lpLocalBuffer1, 200, &unWritten);
     RtWriteStringsToConsole(3, _R("Wrong result = "), lpLocalBuffer1, _R(".\n"));
     unResult = 1;
     goto the_end;
   }
 
   /* If something has been written to the buffer. */
-  if (nReference > 0)
+  if (unReference > 0)
   {
     if (RtCompareStrings(lpReference, lpBuffer))
     {
@@ -254,23 +253,23 @@ the_end:
 }
 
 
-RT_UN16 RT_CALL TtTestRightTrimString(RT_CHAR* lpInput, RT_N nReference, RT_CHAR* lpReference)
+RT_UN16 RT_CALL TtTestRightTrimString(RT_CHAR* lpInput, RT_UN unReference, RT_CHAR* lpReference)
 {
   RT_CHAR lpLocalBuffer[200];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
   unResult = 1;
 
   RtWriteStringsToConsole(3, _R("Testing RtRightTrimString with input string = \""), lpInput, _R("\"...\n"));
 
-  RtCopyString(lpInput, lpLocalBuffer, 200, &nWritten);
+  RtCopyString(lpInput, lpLocalBuffer, 200, &unWritten);
 
-  RtRightTrimString(lpLocalBuffer, &nWritten);
+  RtRightTrimString(lpLocalBuffer, &unWritten);
 
-  if (nWritten != nReference)
+  if (unWritten != unReference)
   {
-    RtConvertNumberToString(nWritten, lpLocalBuffer, 200, &nWritten);
+    RtConvertIntegerToString(unWritten, lpLocalBuffer, 200, &unWritten);
     RtWriteStringsToConsole(3, _R("Wrong result = "), lpLocalBuffer, _R(".\n"));
     goto the_end;
   }
@@ -303,24 +302,24 @@ the_end:
   return unResult;
 }
 
-RT_UN16 RT_CALL TtTestCountStringOccurrences(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_N nExpected)
+RT_UN16 RT_CALL TtTestCountStringOccurrences(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_UN unExpected)
 {
   RT_CHAR lpFound[64];
   RT_CHAR lpExpected[64];
-  RT_N nFound;
-  RT_N nWritten;
+  RT_UN unFound;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
   RtWriteStringsToConsole(5, _R("Testing RtCountStringOccurrences, occurences count of \""), lpSearched, _R("\" in \""), lpString, _R("\"...\n"));
-  nFound = RtCountStringOccurrences(lpString, lpSearched);
-  if (nFound == nExpected)
+  unFound = RtCountStringOccurrences(lpString, lpSearched);
+  if (unFound == unExpected)
   {
     unResult = 0;
   }
   else
   {
-    RtConvertNumberToString(nExpected, lpExpected, 64, &nWritten);
-    RtConvertNumberToString(nFound, lpFound, 64, &nWritten);
+    RtConvertUIntegerToString(unExpected, lpExpected, 64, &unWritten);
+    RtConvertUIntegerToString(unFound, lpFound, 64, &unWritten);
     RtWriteStringsToConsole(5, _R("Wrong result, expected "), lpExpected, _R(" but found "), lpFound, _R(".\n"));
     unResult = 1;
   }
@@ -346,13 +345,13 @@ the_end:
 RT_UN16 RT_CALL TtTestReplaceString(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpReference)
 {
   RT_CHAR lpBuffer[64];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_UN16 unResult;
 
   unResult = 1;
 
   RtWriteStringsToConsole(7, _R("Replacing \""), lpSearched, _R("\" by \""), lpReplacement, _R("\" in \""), lpString, _R("\".\n"));
-  if (!RtReplaceString(lpString, lpSearched, lpReplacement, lpBuffer, 64, &nWritten)) goto the_end;
+  if (!RtReplaceString(lpString, lpSearched, lpReplacement, lpBuffer, 64, &unWritten)) goto the_end;
   if (RtCompareStrings(lpBuffer, lpReference))
   {
     RtWriteStringsToConsole(5, _R("Wrong value \""), lpBuffer, _R("\" expected \""), lpReference, _R("\".\n"));

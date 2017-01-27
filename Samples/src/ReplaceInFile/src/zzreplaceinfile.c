@@ -4,14 +4,14 @@
 RT_UN16 ZzWriteLastErrorMessage(RT_CHAR* lpLabel)
 {
   RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_N nWritten;
+  RT_UN unWritten;
 
-  nWritten = 0;
-  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &nWritten);
-  RtGetLastErrorMessage(&lpBuffer[nWritten], RT_CHAR_BIG_STRING_SIZE - nWritten, &nWritten);
-  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[nWritten], RT_CHAR_BIG_STRING_SIZE - nWritten, &nWritten);
+  unWritten = 0;
+  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten);
+  RtGetLastErrorMessage(&lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
 
-  RtWriteStringToConsoleWithSize(lpBuffer, nWritten);
+  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   return 1;
 }
@@ -32,9 +32,9 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   RT_N nNewFileContentAsStringSize;
   RT_N nDelta;
 
-  RT_N nWritten;
-  RT_N nFileSize;
-  RT_N nNewFileSize;
+  RT_UN unWritten;
+  RT_UN unFileSize;
+  RT_UN unNewFileSize;
   RT_N nOcurrencesCount;
   RT_B bResult;
 
@@ -51,15 +51,15 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   }
 
   /* Read input file content. */
-  nFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent, lpHeap);
-  if (nFileSize == -1)
+  unFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent, lpHeap);
+  if (unFileSize == RT_TYPE_MAX_UN)
   {
     ZzWriteLastErrorMessage(_R("Failed to read input file: "));
     goto handle_error;
   }
 
   /* Decode input file content. */
-  nFileContentAsStringSize = RtDecodeWithHeap(lpFileContent, nFileSize, 0, &lpFileContentAsString, lpHeap);
+  nFileContentAsStringSize = RtDecodeWithHeap(lpFileContent, unFileSize, 0, &lpFileContentAsString, lpHeap);
   if (nFileContentAsStringSize == -1)
   {
     ZzWriteLastErrorMessage(_R("Failed to decode input file: "));
@@ -76,21 +76,21 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
       ZzWriteLastErrorMessage(_R("Failed to allocate result buffer: "));
       goto handle_error;
     }
-    nWritten = 0;
-    if (!RtReplaceString(lpFileContentAsString, lpSearched, lpReplacement, lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &nWritten))
+    unWritten = 0;
+    if (!RtReplaceString(lpFileContentAsString, lpSearched, lpReplacement, lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &unWritten))
     {
       ZzWriteLastErrorMessage(_R("Replacement failed: "));
       goto handle_error;
     }
 
-    nNewFileSize = RtEncodeWithHeap(lpNewFileContentAsString, nWritten, 0, &lpNewFileContent, lpHeap);
-    if (nNewFileSize == -1)
+    unNewFileSize = RtEncodeWithHeap(lpNewFileContentAsString, unWritten, 0, &lpNewFileContent, lpHeap);
+    if (unNewFileSize == -1)
     {
       ZzWriteLastErrorMessage(_R("Failed to encode output file: "));
       goto handle_error;
     }
 
-    RtWriteToSmallFile(lpNewFileContent, nNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE);
+    RtWriteToSmallFile(lpNewFileContent, unNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE);
   }
 
   bResult = RT_TRUE;

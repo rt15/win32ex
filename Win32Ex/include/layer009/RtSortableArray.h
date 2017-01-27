@@ -14,7 +14,7 @@ typedef struct _RT_SORTABLE_ARRAY_HEADER
 }
 RT_SORTABLE_ARRAY_HEADER;
 
-void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_UN32 unSize, RT_UN32 unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext);
+void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext);
 
 /**
  * Add a new item to the sortable array, in its right place.<br>
@@ -24,15 +24,15 @@ void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_
  * Giving the item outside of the array is not an issue as there is a copy in most cases.
  * </p>
  *
- * @return The index at which the item has been inserted, -1 in case of failure.
+ * @return The index at which the item has been inserted, RT_TYPE_MAX_UN in case of failure.
  */
-RT_N RT_API RtAddItemToSortableArray(void** lpSortableArray, void* lpNewItem);
+RT_UN RT_API RtAddItemToSortableArray(void** lpSortableArray, void* lpNewItem);
 
 /**
  * Delete an item of the array by overwriting it with the end of the array.<br>
  * The array remains sorted.
  */
-void* RT_API RtDeleteSortableArrayItemIndex(void** lpSortableArray, RT_UN32 unItemIndex);
+void* RT_API RtDeleteSortableArrayItemIndex(void** lpSortableArray, RT_UN unItemIndex);
 
 /**
  * <p>
@@ -59,6 +59,6 @@ RT_B RT_API RtUnsortSortableArray(void* lpSortableArray);
  * </p>
  *
  */
-RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, RT_N* lpItemIndex);
+RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, RT_UN* lpItemIndex);
 
 #endif /* RT_SORTABLE_ARRAY_H */

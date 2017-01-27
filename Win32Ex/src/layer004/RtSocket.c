@@ -145,7 +145,7 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN32 unAddressFamily, RT_UN32 unType, RT_UN32 unProtocol, RT_B bBlocking, RT_B bCloseOnExec)
+RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bCloseOnExec)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unFlags;
@@ -166,7 +166,7 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN32 unAddressFamily, RT_UN32
     unFlags = WSA_FLAG_OVERLAPPED;
   }
   /* WSA_FLAG_NO_HANDLE_INHERIT flag is in early versions of Windows only. */
-  lpSocket->unSocket = (RT_UN)WSASocket(unAddressFamily, unType, unProtocol, RT_NULL, 0, unFlags);
+  lpSocket->unSocket = (RT_UN)WSASocket((int)unAddressFamily, (int)unType, (int)unProtocol, RT_NULL, 0, unFlags);
   if (lpSocket->unSocket == INVALID_SOCKET) goto handle_error;
 
 #else /* NOT RT_DEFINE_WINDOWS */
@@ -200,7 +200,7 @@ void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress)
   lpAddress->rtUnion.unAddress = htonl(INADDR_LOOPBACK);
 }
 
-void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN32 unPort)
+void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN unPort)
 {
   RtZeroMemory(lpSocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV4));
   lpSocketAddress->unAddressFamily = RT_SOCKET_ADDRESS_FAMILY_IPV4;
@@ -208,12 +208,12 @@ void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, R
   RtCopyMemory(lpAddress, &lpSocketAddress->rtAddress, sizeof(RT_ADDRESS_IPV4));
 }
 
-RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN32 unPort)
+RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPort)
 {
   RT_SOCKET_ADDRESS_IPV4 rtIpv4SocketAddress;
   RT_SOCKET_ADDRESS_IPV6 rtIpv6SocketAddress;
   RT_SOCKET_ADDRESS* lpSocketAddress;
-  RT_UN32 unAddressFamily;
+  RT_UN unAddressFamily;
   void* lpAddress;
 #ifdef RT_DEFINE_WINDOWS
   int nReturnedValue;
@@ -335,7 +335,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN32 unPort)
+RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort)
 {
   struct sockaddr_in rtIpv4SocketAddress;
   struct sockaddr_in6 rtIpv6SocketAddress;
@@ -410,24 +410,25 @@ RT_B RT_API RtListenFromSocketWithBackLog(RT_SOCKET* lpSocket, RT_N32 nBacklog)
 /**
  * Translate win32ex socket message flags into Linux flags.
  */
-RT_UN RT_CALL RtComputeSocketMessageFlags(RT_N unFlags)
+RT_UN RT_CALL RtComputeSocketMessageFlags(RT_UN unFlags)
 {
   RT_UN unResult;
 
   unResult = 0;
-  if (unFlags & RT_SOCKET_MESSAGE_OUT_OF_BAND) nResult |= MSG_OOB;
-  if (unFlags & RT_SOCKET_MESSAGE_PEEK) nResult |= MSG_PEEK;
-  if (unFlags & RT_SOCKET_MESSAGE_DO_NOT_ROUTE) nResult |= MSG_DONTROUTE;
-  if (unFlags & RT_SOCKET_MESSAGE_WAIT_ALL) nResult |= MSG_WAITALL;
+  if (unFlags & RT_SOCKET_MESSAGE_OUT_OF_BAND) unResult |= MSG_OOB;
+  if (unFlags & RT_SOCKET_MESSAGE_PEEK) unResult |= MSG_PEEK;
+  if (unFlags & RT_SOCKET_MESSAGE_DO_NOT_ROUTE) unResult |= MSG_DONTROUTE;
+  if (unFlags & RT_SOCKET_MESSAGE_WAIT_ALL) unResult |= MSG_WAITALL;
 
   return unResult;
 }
 #endif
 
-RT_N RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_N nDataSize, RT_UN32 unFlags)
+RT_UN RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_UN unDataSize, RT_UN unFlags)
 {
-  RT_UN32 unActualFlags;
-  RT_N nResult;
+  RT_UN unActualFlags;
+  int nSendResult;
+  RT_UN unResult;
 
 #ifdef RT_DEFINE_WINDOWS
   unActualFlags = unFlags;
@@ -436,18 +437,29 @@ RT_N RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_N nDataSiz
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
-  nResult = send(lpSocket->unSocket, lpData, (int)nDataSize, unActualFlags);
+  /* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+  nSendResult = send(lpSocket->unSocket, lpData, (int)unDataSize, (int)unActualFlags);
 #else
-  nResult = send(lpSocket->nSocket, lpData, nDataSize, unActualFlags);
+  /* Returns -1 in case of issue and set errno. */
+  nSendResult = send(lpSocket->nSocket, lpData, unDataSize, unActualFlags);
 #endif
 
-  return nResult;
+  if (nSendResult < 0)
+  {
+    unResult = RT_TYPE_MAX_UN;
+  }
+  else
+  {
+    unResult = nSendResult;
+  }
+  return unResult;
 }
 
-RT_N RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_N nBufferSize, RT_UN32 unFlags)
+RT_UN RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize, RT_UN unFlags)
 {
-  RT_UN32 unActualFlags;
-  RT_N nResult;
+  RT_UN unActualFlags;
+  int nRecvResult;
+  RT_UN unResult;
 
 #ifdef RT_DEFINE_WINDOWS
   unActualFlags = unFlags;
@@ -456,12 +468,22 @@ RT_N RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_N nBuffe
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
-  nResult = recv(lpSocket->unSocket, lpBuffer, (int)nBufferSize, unActualFlags);
+  /* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+  nRecvResult = recv(lpSocket->unSocket, lpBuffer, (int)unBufferSize, (int)unActualFlags);
 #else
-  nResult = recv(lpSocket->nSocket, lpBuffer, nBufferSize, unActualFlags);
+  /* Returns -1 in case of issue and set errno. */
+  nRecvResult = recv(lpSocket->nSocket, lpBuffer, unBufferSize, unActualFlags);
 #endif
 
-  return nResult;
+  if (nRecvResult < 0)
+  {
+    unResult = RT_TYPE_MAX_UN;
+  }
+  else
+  {
+    unResult = nRecvResult;
+  }
+  return unResult;
 }
 
 RT_B RT_API RtAcceptSocketConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedSocket, RT_SOCKET_ADDRESS* lpSocketAddress)
@@ -506,13 +528,13 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtShutdownSocket(RT_SOCKET* lpSocket, RT_UN32 unFlag)
+RT_B RT_API RtShutdownSocket(RT_SOCKET* lpSocket, RT_UN unFlag)
 {
   RT_B bResult;
 
   /* On success shutdown returns zero, -1 and set last error otherwise. */
 #ifdef RT_DEFINE_WINDOWS
-  bResult = !shutdown(lpSocket->unSocket, unFlag);
+  bResult = !shutdown(lpSocket->unSocket, (int)unFlag);
 #else
   bResult = !shutdown(lpSocket->nSocket, unFlag);
 #endif

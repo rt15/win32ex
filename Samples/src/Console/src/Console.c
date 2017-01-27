@@ -83,47 +83,47 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 void RT_CALL ZzDisplayEnvironmentVariable(RT_CHAR* lpName)
 {
   RT_CHAR lpBigBuffer[BIG_BUFFER_SIZE];
-  RT_N nWritten;
+  RT_UN unWritten;
 
-  nWritten = 0;
-  RtCopyString(lpName, lpBigBuffer, BIG_BUFFER_SIZE, &nWritten);
-  RtCopyString(_R("=\""), &lpBigBuffer[nWritten], BIG_BUFFER_SIZE - nWritten, &nWritten);
-  RtGetEnvironmentVariable(lpName, &lpBigBuffer[nWritten], BIG_BUFFER_SIZE - nWritten, &nWritten);
-  RtCopyString(_R("\"\n"), &lpBigBuffer[nWritten], BIG_BUFFER_SIZE - nWritten, &nWritten);
-  RtWriteStringToConsoleWithSize(lpBigBuffer, nWritten);
+  unWritten = 0;
+  RtCopyString(lpName, lpBigBuffer, BIG_BUFFER_SIZE, &unWritten);
+  RtCopyString(_R("=\""), &lpBigBuffer[unWritten], BIG_BUFFER_SIZE - unWritten, &unWritten);
+  RtGetEnvironmentVariable(lpName, &lpBigBuffer[unWritten], BIG_BUFFER_SIZE - unWritten, &unWritten);
+  RtCopyString(_R("\"\n"), &lpBigBuffer[unWritten], BIG_BUFFER_SIZE - unWritten, &unWritten);
+  RtWriteStringToConsoleWithSize(lpBigBuffer, unWritten);
 }
 
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   RT_CHAR lpBuffer[BUFFER_SIZE];
   RT_CHAR lpPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
-  RT_N nReadCharactersCount;
+  RT_UN unReadCharactersCount;
   RT_CHAR nRead;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_N nI;
 
-  nWritten = 0;
-  RtCopyString(_R("Temp directory: \""), lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &nWritten);
-  RtGetTempDirectory(&lpPath[nWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - nWritten, &nWritten);
-  RtCopyString(_R("\".\n"), &lpPath[nWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - nWritten, &nWritten);
-  RtWriteStringToConsoleWithSize(lpPath, nWritten);
+  unWritten = 0;
+  RtCopyString(_R("Temp directory: \""), lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
+  RtGetTempDirectory(&lpPath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
+  RtCopyString(_R("\".\n"), &lpPath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
+  RtWriteStringToConsoleWithSize(lpPath, unWritten);
 
-  nWritten = 0;
-  RtCopyString(_R("File name: \""), lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &nWritten);
+  unWritten = 0;
+  RtCopyString(_R("File name: \""), lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
 
 #ifdef RT_DEFINE_WINDOWS
-  RtExtractFileName(_R("c:\\foo\\bar.txt"), RtGetStringSize(_R("c:\\foo\\bar.txt")), &lpPath[nWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - nWritten, &nWritten);
+  RtExtractFileName(_R("c:\\foo\\bar.txt"), RtGetStringSize(_R("c:\\foo\\bar.txt")), &lpPath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
 #else
-  RtExtractFileName(_R("/foo/bar.txt"), RtGetStringSize(_R("/foo/bar.txt")), &lpPath[nWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - nWritten, &nWritten);
+  RtExtractFileName(_R("/foo/bar.txt"), RtGetStringSize(_R("/foo/bar.txt")), &lpPath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
 #endif
-  RtCopyString(_R("\"\n"), &lpPath[nWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - nWritten, &nWritten);
-  RtWriteStringToConsoleWithSize(lpPath, nWritten);
+  RtCopyString(_R("\"\n"), &lpPath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
+  RtWriteStringToConsoleWithSize(lpPath, unWritten);
 
   ZzDisplayEnvironmentVariable(_R("SystemRoot"));
   ZzDisplayEnvironmentVariable(_R("HOME"));
 
-  nWritten = 0;
-  RtGetApplicationDataDirectory(_R("Foo"), lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &nWritten);
+  unWritten = 0;
+  RtGetApplicationDataDirectory(_R("Foo"), lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
   RtWriteStringsToConsole(3, _R("Config dir=\""), lpPath, _R("\"\n"));
 
   RtWriteStringToConsole(_R("Héllo, world!\n"));
@@ -133,18 +133,18 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   nRead = RtReadCharFromConsole();
   RtWriteStringToConsoleWithSize(&nRead, 1);
 
-  nWritten = 0;
-  RtConvertNumberToString((RT_UCHAR8)nRead, lpBuffer, BUFFER_SIZE, &nWritten);
+  unWritten = 0;
+  RtConvertIntegerToString((RT_UCHAR8)nRead, lpBuffer, BUFFER_SIZE, &unWritten);
   RtWriteStringsToConsole(3, _R(" "), lpBuffer, _R("\n"));
 
   for (nI = 0; nI < 2; nI++)
   {
     RtWriteStringToConsole(_R("\nReading line...\n"));
-    nReadCharactersCount = RtReadLineFromConsole(lpBuffer, BUFFER_SIZE);
+    unReadCharactersCount = RtReadLineFromConsole(lpBuffer, BUFFER_SIZE);
 
     RtWriteStringsToConsole(3, _R("O"), lpBuffer, _R("O\n"));
 
-    RtConvertNumberToString(nReadCharactersCount, lpBuffer, BUFFER_SIZE, &nWritten);
+    RtConvertUIntegerToString(unReadCharactersCount, lpBuffer, BUFFER_SIZE, &unWritten);
     RtWriteStringsToConsole(3, _R("Read = "), lpBuffer, _R("\n"));
   }
 

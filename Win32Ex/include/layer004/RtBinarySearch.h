@@ -17,9 +17,9 @@
  * Can fails only if the comparison callback fails.
  * </p>
  *
- * @param lpItemIndex -1 if the item is not found, the item index otherwise.
+ * @param lpItemIndex RT_TYPE_MAX_UN if the item is not found, the item index otherwise.
  */
-RT_B RT_API RtBinarySearchIndex(void* lpArea, void* lpItem, RT_UN32 unSize, RT_UN32 unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext, RT_N* lpItemIndex);
+RT_B RT_API RtBinarySearchIndex(void* lpArea, void* lpItem, RT_UN unSize, RT_UN unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext, RT_UN* lpItemIndex);
 
 /**
  * Search index corresponding to lpItem in lpArea.<br>
@@ -29,9 +29,9 @@ RT_B RT_API RtBinarySearchIndex(void* lpArea, void* lpItem, RT_UN32 unSize, RT_U
  * Can fails only if the comparison callback fails.
  * </p>
  *
- * @return The index of searched lpItem or an index to which insert it, -1 in case of issue.
+ * @return The index of searched lpItem or an index to which insert it, RT_TYPE_MAX_UN in case of issue.
  */
-RT_N RT_API RtBinarySearchInsertionIndex(void* lpArea, void* lpItem, RT_UN32 unSize, RT_UN32 unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext);
+RT_UN RT_API RtBinarySearchInsertionIndex(void* lpArea, void* lpItem, RT_UN unSize, RT_UN unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext);
 
 
 #endif /* RT_BINARY_SEARCH_H */

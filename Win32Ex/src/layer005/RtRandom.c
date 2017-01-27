@@ -58,38 +58,34 @@ handle_error:
 
 #endif
 
-RT_B RT_API RtGetRandomBytes(void* lpArea, RT_N32 nSize)
+RT_B RT_API RtGetRandomBytes(void* lpArea, RT_UN32 unSize)
 {
   RT_B bResult;
 
-  if (nSize > 0)
+#ifdef RT_DEFINE_WINDOWS
+  if (RtFastInitializationRequired(&rt_randomInitialization))
   {
-
-#ifdef RT_DEFINE_WINDOWS
-    if (RtFastInitializationRequired(&rt_randomInitialization))
-    {
-      rt_bRandomInitializationSuccessful = RtInitializeRandom();
-      RtNotifyFastInitializationDone(&rt_randomInitialization);
-    }
-    if (!rt_bRandomInitializationSuccessful)
-    {
-      /* Set last error as when the initialization has failed. */
-      SetLastError(rt_nRandomInitializationError);
-      goto handle_error;
-    }
-#endif
-
-#ifdef RT_DEFINE_WINDOWS
-    if (!rt_lpRtlGenRandom(lpArea, nSize)) goto handle_error;
-#else /* NOT RT_DEFINE_WINDOWS */
-    if (!RAND_bytes(lpArea, nSize))
-    {
-      /* RAND_bytes uses err_get_error and does not set errno so we use RtSetLastError. */
-      RtSetLastError(RT_ERROR_FUNCTION_FAILED);
-      goto handle_error;
-    }
-#endif
+    rt_bRandomInitializationSuccessful = RtInitializeRandom();
+    RtNotifyFastInitializationDone(&rt_randomInitialization);
   }
+  if (!rt_bRandomInitializationSuccessful)
+  {
+    /* Set last error as when the initialization has failed. */
+    SetLastError(rt_nRandomInitializationError);
+    goto handle_error;
+  }
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+  if (!rt_lpRtlGenRandom(lpArea, unSize)) goto handle_error;
+#else /* NOT RT_DEFINE_WINDOWS */
+  if (!RAND_bytes(lpArea, unSize))
+  {
+    /* RAND_bytes uses err_get_error and does not set errno so we use RtSetLastError. */
+    RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+    goto handle_error;
+  }
+#endif
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -99,17 +95,39 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtGetRandomNumber(RT_N* lpResult)
+RT_B RT_API RtGetRandomInteger(RT_N* lpResult)
 {
   return RtGetRandomBytes(lpResult, sizeof(RT_N));
 }
 
-RT_B RT_API RtGetRandomNumberWithBoundaries(RT_N nLowerBound, RT_N nUpperBound, RT_N* lpResult)
+RT_B RT_API RtGetRandomUInteger(RT_UN* lpResult)
+{
+  return RtGetRandomBytes(lpResult, sizeof(RT_UN));
+}
+
+RT_B RT_API RtGetRandomUIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperBound, RT_UN* lpResult)
 {
   RT_UN unUnsigned;
   RT_B bResult;
 
-  if (!RtGetRandomNumber((RT_N*)&unUnsigned)) goto handle_error;
+  if (!RtGetRandomUInteger(&unUnsigned)) goto handle_error;
+  unUnsigned = unUnsigned % (unUpperBound + 1 - unLowerBound);
+  *lpResult = unUnsigned + unLowerBound;
+
+  bResult = RT_TRUE;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FALSE;
+  goto free_resources;
+}
+
+RT_B RT_API RtGetRandomIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperBound, RT_N* lpResult)
+{
+  RT_UN unUnsigned;
+  RT_B bResult;
+
+  if (!RtGetRandomUInteger(&unUnsigned)) goto handle_error;
   unUnsigned = unUnsigned % (RT_UN)(nUpperBound + 1 - nLowerBound);
   *lpResult = unUnsigned + nLowerBound;
 

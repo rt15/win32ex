@@ -13,12 +13,12 @@ RT_UN16 RT_CALL TtTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
   return 0;
 }
 
-RT_UN16 RT_CALL TtTestNumberProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue, RT_N nExpected)
+RT_UN16 RT_CALL TtTestIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue, RT_N nExpected)
 {
   RT_N nValue;
   RT_UN16 unResult;
 
-  nValue = RtGetNumberProperty(lpProperties, lpKey, nDefaultValue);
+  nValue = RtGetIntegerProperty(lpProperties, lpKey, nDefaultValue);
   unResult = (nValue == nExpected) ? 0 : 1;
 
   return unResult;
@@ -54,9 +54,9 @@ RT_UN16 RT_CALL TtTestProperties(RT_HEAP** lpHeap)
   if (TtTestProperty(&properties, _R("key_with_empty_value"))) goto the_end;
   if (TtTestProperty(&properties, _R("key_without_value"))) goto the_end;
 
-  if (TtTestNumberProperty(&properties, _R("key_with_number"), 5, 12)) goto the_end;
-  if (TtTestNumberProperty(&properties, _R("key_with_zero"), 5, 0)) goto the_end;
-  if (TtTestNumberProperty(&properties, _R("wrong_number_key"), 5, 5)) goto the_end;
+  if (TtTestIntegerProperty(&properties, _R("key_with_number"), 5, 12)) goto the_end;
+  if (TtTestIntegerProperty(&properties, _R("key_with_zero"), 5, 0)) goto the_end;
+  if (TtTestIntegerProperty(&properties, _R("wrong_number_key"), 5, 5)) goto the_end;
 
   if (TtTestBooleanProperty(&properties, _R("key_with_true"), RT_FALSE, RT_TRUE)) goto the_end;
   if (TtTestBooleanProperty(&properties, _R("key_with_false"), RT_TRUE, RT_FALSE)) goto the_end;

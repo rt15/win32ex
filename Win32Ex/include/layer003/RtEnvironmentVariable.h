@@ -8,6 +8,6 @@
  * In case of error, lpBuffer start with a zero character and <tt>lpWritten</tt> is left untouched.
  * </p>
  */
-RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten);
+RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
 #endif /* RT_ENVIRONMENT_VARIABLE_H */

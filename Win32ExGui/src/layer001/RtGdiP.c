@@ -54,7 +54,7 @@ void RT_API RtGdipSetLastErrorFromGpStatus(RT_UN unStatus)
   RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
 }
 
-RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N nWidth, RT_N nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode)
+RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode)
 {
   GpGraphics* lpGraphics;
   GpBitmap* lpBitmap;

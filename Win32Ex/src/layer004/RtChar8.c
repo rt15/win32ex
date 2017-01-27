@@ -1,6 +1,6 @@
 #include "layer004/RtChar8.h"
 
-RT_N RT_API RtGetString8Size(RT_CHAR8* lpInput)
+RT_UN RT_API RtGetString8Size(RT_CHAR8* lpInput)
 {
   RT_CHAR8* lpInInput;
   RT_UN unResult;
@@ -9,7 +9,7 @@ RT_N RT_API RtGetString8Size(RT_CHAR8* lpInput)
 
   while (*lpInInput++);
 
-  unResult = (RT_N)(lpInInput - lpInput - 1);
+  unResult = (RT_UN)(lpInInput - lpInput - 1);
 
   return unResult;
 }

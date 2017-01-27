@@ -59,8 +59,8 @@ RT_B RT_CALL CbNameComparisonCallback(void* lpItem1, void* lpItem2, void* lpCont
   lpIndex1 = (RT_N*)lpItem1;
   lpIndex2 = (RT_N*)lpItem2;
 
-  lpString1 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->nItemSize * *lpIndex1));
-  lpString2 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->nItemSize * *lpIndex2));
+  lpString1 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->unItemSize * *lpIndex1));
+  lpString2 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->unItemSize * *lpIndex2));
 
   *lpComparisonResult = RtCompareStrings(lpString1, lpString2);
   return RT_TRUE;
@@ -78,7 +78,7 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   CB_COMPETITION competition;
   RtRuntimeHeap runtimeHeap;
-  RT_N nI, nJ;
+  RT_N nI, unJ;
   RT_UN32 unResult;
 
   if (!RtRuntimeHeapCreate(&runtimeHeap))
@@ -100,9 +100,9 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
 cleanup_tables:
   /* Cleaning up. */
-  for (nJ = 0; nJ < nI; nJ++)
+  for (unJ = 0; unJ < nI; unJ++)
   {
-    if (!RtFreeTable(&competition.lpTables[nJ]))
+    if (!RtFreeTable(&competition.lpTables[unJ]))
     {
       CbWriteLastErrorMessage(_R("Failed to free tables: "));
       unResult = 1;

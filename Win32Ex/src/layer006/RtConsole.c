@@ -19,30 +19,30 @@ RT_B RT_API RtWriteStringToConsole(RT_CHAR* lpString)
  * Affiche le texte indiqué dans la console
  *
  * @param lpString Texte à écrire dans la console
- * @param nSize Nombre de caractères à afficher
+ * @param unSize Nombre de caractères à afficher
  * @return Zero en cas de problème
  */
-RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_N nSize)
+RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
 {
 #ifdef RT_DEFINE_WINDOWS
-  RT_UN32 unWritten;  /* Réception du nombre de caractère écris                   */
+  DWORD unWritten;       /* Réception du nombre de caractère écris                   */
   RT_CHAR8* lpOemText;   /* Texte traduit en OEM                                  */
   void* lpHeapBuffer;
-  RT_N nHeapBufferSize;
+  RT_UN unHeapBufferSize;
   RT_CHAR8 lpBuffer[RT_CHAR_BIG_STRING_SIZE];
   RT_B bResult;
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
   lpHeapBuffer = RT_NULL;
-  nHeapBufferSize = 0;
+  unHeapBufferSize = 0;
 
-  if (!RtAllocIfNeeded(lpBuffer, RT_CHAR_BIG_STRING_SIZE, &lpHeapBuffer, &nHeapBufferSize, (void**)&lpOemText, nSize)) goto handle_error;
+  if (!RtAllocIfNeeded(lpBuffer, RT_CHAR_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, (void**)&lpOemText, unSize)) goto handle_error;
 
   /* Translate àùéè characters... Never fails if arguments are different. */
-  CharToOemBuff(lpString, lpOemText, nSize);
+  CharToOemBuff(lpString, lpOemText, (DWORD)unSize);
 
-  bResult = WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), lpOemText, nSize, &unWritten, NULL);
+  bResult = WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), lpOemText, (DWORD)unSize, &unWritten, NULL);
 
 free_resources:
   if (lpHeapBuffer)
@@ -60,7 +60,7 @@ handle_error:
   bResult = RT_FALSE;
   goto free_resources;
 #else
-  return (write(1, lpString, (size_t)nSize) != -1);
+  return (write(1, lpString, (size_t)unSize) != -1);
 #endif
 }
 
@@ -69,11 +69,11 @@ RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
   RT_UN unStringsLenght;
   RT_CHAR* lpString;
   va_list vaList;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_CHAR lpBuffer[512];
   RT_CHAR* lpStrings;
   void* lpHeapBuffer;
-  RT_N nHeapBufferSize;
+  RT_UN unHeapBufferSize;
   RT_UN unI;
   RT_B bResult;
 
@@ -103,15 +103,15 @@ RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
     va_end(vaList);
 
     lpHeapBuffer = RT_NULL;
-    nHeapBufferSize = 0;
-    if (RtAllocIfNeeded(lpBuffer, 512 * sizeof(RT_CHAR), &lpHeapBuffer, &nHeapBufferSize, (void**)&lpStrings, (unStringsLenght + 1) * sizeof(RT_CHAR)))
+    unHeapBufferSize = 0;
+    if (RtAllocIfNeeded(lpBuffer, 512 * sizeof(RT_CHAR), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpStrings, (unStringsLenght + 1) * sizeof(RT_CHAR)))
     {
       va_start(vaList, unStringsCount);
-      nWritten = 0;
-      RtVConcatStrings(vaList, unStringsCount, lpStrings, unStringsLenght + 1, &nWritten);
+      unWritten = 0;
+      RtVConcatStrings(vaList, unStringsCount, lpStrings, unStringsLenght + 1, &unWritten);
       va_end(vaList);
 
-      bResult = RtWriteStringToConsoleWithSize(lpStrings, nWritten);
+      bResult = RtWriteStringToConsoleWithSize(lpStrings, unWritten);
       if (lpHeapBuffer)
       {
         bResult = (RtFree(&lpHeapBuffer) && bResult);
@@ -134,34 +134,34 @@ void RT_API RtPauseConsole()
   RtReadCharFromConsole();
 }
 
-RT_N RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_N nBufferSize)
+RT_UN RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_UN unBufferSize)
 {
 #ifdef RT_DEFINE_WINDOWS
   HANDLE hInput;    /* Handle de l'entrée standard                            */
-  RT_UN32 unRead;    /* Nombre d'octets lus                                    */
-  RT_UN32 unOldMode; /* Sauvegarde le mode précédent pour le restituer         */
+  DWORD unRead;    /* Nombre d'octets lus                                    */
+  DWORD unOldMode; /* Sauvegarde le mode précédent pour le restituer         */
 #else
   int nChar;
 #endif
-  RT_N nResult;
+  RT_UN unResult;
 
 #ifdef RT_DEFINE_WINDOWS
   hInput = GetStdHandle(STD_INPUT_HANDLE);
   GetConsoleMode(hInput, &unOldMode);
   SetConsoleMode(hInput, ENABLE_PROCESSED_INPUT | ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
-  if (ReadConsole(hInput, lpBuffer, nBufferSize, &unRead, RT_NULL))
+  if (ReadConsole(hInput, lpBuffer, (DWORD)unBufferSize, &unRead, RT_NULL))
   {
-    if (unRead == nBufferSize)
+    if (unRead == unBufferSize)
     {
       /* Keep reading until LF is found to discard characters (FlushConsoleInputBuffer cannot be used with ReadConsole). */
       while (lpBuffer[unRead - 1] != _R('\n'))
       {
-        if (!ReadConsole(hInput, lpBuffer, nBufferSize, &unRead, RT_NULL))
+        if (!ReadConsole(hInput, lpBuffer, (DWORD)unBufferSize, &unRead, RT_NULL))
         {
           break;
         }
       }
-      nResult = -1;
+      unResult = RT_TYPE_MAX_UN;
     }
     else
     {
@@ -169,24 +169,24 @@ RT_N RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_N nBufferSize)
       unRead -= 2;
       /* Zero terminated String. */
       lpBuffer[unRead] = 0;
-      nResult = unRead;
+      unResult = unRead;
     }
   }
   else
   {
-    nResult = -1;
+    unResult = RT_TYPE_MAX_UN;
   }
   SetConsoleMode(hInput, unOldMode);
 #else
   /* The getline function cannot be used as first parameter must be a pointer on memory allocated with malloc. */
-  nResult = 0;
+  unResult = 0;
 loop:
   nChar = getchar();
-  if (nResult >= nBufferSize)
+  if (unResult >= unBufferSize)
   {
     /* Buffer not large enough. */
     lpBuffer[0] = 0;
-    nResult = -1;
+    unResult = RT_TYPE_MAX_UN;
   }
   else
   {
@@ -196,23 +196,23 @@ loop:
       nChar = 0;
     }
 
-    lpBuffer[nResult] = nChar;
+    lpBuffer[unResult] = nChar;
 
     if (nChar)
     {
-      nResult++;
+      unResult++;
       goto loop;
     }
   }
 #endif
-  return nResult;
+  return unResult;
 }
 
 RT_CHAR RT_API RtReadCharFromConsole()
 {
 #ifdef RT_DEFINE_WINDOWS
   HANDLE hInput;    /* Handle de l'entrée standard                            */
-  RT_UN32 unRead;    /* Nombre d'octets lus                                    */
+  RT_UN unRead;    /* Nombre d'octets lus                                    */
   RT_UN32 unOldMode; /* Sauvegarde le mode précédent pour le restituer         */
 #else
   struct termios termConfig;

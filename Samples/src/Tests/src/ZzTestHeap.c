@@ -5,7 +5,7 @@ RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
   RT_UCHAR8 lpBuffer[50];
   void* lpArea;
   void* lpHeapBuffer;
-  RT_N nHeapBufferSize;
+  RT_UN unHeapBufferSize;
   RT_B bResult;
 
   lpHeapBuffer = RT_NULL;
@@ -14,22 +14,22 @@ RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
   if (lpArea != lpBuffer) goto handle_error;
 
   /* Alloc. */
-  nHeapBufferSize = 0;
-  if (!RtAllocIfNeededWithHeap(RT_NULL, 0, &lpHeapBuffer, &nHeapBufferSize, &lpArea, 30, _R("foo"), lpHeap)) goto handle_error;
+  unHeapBufferSize = 0;
+  if (!RtAllocIfNeededWithHeap(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 30, _R("foo"), lpHeap)) goto handle_error;
   if (lpArea != lpHeapBuffer) goto handle_error;
-  if (nHeapBufferSize != 30) goto handle_error;
+  if (unHeapBufferSize != 30) goto handle_error;
 
   /* Heap buffer big enough. */
   lpArea = RT_NULL;
-  if (!RtAllocIfNeededWithHeap(RT_NULL, 0, &lpHeapBuffer, &nHeapBufferSize, &lpArea, 15, _R("foo"), lpHeap)) goto handle_error;
+  if (!RtAllocIfNeededWithHeap(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 15, _R("foo"), lpHeap)) goto handle_error;
   if (lpArea != lpHeapBuffer) goto handle_error;
-  if (nHeapBufferSize != 30) goto handle_error;
+  if (unHeapBufferSize != 30) goto handle_error;
 
   /* Re-alloc. */
   lpArea = RT_NULL;
-  if (!RtAllocIfNeededWithHeap(RT_NULL, 0, &lpHeapBuffer, &nHeapBufferSize, &lpArea, 40, _R("foo"), lpHeap)) goto handle_error;
+  if (!RtAllocIfNeededWithHeap(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 40, _R("foo"), lpHeap)) goto handle_error;
   if (lpArea != lpHeapBuffer) goto handle_error;
-  if (nHeapBufferSize != 40) goto handle_error;
+  if (unHeapBufferSize != 40) goto handle_error;
 
   bResult = RT_TRUE;
 free_resources:

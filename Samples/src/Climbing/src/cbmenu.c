@@ -3,7 +3,7 @@
 RT_UN16 RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM* lpMenuItems, RT_UN unItemCounts, void* lpContext)
 {
   RT_CHAR nRead;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_N nI;
 
   RT_CHAR lpBuffer[16];
@@ -19,7 +19,7 @@ RT_UN16 RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM* lp
     }
     for (nI = 0; nI < unItemCounts; nI++)
     {
-      RtConvertNumberToString(nI + 1, lpBuffer, 16, &nWritten);
+      RtConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
       RtWriteStringsToConsole(4, lpMenuItems[nI].lpTitle, _R(": "), lpBuffer, _R("\n"));
     }
     RtWriteStringToConsole(_R("\nExit: 0\n"));

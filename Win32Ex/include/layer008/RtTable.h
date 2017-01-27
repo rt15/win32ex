@@ -7,7 +7,7 @@
 
 typedef struct _RT_TABLE_INDEX
 {
-  RT_N* lpIndexes;
+  RT_UN* lpIndexes;
   RT_B bEnabled;
 }
 RT_TABLE_INDEX;
@@ -30,12 +30,12 @@ void* RT_API RtAcquireTableItem(RT_TABLE* lpTable, void** lpItems);
  */
 RT_B RT_API RtIndexNewTableItem(RT_TABLE* lpTable);
 
-void RT_API RtIndexUpdatedTableItem(RT_TABLE* lpTable, RT_UN32 unItemIndex, RT_UN unIndex);
+void RT_API RtIndexUpdatedTableItem(RT_TABLE* lpTable, RT_UN unItemIndex, RT_UN unIndex);
 
 /**
  * Delete an item from the data table and remove indexes entries.
  */
-RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN32 unItemIndex);
+RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN unItemIndex);
 
 RT_B RT_API RtFreeTable(RT_TABLE* lpTable);
 

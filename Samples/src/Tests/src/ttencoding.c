@@ -26,28 +26,28 @@ RT_CHAR* tt_System_2 = _R("é\u0163");
 RT_UCHAR8 tt_ISO88592[3] = { 0xE9, 0xFE, 0x00 };
 RT_UCHAR8 tt_Utf8_2[5] = { 0xC3, 0xA9, 0xC5, 0xA3, 0x00 };
 
-RT_UN16 RT_CALL TtTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, RT_N nEncoding, RT_N nEncodedLength, RT_N nEncodedCharSize, RT_B bDecodeOnly)
+RT_UN16 RT_CALL TtTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, RT_UN unEncoding, RT_UN unEncodedLength, RT_UN unEncodedCharSize, RT_B bDecodeOnly)
 {
-  RT_N nExpectedStringSize;
+  RT_UN unExpectedStringSize;
   RT_CHAR8 lpBuffer[512];
   RT_CHAR lpCharBuffer[512];
   RT_UN16 unResult;
 
   unResult = 1;
 
-  if (RtGetTerminatingZeroSize(nEncoding) != nEncodedCharSize) goto the_end;
-  if (RtGetDataSize((RT_CHAR8*)lpEncoded, nEncodedCharSize) != nEncodedLength) goto the_end;
+  if (RtGetTerminatingZeroSize(unEncoding) != unEncodedCharSize) goto the_end;
+  if (RtGetDataSize((RT_CHAR8*)lpEncoded, unEncodedCharSize) != unEncodedLength) goto the_end;
 
   /* Encode. */
   if (!bDecodeOnly)
   {
-    if (RtEncodeWithBuffer(lpCharacters, -1, nEncoding, lpBuffer, 512) != nEncodedLength) goto the_end;
-    if (RtCompareMemory(lpBuffer, lpEncoded, nEncodedLength + nEncodedCharSize)) goto the_end;
+    if (RtEncodeWithBuffer(lpCharacters, RT_TYPE_MAX_UN, unEncoding, lpBuffer, 512) != unEncodedLength) goto the_end;
+    if (RtCompareMemory(lpBuffer, lpEncoded, unEncodedLength + unEncodedCharSize)) goto the_end;
   }
 
   /* Decode. */
-  nExpectedStringSize = RtGetStringSize(lpCharacters);
-  if (RtDecodeWithBuffer((RT_CHAR8*)lpEncoded, -1, nEncoding, lpCharBuffer, 512) != nExpectedStringSize) goto the_end;
+  unExpectedStringSize = RtGetStringSize(lpCharacters);
+  if (RtDecodeWithBuffer((RT_CHAR8*)lpEncoded, RT_TYPE_MAX_UN, unEncoding, lpCharBuffer, 512) != unExpectedStringSize) goto the_end;
   if (RtCompareStrings(lpCharBuffer, lpCharacters)) goto the_end;
 
   unResult = 0;

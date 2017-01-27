@@ -9,14 +9,14 @@
  */
 
 /**
- * @param nBufferSize Must be at least 3.
- * @return Read characters count and -1 in case of error.
+ * @param unBufferSize Must be at least 3.
+ * @return Read characters count and RT_TYPE_MAX_UN in case of error.
  */
-RT_N RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_N nBufferSize);
+RT_UN RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_UN unBufferSize);
 
 RT_B RT_API RtWriteStringToConsole(RT_CHAR* lpString);
 
-RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_N nSize);
+RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize);
 
 RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...);
 

@@ -11,8 +11,8 @@ typedef struct _ZZ_APP_CONTEXT
   RT_H hInstance;
   RT_UN32 unWindowExitCode;
 
-  RT_N nVerticalSplitterX;                  /* Position of the vertical splitter. */
-  RT_N nSplitterCursorOffset;               /* Used when the a splitter is in use to store the offset where the user clicked. */
+  RT_N32 nVerticalSplitterX;                /* Position of the vertical splitter. */
+  RT_N32 nSplitterCursorOffset;             /* Used when the a splitter is in use to store the offset where the user clicked. */
   RT_B bUsingVerticalSplitter;              /* Track usage of vertical splitter. */
 
   RT_H hStandardCursor;
@@ -21,7 +21,7 @@ typedef struct _ZZ_APP_CONTEXT
   RT_H hFont;
 
   /* Current entity tab. */
-  RT_N nCurrentEntity;
+  RT_UN unCurrentEntity;
 
   void* lpLists[ZZ_RESOURCES_ENTITIES_COUNT];
 

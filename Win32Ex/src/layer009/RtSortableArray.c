@@ -4,7 +4,7 @@
 #include "layer004/RtBinarySearch.h"
 #include "layer004/RtQuickSort.h"
 
-void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_UN32 unSize, RT_UN32 unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext)
+void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
 
@@ -19,69 +19,69 @@ void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_
   return *lpSortableArray;
 }
 
-RT_N RT_API RtAddItemToSortableArray(void** lpSortableArray, void* lpNewItem)
+RT_UN RT_API RtAddItemToSortableArray(void** lpSortableArray, void* lpNewItem)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
-  RT_N nSize;
-  RT_N nItemSize;
-  RT_N nLastItemIndex;
+  RT_UN unSize;
+  RT_UN unItemSize;
+  RT_UN unLastItemIndex;
   void* lpSource;
   void* lpDestination;
-  RT_N nResult;
+  RT_UN unResult;
 
   /* Add more space at the end of the array. */
-  if (RtNewArrayItemIndex(lpSortableArray, &nLastItemIndex) == -1)
+  if (RtNewArrayItemIndex(lpSortableArray, &unLastItemIndex) == RT_TYPE_MAX_UN)
   {
-    nResult = -1;
+    unResult = RT_TYPE_MAX_UN;
     goto the_end;
   }
 
   lpHeader = (RT_SORTABLE_ARRAY_HEADER*)*lpSortableArray;
   lpHeader--;
-  nSize = lpHeader->rtArrayHeader.unSize;
-  nItemSize = lpHeader->rtArrayHeader.unItemSize;
+  unSize = lpHeader->rtArrayHeader.unSize;
+  unItemSize = lpHeader->rtArrayHeader.unItemSize;
 
   /* Is there only the new item in the array? */
-  if (nSize == 1)
+  if (unSize == 1)
   {
     /* We need to Copy the only item and return 0 as insertion index. */
     lpSource = *lpSortableArray;
-    nResult = 0;
+    unResult = 0;
   }
   else
   {
     /* Search insertion point. */
-    nResult = RtBinarySearchInsertionIndex(*lpSortableArray, lpNewItem, nSize - 1, nItemSize, lpHeader->lpComparisonCallback, lpHeader->lpContext);
-    if (nResult == -1)
+    unResult = RtBinarySearchInsertionIndex(*lpSortableArray, lpNewItem, unSize - 1, unItemSize, lpHeader->lpComparisonCallback, lpHeader->lpContext);
+    if (unResult == RT_TYPE_MAX_UN)
     {
       /* Drop create empty space. */
-      RtSetArraySize(lpSortableArray, nSize - 1);
+      RtSetArraySize(lpSortableArray, unSize - 1);
       goto the_end;
     }
 
     /* Compute insertion address. */
-    lpSource = ((RT_UCHAR8*)*lpSortableArray) + nItemSize * nResult;
+    lpSource = ((RT_UCHAR8*)*lpSortableArray) + unItemSize * unResult;
 
     /* If an hole is necessary. */
-    if (nResult < nSize - 1)
+    if (unResult < unSize - 1)
     {
       /* Create an hole at insertion point. */
-      lpDestination = ((RT_UCHAR8*)*lpSortableArray) + nItemSize * (nResult + 1);
-      RtMoveMemory(lpSource, lpDestination, (nSize - (nResult + 1)) * nItemSize);
+      lpDestination = ((RT_UCHAR8*)*lpSortableArray) + unItemSize * (unResult + 1);
+      RtMoveMemory(lpSource, lpDestination, (unSize - (unResult + 1)) * unItemSize);
     }
   }
   /* Fill the hole. */
-  RtCopyMemory(lpNewItem, lpSource, nItemSize);
+  RtCopyMemory(lpNewItem, lpSource, unItemSize);
 
 the_end:
-  return nResult;
+  return unResult;
 }
 
-void* RT_API RtDeleteSortableArrayItemIndex(void** lpSortableArray, RT_UN32 unItemIndex)
+void* RT_API RtDeleteSortableArrayItemIndex(void** lpSortableArray, RT_UN unItemIndex)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
-  RT_UN32 unSize;
-  RT_UN32 unItemSize;
+  RT_UN unSize;
+  RT_UN unItemSize;
   void* lpSource;
   void* lpDestination;
 
@@ -142,7 +142,7 @@ RT_B RT_API RtUnsortSortableArray(void* lpSortableArray)
   return RT_TRUE;
 }
 
-RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, RT_N* lpItemIndex)
+RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, RT_UN* lpItemIndex)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
   RT_B bResult;
@@ -160,7 +160,7 @@ RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, 
   bResult = RT_TRUE;
   goto free_resource;
 handle_error:
-  *lpItemIndex = -1;
+  *lpItemIndex = RT_TYPE_MAX_UN;
   bResult = RT_FALSE;
 free_resource:
   return bResult;

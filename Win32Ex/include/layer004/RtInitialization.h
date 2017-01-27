@@ -11,7 +11,7 @@
 
 typedef struct _RT_INITIALIZATION
 {
-  RT_N nInitialized;
+  RT_UN unInitialized;
   RT_CRITICAL_SECTION rtCriticalSection;
 }
 RT_INITIALIZATION;

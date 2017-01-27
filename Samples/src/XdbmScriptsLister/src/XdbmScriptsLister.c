@@ -24,14 +24,14 @@ XS_CONTEXT;
 RT_UN16 RT_CALL WriteLastErrorMessage(RT_CHAR* lpLabel)
 {
   RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_N nWritten;
+  RT_UN unWritten;
 
-  nWritten = 0;
-  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &nWritten);
-  RtGetLastErrorMessage(&lpBuffer[nWritten], RT_CHAR_BIG_STRING_SIZE - nWritten, &nWritten);
-  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[nWritten], RT_CHAR_BIG_STRING_SIZE - nWritten, &nWritten);
+  unWritten = 0;
+  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten);
+  RtGetLastErrorMessage(&lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
 
-  RtWriteStringToConsoleWithSize(lpBuffer, nWritten);
+  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   return 1;
 }
@@ -42,7 +42,7 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
   RT_N nBegin;
   RT_N nEnd;
   RT_N nI;
-  RT_N nJ;
+  RT_N unJ;
   RT_B bResult;
 
   nBegin = RtSearchString(lpFileContent, lpTagName);
@@ -68,13 +68,13 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
     nEnd++;
   }
 
-  nJ = 0;
+  unJ = 0;
   for (nI = nBegin; nI < nEnd; nI++)
   {
-    lpValue[nJ] = lpFileContent[nI];
-    nJ++;
+    lpValue[unJ] = lpFileContent[nI];
+    unJ++;
   }
-  lpValue[nJ] = 0;
+  lpValue[unJ] = 0;
 
   RtWriteStringsToConsole(2, _R("\t"), lpValue);
 
@@ -84,7 +84,7 @@ the_end:
   return bResult;
 }
 
-RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_N nType, void* lpContext)
+RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
 {
   XS_CONTEXT* lpXsContext;
   RT_HEAP** lpHeap;
@@ -94,23 +94,23 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_N nType, void* lpContext)
   RT_CHAR* lpFileContent;
   RT_N nFileContentSize;
   RT_N nDataSize;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_N nI;
   RT_B bResult;
 
   bResult = RT_TRUE;
 
-  if (nType == RT_FILE_SYSTEM_TYPE_FILE)
+  if (unType == RT_FILE_SYSTEM_TYPE_FILE)
   {
-    nWritten = 0;
-    RtCopyString(lpPath, lpLowerCasePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &nWritten);
+    unWritten = 0;
+    RtCopyString(lpPath, lpLowerCasePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
     RtFastLowerString(lpLowerCasePath);
-    if (RtStringEndsWithWithSize(lpLowerCasePath, nWritten, _R(".sql"), 4))
+    if (RtStringEndsWithWithSize(lpLowerCasePath, unWritten, _R(".sql"), 4))
     {
-      nWritten = 0;
-      RtExtractFileName(lpPath, RtGetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &nWritten);
+      unWritten = 0;
+      RtExtractFileName(lpPath, RtGetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
       /* Write file name without extension. */
-      RtWriteStringToConsoleWithSize(lpFileName, nWritten - 4);
+      RtWriteStringToConsoleWithSize(lpFileName, unWritten - 4);
 
       lpXsContext = (XS_CONTEXT*)lpContext;
       lpHeap = lpXsContext->lpHeap;
@@ -161,7 +161,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_N nType, void* lpContext)
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   RtRuntimeHeap runtimeHeap;
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_CHAR* lpSchema;
   RT_CHAR lpPath[XS_BUFFER_SIZE];
   XS_CONTEXT context;
@@ -180,10 +180,10 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   {
     lpSchema = xs_lpSchemas[nI];
 
-    nWritten = 0;
-    RtCopyString(_R("database/"),                &lpPath[nWritten], XS_BUFFER_SIZE - nWritten, &nWritten);
-    RtCopyString(lpSchema,                       &lpPath[nWritten], XS_BUFFER_SIZE - nWritten, &nWritten);
-    RtCopyString(_R("/database/oracle/scripts"), &lpPath[nWritten], XS_BUFFER_SIZE - nWritten, &nWritten);
+    unWritten = 0;
+    RtCopyString(_R("database/"),                &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
+    RtCopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
+    RtCopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
 
     if (!RtBrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, &context))
     {

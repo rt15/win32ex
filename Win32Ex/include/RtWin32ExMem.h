@@ -9,7 +9,7 @@
  * This header can define corresponding symbols when CRT is not used.
  *
  * <p>
- * Partial copy from RtMemory.c, changing:
+ * Partial copy from RtMemory.c, mostly changing:
  * </p>
  * <ul>
  * <li>function names to memcmp, memcpy, memmove and memset.</li>
@@ -37,65 +37,65 @@ typedef RT_UN RT_SIZE_T;
 
 #endif
 
-int RT_CDECL memcmp(void* lpArea1, void* lpArea2, RT_SIZE_T nSize)
+int RT_CDECL memcmp(void* lpArea1, void* lpArea2, RT_SIZE_T unSize)
 {
   RT_CHAR8* lpCharArea1;   /* Facilite l'accès aux octets de lpArea1              */
   RT_CHAR8* lpCharArea2;   /* Idem pour lpArea2                                   */
-  RT_SIZE_T nI;
+  RT_SIZE_T unI;
 
   lpCharArea1 = (RT_CHAR8*)lpArea1;
   lpCharArea2 = (RT_CHAR8*)lpArea2;
-  nI = 0;
-  while ((nI < nSize) && (lpCharArea1[nI] == lpCharArea2[nI]))
-    nI++;
-  if (nI == nSize) nI--;
-  return lpCharArea1[nI] - lpCharArea2[nI];
+  unI = 0;
+  while ((unI < unSize) && (lpCharArea1[unI] == lpCharArea2[unI]))
+    unI++;
+  if (unI == unSize) unI--;
+  return lpCharArea1[unI] - lpCharArea2[unI];
 }
 
-void* RT_CDECL memcpy(void* lpSource, void* lpDestination, RT_SIZE_T nSize)
+void* RT_CDECL memcpy(void* lpSource, void* lpDestination, RT_SIZE_T unSize)
 {
   RT_CHAR8* lpCharDest;    /* Facilite l'accès à la zone de destination           */
   RT_CHAR8* lpCharSrc;     /* Facilite l'accès à la zone source                   */
-  RT_SIZE_T nI;
+  RT_SIZE_T unI;
 
   lpCharDest = lpDestination;
   lpCharSrc = lpSource;
-  for (nI = 0; nI < nSize; nI++)
-    lpCharDest[nI] = lpCharSrc[nI];
+  for (unI = 0; unI < unSize; unI++)
+    lpCharDest[unI] = lpCharSrc[unI];
 
   return lpDestination;
 }
 
-void* RT_CDECL memmove(void* lpSource, void* lpDestination, RT_SIZE_T nSize)
+void* RT_CDECL memmove(void* lpSource, void* lpDestination, RT_SIZE_T unSize)
 {
   RT_CHAR8* lpCharDest;    /* Facilite l'accès à la zone de destination           */
   RT_CHAR8* lpCharSrc;     /* Facilite l'accès à la zone source                   */
-  RT_SIZE_T nI;
+  RT_SIZE_T unI;
 
   lpCharDest = lpDestination;
   lpCharSrc = lpSource;
 
   if (lpDestination > lpSource)
   {
-    for (nI = nSize - 1; nI != 0; nI--)
-      lpCharDest[nI] = lpCharSrc[nI];
+    for (unI = unSize - 1; unI != 0; unI--)
+      lpCharDest[unI] = lpCharSrc[unI];
     lpCharDest[0] = lpCharSrc[0];
   }
   else
-    for (nI = 0; nI < nSize; nI++)
-      lpCharDest[nI] = lpCharSrc[nI];
+    for (unI = 0; unI < unSize; unI++)
+      lpCharDest[unI] = lpCharSrc[unI];
 
   return lpDestination;
 }
 
-void* RT_CDECL memset(void* lpArea, int nValue, RT_SIZE_T nSize)
+void* RT_CDECL memset(void* lpArea, int nValue, RT_SIZE_T unSize)
 {
   RT_UCHAR8* lpByteArea;    /* Facilite l'accès à la zone                        */
-  RT_SIZE_T nI;
+  RT_SIZE_T unI;
 
   lpByteArea = (RT_UCHAR8*)lpArea;
-  for (nI = 0; nI < nSize; nI++)
-    lpByteArea[nI] = nValue;
+  for (unI = 0; unI < unSize; unI++)
+    lpByteArea[unI] = nValue;
   return lpArea;
 }
 

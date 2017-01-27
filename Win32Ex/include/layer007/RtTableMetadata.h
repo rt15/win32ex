@@ -6,9 +6,9 @@
 
 typedef struct _RT_TABLE_METADATA
 {
-  RT_N nItemUserDataSize;                        /* Size of user data in the table.       */
-  RT_N nItemSize;                                /* Size of the items in the table.       */
-  RT_N nTableIndexesCount;                       /* Count of indexes in the table.        */
+  RT_UN unItemUserDataSize;                        /* Size of user data in the table.       */
+  RT_UN unItemSize;                                /* Size of the items in the table.       */
+  RT_UN unTableIndexesCount;                       /* Count of indexes in the table.        */
   RT_COMPARISON_CALLBACK* lpComparisonCallbacks; /* Comparison callbacks used by indexes. */
 }
 RT_TABLE_METADATA;

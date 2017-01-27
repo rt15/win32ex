@@ -1,60 +1,60 @@
 #include "layer009/RtLinkedList.h"
 
-void* RT_API RtCreateLinkedList(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN32 unSize, RT_UN32 unItemSize)
+void* RT_API RtCreateLinkedList(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize)
 {
   RT_LINKED_LIST_HEADER* lpHeader;
   RT_CHAR8* lpItems;
   RT_LINKED_LIST_ITEM_HEADER* lpItem;
-  RT_UN32 unI;
+  RT_UN unI;
 
   if (RtCreateArray(lpLinkedList, sizeof(RT_LINKED_LIST_HEADER), lpHeap, unSize, unItemSize))
   {
     lpHeader = *lpLinkedList;
     lpHeader--;
-    lpHeader->nFirstUsedItemIndex = -1;
+    lpHeader->unFirstUsedItemIndex = RT_TYPE_MAX_UN;
     if (unSize)
     {
-      lpHeader->nFirstFreeItemIndex = 0;
+      lpHeader->unFirstFreeItemIndex = 0;
 
       /* Initialize free linked list. */
       lpItems = *lpLinkedList;
       for (unI = 0; unI < unSize - 1; unI++)
       {
         lpItem = (RT_LINKED_LIST_ITEM_HEADER*)(lpItems + unI * unItemSize);
-        lpItem->nNextItemIndex = unI + 1;
+        lpItem->unNextItemIndex = unI + 1;
       }
       lpItem = (RT_LINKED_LIST_ITEM_HEADER*)(lpItems + (unSize - 1) * unItemSize);
-      lpItem->nNextItemIndex = -1;
+      lpItem->unNextItemIndex = RT_TYPE_MAX_UN;
     }
     else
     {
-      lpHeader->nFirstFreeItemIndex = -1;
+      lpHeader->unFirstFreeItemIndex = RT_TYPE_MAX_UN;
     }
   }
   return *lpLinkedList;
 }
 
-RT_N RT_API RtNewLinkedListItemIndex(void** lpLinkedList, RT_N* lpItemIndex)
+RT_UN RT_API RtNewLinkedListItemIndex(void** lpLinkedList, RT_UN* lpItemIndex)
 {
   RT_LINKED_LIST_HEADER* lpHeader;
   RT_LINKED_LIST_ITEM_HEADER* lpItem;
   RT_LINKED_LIST_ITEM_HEADER* lpNextItem;
-  RT_N nNextItem;
+  RT_UN unNextItem;
 
   lpHeader = *lpLinkedList;
   lpHeader--;
 
-  *lpItemIndex = lpHeader->nFirstFreeItemIndex;
-  if (*lpItemIndex != -1)
+  *lpItemIndex = lpHeader->unFirstFreeItemIndex;
+  if (*lpItemIndex != RT_TYPE_MAX_UN)
   {
     lpItem = (RT_LINKED_LIST_ITEM_HEADER*)(((RT_CHAR8*)*lpLinkedList) + *lpItemIndex * lpHeader->rtArrayHeader.unItemSize);
 
     /* Manage free items list. */
-    lpHeader->nFirstFreeItemIndex = lpItem->nNextItemIndex;
+    lpHeader->unFirstFreeItemIndex = lpItem->unNextItemIndex;
   }
   else
   {
-    if (RtNewArrayItemIndex(lpLinkedList, lpItemIndex) == -1)
+    if (RtNewArrayItemIndex(lpLinkedList, lpItemIndex) == RT_TYPE_MAX_UN)
     {
       goto the_end;
     }
@@ -65,14 +65,14 @@ RT_N RT_API RtNewLinkedListItemIndex(void** lpLinkedList, RT_N* lpItemIndex)
   }
 
   /* Add result to used items list. */
-  nNextItem = lpHeader->nFirstUsedItemIndex;
-  lpHeader->nFirstUsedItemIndex = *lpItemIndex;
-  lpItem->nPreviousItemIndex = -1;
-  lpItem->nNextItemIndex = nNextItem;
-  if (nNextItem != -1)
+  unNextItem = lpHeader->unFirstUsedItemIndex;
+  lpHeader->unFirstUsedItemIndex = *lpItemIndex;
+  lpItem->unPreviousItemIndex = RT_TYPE_MAX_UN;
+  lpItem->unNextItemIndex = unNextItem;
+  if (unNextItem != RT_TYPE_MAX_UN)
   {
-    lpNextItem = (RT_LINKED_LIST_ITEM_HEADER*)(((RT_CHAR8*)*lpLinkedList) + nNextItem * lpHeader->rtArrayHeader.unItemSize);
-    lpNextItem->nPreviousItemIndex = *lpItemIndex;
+    lpNextItem = (RT_LINKED_LIST_ITEM_HEADER*)(((RT_CHAR8*)*lpLinkedList) + unNextItem * lpHeader->rtArrayHeader.unItemSize);
+    lpNextItem->unPreviousItemIndex = *lpItemIndex;
   }
 
 the_end:

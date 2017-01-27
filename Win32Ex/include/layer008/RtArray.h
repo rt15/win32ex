@@ -15,10 +15,10 @@
 
 typedef struct _RT_ARRAY_HEADER
 {
-  RT_UN32 unHeaderSize;
+  RT_UN unHeaderSize;
   RT_HEAP** lpHeap;
-  RT_UN32 unSize;
-  RT_UN32 unItemSize;
+  RT_UN unSize;
+  RT_UN unItemSize;
 }
 RT_ARRAY_HEADER;
 
@@ -32,19 +32,26 @@ RT_ARRAY_HEADER;
  *
  * @param nHeaderSize The total size of the custom header ending with RT_ARRAY_HEADER.
  */
-void* RT_API RtCreateArray(void** lpArray, RT_UN32 unHeaderSize, RT_HEAP** lpHeap, RT_UN32 unSize, RT_UN32 unItemSize);
-void* RT_API RtSetArraySize(void** lpArray, RT_UN32 unSize);
-RT_UN32 RT_API RtGetArraySize(void* lpArray);
-RT_UN32 RT_API RtGetArrayItemSize(void* lpArray);
+void* RT_API RtCreateArray(void** lpArray, RT_UN unHeaderSize, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize);
+void* RT_API RtSetArraySize(void** lpArray, RT_UN unSize);
+RT_UN RT_API RtGetArraySize(void* lpArray);
+RT_UN RT_API RtGetArrayItemSize(void* lpArray);
 
 void* RT_API RtNewArrayItem(void** lpArray, void** lpItem);
-RT_N RT_API RtNewArrayItemIndex(void** lpArray, RT_N* lpItemIndex);
+
+
+/**
+ * Adds a new item and returns its index.
+ *
+ * Return RT_TYPE_MAX_UN in case of error.
+ */
+RT_UN RT_API RtNewArrayItemIndex(void** lpArray, RT_UN* lpItemIndex);
 
 /**
  * This function moves the last item if it is not the item to delete.
  * As a result, indexes on the array items might become invalid.
  */
-void* RT_API RtDeleteArrayItemIndex(void** lpArray, RT_UN32 unItemIndex);
+void* RT_API RtDeleteArrayItemIndex(void** lpArray, RT_UN unItemIndex);
 
 /**
  *
@@ -56,7 +63,7 @@ void* RT_API RtDeleteArrayItemIndex(void** lpArray, RT_UN32 unItemIndex);
  */
 void* RT_API RtGetLastArrayItem(void* lpArray);
 
-void* RT_API RtGetArrayItem(void* lpArray, RT_UN32 unItemIndex, void** lpItem);
+void* RT_API RtGetArrayItem(void* lpArray, RT_UN unItemIndex, void** lpItem);
 
 /**
  * Delete the last item of the array.

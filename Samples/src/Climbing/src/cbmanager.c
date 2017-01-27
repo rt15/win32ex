@@ -11,7 +11,7 @@ void RT_CALL CbDisplayList(CB_MANAGER_CONTEXT* lpManagerContext, RT_B bWithIndex
   RT_N nObjectsCount;
   CB_OBJECT* lpObject;
   RT_CHAR lpBuffer[16];
-  RT_N nWritten;
+  RT_UN unWritten;
   RT_N nI;
 
   lpTable = &lpManagerContext->lpCompetition->lpTables[lpManagerContext->nClass];
@@ -23,7 +23,7 @@ void RT_CALL CbDisplayList(CB_MANAGER_CONTEXT* lpManagerContext, RT_B bWithIndex
     RtGetArrayItem(lpTable->lpTableData, lpTable->lpTableIndexes[0].lpIndexes[nI], (void**)&lpObject);
     if (bWithIndex)
     {
-      RtConvertNumberToString(nI + 1, lpBuffer, 16, &nWritten);
+      RtConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
       RtWriteStringsToConsole(4, lpBuffer, _R(": "), lpObject->lpName, _R("\n"));
     }
     else
@@ -41,31 +41,31 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
   void** lpTableData;
   CB_OBJECT* lpObject;
   RT_CHAR lpName[256];
-  RT_N nRead;
-  RT_N nWritten;
+  RT_UN unRead;
+  RT_UN unWritten;
   RT_UN32 unResult;
 
   while (RT_TRUE)
   {
     RtWriteStringToConsole(_R("\nEnter a name or nothing to quit:\n"));
-    nRead = RtReadLineFromConsole(lpName, 256);
+    unRead = RtReadLineFromConsole(lpName, 256);
 
     /* Error. */
-    if (nRead == -1)
+    if (unRead == RT_TYPE_MAX_UN)
     {
       unResult = 1;
       break;
     }
 
     /* Exit. */
-    if (nRead == 0)
+    if (unRead == 0)
     {
       unResult = 0;
       break;
     }
 
     /* Too long name. */
-    if (nRead >= CB_NAME_SIZE)
+    if (unRead >= CB_NAME_SIZE)
     {
       RtWriteStringToConsole(_R("Too long name.\n"));
     }
@@ -79,7 +79,7 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
         unResult = 1;
         break;
       }
-      RtCopyStringWithSize(lpName, nRead, lpObject->lpName, CB_NAME_SIZE, &nWritten);
+      RtCopyStringWithSize(lpName, unRead, lpObject->lpName, CB_NAME_SIZE, &unWritten);
       if (!RtIndexNewTableItem(lpTable))
       {
         unResult = 1;
@@ -97,7 +97,7 @@ RT_UN16 RT_CALL CbDeleteObject(void* lpContext)
   RT_N nObjectsCount;
   RT_CHAR lpIndex[256];
   RT_N nIndex;
-  RT_N nRead;
+  RT_UN unRead;
   RT_UN32 unResult;
 
   lpManagerContext = (CB_MANAGER_CONTEXT*)lpContext;
@@ -111,24 +111,24 @@ RT_UN16 RT_CALL CbDeleteObject(void* lpContext)
 
     CbDisplayList(lpManagerContext, RT_TRUE);
 
-    nRead = RtReadLineFromConsole(lpIndex, 256);
+    unRead = RtReadLineFromConsole(lpIndex, 256);
 
     /* Error. */
-    if (nRead == -1)
+    if (unRead == RT_TYPE_MAX_UN)
     {
       unResult = 1;
       break;
     }
 
     /* Exit. */
-    if (nRead == 0)
+    if (unRead == 0)
     {
       unResult = 0;
       break;
     }
 
     /* Parse index. */
-    if (RtConvertStringToNumber(lpIndex, &nIndex))
+    if (RtConvertStringToInteger(lpIndex, &nIndex))
     {
       if (!nIndex)
       {
@@ -159,7 +159,7 @@ RT_UN16 RT_CALL CbEditObject(void* lpContext)
   RT_N nObjectsCount;
   RT_CHAR lpIndex[256];
   RT_N nIndex;
-  RT_N nRead;
+  RT_UN unRead;
   RT_UN32 unResult;
 
   lpManagerContext = (CB_MANAGER_CONTEXT*)lpContext;
@@ -173,24 +173,24 @@ RT_UN16 RT_CALL CbEditObject(void* lpContext)
 
     CbDisplayList(lpManagerContext, RT_TRUE);
 
-    nRead = RtReadLineFromConsole(lpIndex, 256);
+    unRead = RtReadLineFromConsole(lpIndex, 256);
 
     /* Error. */
-    if (nRead == -1)
+    if (unRead == RT_TYPE_MAX_UN)
     {
       unResult = 1;
       break;
     }
 
     /* Exit. */
-    if (nRead == 0)
+    if (unRead == 0)
     {
       unResult = 0;
       break;
     }
 
     /* Parse index. */
-    if (RtConvertStringToNumber(lpIndex, &nIndex))
+    if (RtConvertStringToInteger(lpIndex, &nIndex))
     {
       if (!nIndex)
       {

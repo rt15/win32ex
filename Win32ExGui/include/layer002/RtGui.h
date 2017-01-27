@@ -42,13 +42,13 @@ typedef struct _RT_GUI_COMMAND_MENU_ITEM
 {
   RT_GUI_MENU_ITEM menuItem;
   RT_CHAR* lpText;
-  RT_UN32 unCommandType;   /* RT_GUI_COMMAND_MENU_ITEM_TYPE_BUTTON/RT_GUI_COMMAND_MENU_ITEM_TYPE_CHECK_BOX. */
-  RT_UN32 unId;            /* WM_COMMAND id. */
-  RT_H hIcon;             /* Optional icon. If RT_NULL, and nSystemImageList == -1, then lpText is used in toolbars. */
-  RT_H hBitmap;           /* PARGB bitmap for menu rendering in version above XP. */
-  RT_N nSystemImageList;  /* -1/IDB_STD_SMALL_COLOR/IDB_VIEW_SMALL_COLOR/IDB_HIST_SMALL_COLOR. */
-  RT_N nSystemImageIndex; /* Index in nSystemImageList. */
-  RT_UN32 unImageIndex;    /* Index of the image in the imagelist. Filled by RtCreateToolBarImageList. */
+  RT_UN32 unCommandType;       /* RT_GUI_COMMAND_MENU_ITEM_TYPE_BUTTON/RT_GUI_COMMAND_MENU_ITEM_TYPE_CHECK_BOX. */
+  RT_UN32 unId;                /* WM_COMMAND id. */
+  RT_H hIcon;                  /* Optional icon. If RT_NULL, and unSystemImageList == RT_TYPE_MAX_UN, then lpText is used in toolbars. */
+  RT_H hBitmap;                /* PARGB bitmap for menu rendering in version above XP. */
+  RT_UN32 unSystemImageList;   /* RT_TYPE_MAX_UN/IDB_STD_SMALL_COLOR/IDB_VIEW_SMALL_COLOR/IDB_HIST_SMALL_COLOR. */
+  RT_UN32 unSystemImageIndex;  /* Index in nSystemImageList. */
+  RT_UN32 unImageIndex;        /* Index of the image in the imagelist. Filled by RtCreateToolBarImageList. */
 }
 RT_GUI_COMMAND_MENU_ITEM;
 
@@ -69,7 +69,7 @@ RT_GUI_SUB_MENU_MENU_ITEM;
 typedef struct _RT_GUI_SEPARATOR_MENU_ITEM
 {
   RT_GUI_MENU_ITEM menuItem;
-  RT_N nSeparatorSize;   /* Used for toolbars only. */
+  RT_N32 nSeparatorSize;   /* Used for toolbars only. */
 }
 RT_GUI_SEPARATOR_MENU_ITEM;
 
@@ -79,7 +79,7 @@ RT_GUI_SEPARATOR_MENU_ITEM;
 typedef struct _RT_GUI_COMMAND_MENU_ITEM_MANAGER
 {
   RT_GUI_COMMAND_MENU_ITEM* lpCommandMenuItems;
-  RT_N nCommandMenuItemsCount;
+  RT_UN unCommandMenuItemsCount;
   RT_H hToolBarImageList;
 }
 RT_GUI_COMMAND_MENU_ITEM_MANAGER;
@@ -157,7 +157,7 @@ RT_B RT_API RtFreeGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* lp
 /**
  * @param lpButtons Buffer.
  */
-RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_N nControlId, RT_H hInstance);
+RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_UN unControlId, RT_H hInstance);
 
 /**
  * GetClientRect returns the size of the client area.<br>
@@ -175,7 +175,7 @@ RT_B RT_API RtGetWindowSize(RT_H hWindow, RT_GUI_RECT* lpRect);
  */
 RT_B RT_API RtMoveWindow(RT_H hWindow, RT_GUI_RECT* lpRect);
 
-RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT_N nControlId, RT_H hInstance);
+RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT_UN unControlId, RT_H hInstance);
 
 /**
  * Returns an handle to the application instance (hInstance).
@@ -238,7 +238,7 @@ RT_H RT_API RtCreateDialogBox(RT_CHAR* lpText, RT_CHAR* lpClassName, RT_B bSizab
 /**
  * Be sure to dispatch the WM_SIZE to the status bar in the parent window proc.
  */
-RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow, RT_N nControlId, RT_H hInstance);
+RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow, RT_UN unControlId, RT_H hInstance);
 
 void RT_API RtSetSimpleStatusBarText(RT_H hStatusBar, RT_CHAR* lpText);
 

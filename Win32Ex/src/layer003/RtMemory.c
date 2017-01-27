@@ -71,16 +71,16 @@ void* RT_API RtMoveMemory(void* lpSource, void* lpDestination, RT_UN unSize)
  *
  * Renvoie lpArea.
  */
-void* RT_API RtSetMemory(void* lpArea, RT_N nValue, RT_UN unSize)
+void* RT_API RtSetMemory(void* lpArea, RT_UN unValue, RT_UN unSize)
 {
   RT_UCHAR8* lpByteArea;    /* Facilite l'accès à la zone                        */
   RT_UN unI;
 
   lpByteArea = (RT_UCHAR8*)lpArea;
-  /* TODO: Do not work per byte. */
+  /* TODO: Do not work per byte when possible. */
   for (unI = 0; unI < unSize; unI++)
   {
-    lpByteArea[unI] = (RT_UCHAR8)nValue;
+    lpByteArea[unI] = (RT_UCHAR8)unValue;
   }
   return lpArea;
 }
@@ -134,19 +134,21 @@ RT_UN32* RT_API RtSwapBytes32(RT_UN32* lpSource, RT_UN32* lpDestination, RT_UN u
   return lpDestination;
 }
 
-RT_UN RT_API RtComputeChunksCount(RT_UN32 unSize, RT_UN32 unChunkSize)
+RT_UN RT_API RtComputeChunksCount(RT_UN unSize, RT_UN unChunkSize)
 {
   RT_UN unResult;
 
-  unResult = unSize / unChunkSize;
-  if (unSize % unChunkSize)
+  if (!unChunkSize)
   {
-    unResult++;
+    unResult = RT_TYPE_MAX_UN;
   }
-
-  goto free_resources;
-handle_error:
-  unResult = RT_TYPE_MAX_UN;
-free_resources:
+  else
+  {
+    unResult = unSize / unChunkSize;
+    if (unSize % unChunkSize)
+    {
+      unResult++;
+    }
+  }
   return unResult;
 }

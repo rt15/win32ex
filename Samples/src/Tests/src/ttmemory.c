@@ -11,7 +11,7 @@ RT_UN16 RT_CALL TtTestComputeChunksCount()
   if (RtComputeChunksCount(1, 1) != 1) goto the_end;
   if (RtComputeChunksCount(5, 6) != 1) goto the_end;
   if (RtComputeChunksCount(0, 1) != 0) goto the_end;
-  if (RtComputeChunksCount(1, 0) != -1) goto the_end;
+  if (RtComputeChunksCount(1, 0) != RT_TYPE_MAX_UN) goto the_end;
 
   unResult = 0;
 the_end:

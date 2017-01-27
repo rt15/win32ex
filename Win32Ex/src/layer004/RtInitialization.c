@@ -4,7 +4,7 @@
 
 void RT_API RtCreateInitialization(RT_INITIALIZATION* lpInitialization)
 {
-  lpInitialization->nInitialized = 0;
+  lpInitialization->unInitialized = 0;
   RtCreateCriticalSection(&lpInitialization->rtCriticalSection, RT_FALSE);
 }
 
@@ -12,7 +12,7 @@ RT_B RT_API RtInitializationRequired(RT_INITIALIZATION* lpInitialization)
 {
   RT_B bResult;
 
-  if (RT_ATOMIC_LOAD(lpInitialization->nInitialized))
+  if (RT_ATOMIC_LOAD(lpInitialization->unInitialized))
   {
     /* Initialized is true and we have put a memory barrier, so we are sure that initialization is done and accessible. */
     bResult = RT_FALSE;
@@ -21,7 +21,7 @@ RT_B RT_API RtInitializationRequired(RT_INITIALIZATION* lpInitialization)
   {
     RtEnterCriticalSection(&lpInitialization->rtCriticalSection);
 
-    if (!RT_ATOMIC_LOAD(lpInitialization->nInitialized))
+    if (!RT_ATOMIC_LOAD(lpInitialization->unInitialized))
     {
       bResult = RT_TRUE;
     }
@@ -35,7 +35,7 @@ RT_B RT_API RtInitializationRequired(RT_INITIALIZATION* lpInitialization)
 
 void RT_API RtNotifyInitializationDone(RT_INITIALIZATION* lpInitialization)
 {
-  RT_ATOMIC_STORE(lpInitialization->nInitialized, 1);
+  RT_ATOMIC_STORE(lpInitialization->unInitialized, 1);
   RtLeaveCriticalSection(&lpInitialization->rtCriticalSection);
 }
 

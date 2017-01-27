@@ -3,7 +3,7 @@
 #include "layer001/RtWin32ExOsDefines.h"
 #include "layer002/RtErrorCode.h"
 
-RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N* lpWritten)
+RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD nReturnedValue;
@@ -15,12 +15,12 @@ RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR
 
 #ifdef RT_DEFINE_WINDOWS
   /* Ensure that the 32 or 64 bits signed integer will fit into a DWORD. */
-  if (nBufferSize < 0 || nBufferSize > RT_TYPE_MAX_N32)
+  if (unBufferSize < 0 || unBufferSize > RT_TYPE_MAX_N32)
   {
     RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
     goto handle_error;
   }
-  nReturnedValue = GetEnvironmentVariable(lpEnvironmentVariableName, lpBuffer, (DWORD)nBufferSize);
+  nReturnedValue = GetEnvironmentVariable(lpEnvironmentVariableName, lpBuffer, (DWORD)unBufferSize);
   if (!nReturnedValue)
   {
     goto handle_error;
@@ -32,7 +32,7 @@ RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR
   }
 
   /* If buffer is too small GetEnvironmentVariable return the required buffer size and lpBuffer is unknown. */
-  if ((RT_N)nReturnedValue > nBufferSize)
+  if (nReturnedValue > unBufferSize)
   {
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
     goto handle_error;
@@ -50,7 +50,7 @@ RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR
 
   /* Check buffer size. */
   nLength = strlen(lpReturnedValue);
-  if (nLength + 1 > nBufferSize)
+  if (nLength + 1 > unBufferSize)
   {
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
     goto handle_error;
@@ -66,7 +66,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  if (nBufferSize > 0)
+  if (unBufferSize > 0)
   {
     lpBuffer[0] = 0;
   }

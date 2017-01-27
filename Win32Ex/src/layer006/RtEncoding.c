@@ -8,7 +8,7 @@
 
 #ifdef RT_DEFINE_WINDOWS
 
-RT_N rt_lpCodePages[] = { CP_ACP, /* System ANSI code page (0).  */
+UINT rt_lpCodePages[] = { CP_ACP, /* System ANSI code page (0).  */
                           37,     /* RT_ENCODING_IBM037.         */
                           437,    /* RT_ENCODING_IBM437.         */
                           500,    /* RT_ENCODING_IBM500.         */
@@ -197,44 +197,44 @@ RT_CHAR* rt_lpEncodingSystem;
 /**
  * Use Windows WideCharToMultiByte/MultiByteToWideChar to encode/decode.
  */
-RT_N RT_CALL RtEncodeOrDecodeUsingWindows(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_B bEncode, RT_N nOutputTerminatingZeroSize)
+RT_UN RT_CALL RtEncodeOrDecodeUsingWindows(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_B bEncode, RT_UN unOutputTerminatingZeroSize)
 {
-  RT_N nCodePage;
-  RT_N nAccurateBufferSize;
+  UINT nCodePage;
+  RT_UN unAccurateBufferSize;
   RT_B bUseHeap;
-  RT_N nI;
-  RT_N nResult;
+  RT_UN unI;
+  RT_UN unResult;
 
-  nCodePage = rt_lpCodePages[nEncoding];
-  nAccurateBufferSize = nBufferSize;
+  nCodePage = rt_lpCodePages[unEncoding];
+  unAccurateBufferSize = unBufferSize;
   if (lpBuffer)
   {
-    if (nInputSize != -1)
+    if (unInputSize != RT_TYPE_MAX_UN)
     {
-      /* In case nInputSize is provided, we need an extra space for the trailing zero character. */
-      nAccurateBufferSize--;
+      /* In case unInputSize is provided, we need an extra space for the trailing zero character. */
+      unAccurateBufferSize--;
     }
     if (bEncode)
     {
-      nResult = WideCharToMultiByte(nCodePage, 0, (RT_CHAR*)lpInput, nInputSize, lpBuffer, nAccurateBufferSize, RT_NULL, RT_NULL);
+      unResult = WideCharToMultiByte(nCodePage, 0, (RT_CHAR*)lpInput, (int)unInputSize, lpBuffer, (int)unAccurateBufferSize, RT_NULL, RT_NULL);
     }
     else
     {
-      nResult = MultiByteToWideChar(nCodePage, MB_ERR_INVALID_CHARS, lpInput, nInputSize, (RT_CHAR*)lpBuffer, nAccurateBufferSize);
+      unResult = MultiByteToWideChar(nCodePage, MB_ERR_INVALID_CHARS, lpInput, (int)unInputSize, (RT_CHAR*)lpBuffer, (int)unAccurateBufferSize);
     }
-    if (nResult)
+    if (unResult)
     {
-      if (nInputSize == -1)
+      if (unInputSize == RT_TYPE_MAX_UN)
       {
         /* The result includes the zero trailing character. */
-        nResult--;
+        unResult--;
       }
       else
       {
-        /* In case nInputSize is provided, we need to add the trailing zero character. */
-        for (nI = 0; nI < nOutputTerminatingZeroSize; nI++)
+        /* In case unInputSize is provided, we need to add the trailing zero character. */
+        for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
         {
-          lpBuffer[nResult * nOutputTerminatingZeroSize + nI] = 0;
+          lpBuffer[unResult * unOutputTerminatingZeroSize + unI] = 0;
         }
       }
       /* Buffer was large enough. */
@@ -250,7 +250,7 @@ RT_N RT_CALL RtEncodeOrDecodeUsingWindows(RT_CHAR8* lpInput, RT_N nInputSize, RT
       else
       {
         bUseHeap = RT_FALSE;
-        nResult = -1;
+        unResult = RT_TYPE_MAX_UN;
       }
     }
   }
@@ -264,58 +264,58 @@ RT_N RT_CALL RtEncodeOrDecodeUsingWindows(RT_CHAR8* lpInput, RT_N nInputSize, RT
     {
       if (bEncode)
       {
-        nResult = WideCharToMultiByte(nCodePage, 0, (RT_CHAR*)lpInput, nInputSize, RT_NULL, 0, RT_NULL, RT_NULL);
+        unResult = WideCharToMultiByte(nCodePage, 0, (RT_CHAR*)lpInput, (int)unInputSize, RT_NULL, 0, RT_NULL, RT_NULL);
       }
       else
       {
-        nResult = MultiByteToWideChar(nCodePage, MB_ERR_INVALID_CHARS, lpInput, nInputSize, RT_NULL, 0);
+        unResult = MultiByteToWideChar(nCodePage, MB_ERR_INVALID_CHARS, lpInput, (int)unInputSize, RT_NULL, 0);
       }
-      if (!nResult)
+      if (!unResult)
       {
         *lpOutput = RT_NULL;
-        nResult = -1;
+        unResult = RT_TYPE_MAX_UN;
       }
       else
       {
-        if (nInputSize == -1)
+        if (unInputSize == RT_TYPE_MAX_UN)
         {
-          nAccurateBufferSize = nResult;
+          unAccurateBufferSize = unResult;
         }
         else
         {
-          /* As nInputSize is provided, we need place for trailing zero. */
-          nAccurateBufferSize = nResult + 1;
+          /* As unInputSize is provided, we need place for trailing zero. */
+          unAccurateBufferSize = unResult + 1;
         }
-        if (RtAllocIfNeededWithHeap(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (bEncode) ? nAccurateBufferSize : nAccurateBufferSize * sizeof(RT_CHAR), _R("Encoded/decoded stuff"), lpHeap))
+        if (RtAllocIfNeededWithHeap(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (bEncode) ? unAccurateBufferSize : unAccurateBufferSize * sizeof(RT_CHAR), _R("Encoded/decoded stuff"), lpHeap))
         {
           if (bEncode)
           {
-            nResult = WideCharToMultiByte(nCodePage, 0, (RT_CHAR*)lpInput, nInputSize, *lpOutput, nResult, RT_NULL, RT_NULL);
+            unResult = WideCharToMultiByte(nCodePage, 0, (RT_CHAR*)lpInput, (int)unInputSize, *lpOutput, (int)unResult, RT_NULL, RT_NULL);
           }
           else
           {
-             nResult = MultiByteToWideChar(nCodePage, MB_ERR_INVALID_CHARS, lpInput, nInputSize, (RT_CHAR*)*lpOutput, nResult);
+             unResult = MultiByteToWideChar(nCodePage, MB_ERR_INVALID_CHARS, lpInput, (int)unInputSize, (RT_CHAR*)*lpOutput, (int)unResult);
           }
-          if (nResult)
+          if (unResult)
           {
-            if (nInputSize == -1)
+            if (unInputSize == RT_TYPE_MAX_UN)
             {
               /* The result includes the zero trailing character. */
-              nResult--;
+              unResult--;
             }
             else
             {
-              /* In case nInputSize is provided, we need to add the trailing zero character. */
-              for (nI = 0; nI < nOutputTerminatingZeroSize; nI++)
+              /* In case unInputSize is provided, we need to add the trailing zero character. */
+              for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
               {
-                (*lpOutput)[nResult * nOutputTerminatingZeroSize + nI] = 0;
+                (*lpOutput)[unResult * unOutputTerminatingZeroSize + unI] = 0;
               }
             }
           }
           else
           {
             (*lpHeap)->lpFree(lpHeap, (void**)lpOutput);
-            nResult = -1;
+            unResult = RT_TYPE_MAX_UN;
           }
         }
       }
@@ -323,10 +323,10 @@ RT_N RT_CALL RtEncodeOrDecodeUsingWindows(RT_CHAR8* lpInput, RT_N nInputSize, RT
     else
     {
       RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
-      nResult = -1;
+      unResult = RT_TYPE_MAX_UN;
     }
   }
-  return nResult;
+  return unResult;
 }
 
 /**
@@ -442,39 +442,39 @@ void RT_CALL RtCopy32BeTo16Be(RT_UN32* lpSource, RT_UN16* lpDestination, RT_UN u
  * @param nOutputEncoding Output encoding with optional endianess.
  * @return Output size in bytes.
  */
-RT_N RT_CALL RtEncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_N nInputCharSize, RT_N nInputEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_N nOutputEncoding, RT_N nInputTerminatingZeroSize, RT_N nOutputTerminatingZeroSize)
+RT_UN RT_CALL RtEncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_UN unInputCharSize, RT_UN unInputEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_UN unOutputEncoding, RT_UN unInputTerminatingZeroSize, RT_UN unOutputTerminatingZeroSize)
 {
-  RT_N nOutputCharSize;
+  RT_UN unOutputCharSize;
   RT_CHAR8* lpOutputPayload; /* Pointer on output after optional BOM. */
-  RT_N nI;
-  RT_N nResult;
+  RT_UN unI;
+  RT_UN unResult;
 
-  if ((nOutputEncoding == RT_ENCODING_UTF_16) ||
-      (nOutputEncoding == RT_ENCODING_UTF_32))
+  if ((unOutputEncoding == RT_ENCODING_UTF_16) ||
+      (unOutputEncoding == RT_ENCODING_UTF_32))
   {
     /* There is no more BOM in input, but we need one in output. */
-    nOutputCharSize = nInputCharSize + 1;
+    unOutputCharSize = unInputCharSize + 1;
   }
   else
   {
-    nOutputCharSize = nInputCharSize;
+    unOutputCharSize = unInputCharSize;
   }
 
   /* Allocate resulting buffer, adding one for zero terminating character. */
-  if (!RtAllocIfNeededWithHeap(lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (nOutputCharSize + 1) * nOutputTerminatingZeroSize, _R("Encode/decode unicode"), lpHeap))
+  if (!RtAllocIfNeededWithHeap(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (unOutputCharSize + 1) * unOutputTerminatingZeroSize, _R("Encode/decode unicode"), lpHeap))
   {
     goto handle_error;
   }
 
   /* Add little endian BOM if needed and set output payload pointer. */
-  if (nOutputEncoding == RT_ENCODING_UTF_16)
+  if (unOutputEncoding == RT_ENCODING_UTF_16)
   {
     /* Always assume little endian on Windows. */
     (*lpOutput)[0] = (RT_CHAR8)0xFF;
     (*lpOutput)[1] = (RT_CHAR8)0xFE;
     lpOutputPayload = &(*lpOutput)[2];
   }
-  else if (nOutputEncoding == RT_ENCODING_UTF_32)
+  else if (unOutputEncoding == RT_ENCODING_UTF_32)
   {
     /* Always assume little endian on Windows. */
     (*lpOutput)[0] = (RT_CHAR8)0xFF;
@@ -488,108 +488,108 @@ RT_N RT_CALL RtEncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_N nInputCharSize, RT_
     lpOutputPayload = *lpOutput;
   }
 
-  switch (nInputEncoding)
+  switch (unInputEncoding)
   {
     case RT_ENCODING_UTF_16LE:
-      switch (nOutputEncoding)
+      switch (unOutputEncoding)
       {
         case RT_ENCODING_UTF_16:
         case RT_ENCODING_UTF_16LE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, nInputCharSize * nInputTerminatingZeroSize);
+          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
         case RT_ENCODING_UTF_16BE:
           /* Swap 16. */
-          RtSwapBytes16((RT_UN16*)lpInput, (RT_UN16*)lpOutputPayload, nInputCharSize);
+          RtSwapBytes16((RT_UN16*)lpInput, (RT_UN16*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_32:
         case RT_ENCODING_UTF_32LE:
-          RtCopy16LeTo32Le((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, nInputCharSize);
+          RtCopy16LeTo32Le((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_32BE:
-          RtCopy16LeTo32Be((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, nInputCharSize);
+          RtCopy16LeTo32Be((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, unInputCharSize);
           break;
       }
       break;
     case RT_ENCODING_UTF_16BE:
-      switch (nOutputEncoding)
+      switch (unOutputEncoding)
       {
         case RT_ENCODING_UTF_16:
         case RT_ENCODING_UTF_16LE:
           /* Swap 16. */
-          RtSwapBytes16((RT_UN16*)lpInput, (RT_UN16*)lpOutputPayload, nInputCharSize);
+          RtSwapBytes16((RT_UN16*)lpInput, (RT_UN16*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_16BE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, nInputCharSize * nInputTerminatingZeroSize);
+          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
         case RT_ENCODING_UTF_32:
         case RT_ENCODING_UTF_32LE:
-          RtCopy16BeTo32Le((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, nInputCharSize);
+          RtCopy16BeTo32Le((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_32BE:
-          RtCopy16BeTo32Be((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, nInputCharSize);
+          RtCopy16BeTo32Be((RT_UN16*)lpInput, (RT_UN32*)lpOutputPayload, unInputCharSize);
           break;
       }
       break;
     case RT_ENCODING_UTF_32LE:
-      switch (nOutputEncoding)
+      switch (unOutputEncoding)
       {
         case RT_ENCODING_UTF_16:
         case RT_ENCODING_UTF_16LE:
-          RtCopy32LeTo16Le((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, nInputCharSize);
+          RtCopy32LeTo16Le((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_16BE:
-          RtCopy32LeTo16Be((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, nInputCharSize);
+          RtCopy32LeTo16Be((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_32:
         case RT_ENCODING_UTF_32LE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, nInputCharSize * nInputTerminatingZeroSize);
+          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
         case RT_ENCODING_UTF_32BE:
           /* Swap 32. */
-          RtSwapBytes32((RT_UN32*)lpInput, (RT_UN32*)lpOutputPayload, nInputCharSize);
+          RtSwapBytes32((RT_UN32*)lpInput, (RT_UN32*)lpOutputPayload, unInputCharSize);
           break;
       }
       break;
     case RT_ENCODING_UTF_32BE:
-      switch (nOutputEncoding)
+      switch (unOutputEncoding)
       {
         case RT_ENCODING_UTF_16:
         case RT_ENCODING_UTF_16LE:
-          RtCopy32BeTo16Le((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, nInputCharSize);
+          RtCopy32BeTo16Le((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_16BE:
-          RtCopy32BeTo16Be((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, nInputCharSize);
+          RtCopy32BeTo16Be((RT_UN32*)lpInput, (RT_UN16*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_32:
         case RT_ENCODING_UTF_32LE:
           /* Swap 32. */
-          RtSwapBytes32((RT_UN32*)lpInput, (RT_UN32*)lpOutputPayload, nInputCharSize);
+          RtSwapBytes32((RT_UN32*)lpInput, (RT_UN32*)lpOutputPayload, unInputCharSize);
           break;
         case RT_ENCODING_UTF_32BE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, nInputCharSize * nInputTerminatingZeroSize);
+          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
       }
       break;
   }
 
   /* Result is size in bytes without counting the zero terminating bytes. */
-  nResult = nOutputCharSize * nOutputTerminatingZeroSize;
+  unResult = unOutputCharSize * unOutputTerminatingZeroSize;
 
   /* Add terminating zero bytes. */
-  for (nI = 0; nI < nOutputTerminatingZeroSize; nI++)
+  for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
   {
-    (*lpOutput)[nResult + nI] = 0;
+    (*lpOutput)[unResult + unI] = 0;
   }
 
   goto free_resources;
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
 free_resources:
-  return nResult;
+  return unResult;
 }
 
 /**
@@ -598,23 +598,23 @@ free_resources:
  *
  * @return Output size in bytes.
  */
-RT_N RT_CALL RtEncodeOrDecodeUnicodeWithBom(RT_CHAR8* lpInput, RT_N nInputCharSize, RT_N nInputEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_N nOutputEncoding, RT_N nInputTerminatingZeroSize, RT_N nOutputTerminatingZeroSize)
+RT_UN RT_CALL RtEncodeOrDecodeUnicodeWithBom(RT_CHAR8* lpInput, RT_UN unInputCharSize, RT_UN unInputEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_UN unOutputEncoding, RT_UN unInputTerminatingZeroSize, RT_UN unOutputTerminatingZeroSize)
 {
   RT_CHAR8* lpInputPayload; /* Pointer on input after optional BOM. */
-  RT_N nInputPayloadSize;
-  RT_N nInputPayloadEncoding; /* Input encoding with endianness. */
-  RT_N nResult;
+  RT_UN unInputPayloadSize;
+  RT_UN unInputPayloadEncoding; /* Input encoding with endianness. */
+  RT_UN unResult;
 
-  if (nInputEncoding == RT_ENCODING_UTF_16)
+  if (unInputEncoding == RT_ENCODING_UTF_16)
   {
     /* We already checked that size is > 0. */
     if (((RT_UCHAR8)lpInput[0] == 0xFF) && ((RT_UCHAR8)lpInput[1] == 0xFE))
     {
-      nInputPayloadEncoding = RT_ENCODING_UTF_16LE;
+      unInputPayloadEncoding = RT_ENCODING_UTF_16LE;
     }
     else if (((RT_UCHAR8)lpInput[0] == 0xFE) && ((RT_UCHAR8)lpInput[1] == 0xFF))
     {
-      nInputPayloadEncoding = RT_ENCODING_UTF_16BE;
+      unInputPayloadEncoding = RT_ENCODING_UTF_16BE;
     }
     else
     {
@@ -627,18 +627,18 @@ RT_N RT_CALL RtEncodeOrDecodeUnicodeWithBom(RT_CHAR8* lpInput, RT_N nInputCharSi
     lpInputPayload = &lpInput[2];
 
     /* Remove BOM from size. */
-    nInputPayloadSize = nInputCharSize - 1;
+    unInputPayloadSize = unInputCharSize - 1;
   }
-  else if (nInputEncoding == RT_ENCODING_UTF_32)
+  else if (unInputEncoding == RT_ENCODING_UTF_32)
   {
     /* We already checked that size is > 0. */
     if (((RT_UCHAR8)lpInput[0] == 0xFF) && ((RT_UCHAR8)lpInput[1] == 0xFE) && ((RT_UCHAR8)lpInput[2] == 0x00) && ((RT_UCHAR8)lpInput[3] == 0x00))
     {
-      nInputPayloadEncoding = RT_ENCODING_UTF_32LE;
+      unInputPayloadEncoding = RT_ENCODING_UTF_32LE;
     }
     else if (((RT_UCHAR8)lpInput[0] == 0x00) && ((RT_UCHAR8)lpInput[1] == 0x00) && ((RT_UCHAR8)lpInput[2] == 0xFE) && ((RT_UCHAR8)lpInput[3] == 0xFF))
     {
-      nInputPayloadEncoding = RT_ENCODING_UTF_32BE;
+      unInputPayloadEncoding = RT_ENCODING_UTF_32BE;
     }
     else
     {
@@ -651,22 +651,22 @@ RT_N RT_CALL RtEncodeOrDecodeUnicodeWithBom(RT_CHAR8* lpInput, RT_N nInputCharSi
     lpInputPayload = &lpInput[4];
 
     /* Remove BOM from size. */
-    nInputPayloadSize = nInputCharSize - 1;
+    unInputPayloadSize = unInputCharSize - 1;
   }
   else
   {
-    nInputPayloadEncoding = nInputEncoding;
+    unInputPayloadEncoding = unInputEncoding;
     lpInputPayload = lpInput;
-    nInputPayloadSize = nInputCharSize;
+    unInputPayloadSize = unInputCharSize;
   }
 
-  nResult = RtEncodeOrDecodeUnicode(lpInputPayload, nInputPayloadSize, nInputPayloadEncoding, lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, nOutputEncoding, nInputTerminatingZeroSize, nOutputTerminatingZeroSize);
+  unResult = RtEncodeOrDecodeUnicode(lpInputPayload, unInputPayloadSize, unInputPayloadEncoding, lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, unOutputEncoding, unInputTerminatingZeroSize, unOutputTerminatingZeroSize);
 
   goto free_resources;
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
 free_resources:
-  return nResult;
+  return unResult;
 }
 
 #else /* NOT RT_DEFINE_WINDOWS */
@@ -674,33 +674,33 @@ free_resources:
 /**
  * Call iconv, manage returned value and add zero terminating characters.
  */
-RT_N RT_CALL RtPerformIconvWithBuffer(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N nInputSize, RT_CHAR8* lpBuffer, RT_N nBufferSize, RT_N nOutputTerminatingZeroSize)
+RT_UN RT_CALL RtPerformIconvWithBuffer(iconv_t lpIconv, RT_CHAR8* lpInput, RT_UN unInputSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN unOutputTerminatingZeroSize)
 {
   RT_CHAR8* lpIconvInput;
   RT_CHAR8* lpIconvBuffer;
   size_t nIconvInputSize;
   size_t nIconvBufferSize;
   size_t nReturnedValue;
-  RT_N nI;
-  RT_N nResult;
+  RT_UN unI;
+  RT_UN unResult;
 
   /* Iconv update input/output sizes. */
   lpIconvInput = lpInput;
-  nIconvInputSize = nInputSize;
+  nIconvInputSize = unInputSize;
   lpIconvBuffer = lpBuffer;
 
   /* Keep bytes for zero terminating characters. */
-  nIconvBufferSize = nBufferSize - nOutputTerminatingZeroSize;
+  nIconvBufferSize = unBufferSize - unOutputTerminatingZeroSize;
 
   nReturnedValue = iconv(lpIconv, &lpIconvInput, &nIconvInputSize, &lpIconvBuffer, &nIconvBufferSize);
   if (nReturnedValue == 0)
   {
     /* Conversion is ok. */
-    nResult = nBufferSize - nOutputTerminatingZeroSize - nIconvBufferSize;
+    unResult = unBufferSize - unOutputTerminatingZeroSize - nIconvBufferSize;
     /* As iconv does not put zero terminating character, it is done here. */
-    for (nI = 0; nI < nOutputTerminatingZeroSize; nI++)
+    for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
     {
-      lpBuffer[nResult + nI] = 0;
+      lpBuffer[unResult + unI] = 0;
     }
   }
   else if (nReturnedValue == (size_t)-1)
@@ -717,35 +717,35 @@ RT_N RT_CALL RtPerformIconvWithBuffer(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N n
 
   goto free_resources;
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
 free_resources:
-  return nResult;
+  return unResult;
 }
 
 /**
  * Try to perform the convertion increasing the heap buffer size if needed.
  */
-RT_N RT_CALL RtPerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N nInputSize, RT_N nInitialHeapBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_N nOutputTerminatingZeroSize)
+RT_UN RT_CALL RtPerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unInitialHeapBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_UN unOutputTerminatingZeroSize)
 {
   RT_CHAR8* lpIconvInput;
   RT_CHAR8* lpIconvBuffer;
-  RT_N nHeapBufferSize;
-  RT_N nIncrease;
+  RT_UN unHeapBufferSize;
+  RT_UN unIncrease;
   size_t nInputBytesLeft;
   size_t nOutBytesLeft;
   size_t nReturnedValue;
-  RT_N nLength;
-  RT_N nI;
-  RT_N nResult;
+  RT_UN unLength;
+  RT_UN unI;
+  RT_UN unResult;
 
   /* Iconv update input/output sizes. */
   lpIconvInput = lpInput;
-  nInputBytesLeft = nInputSize;
+  nInputBytesLeft = unInputSize;
   lpIconvBuffer = *lpOutput;
 
   /* Keep bytes for zero terminating characters. */
-  nHeapBufferSize = nInitialHeapBufferSize - nOutputTerminatingZeroSize;
-  nOutBytesLeft = nHeapBufferSize;
+  unHeapBufferSize = unInitialHeapBufferSize - unOutputTerminatingZeroSize;
+  nOutBytesLeft = unHeapBufferSize;
 
   /* Re-allocate buffer until complete conversion. */
   while (RT_TRUE)
@@ -754,11 +754,11 @@ RT_N RT_CALL RtPerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N nIn
     if (nReturnedValue == 0)
     {
       /* Conversion is ok. */
-      nResult = lpIconvBuffer - *lpOutput;
+      unResult = lpIconvBuffer - *lpOutput;
       /* As iconv does not put zero terminating character, it is done here. */
-      for (nI = 0; nI < nOutputTerminatingZeroSize; nI++)
+      for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
       {
-        (*lpOutput)[nResult + nI] = 0;
+        (*lpOutput)[unResult + unI] = 0;
       }
       /* Conversion done, exiting loop. */
       break;
@@ -767,16 +767,16 @@ RT_N RT_CALL RtPerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N nIn
     {
       if (errno == E2BIG)
       {
-        nLength = lpIconvBuffer - *lpOutput;
+        unLength = lpIconvBuffer - *lpOutput;
 
         /* Should not be zero as nInitialHeapBufferSize is greater than 16. */
-        nIncrease = 0.2 * nHeapBufferSize;
+        unIncrease = 0.2 * unHeapBufferSize;
 
         /* Re-allocate more space. */
-        nHeapBufferSize += nIncrease;
-        nOutBytesLeft += nIncrease;
-        if (!RtAllocIfNeededWithHeap(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, nHeapBufferSize, _R("Foo"), lpHeap)) goto handle_error;
-        lpIconvBuffer = *lpOutput + nLength;
+        unHeapBufferSize += unIncrease;
+        nOutBytesLeft += unIncrease;
+        if (!RtAllocIfNeededWithHeap(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unHeapBufferSize, _R("Foo"), lpHeap)) goto handle_error;
+        lpIconvBuffer = *lpOutput + unLength;
       }
       else
       {
@@ -794,30 +794,30 @@ RT_N RT_CALL RtPerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N nIn
 
   goto free_resources;
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
 free_resources:
-  return nResult;
+  return unResult;
 }
 
 /**
  * Call iconv function with given iconv_t.
  *
- * @param nInputSize Must not be -1.
- * @param nTerminatingZeroSize Size of terminating zero. As UTF-16 can contain zero bytes it is cleaner to end them with 2 zero bytes.
+ * @param unInputSize Must not be RT_TYPE_MAX_UN.
+ * @param unTerminatingZeroSize Size of terminating zero. As UTF-16 can contain zero bytes it is cleaner to end them with 2 zero bytes.
  * @return The written bytes count in <tt>lpBuffer</tt>, not including the terminating zero bytes.
  */
-RT_N RT_CALL RtIconvWithIconv(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N nInputSize, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_N nInputTerminatingZeroSize, RT_N nOutputTerminatingZeroSize)
+RT_UN RT_CALL RtIconvWithIconv(iconv_t lpIconv, RT_CHAR8* lpInput, RT_UN unInputSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_UN unInputTerminatingZeroSize, RT_UN unOutputTerminatingZeroSize)
 {
   RT_B bUseHeap;
-  RT_N nHeapBufferSize;
+  RT_UN unHeapBufferSize;
   size_t nIconvInputSize;
   size_t nIconvBufferSize;
-  RT_N nResult;
+  RT_UN unResult;
 
   if (lpBuffer)
   {
-    nResult = RtPerformIconvWithBuffer(lpIconv, lpInput, nInputSize, lpBuffer, nBufferSize, nOutputTerminatingZeroSize);
-    if (nResult == -1)
+    unResult = RtPerformIconvWithBuffer(lpIconv, lpInput, unInputSize, lpBuffer, unBufferSize, unOutputTerminatingZeroSize);
+    if (unResult == RT_TYPE_MAX_UN)
     {
       if (errno == E2BIG)
       {
@@ -855,32 +855,32 @@ RT_N RT_CALL RtIconvWithIconv(iconv_t lpIconv, RT_CHAR8* lpInput, RT_N nInputSiz
       }
 
       /* Compute first heap buffer size based either on given buffer size or input size. */
-      if (nBufferSize > 0)
+      if (unBufferSize > 0)
       {
-        /* We just failed with nBufferSize so try with twice more. */
-        nHeapBufferSize = 16 + nBufferSize * 2;
+        /* We just failed with unBufferSize so try with twice more. */
+        unHeapBufferSize = 16 + unBufferSize * 2;
       }
       else
       {
         /* Base buffer size on characters sizes. */
-        nHeapBufferSize = 16 + 1.2 * nInputSize * ((float)nOutputTerminatingZeroSize / (float)nInputTerminatingZeroSize);
+        unHeapBufferSize = 16 + 1.2 * unInputSize * ((float)unOutputTerminatingZeroSize / (float)unInputTerminatingZeroSize);
       }
 
-      if (!RtAllocIfNeededWithHeap(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, nHeapBufferSize, _R("Encoded/decoded stuff"), lpHeap)) goto handle_error;
-      nResult = RtPerformIconvWithHeap(lpIconv, lpInput, nInputSize, nHeapBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, nOutputTerminatingZeroSize);
+      if (!RtAllocIfNeededWithHeap(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unHeapBufferSize, _R("Encoded/decoded stuff"), lpHeap)) goto handle_error;
+      unResult = RtPerformIconvWithHeap(lpIconv, lpInput, unInputSize, unHeapBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, unOutputTerminatingZeroSize);
     }
     else
     {
       RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
-      nResult = -1;
+      unResult = RT_TYPE_MAX_UN;
     }
   }
 
   goto free_resources;
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
 free_resources:
-  return nResult;
+  return unResult;
 }
 
 /**
@@ -891,16 +891,16 @@ free_resources:
  * To restore it to initial state, use iconv with NULL as inbuf.
  * </p>
  *
- * @param nInputSize If -1, lpInput is considered NULL terminated.
- * @param nTerminatingZeroSize Size of terminating zero. As UTF-16 can contain zero bytes it is cleaner to end them with 2 zero bytes.
+ * @param unInputSize If RT_TYPE_MAX_UN, lpInput is considered NULL terminated.
+ * @param unTerminatingZeroSize Size of terminating zero. As UTF-16 can contain zero bytes it is cleaner to end them with 2 zero bytes.
  * @return The written bytes count in <tt>lpBuffer</tt>, not including the terminating zero bytes.
  */
-RT_N RT_CALL RtIconvWithEncoding(RT_CHAR* lpInputEncoding, RT_CHAR* lpOutputEncoding, RT_CHAR8* lpInput, RT_N nInputSize, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_N nInputTerminatingZeroSize, RT_N nOutputTerminatingZeroSize)
+RT_UN RT_CALL RtIconvWithEncoding(RT_CHAR* lpInputEncoding, RT_CHAR* lpOutputEncoding, RT_CHAR8* lpInput, RT_UN unInputSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_UN unInputTerminatingZeroSize, RT_UN unOutputTerminatingZeroSize)
 {
   RT_B bOpen;
-  RT_N nActualInputSize;
+  RT_UN unActualInputSize;
   iconv_t lpIconv;
-  RT_N nResult;
+  RT_UN unResult;
 
   bOpen = RT_FALSE;
 
@@ -912,31 +912,31 @@ RT_N RT_CALL RtIconvWithEncoding(RT_CHAR* lpInputEncoding, RT_CHAR* lpOutputEnco
   bOpen = RT_TRUE;
 
   /* Compute input size if not provided. */
-  if (nInputSize == -1)
+  if (unInputSize == RT_TYPE_MAX_UN)
   {
-    nActualInputSize = RtGetDataSize(lpInput, nInputTerminatingZeroSize);
+    unActualInputSize = RtGetDataSize(lpInput, unInputTerminatingZeroSize);
   }
   else
   {
-    nActualInputSize = nInputSize;
+    unActualInputSize = unInputSize;
   }
 
-  nResult = RtIconvWithIconv(lpIconv, lpInput, nActualInputSize, lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, nInputTerminatingZeroSize, nOutputTerminatingZeroSize);
+  unResult = RtIconvWithIconv(lpIconv, lpInput, unActualInputSize, lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, unInputTerminatingZeroSize, unOutputTerminatingZeroSize);
 
   goto free_resources;
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
 free_resources:
   if (bOpen)
   {
-    if ((iconv_close(lpIconv) == -1) && (nResult != -1))
+    if ((iconv_close(lpIconv) == -1) && (unResult != RT_TYPE_MAX_UN))
     {
       bOpen = RT_FALSE;
       goto handle_error;
     }
     bOpen = RT_FALSE;
   }
-  return nResult;
+  return unResult;
 }
 
 /**
@@ -948,8 +948,8 @@ free_resources:
 RT_CHAR* RT_CALL RtGetLinuxSystemEncoding()
 {
   RT_CHAR* lpReturnedValue;
-  RT_N nWritten;
-  RT_N nEncodingNameSize;
+  RT_UN unWritten;
+  RT_UN unEncodingNameSize;
 
   if (RtFastInitializationRequired(&rt_encodingSystemInitialization))
   {
@@ -958,11 +958,11 @@ RT_CHAR* RT_CALL RtGetLinuxSystemEncoding()
     lpReturnedValue = nl_langinfo(CODESET);
     if (lpReturnedValue)
     {
-      nEncodingNameSize = RtGetStringSize(lpReturnedValue);
-      if (nEncodingNameSize)
+      unEncodingNameSize = RtGetStringSize(lpReturnedValue);
+      if (unEncodingNameSize)
       {
         /* The pointer nl_langinfo is not thread safe so we make a copy fastly. */
-        if (RtCopyString(lpReturnedValue, rt_lpEncodingSystemBuffer, 64, &nWritten))
+        if (RtCopyString(lpReturnedValue, rt_lpEncodingSystemBuffer, 64, &unWritten))
         {
           rt_lpEncodingSystem = rt_lpEncodingSystemBuffer;
         }
@@ -983,21 +983,21 @@ RT_CHAR* RT_CALL RtGetLinuxSystemEncoding()
 /**
  * Factorize encoding and decoding.
  */
-RT_N RT_CALL RtEncodeOrDecode(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_B bEncode)
+RT_UN RT_CALL RtEncodeOrDecode(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap, RT_B bEncode)
 {
-  RT_N nInputTerminatingZeroSize;
-  RT_N nOutputTerminatingZeroSize;
+  RT_UN unInputTerminatingZeroSize;
+  RT_UN unOutputTerminatingZeroSize;
 #ifdef RT_DEFINE_WINDOWS
-  RT_N nInputEncoding;
-  RT_N nOutputEncoding;
-  RT_N nInputCharSize;
+  RT_UN unInputEncoding;
+  RT_UN unOutputEncoding;
+  RT_UN unInputCharSize;
 #else /* NOT RT_DEFINE_WINDOWS */
   RT_CHAR* lpSystemEncoding;
   RT_CHAR* lpInputEncoding;
   RT_CHAR* lpOutputEncoding;
 #endif
-  RT_N nI;
-  RT_N nResult;
+  RT_UN unI;
+  RT_UN unResult;
 
 #ifdef RT_DEFINE_LINUX
   /* Retrieve Linux system encoding. */
@@ -1009,176 +1009,176 @@ RT_N RT_CALL RtEncodeOrDecode(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding
   if (bEncode)
   {
     /* Encoding, input size depends on RTCHAR size. */
-    nInputTerminatingZeroSize = sizeof(RT_CHAR);
+    unInputTerminatingZeroSize = sizeof(RT_CHAR);
 
     /* Encoding, output size depends on output encoding. */
-    nOutputTerminatingZeroSize = RtGetTerminatingZeroSize(nEncoding);
+    unOutputTerminatingZeroSize = RtGetTerminatingZeroSize(unEncoding);
 
 #ifdef RT_DEFINE_WINDOWS
-    nInputEncoding = RT_ENCODING_UTF_16LE;
-    nOutputEncoding = nEncoding;
-    /* The nInputSize value is given in characters. */
-    nInputCharSize = nInputSize;
+    unInputEncoding = RT_ENCODING_UTF_16LE;
+    unOutputEncoding = unEncoding;
+    /* The unInputSize value is given in characters. */
+    unInputCharSize = unInputSize;
 #else /* NOT RT_DEFINE_WINDOWS */
 
     lpInputEncoding = lpSystemEncoding;
-    lpOutputEncoding = rt_lpEncodingNames[nEncoding];
+    lpOutputEncoding = rt_lpEncodingNames[unEncoding];
 #endif
   }
   else
   {
     /* Decoding, input size depends on input encoding. */
-    nInputTerminatingZeroSize = RtGetTerminatingZeroSize(nEncoding);
+    unInputTerminatingZeroSize = RtGetTerminatingZeroSize(unEncoding);
 
     /* Decoding, size depends on RTCHAR size. */
-    nOutputTerminatingZeroSize = sizeof(RT_CHAR);
+    unOutputTerminatingZeroSize = sizeof(RT_CHAR);
 
 #ifdef RT_DEFINE_WINDOWS
-    nInputEncoding = nEncoding;
-    nOutputEncoding = RT_ENCODING_UTF_16LE;
-    /* The nInputSize value is given in bytes. */
-    nInputCharSize = (nInputSize == -1) ? -1 : nInputSize / nInputTerminatingZeroSize;
+    unInputEncoding = unEncoding;
+    unOutputEncoding = RT_ENCODING_UTF_16LE;
+    /* The unInputSize value is given in bytes. */
+    unInputCharSize = (unInputSize == RT_TYPE_MAX_UN) ? RT_TYPE_MAX_UN : unInputSize / unInputTerminatingZeroSize;
 #else /* NOT RT_DEFINE_WINDOWS */
 
-    lpInputEncoding = rt_lpEncodingNames[nEncoding];
+    lpInputEncoding = rt_lpEncodingNames[unEncoding];
     lpOutputEncoding = lpSystemEncoding;
 #endif
   }
 
   /* If empty input, return empty output. */
-  if (!nInputSize)
+  if (!unInputSize)
   {
     /* Allocate a buffer for zero character. */
-    if (!RtAllocIfNeededWithHeap(lpBuffer, (bEncode) ? nBufferSize : nBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, nOutputTerminatingZeroSize, _R("Null encoding/decoding result"), lpHeap)) goto handle_error;
-    for (nI = 0; nI < nOutputTerminatingZeroSize; nI++)
+    if (!RtAllocIfNeededWithHeap(lpBuffer, (bEncode) ? unBufferSize : unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unOutputTerminatingZeroSize, _R("Null encoding/decoding result"), lpHeap)) goto handle_error;
+    for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
     {
-      (*lpOutput)[nI] = 0;
+      (*lpOutput)[unI] = 0;
     }
-    nResult = 0;
+    unResult = 0;
     goto free_resources;
   }
 #ifdef RT_DEFINE_WINDOWS
-  if ((nEncoding == RT_ENCODING_UTF_16)   ||
-      (nEncoding == RT_ENCODING_UTF_16LE) ||
-      (nEncoding == RT_ENCODING_UTF_16BE) ||
-      (nEncoding == RT_ENCODING_UTF_32)   ||
-      (nEncoding == RT_ENCODING_UTF_32LE) ||
-      (nEncoding == RT_ENCODING_UTF_32BE))
+  if ((unEncoding == RT_ENCODING_UTF_16)   ||
+      (unEncoding == RT_ENCODING_UTF_16LE) ||
+      (unEncoding == RT_ENCODING_UTF_16BE) ||
+      (unEncoding == RT_ENCODING_UTF_32)   ||
+      (unEncoding == RT_ENCODING_UTF_32LE) ||
+      (unEncoding == RT_ENCODING_UTF_32BE))
   {
-    /* Result -1 input size. */
-    if (nInputCharSize == -1)
+    /* Result RT_TYPE_MAX_UN input size. */
+    if (unInputCharSize == RT_TYPE_MAX_UN)
     {
       /* The RtGetDataSize return size in bytes. */
-      nInputCharSize = RtGetDataSize(lpInput, nInputTerminatingZeroSize) / nInputTerminatingZeroSize;
+      unInputCharSize = RtGetDataSize(lpInput, unInputTerminatingZeroSize) / unInputTerminatingZeroSize;
     }
-    nResult = RtEncodeOrDecodeUnicodeWithBom(lpInput, nInputCharSize, nInputEncoding, lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, nOutputEncoding, nInputTerminatingZeroSize, nOutputTerminatingZeroSize);
-    if ((nResult != -1) && (!bEncode))
+    unResult = RtEncodeOrDecodeUnicodeWithBom(lpInput, unInputCharSize, unInputEncoding, lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, unOutputEncoding, unInputTerminatingZeroSize, unOutputTerminatingZeroSize);
+    if ((unResult != RT_TYPE_MAX_UN) && (!bEncode))
     {
       /* Convert result size from bytes to characters. */
-      nResult = nResult / nOutputTerminatingZeroSize;
+      unResult = unResult / unOutputTerminatingZeroSize;
     }
   }
   else
   {
-    nResult = RtEncodeOrDecodeUsingWindows(lpInput, nInputSize, nEncoding, lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, bEncode, nOutputTerminatingZeroSize);
+    unResult = RtEncodeOrDecodeUsingWindows(lpInput, unInputSize, unEncoding, lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, bEncode, unOutputTerminatingZeroSize);
   }
 #else /* NOT RT_DEFINE_WINDOWS */
 
-  nResult = RtIconvWithEncoding(lpInputEncoding, lpOutputEncoding, lpInput, nInputSize, lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, nInputTerminatingZeroSize, nOutputTerminatingZeroSize);
+  unResult = RtIconvWithEncoding(lpInputEncoding, lpOutputEncoding, lpInput, unInputSize, lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, unInputTerminatingZeroSize, unOutputTerminatingZeroSize);
 #endif
 free_resources:
-  return nResult;
+  return unResult;
 
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
   goto free_resources;
 }
 
-RT_N RT_API RtDecodeWithHeap(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtDecodeWithHeap(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR** lpOutput, RT_HEAP** lpHeap)
 {
   void* lpHeapBuffer;
-  RT_N nHeapBufferSize;
+  RT_UN unHeapBufferSize;
 
   lpHeapBuffer = RT_NULL;
-  nHeapBufferSize = 0;
-  return RtDecode(lpInput, nInputSize, nEncoding, RT_NULL, 0, &lpHeapBuffer, &nHeapBufferSize, lpOutput, lpHeap);
+  unHeapBufferSize = 0;
+  return RtDecode(lpInput, unInputSize, unEncoding, RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, lpOutput, lpHeap);
 }
 
-RT_N RT_API RtDecode(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtDecode(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpOutput, RT_HEAP** lpHeap)
 {
-  return RtEncodeOrDecode(lpInput, nInputSize, nEncoding, (RT_CHAR8*)lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, (RT_CHAR8**)lpOutput, lpHeap, RT_FALSE);
+  return RtEncodeOrDecode(lpInput, unInputSize, unEncoding, (RT_CHAR8*)lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (RT_CHAR8**)lpOutput, lpHeap, RT_FALSE);
 }
 
-RT_N RT_API RtEncodeWithHeap(RT_CHAR* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtEncodeWithHeap(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
 {
   void* lpHeapBuffer;
-  RT_N nHeapBufferSize;
+  RT_UN unHeapBufferSize;
 
   lpHeapBuffer = RT_NULL;
-  nHeapBufferSize = 0;
-  return RtEncode(lpInput, nInputSize, nEncoding, RT_NULL, 0, &lpHeapBuffer, &nHeapBufferSize, lpOutput, lpHeap);
+  unHeapBufferSize = 0;
+  return RtEncode(lpInput, unInputSize, unEncoding, RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, lpOutput, lpHeap);
 }
 
-RT_N RT_API RtEncode(RT_CHAR* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize, void** lpHeapBuffer, RT_N* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtEncode(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
 {
-  return RtEncodeOrDecode((RT_CHAR8*)lpInput, nInputSize, nEncoding, lpBuffer, nBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, RT_TRUE);
+  return RtEncodeOrDecode((RT_CHAR8*)lpInput, unInputSize, unEncoding, lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, RT_TRUE);
 }
 
-RT_N RT_API RtDecodeWithBuffer(RT_CHAR8* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR* lpBuffer, RT_N nBufferSize)
+RT_UN RT_API RtDecodeWithBuffer(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR* lpBuffer, RT_UN unBufferSize)
 {
   RT_CHAR* lpOutput;
-  return RtDecode(lpInput, nInputSize, nEncoding, lpBuffer, nBufferSize, RT_NULL, RT_NULL, &lpOutput, RT_NULL);
+  return RtDecode(lpInput, unInputSize, unEncoding, lpBuffer, unBufferSize, RT_NULL, RT_NULL, &lpOutput, RT_NULL);
 }
 
-RT_N RT_API RtEncodeWithBuffer(RT_CHAR* lpInput, RT_N nInputSize, RT_N nEncoding, RT_CHAR8* lpBuffer, RT_N nBufferSize)
+RT_UN RT_API RtEncodeWithBuffer(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR8* lpBuffer, RT_UN unBufferSize)
 {
   RT_CHAR8* lpOutput;
-  return RtEncode(lpInput, nInputSize, nEncoding, lpBuffer, nBufferSize, RT_NULL, RT_NULL, &lpOutput, RT_NULL);
+  return RtEncode(lpInput, unInputSize, unEncoding, lpBuffer, unBufferSize, RT_NULL, RT_NULL, &lpOutput, RT_NULL);
 }
 
-RT_N RT_API RtGetTerminatingZeroSize(RT_N nEncoding)
+RT_UN RT_API RtGetTerminatingZeroSize(RT_UN unEncoding)
 {
-  RT_N nResult;
+  RT_UN unResult;
 
-  if ((nEncoding == RT_ENCODING_UTF_16) || (nEncoding == RT_ENCODING_UTF_16BE) || (nEncoding == RT_ENCODING_UTF_16LE))
+  if ((unEncoding == RT_ENCODING_UTF_16) || (unEncoding == RT_ENCODING_UTF_16BE) || (unEncoding == RT_ENCODING_UTF_16LE))
   {
-    nResult = 2;
+    unResult = 2;
   }
-  else if ((nEncoding == RT_ENCODING_UTF_32) || (nEncoding == RT_ENCODING_UTF_32BE) || (nEncoding == RT_ENCODING_UTF_32LE))
+  else if ((unEncoding == RT_ENCODING_UTF_32) || (unEncoding == RT_ENCODING_UTF_32BE) || (unEncoding == RT_ENCODING_UTF_32LE))
   {
-    nResult = 4;
+    unResult = 4;
   }
   else
   {
-    nResult = 1;
+    unResult = 1;
   }
-  return nResult;
+  return unResult;
 }
 
-RT_N RT_API RtGetDataSize(RT_CHAR8* lpData, RT_N nTerminatingZeroSize)
+RT_UN RT_API RtGetDataSize(RT_CHAR8* lpData, RT_UN unTerminatingZeroSize)
 {
   RT_CHAR8* lpChars;
   RT_UN16* lpWideChars;
   RT_UN32* lpVeryWideChars;
-  RT_N nResult;
+  RT_UN unResult;
 
-  if (nTerminatingZeroSize == 2)
+  if (unTerminatingZeroSize == 2)
   {
     lpWideChars = (RT_UN16*)lpData;
     while (*lpWideChars++);
-    nResult = (RT_N)((RT_CHAR8*)lpWideChars - lpData - 2);
+    unResult = (RT_UN)((RT_CHAR8*)lpWideChars - lpData - 2);
   }
-  else if (nTerminatingZeroSize == 4)
+  else if (unTerminatingZeroSize == 4)
   {
     lpVeryWideChars = (RT_UN32*)lpData;
     while (*lpVeryWideChars++);
-    nResult = (RT_N)((RT_CHAR8*)lpVeryWideChars - lpData - 4);
+    unResult = (RT_UN)((RT_CHAR8*)lpVeryWideChars - lpData - 4);
   }
   else
   {
     lpChars = lpData;
     while (*lpChars++);
-    nResult = (RT_N)(lpChars - lpData - 1);
+    unResult = (RT_UN)(lpChars - lpData - 1);
   }
-  return nResult;
+  return unResult;
 }

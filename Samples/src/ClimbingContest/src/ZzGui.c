@@ -75,7 +75,7 @@ RT_GUI_RECT* RT_CALL ZzComputeLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEX
   return lpRect;
 }
 
-RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont)
+RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_UN unControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont)
 {
   RT_H hResult;
 
@@ -89,7 +89,7 @@ RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nCon
                            lpPosition->nX, lpPosition->nY,            /* Position. */
                            lpPosition->nWidth, lpPosition->nHeight,   /* Size. */
                            hParentWindow,                             /* Parent Window. */
-                           (HMENU)nControlId,                         /* Control id. */
+                           (HMENU)unControlId,                         /* Control id. */
                            hInstance,                                 /* Application instance. */
                            RT_NULL);
 
@@ -114,7 +114,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_N nControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont)
+RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_UN unControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont)
 {
   DWORD unStyle;
   RT_H hResult;
@@ -128,7 +128,7 @@ RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_N nCont
                            lpPosition->nX, lpPosition->nY,            /* Position. */
                            lpPosition->nWidth, lpPosition->nHeight,   /* Size. */
                            hParentWindow,                             /* Parent Window. */
-                           (HMENU)nControlId,               /* Control id. */
+                           (HMENU)unControlId,               /* Control id. */
                            hInstance,                                 /* Application instance. */
                            RT_NULL);
 
@@ -154,7 +154,6 @@ handle_error:
   }
   goto free_resources;
 }
-
 
 /**
  * Forward left tab messages to main window.

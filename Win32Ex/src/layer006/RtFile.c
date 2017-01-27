@@ -14,10 +14,10 @@
 RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
 {
 #ifdef RT_DEFINE_WINDOWS
-  RT_UN unFlags;   /* Flags d'ouverture du fichier                              */
-  RT_UN unCreationDistribution;
+  DWORD unFlags;   /* Flags d'ouverture du fichier                              */
+  DWORD unCreationDistribution;
 #else
-  RT_N nFlags;    /* Flags d'ouverture du fichier                              */
+  int nFlags;      /* Flags d'ouverture du fichier                              */
 #endif
   RT_B bResult;
 
@@ -85,7 +85,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN32 unBytesToRead)
+RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_UN32 unBytesRead;    /* Récupération du nombre d'octets lus                 */
@@ -95,9 +95,10 @@ RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN32 unBytesT
   bResult = RT_FALSE;
 
 #ifdef RT_DEFINE_WINDOWS
+  /* TODO: Manage more than 4Go? */
   if (ReadFile(lpFile->hFile,
                lpBuffer,
-               unBytesToRead,
+               (DWORD)unBytesToRead,
                &unBytesRead,
                NULL))
     if (unBytesRead == unBytesToRead)
@@ -110,10 +111,10 @@ RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN32 unBytesT
   return bResult;
 }
 
-RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN32 unBytesToWrite)
+RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite)
 {
 #ifdef RT_DEFINE_WINDOWS
-  RT_UN32 unBytesWritten;     /* Récupération du nombre d'octets écris           */
+  DWORD unBytesWritten;     /* Récupération du nombre d'octets écris           */
 #endif
   RT_B bResult;
 
@@ -122,7 +123,7 @@ RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN32 unBytesToWr
 #ifdef RT_DEFINE_WINDOWS
   if (WriteFile(lpFile->hFile,
                 lpData,
-                unBytesToWrite,
+                (DWORD)unBytesToWrite,
                 &unBytesWritten,
                 NULL))
     if (unBytesWritten == unBytesToWrite)
@@ -135,10 +136,10 @@ RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN32 unBytesToWr
   return bResult;
 }
 
-RT_N RT_API RtComputeFileSize(RT_FILE* lpFile)
+RT_UN RT_API RtComputeFileSize(RT_FILE* lpFile)
 {
   RT_UN unOldPos;
-  RT_N nResult;
+  RT_UN unResult;
 
   /* Backup the current position */
   unOldPos = RtGetFilePointer(lpFile);
@@ -147,15 +148,15 @@ RT_N RT_API RtComputeFileSize(RT_FILE* lpFile)
   if (!RtSetFilePointer(lpFile, 0, RT_FILE_POS_END)) goto handle_error;
 
   /* Get the new position which is the file size. */
-  nResult = RtGetFilePointer(lpFile);
+  unResult = RtGetFilePointer(lpFile);
 
   /* Go back to original position. */
   if (!RtSetFilePointer(lpFile, unOldPos, RT_FILE_POS_BEGIN)) goto handle_error;
 
 free_resources:
-  return nResult;
+  return unResult;
 handle_error:
-  nResult = -1;
+  unResult = RT_TYPE_MAX_UN;
   goto free_resources;
 }
 
@@ -169,7 +170,7 @@ RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
   bResult = RT_FALSE;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (SetFilePointer(lpFile->hFile, nOffset, NULL, unFrom) != INVALID_SET_FILE_POINTER)
+  if (SetFilePointer(lpFile->hFile, (LONG)nOffset, NULL, (DWORD)unFrom) != INVALID_SET_FILE_POINTER)
   {
     bResult = RT_TRUE;
   }
@@ -195,31 +196,36 @@ RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
   return bResult;
 }
 
-RT_N RT_API RtGetFilePointer(RT_FILE* lpFile)
+RT_UN RT_API RtGetFilePointer(RT_FILE* lpFile)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unReturnedValue;
+#else
+  off_t nReturnedValue;
 #endif
-  RT_N nResult;
+  RT_UN unResult;
 #ifdef RT_DEFINE_WINDOWS
   unReturnedValue = SetFilePointer(lpFile->hFile, 0, NULL, FILE_CURRENT);
   if (unReturnedValue == INVALID_SET_FILE_POINTER)
   {
-    nResult = -1;
-  }
-  else if (unReturnedValue > RT_TYPE_MAX_N)
-  {
-    RtSetLastError(RT_ERROR_ARITHMETIC_OVERFLOW);
-    nResult = -1;
+    unResult = RT_TYPE_MAX_UN;
   }
   else
   {
-    nResult = unReturnedValue;
+    unResult = unReturnedValue;
   }
 #else
-  nResult = lseek(lpFile->nFile, 0, SEEK_CUR);
+  nReturnedValue = lseek(lpFile->nFile, 0, SEEK_CUR);
+  if (nReturnedValue < 0)
+  {
+    unResult = RT_TYPE_MAX_UN;
+  }
+  else
+  {
+    unResult = nReturnedValue;
+  }
 #endif
-  return nResult;
+  return unResult;
 }
 
 RT_B RT_API RtFreeFile(RT_FILE* lpFile)

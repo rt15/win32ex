@@ -10,7 +10,7 @@ typedef struct _RT_SOCKET
 #else
   RT_N32 nSocket;
 #endif
-  RT_UN32 unAddressFamily;
+  RT_UN unAddressFamily;
 }
 RT_SOCKET;
 
@@ -188,17 +188,17 @@ RT_B RT_API RtInitializeSockets();
  * @param bCloseOnExec Not used under Windows.
  * @param unProtocol Often zero but can be a RT_SOCKET_PROTOCOL_XXX value.
  */
-RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN32 unAddressFamily, RT_UN32 unType, RT_UN32 unProtocol, RT_B bBlocking, RT_B bCloseOnExec);
+RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bCloseOnExec);
 
 void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress);
 
-void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN32 unPort);
+void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN unPort);
 
-RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN32 unPort);
+RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPort);
 
 RT_B RT_API RtConnectSocketWithAddress(RT_SOCKET* lpSocket, RT_SOCKET_ADDRESS* lpSocketAddress);
 
-RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN32 unPort);
+RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort);
 
 RT_B RT_API RtListenFromSocket(RT_SOCKET* lpSocket);
 
@@ -215,21 +215,21 @@ RT_B RT_API RtAcceptSocketConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedS
 /**
  *
  * @param nFlags Combination of RT_SOCKET_MESSAGE_XXXX flags.
- * @return Number of bytes sent, -1 in case of issue.
+ * @return Number of bytes sent, RT_TYPE_MAX_UN in case of issue.
  */
-RT_N RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_N nDataSize, RT_UN32 unFlags);
+RT_UN RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_UN unDataSize, RT_UN unFlags);
 
 /**
  *
  * @param unFlags Combination of RT_SOCKET_MESSAGE_XXXX flags.
- * @return Number of bytes received, -1 in case of issue.
+ * @return Number of bytes received, RT_TYPE_MAX_UN in case of issue.
  */
-RT_N RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_N nBufferSize, RT_UN32 unFlags);
+RT_UN RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize, RT_UN unFlags);
 
 /**
  * @param unFlags One of RT_SOCKET_SHUTDOWN_XXXX, mostly RT_SOCKET_SHUTDOWN_BOTH.
  */
-RT_B RT_API RtShutdownSocket(RT_SOCKET* lpSocket, RT_UN32 unFlag);
+RT_B RT_API RtShutdownSocket(RT_SOCKET* lpSocket, RT_UN unFlag);
 
 RT_B RT_API RtFreeSocket(RT_SOCKET* lpSocket);
 
