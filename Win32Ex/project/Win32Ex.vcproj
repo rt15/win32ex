@@ -301,10 +301,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\layer007\RtImage.c"
-					>
-				</File>
-				<File
 					RelativePath="..\src\layer007\rtwin32exinternal.c"
 					>
 				</File>
@@ -516,10 +512,6 @@
 				>
 				<File
 					RelativePath="..\include\layer007\RtFileUtils.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer007\RtImage.h"
 					>
 				</File>
 				<File

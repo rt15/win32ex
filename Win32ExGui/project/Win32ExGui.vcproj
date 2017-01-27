@@ -169,6 +169,10 @@
 					RelativePath="..\src\layer001\RtGdiP.c"
 					>
 				</File>
+				<File
+					RelativePath="..\src\layer001\RtImage.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="layer002"
@@ -201,6 +205,10 @@
 				>
 				<File
 					RelativePath="..\include\layer001\RtGdiP.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer001\RtImage.h"
 					>
 				</File>
 			</Filter>

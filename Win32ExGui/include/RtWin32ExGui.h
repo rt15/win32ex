@@ -2,6 +2,7 @@
 #define RT_WIN32_EX_GUI_H
 
 #include "layer001/RtGdiP.h"
+#include "layer001/RtImage.h"
 
 #include "layer002/RtGui.h"
 

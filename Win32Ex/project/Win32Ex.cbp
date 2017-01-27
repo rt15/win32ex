@@ -127,7 +127,6 @@
 		<Unit filename="../include/layer006/RtPageHeap.h" />
 		<Unit filename="../include/layer006/RtRuntimeHeap.h" />
 		<Unit filename="../include/layer007/RtFileUtils.h" />
-		<Unit filename="../include/layer007/RtImage.h" />
 		<Unit filename="../include/layer007/RtTableMetadata.h" />
 		<Unit filename="../include/layer008/RtArray.h" />
 		<Unit filename="../include/layer008/RtSmallFile.h" />
@@ -218,9 +217,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer007/RtFileUtils.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer007/RtImage.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer007/rtwin32exinternal.c">

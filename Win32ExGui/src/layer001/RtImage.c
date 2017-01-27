@@ -1,10 +1,6 @@
-#include "layer007/RtImage.h"
+#include "layer001/RtImage.h"
 
-#ifdef RT_DEFINE_WINDOWS
-
-#include "layer001/RtWin32ExOsDefines.h"
-#include "layer002/RtErrorCode.h"
-#include "layer003/RtMemory.h"
+#include "layer000/RtWin32ExGuiOsDefines.h"
 
 RT_H RT_API RtCreateDcFromBitmap(RT_H hBitmap)
 {
@@ -291,4 +287,3 @@ RT_H RT_API RtLoadIcon(RT_N nResourceIndex, RT_H hInstance)
   return LoadImage(hInstance, MAKEINTRESOURCE(nResourceIndex), IMAGE_ICON, 0, 0, LR_DEFAULTCOLOR);
 }
 
-#endif

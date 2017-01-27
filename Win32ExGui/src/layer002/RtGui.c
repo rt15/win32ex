@@ -1,6 +1,7 @@
 #include "layer002/RtGui.h"
 
 #include "layer000/RtWin32ExGuiOsDefines.h"
+#include "layer001/RtImage.h"
 
 RT_FAST_INITIALIZATION rt_guiOsVersionInitialization = RT_FAST_INITIALIZATION_STATIC_INIT;
 
@@ -727,7 +728,7 @@ RT_B RT_API RtSetWindowUserData(RT_H hWindow, void* lpUserData)
 
   /* SetWindowLongPtr returns the previous value and 0 in case of issue. But the previous value can be 0. So there is a check on last error. */
   SetLastError(0);
-  nReturnedValue = SetWindowLongPtr(hWindow, GWLP_USERDATA, RT_TYPE_MAKE_UINTEGER(lpUserData)); 
+  nReturnedValue = SetWindowLongPtr(hWindow, GWLP_USERDATA, RT_TYPE_MAKE_UINTEGER(lpUserData));
   if (!nReturnedValue && GetLastError())
   {
     bResult = RT_FALSE;

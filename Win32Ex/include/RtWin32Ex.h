@@ -331,7 +331,6 @@ Il y a des TODO un peu partout dans le code.
 #include "layer006/RtRuntimeHeap.h"
 
 #include "layer007/RtFileUtils.h"
-#include "layer007/RtImage.h"
 #include "layer007/RtTableMetadata.h"
 
 #include "layer008/RtArray.h"

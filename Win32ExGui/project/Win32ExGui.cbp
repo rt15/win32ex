@@ -62,8 +62,12 @@
 		<Unit filename="../include/RtWin32ExGui.h" />
 		<Unit filename="../include/layer000/RtWin32ExGuiOsDefines.h" />
 		<Unit filename="../include/layer001/RtGdiP.h" />
+		<Unit filename="../include/layer001/RtImage.h" />
 		<Unit filename="../include/layer002/RtGui.h" />
 		<Unit filename="../src/layer001/RtGdiP.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer001/RtImage.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer002/RtGui.c">

@@ -1,14 +1,12 @@
 #ifndef RT_IMAGE_H
 #define RT_IMAGE_H
 
-#include "layer000/RtWin32ExTypes.h"
+#include <RtWin32Ex.h>
 
 /**
  * @file
  * Windows images utility functions.
  */
-
-#ifdef RT_DEFINE_WINDOWS
 
 /**
  * Create a device context compatible with the screen from the given bitmap.
@@ -85,7 +83,5 @@ RT_H RT_API RtConvertIconToPargbBitmap(RT_H hIcon, RT_N nWidth, RT_N nHeight, RT
  * </p>
  */
 RT_H RT_API RtLoadIcon(RT_N nResourceIndex, RT_H hInstance);
-
-#endif
 
 #endif /* RT_IMAGE_H */
