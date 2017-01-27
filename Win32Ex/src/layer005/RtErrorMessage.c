@@ -1,6 +1,7 @@
 #include "layer005/RtErrorMessage.h"
 
 #include "layer001/RtWin32ExOsDefines.h"
+#include "layer002/RtErrorCode.h"
 #include "layer004/RtChar.h"
 
 RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N *lpWritten)
@@ -14,10 +15,16 @@ RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_N nBufferSize, RT_N *lpW
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
+  /* Ensure that the 32 or 64 bits signed integer will fit into a DWORD. */
+  if (nBufferSize < 0 || nBufferSize > RT_TYPE_MAX_N32)
+  {
+    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    goto handle_error;
+  }
   nWritten = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
                            NULL, GetLastError(),
                            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                           lpBuffer, nBufferSize, NULL);
+                           lpBuffer, (DWORD)nBufferSize, NULL);
 
   if (!nWritten) goto handle_error;
   /* Remove trailing end of lines. */

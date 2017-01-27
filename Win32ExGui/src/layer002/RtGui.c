@@ -49,7 +49,7 @@ RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT
                         lpPosition->nX, lpPosition->nY,
                         lpPosition->nWidth, lpPosition->nHeight,
                         hParentWindow,
-                        (HMENU)(LONG_PTR)nControlId,
+                        (HMENU)nControlId,
                         hInstance,
                         RT_NULL);
 }
@@ -67,12 +67,12 @@ RT_UN16 RT_CALL RtDefaultMessageLoop()
     DispatchMessage(&message);
   }
 
-  return message.wParam;
+  return (RT_UN16)message.wParam;
 }
 
 RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_N nControlId, RT_H hInstance)
 {
-  RT_N nI;
+  RT_UN unI;
   RT_H hResult;
 
 
@@ -82,31 +82,31 @@ RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItem
                             WS_CHILD | WS_VISIBLE,        /* Style. */
                             0, 0, 0, 0,
                             hParentWindow,                /* Parent. */
-                            (HMENU)(LONG_PTR)nControlId,  /* Control id. */
+                            (HMENU)nControlId,            /* Control id. */
                             hInstance,
                             RT_NULL);
 
   if (hResult)
   {
-    for (nI = 0; nI < unMenuItemsCount; nI++)
+    for (unI = 0; unI < unMenuItemsCount; unI++)
     {
-      switch (lpMenuItems[nI]->unType)
+      switch (lpMenuItems[unI]->unType)
       {
         case RT_GUI_MENU_ITEM_TYPE_COMMAND:
-          lpButtons[nI].iBitmap = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItems[nI])->unImageIndex;
-          lpButtons[nI].idCommand = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItems[nI])->unId;
-          lpButtons[nI].fsState = TBSTATE_ENABLED;
-          lpButtons[nI].fsStyle = TBSTYLE_BUTTON;
-          lpButtons[nI].dwData = 0;
-          lpButtons[nI].iString = 0;
+          lpButtons[unI].iBitmap = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItems[unI])->unImageIndex;
+          lpButtons[unI].idCommand = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItems[unI])->unId;
+          lpButtons[unI].fsState = TBSTATE_ENABLED;
+          lpButtons[unI].fsStyle = TBSTYLE_BUTTON;
+          lpButtons[unI].dwData = 0;
+          lpButtons[unI].iString = 0;
           break;
         case RT_GUI_MENU_ITEM_TYPE_SEPARATOR:
-          lpButtons[nI].iBitmap = ((RT_GUI_SEPARATOR_MENU_ITEM*)lpMenuItems[nI])->nSeparatorSize;;
-          lpButtons[nI].idCommand = 0;
-          lpButtons[nI].fsState = TBSTATE_ENABLED;
-          lpButtons[nI].fsStyle = BTNS_SEP;
-          lpButtons[nI].dwData = 0;
-          lpButtons[nI].iString = 0;
+          lpButtons[unI].iBitmap = ((RT_GUI_SEPARATOR_MENU_ITEM*)lpMenuItems[unI])->nSeparatorSize;;
+          lpButtons[unI].idCommand = 0;
+          lpButtons[unI].fsState = TBSTATE_ENABLED;
+          lpButtons[unI].fsStyle = BTNS_SEP;
+          lpButtons[unI].dwData = 0;
+          lpButtons[unI].iString = 0;
           break;
         default:
           SetLastError(RT_ERROR_BAD_ARGUMENTS);
@@ -143,7 +143,7 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
   RT_UN32 unOsVersion;
   RT_UN32 lpMaskBuffer[256];
   RT_UN32 lpColorBuffer[256];
-  RT_N nI;
+  RT_UN unI;
   RT_B bResult;
 
   /* Used to load system images. */
@@ -158,42 +158,42 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
 
   /* Count icons. The result is not accurate as the user can use system image lists, but it will help for initial image list size. */
   nIconsCount = 0;
-  for (nI = 0; nI < unCommandMenuItemsCount; nI++)
+  for (unI = 0; unI < unCommandMenuItemsCount; unI++)
   {
-    if (lpCommandMenuItems[nI].hIcon)
+    if (lpCommandMenuItems[unI].hIcon)
     {
       nIconsCount++;
     }
-    lpCommandMenuItems[nI].hBitmap = RT_NULL;
+    lpCommandMenuItems[unI].hBitmap = RT_NULL;
   }
 
   lpGuiCommandMenuItemManager->hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK, nIconsCount, 8);
   if (!lpGuiCommandMenuItemManager->hToolBarImageList) goto handle_error;
 
   /* By default, there is no system image list loaded. */
-  for (nI = 0; nI < 3; nI++)
+  for (unI = 0; unI < 3; unI++)
   {
-    lpSystemImageListIndex[nI] = -1;
+    lpSystemImageListIndex[unI] = -1;
   }
 
   /* Loop on command menu items. */
   nImageIndex = 0;
-  for (nI = 0; nI < unCommandMenuItemsCount; nI++)
+  for (unI = 0; unI < unCommandMenuItemsCount; unI++)
   {
-    if (lpCommandMenuItems[nI].hIcon)
+    if (lpCommandMenuItems[unI].hIcon)
     {
       /* The user has provided an icon. */
-      if (ImageList_AddIcon(lpGuiCommandMenuItemManager->hToolBarImageList, lpCommandMenuItems[nI].hIcon) == -1)
+      if (ImageList_AddIcon(lpGuiCommandMenuItemManager->hToolBarImageList, lpCommandMenuItems[unI].hIcon) == -1)
       {
         goto handle_error;
       }
-      lpCommandMenuItems[nI].unImageIndex = nImageIndex;
+      lpCommandMenuItems[unI].unImageIndex = nImageIndex;
       nImageIndex++;
     }
-    else if (lpCommandMenuItems[nI].nSystemImageList != -1)
+    else if (lpCommandMenuItems[unI].nSystemImageList != -1)
     {
       /* The user want to use an icon from a system image list. */
-      switch (lpCommandMenuItems[nI].nSystemImageList)
+      switch (lpCommandMenuItems[unI].nSystemImageList)
       {
         case IDB_STD_SMALL_COLOR:
           nSystemImageList = 0;
@@ -234,28 +234,28 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
           /* We use our main image list as temporary image list. */
           SendMessage(hTemporaryToolBar, TB_SETIMAGELIST, 0, (LPARAM)lpGuiCommandMenuItemManager->hToolBarImageList);
         }
-        SendMessage(hTemporaryToolBar, TB_LOADIMAGES, (WPARAM)lpCommandMenuItems[nI].nSystemImageList, (LPARAM)HINST_COMMCTRL);
+        SendMessage(hTemporaryToolBar, TB_LOADIMAGES, (WPARAM)lpCommandMenuItems[unI].nSystemImageList, (LPARAM)HINST_COMMCTRL);
         lpSystemImageListIndex[nSystemImageList] = nImageIndex;
         nImageIndex = ImageList_GetImageCount(lpGuiCommandMenuItemManager->hToolBarImageList);
       }
-      lpCommandMenuItems[nI].unImageIndex = lpSystemImageListIndex[nSystemImageList] + lpCommandMenuItems[nI].nSystemImageIndex;
+      lpCommandMenuItems[unI].unImageIndex = lpSystemImageListIndex[nSystemImageList] + lpCommandMenuItems[unI].nSystemImageIndex;
 
       /* Create the menu icon from the image list. */
-      lpCommandMenuItems[nI].hIcon = ImageList_ExtractIcon(0, lpGuiCommandMenuItemManager->hToolBarImageList, lpCommandMenuItems[nI].unImageIndex);
-      if (!lpCommandMenuItems[nI].hIcon)
+      lpCommandMenuItems[unI].hIcon = ImageList_ExtractIcon(0, lpGuiCommandMenuItemManager->hToolBarImageList, lpCommandMenuItems[unI].unImageIndex);
+      if (!lpCommandMenuItems[unI].hIcon)
       {
         goto handle_error;
       }
     }
     else
     {
-      lpCommandMenuItems[nI].unImageIndex = -1;
+      lpCommandMenuItems[unI].unImageIndex = -1;
     }
 
     /* Under vista, we must use a PARGB bitmap for menus. */
     if (unOsVersion >= 6)
     {
-      if (lpCommandMenuItems[nI].hIcon)
+      if (lpCommandMenuItems[unI].hIcon)
       {
         /* Get a reference DC. */
         if (!hDc)
@@ -264,8 +264,8 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
           if (!hDc) goto handle_error;
         }
         /* Create a PARG bitmap from the icon. */
-        lpCommandMenuItems[nI].hBitmap = RtConvertIconToPargbBitmap(lpCommandMenuItems[nI].hIcon, 16, 16, lpMaskBuffer, lpColorBuffer, hDc);
-        if (!lpCommandMenuItems[nI].hBitmap) goto handle_error;
+        lpCommandMenuItems[unI].hBitmap = RtConvertIconToPargbBitmap(lpCommandMenuItems[unI].hIcon, 16, 16, lpMaskBuffer, lpColorBuffer, hDc);
+        if (!lpCommandMenuItems[unI].hBitmap) goto handle_error;
       }
     }
   }
@@ -279,18 +279,18 @@ handle_error:
     ImageList_Destroy(lpGuiCommandMenuItemManager->hToolBarImageList);
   }
   /* Free allocated icons and bitmaps. */
-  for (nI = 0; nI < unCommandMenuItemsCount; nI++)
+  for (unI = 0; unI < unCommandMenuItemsCount; unI++)
   {
-    if (lpCommandMenuItems[nI].nSystemImageIndex != -1)
+    if (lpCommandMenuItems[unI].nSystemImageIndex != -1)
     {
-      if (lpCommandMenuItems[nI].hIcon)
+      if (lpCommandMenuItems[unI].hIcon)
       {
-        DestroyIcon(lpCommandMenuItems[nI].hIcon);
+        DestroyIcon(lpCommandMenuItems[unI].hIcon);
       }
     }
-    if (lpCommandMenuItems[nI].hBitmap)
+    if (lpCommandMenuItems[unI].hBitmap)
     {
-      DeleteObject(lpCommandMenuItems[nI].hBitmap);
+      DeleteObject(lpCommandMenuItems[unI].hBitmap);
     }
   }
   bResult = RT_FALSE;
@@ -463,7 +463,7 @@ RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow,
                            WS_CHILD | WS_VISIBLE | SBARS_SIZEGRIP,   /* Grip at the right.            */
                            0, 0, 0, 0,                               /* Position and size.            */
                            hParentWindow,                            /* Parent window.                */
-                           (HMENU)(LONG_PTR)nControlId,              /* Child window identifier.      */
+                           (HMENU)nControlId,                        /* Child window identifier.      */
                            hInstance,                                /* Instance.                     */
                            RT_NULL);                                 /* No window creation data.      */
 
@@ -717,9 +717,8 @@ RT_B RT_API RtGetWindowSize(RT_H hWindow, RT_GUI_RECT* lpRect)
 
 void* RT_API RtGetWindowUserData(RT_H hWindow)
 {
-  return (void*)(LONG_PTR)GetWindowLongPtr(hWindow, GWLP_USERDATA);
+  return RT_TYPE_MAKE_POINTER(GetWindowLongPtr(hWindow, GWLP_USERDATA));
 }
-
 
 RT_B RT_API RtSetWindowUserData(RT_H hWindow, void* lpUserData)
 {
@@ -728,7 +727,7 @@ RT_B RT_API RtSetWindowUserData(RT_H hWindow, void* lpUserData)
 
   /* SetWindowLongPtr returns the previous value and 0 in case of issue. But the previous value can be 0. So there is a check on last error. */
   SetLastError(0);
-  nReturnedValue = SetWindowLongPtr(hWindow, GWLP_USERDATA, (ULONG_PTR)lpUserData);
+  nReturnedValue = SetWindowLongPtr(hWindow, GWLP_USERDATA, RT_TYPE_MAKE_UINTEGER(lpUserData)); 
   if (!nReturnedValue && GetLastError())
   {
     bResult = RT_FALSE;

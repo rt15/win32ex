@@ -113,16 +113,35 @@ typedef unsigned __int64 RT_UN64;
   typedef __int64 RT_N;              /* long is 32 bits on msvc win 64 */
   typedef unsigned __int64 RT_UN;
 #else
-  typedef long RT_N;                 /* Should be ssize_t on most systems (int on linux i386, long on x86_64). Should also be off_t. */
-  typedef unsigned long RT_UN;       /* Should be size_t (Result of sizeof, can be considered primitive) but not on VC 32 bits which is using unsigned int. */
+  #ifdef RT_DEFINE_GCC
+    typedef long RT_N;                 /* Should be ssize_t on most systems (int on linux i386, long on x86_64). Should also be off_t. */
+    typedef unsigned long RT_UN;       /* Should be size_t (Result of sizeof, can be considered primitive) but not on VC 32 bits which is using unsigned int. */
+  #else
+    /* _W64 is used to signal to VC compiler that even if the types are 32 bits, they will be 64 bits when targeting 64 bits. */
+    typedef _W64 long RT_N;
+    typedef _W64 unsigned long RT_UN;
+  #endif
 #endif
 typedef void* RT_H;                  /* HANDLE.  */
 
 /* RT_N = LRESULT, LONG_PTR, LPARAM. */
 /* RT_UN = UINT_PTR, ULONG_PTR, DWORD_PTR, WPARAM. */
 
-/* Maximum and minimum values for types. */
+/* Convert pointers into integers and integers to pointers. */
 
+/* Can be used when the integer is 32 bits while targeting 32 bits. */
+#define RT_TYPE_MAKE_POINTER(x)    ((void*)(RT_N)(x))
+
+#ifdef RT_DEFINE_64
+  #define RT_TYPE_MAKE_INTEGER(x)    ((RT_N)(x))
+  #define RT_TYPE_MAKE_UINTEGER(x)   ((RT_UN)(x))
+#else
+  /* Convert to real 32 bits integer types (Not _W64 integers) because the pointers are 32 bits. */
+  #define RT_TYPE_MAKE_INTEGER(x)    ((RT_N32)(RT_N)(x))
+  #define RT_TYPE_MAKE_UINTEGER(x)   ((RT_UN32)(RT_N)(x))
+#endif
+
+/* Maximum and minimum values for types. */
 
 #define RT_TYPE_MAX_N16    32767
 #define RT_TYPE_MIN_N16    (-RT_TYPE_MAX_N16 - 1)

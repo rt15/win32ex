@@ -89,7 +89,7 @@ RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_N nCon
                            lpPosition->nX, lpPosition->nY,            /* Position. */
                            lpPosition->nWidth, lpPosition->nHeight,   /* Size. */
                            hParentWindow,                             /* Parent Window. */
-                           (HMENU)(LONG_PTR)nControlId,               /* Control id. */
+                           (HMENU)nControlId,                         /* Control id. */
                            hInstance,                                 /* Application instance. */
                            RT_NULL);
 
@@ -128,7 +128,7 @@ RT_H RT_CALL ZzCreateButton(RT_GUI_RECT* lpPosition, RT_CHAR* lpText, RT_N nCont
                            lpPosition->nX, lpPosition->nY,            /* Position. */
                            lpPosition->nWidth, lpPosition->nHeight,   /* Size. */
                            hParentWindow,                             /* Parent Window. */
-                           (HMENU)(LONG_PTR)nControlId,               /* Control id. */
+                           (HMENU)nControlId,               /* Control id. */
                            hInstance,                                 /* Application instance. */
                            RT_NULL);
 

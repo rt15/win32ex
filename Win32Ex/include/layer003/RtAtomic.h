@@ -61,19 +61,18 @@
 #define RT_ATOMIC_TRY_TO_ACQUIRE32 RT_ATOMIC_TRY_TO_ACQUIRE
 
 #else
-  /* TODO: Implement for VC, InterlockedExchange and similar. */
 
 /* Define 32 bits version. */
-#define RT_ATOMIC_LOAD32(VAR) _InterlockedOr(&VAR, 0)
-#define RT_ATOMIC_STORE32(VAR, VALUE) _InterlockedExchange(&VAR, VALUE)
-#define RT_ATOMIC_TRY_TO_ACQUIRE32(VAR) !_InterlockedCompareExchange(&VAR, 1, 0)
+#define RT_ATOMIC_LOAD32(VAR) _InterlockedOr((RT_N32*)&VAR, 0)
+#define RT_ATOMIC_STORE32(VAR, VALUE) _InterlockedExchange((RT_N32*)&VAR, VALUE)
+#define RT_ATOMIC_TRY_TO_ACQUIRE32(VAR) !_InterlockedCompareExchange((RT_N32*)&VAR, 1, 0)
 
 #ifdef RT_DEFINE_64
 
 /* Use 64 bits implementation. */
-#define RT_ATOMIC_LOAD32(VAR) _InterlockedOr64(&VAR, 0)
-#define RT_ATOMIC_STORE32(VAR, VALUE) _InterlockedExchange64(&VAR, VALUE)
-#define RT_ATOMIC_TRY_TO_ACQUIRE32(VAR) !_InterlockedCompareExchange64(&VAR, 1, 0)
+#define RT_ATOMIC_LOAD(VAR) _InterlockedOr64(&VAR, 0)
+#define RT_ATOMIC_STORE(VAR, VALUE) _InterlockedExchange64(&VAR, VALUE)
+#define RT_ATOMIC_TRY_TO_ACQUIRE(VAR) !_InterlockedCompareExchange64(&VAR, 1, 0)
 
 #else /* NOT RT_DEFINE_64 */
 

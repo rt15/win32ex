@@ -14,7 +14,13 @@ RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  nReturnedValue = GetEnvironmentVariable(lpEnvironmentVariableName, lpBuffer, nBufferSize);
+  /* Ensure that the 32 or 64 bits signed integer will fit into a DWORD. */
+  if (nBufferSize < 0 || nBufferSize > RT_TYPE_MAX_N32)
+  {
+    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    goto handle_error;
+  }
+  nReturnedValue = GetEnvironmentVariable(lpEnvironmentVariableName, lpBuffer, (DWORD)nBufferSize);
   if (!nReturnedValue)
   {
     goto handle_error;
