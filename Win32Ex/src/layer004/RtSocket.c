@@ -145,7 +145,7 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bCloseOnExec)
+RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN32 unAddressFamily, RT_UN32 unType, RT_UN32 unProtocol, RT_B bBlocking, RT_B bCloseOnExec)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unFlags;
@@ -200,7 +200,7 @@ void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress)
   lpAddress->rtUnion.unAddress = htonl(INADDR_LOOPBACK);
 }
 
-void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN unPort)
+void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN32 unPort)
 {
   RtZeroMemory(lpSocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV4));
   lpSocketAddress->unAddressFamily = RT_SOCKET_ADDRESS_FAMILY_IPV4;
@@ -208,12 +208,12 @@ void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, R
   RtCopyMemory(lpAddress, &lpSocketAddress->rtAddress, sizeof(RT_ADDRESS_IPV4));
 }
 
-RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPort)
+RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN32 unPort)
 {
   RT_SOCKET_ADDRESS_IPV4 rtIpv4SocketAddress;
   RT_SOCKET_ADDRESS_IPV6 rtIpv6SocketAddress;
   RT_SOCKET_ADDRESS* lpSocketAddress;
-  RT_UN unAddressFamily;
+  RT_UN32 unAddressFamily;
   void* lpAddress;
 #ifdef RT_DEFINE_WINDOWS
   int nReturnedValue;
@@ -335,12 +335,12 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort)
+RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN32 unPort)
 {
   struct sockaddr_in rtIpv4SocketAddress;
   struct sockaddr_in6 rtIpv6SocketAddress;
   struct sockaddr* lpSocketAddress;
-  RT_N nAddressSize;
+  RT_N32 nAddressSize;
   RT_B bResult;
 
   switch (lpSocket->unAddressFamily)
@@ -390,7 +390,7 @@ RT_B RT_API RtListenFromSocket(RT_SOCKET* lpSocket)
   return RtListenFromSocketWithBackLog(lpSocket, SOMAXCONN);
 }
 
-RT_B RT_API RtListenFromSocketWithBackLog(RT_SOCKET* lpSocket, RT_N nBacklog)
+RT_B RT_API RtListenFromSocketWithBackLog(RT_SOCKET* lpSocket, RT_N32 nBacklog)
 {
   RT_B bResult;
 
@@ -410,55 +410,55 @@ RT_B RT_API RtListenFromSocketWithBackLog(RT_SOCKET* lpSocket, RT_N nBacklog)
 /**
  * Translate win32ex socket message flags into Linux flags.
  */
-RT_N RT_CALL RtComputeSocketMessageFlags(RT_N nFlags)
+RT_UN RT_CALL RtComputeSocketMessageFlags(RT_N unFlags)
 {
-  RT_N nResult;
+  RT_UN unResult;
 
-  nResult = 0;
-  if (nFlags & RT_SOCKET_MESSAGE_OUT_OF_BAND) nResult |= MSG_OOB;
-  if (nFlags & RT_SOCKET_MESSAGE_PEEK) nResult |= MSG_PEEK;
-  if (nFlags & RT_SOCKET_MESSAGE_DO_NOT_ROUTE) nResult |= MSG_DONTROUTE;
-  if (nFlags & RT_SOCKET_MESSAGE_WAIT_ALL) nResult |= MSG_WAITALL;
+  unResult = 0;
+  if (unFlags & RT_SOCKET_MESSAGE_OUT_OF_BAND) nResult |= MSG_OOB;
+  if (unFlags & RT_SOCKET_MESSAGE_PEEK) nResult |= MSG_PEEK;
+  if (unFlags & RT_SOCKET_MESSAGE_DO_NOT_ROUTE) nResult |= MSG_DONTROUTE;
+  if (unFlags & RT_SOCKET_MESSAGE_WAIT_ALL) nResult |= MSG_WAITALL;
 
-  return nResult;
+  return unResult;
 }
 #endif
 
-RT_N RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_N nDataSize, RT_N nFlags)
+RT_N RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_N nDataSize, RT_UN32 unFlags)
 {
-  RT_N nActualFlags;
+  RT_UN32 unActualFlags;
   RT_N nResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  nActualFlags = nFlags;
+  unActualFlags = unFlags;
 #else
-  nActualFlags = RtComputeSocketMessageFlags(nFlags);
+  unActualFlags = RtComputeSocketMessageFlags(unFlags);
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
-  nResult = send(lpSocket->unSocket, lpData, nDataSize, nActualFlags);
+  nResult = send(lpSocket->unSocket, lpData, (int)nDataSize, unActualFlags);
 #else
-  nResult = send(lpSocket->nSocket, lpData, nDataSize, nActualFlags);
+  nResult = send(lpSocket->nSocket, lpData, nDataSize, unActualFlags);
 #endif
 
   return nResult;
 }
 
-RT_N RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_N nBufferSize, RT_N nFlags)
+RT_N RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_N nBufferSize, RT_UN32 unFlags)
 {
-  RT_N nActualFlags;
+  RT_UN32 unActualFlags;
   RT_N nResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  nActualFlags = nFlags;
+  unActualFlags = unFlags;
 #else
-  nActualFlags = RtComputeSocketMessageFlags(nFlags);
+  unActualFlags = RtComputeSocketMessageFlags(unFlags);
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
-  nResult = recv(lpSocket->unSocket, lpBuffer, nBufferSize, nActualFlags);
+  nResult = recv(lpSocket->unSocket, lpBuffer, (int)nBufferSize, unActualFlags);
 #else
-  nResult = recv(lpSocket->nSocket, lpBuffer, nBufferSize, nActualFlags);
+  nResult = recv(lpSocket->nSocket, lpBuffer, nBufferSize, unActualFlags);
 #endif
 
   return nResult;
@@ -506,15 +506,15 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtShutdownSocket(RT_SOCKET* lpSocket, RT_N nFlag)
+RT_B RT_API RtShutdownSocket(RT_SOCKET* lpSocket, RT_UN32 unFlag)
 {
   RT_B bResult;
 
   /* On success shutdown returns zero, -1 and set last error otherwise. */
 #ifdef RT_DEFINE_WINDOWS
-  bResult = !shutdown(lpSocket->unSocket, nFlag);
+  bResult = !shutdown(lpSocket->unSocket, unFlag);
 #else
-  bResult = !shutdown(lpSocket->nSocket, nFlag);
+  bResult = !shutdown(lpSocket->nSocket, unFlag);
 #endif
 
   return bResult;

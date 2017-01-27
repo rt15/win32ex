@@ -138,12 +138,6 @@ RT_UN RT_API RtComputeChunksCount(RT_UN32 unSize, RT_UN32 unChunkSize)
 {
   RT_UN unResult;
 
-  if ((unSize < 0) || (unChunkSize <= 0))
-  {
-    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
-    goto handle_error;
-  }
-
   unResult = unSize / unChunkSize;
   if (unSize % unChunkSize)
   {

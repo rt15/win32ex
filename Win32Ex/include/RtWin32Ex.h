@@ -15,6 +15,8 @@
 
 #### TODO :
 
+Use unsigned when possible as DWORD on Windows and size_t on Linux are widely used.
+
 Ensure that there cannot be memory leaks while setting array/list size.
 The items must remain accessible and untouched.
 

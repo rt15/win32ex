@@ -77,10 +77,6 @@ RT_UN32* RT_API RtSwapBytes32(RT_UN32* lpSource, RT_UN32* lpDestination, RT_UN u
 
 /**
  * Compute the count of chunks given <tt>nSize</tt> (The elements count) and the size of a chunk.
- *
- * <p>
- * Return RT_TYPE_MAX_UN in case of error.
- * </p>
  */
 RT_UN RT_API RtComputeChunksCount(RT_UN32 unSize, RT_UN32 unChunkSize);
 
