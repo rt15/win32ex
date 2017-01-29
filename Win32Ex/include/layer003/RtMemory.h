@@ -21,6 +21,13 @@
 #endif
 
 /**
+ * Compare two memory areas.<br>
+ * Return a positive number if the first different byte is greater in <tt>lpArea1</tt>
+ *
+ * <p>
+ * Like for memcmp, values inside areas are considered unsigned chars.
+ * </p>
+ *
  * <p>
  * Same prototype as <tt>memcmp</tt> except calling convention.
  * </p>
@@ -28,16 +35,27 @@
 RT_N RT_API RtCompareMemory(void* lpArea1, void* lpArea2, RT_UN unSize);
 
 /**
+ *
+ * <p>
+ * Order of source and destination are the opposite of memcpy.
+ * </p>
+ *
  * <p>
  * Same prototype as <tt>memcpy</tt> except calling convention.
  * </p>
+ *
+ * @return <tt>lpDestination</tt>
  */
 void* RT_API RtCopyMemory(void* lpSource, void* lpDestination, RT_UN unSize);
 
 /**
+ * Act like if a temporary buffer would have been used to avoid overwritting issues.
+ *
  * <p>
  * Same prototype as <tt>memmove</tt> except calling convention.
  * </p>
+ *
+ * @return <tt>lpDestination</tt>
  */
 void* RT_API RtMoveMemory(void* lpSource, void* lpDestination, RT_UN unSize);
 

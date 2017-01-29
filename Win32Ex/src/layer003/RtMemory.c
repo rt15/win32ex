@@ -2,13 +2,6 @@
 
 #include "layer002/RtErrorCode.h"
 
-/**
- * Compare deux zones mémoire
- *
- * Renvoie 0 si les deux zones sont égales. Renvoie un nombre positif si le
- * premier octet qui ne concorde pas est dans lpArea1. Sinon renvoie un
- * nombre négatif.
- */
 RT_N RT_API RtCompareMemory(void* lpArea1, void* lpArea2, RT_UN unSize)
 {
   RT_CHAR8* lpCharArea1;   /* Facilite l'accès aux octets de lpArea1              */
@@ -38,12 +31,6 @@ void* RT_API RtCopyMemory(void* lpSource, void* lpDestination, RT_UN unSize)
   return lpDestination;
 }
 
-/**
- * Copie unSize octets depuis source vers destination
- *
- * Fait comme si un tampon intermédiaire était utilisé pour éviter les
- * problèmes de recouvrement. Renvoie la destination.
- */
 void* RT_API RtMoveMemory(void* lpSource, void* lpDestination, RT_UN unSize)
 {
   RT_CHAR8* lpCharDest;    /* Facilite l'accès à la zone de destination           */

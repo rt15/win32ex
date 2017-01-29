@@ -5,7 +5,7 @@
 
 /**
  * @file
- * Sometimes compiler generates calls to memcmp/memcpy/memmove/memset without using intrinsic functions.<br>
+ * Sometimes (when?) compiler generates calls to memcmp/memcpy/memmove/memset without using intrinsic functions.<br>
  * This header can define corresponding symbols when CRT is not used.
  *
  * <p>
@@ -14,6 +14,7 @@
  * <ul>
  * <li>function names to memcmp, memcpy, memmove and memset.</li>
  * <li>Calling convention from RT_API to RT_CDECL.</li>
+ * <li>Orders of sources and destinations in prototypes.</li>
  * <li>RT_UN into RT_SIZE_T.</li>
  * <li>RT_N into int.</li>
  * </ul>
@@ -52,7 +53,7 @@ int RT_CDECL memcmp(void* lpArea1, void* lpArea2, RT_SIZE_T unSize)
   return lpCharArea1[unI] - lpCharArea2[unI];
 }
 
-void* RT_CDECL memcpy(void* lpSource, void* lpDestination, RT_SIZE_T unSize)
+void* RT_CDECL memcpy(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
 {
   RT_CHAR8* lpCharDest;    /* Facilite l'accès à la zone de destination           */
   RT_CHAR8* lpCharSrc;     /* Facilite l'accès à la zone source                   */
@@ -66,7 +67,7 @@ void* RT_CDECL memcpy(void* lpSource, void* lpDestination, RT_SIZE_T unSize)
   return lpDestination;
 }
 
-void* RT_CDECL memmove(void* lpSource, void* lpDestination, RT_SIZE_T unSize)
+void* RT_CDECL memmove(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
 {
   RT_CHAR8* lpCharDest;    /* Facilite l'accès à la zone de destination           */
   RT_CHAR8* lpCharSrc;     /* Facilite l'accès à la zone source                   */
