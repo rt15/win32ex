@@ -22,18 +22,18 @@ RT_B RT_API RtGdipInitialize()
     if (nStatus != Ok)
     {
       RtGdipSetLastErrorFromGpStatus(nStatus);
-      bResult = RT_FALSE;
+      bResult = RT_FAILURE;
     }
     else
     {
-      bResult = RT_TRUE;
+      bResult = RT_SUCCESS;
     }
 
     RtNotifyFastInitializationDone(&rt_gdipInitialization);
   }
   else
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   return bResult;
 }
@@ -114,10 +114,10 @@ RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N32 nWidth, RT_N32 nH
     goto handle_error;
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   if (lpGraphics)
   {

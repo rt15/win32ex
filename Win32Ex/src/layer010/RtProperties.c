@@ -16,7 +16,7 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
   RT_UN unContext; /* 0 = in end of lines, 1 = in key, 2 = in separator, 3 = in value. */
   RT_B bResult;
 
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 
   unCurrentIndex = 0;
   unContext = 0;
@@ -141,7 +141,7 @@ RT_B RT_CALL RtCreatePropertiesFromString(RT_PROPERTIES* lpProperties, RT_CHAR* 
 
   if (!RtCreateSortableArray((void**)&lpPropertiesEntries, lpHeap, 0, sizeof(RT_PROPERTY_ENTRY), &RtDefaultCompareCallback, RT_NULL))
   {
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
     goto the_end;
   }
 
@@ -151,12 +151,12 @@ RT_B RT_CALL RtCreatePropertiesFromString(RT_PROPERTIES* lpProperties, RT_CHAR* 
     lpProperties->lpPropertiesEntries = lpPropertiesEntries;
     lpProperties->lpData = lpData;
     lpProperties->lpHeap = lpHeap;
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   else
   {
     RtFreeArray((void**)&lpPropertiesEntries);
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
   }
 
 the_end:
@@ -168,7 +168,7 @@ RT_B RT_CALL RtCreatePropertiesFromBuffer(RT_PROPERTIES* lpProperties, RT_CHAR8*
   RT_CHAR* lpData;
   RT_B bResult;
 
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 
   if (RtDecodeWithHeap(lpBuffer, unBufferSize, unEncoding, &lpData, lpHeap) == RT_TYPE_MAX_UN)
   {
@@ -190,7 +190,7 @@ RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath,
   RT_UN unFileSize;
   RT_B bResult;
 
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 
   unFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent, lpHeap);
   if (unFileSize == RT_TYPE_MAX_UN)

@@ -21,12 +21,12 @@ RT_UN32 RT_CALL ZZTestEventThreadCallback(void* lpParameter)
 
   zz_unTestEventThreadStatus = ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_2;
 
-  nResult = RT_TRUE;
+  nResult = RT_SUCCESS;
 free_resources:
   return nResult;
 
 handle_error:
-  nResult = RT_FALSE;
+  nResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -68,7 +68,7 @@ RT_B RT_CALL ZzTestEvent()
 
   if (!RtJoinAndCheckThread(&rtThread)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (bThreadCreated)
   {
@@ -83,6 +83,6 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

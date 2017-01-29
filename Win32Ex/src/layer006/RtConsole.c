@@ -57,7 +57,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 #else
   return (write(1, lpString, (size_t)unSize) != -1);
@@ -79,7 +79,7 @@ RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
 
   if (unStringsCount <= 0)
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   else if (unStringsCount == 1)
   {
@@ -119,7 +119,7 @@ RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
     }
     else
     {
-      bResult = RT_FALSE;
+      bResult = RT_FAILURE;
     }
   }
 

@@ -103,7 +103,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
         if (!RtNewArrayItem((void**)lpContext, (void**)&lpFileInfo))
         {
           WriteLastErrorMessage(_R("New item failed: "));
-          bResult = RT_FALSE;
+          bResult = RT_FAILURE;
           goto the_end;
         }
 
@@ -113,7 +113,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
       }
     }
   }
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 the_end:
   return bResult;
 }

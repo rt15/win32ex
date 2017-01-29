@@ -43,12 +43,12 @@ RT_B RT_API RtBinarySearchIndex(void* lpArea, void* lpItem, RT_UN unSize, RT_UN 
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 

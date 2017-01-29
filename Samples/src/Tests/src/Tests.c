@@ -60,7 +60,7 @@ RT_B RT_CALL BrowsingCallback(RT_CHAR* lpPath , RT_UN unType, void* lpContext)
           RtCopyString(_R(": "),                          &lpMessage[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE + 200 - unWritten, &unWritten);
           WriteLastErrorMessage(lpMessage);
           lpMyContext->_bErrorHandled = RT_TRUE;
-          bResult = RT_FALSE;
+          bResult = RT_FAILURE;
           goto the_end;
         }
       }
@@ -76,13 +76,13 @@ RT_B RT_CALL BrowsingCallback(RT_CHAR* lpPath , RT_UN unType, void* lpContext)
         RtWriteStringToConsole(_R("\n"));
         WriteLastErrorMessage(_R("Error message: "));
         lpMyContext->_bErrorHandled = RT_TRUE;
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
         goto the_end;
       }
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 the_end:
   return bResult;
 }

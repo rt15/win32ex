@@ -93,10 +93,10 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
     RtWriteToSmallFile(lpNewFileContent, unNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE);
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   if (lpNewFileContent)
   {
@@ -152,7 +152,7 @@ RT_B ZzPerform(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpFilePath)
 
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   if (bCloseRuntimeHeap)
   {

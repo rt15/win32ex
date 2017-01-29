@@ -126,7 +126,7 @@ RT_B RT_API RtInitializeSockets()
   if (!rt_lpFreeAddrInfoW) goto handle_error;
 
 #endif
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 
 #ifdef RT_DEFINE_WINDOWS
 free_resources:
@@ -140,7 +140,7 @@ handle_error:
     WSACleanup();
     bWSAStartupCalled = RT_FALSE;
   }
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 #endif
 }
@@ -186,12 +186,12 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
   if (lpSocket->nSocket == -1) goto handle_error;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -292,7 +292,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -331,7 +331,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -381,7 +381,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -519,12 +519,12 @@ RT_B RT_API RtAcceptSocketConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedS
 
   lpAcceptedSocket->unAddressFamily = lpActualSocketAddress->unAddressFamily;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -564,7 +564,7 @@ RT_B RT_API RtCleanUpSockets()
   /* WSACleanup returns zero if the operation was successful, call WSASetLastError and returns SOCKET_ERROR otherwise. */
   bResult = !WSACleanup();
 #else
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 #endif
   return bResult;
 }

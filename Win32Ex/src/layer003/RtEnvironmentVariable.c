@@ -61,7 +61,7 @@ RT_B RT_API RtGetEnvironmentVariable(RT_CHAR* lpEnvironmentVariableName, RT_CHAR
   *lpWritten += nLength;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
@@ -70,6 +70,6 @@ handle_error:
   {
     lpBuffer[0] = 0;
   }
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

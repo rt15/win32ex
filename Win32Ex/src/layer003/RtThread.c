@@ -62,11 +62,11 @@ RT_B RT_API RtJoinThread(RT_THREAD* lpThread)
   if (nReturnedValue)
   {
     errno = nReturnedValue;
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
   }
   else
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
 #endif
   return bResult;
@@ -86,12 +86,12 @@ RT_B RT_API RtJoinAndCheckThread(RT_THREAD* lpThread)
     goto handle_error;
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -123,7 +123,7 @@ RT_B RT_API RtFreeThread(RT_THREAD* lpThread)
 #ifdef RT_DEFINE_WINDOWS
   bResult = CloseHandle(lpThread->hThread);
 #else /* NOT RT_DEFINE_WINDOWS */
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 #endif
   return bResult;
 }

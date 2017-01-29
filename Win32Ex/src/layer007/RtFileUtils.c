@@ -13,7 +13,7 @@ RT_B RT_API RtCreateEmptyFile(RT_CHAR* lpPath, RT_B bTruncate)
   if (!RtCreateFile(&rtFile, lpPath, bTruncate ? RT_FILE_MODE_TRUNCATE : RT_FILE_MODE_NEW)) goto handle_error;
   bFileCreated = RT_TRUE;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (bFileCreated)
   {
@@ -23,6 +23,6 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

@@ -38,7 +38,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 
 #else /* NOT RT_DEFINE_WINDOWS */
@@ -76,7 +76,7 @@ handle_error:
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (bDestinationOpen)
   {
@@ -91,7 +91,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 #endif
 }
@@ -113,7 +113,7 @@ RT_B RT_API RtCreateDirectory(RT_CHAR* lpPath)
   }
   else
   {
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
   }
 #else
   bResult = !mkdir(lpPath, RT_FILE_SYSTEM_RIGHTS);
@@ -160,10 +160,10 @@ RT_B RT_API RtGetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN
   }
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   (*lpWritten) += unWritten;
   return bResult;
@@ -196,14 +196,14 @@ RT_B RT_API RtGetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpW
 #endif
 
   (*lpWritten) += unWritten;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
   if (unBufferSize > 0)
   {
     lpBuffer[0] = 0;
   }
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -301,14 +301,14 @@ RT_B RT_API RtGetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* l
 #endif
 
   (*lpWritten) += unWritten;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
   if (unBufferSize > 0)
   {
     lpBuffer[0] = 0;
   }
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -396,12 +396,12 @@ RT_B RT_API RtExtractParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBu
   {
     if (!RtCopyStringWithSize(lpPath, unLastSeparator, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
     RtRemoveTrailingSeparators(lpBuffer, unLastSeparator, lpWritten);
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
 
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -427,10 +427,10 @@ RT_B RT_API RtGetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *
 #endif
 
   *lpWritten += unWritten;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -518,10 +518,10 @@ RT_B RT_API FileSys_FullPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferS
   if (!RtCopyStringWithSize(RT_FILE_SYSTEM_SEPARATOR_STRING, 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
   if (!RtCopyString(lpPath,                                     &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   *lpWritten += unWritten;
   return bResult;
@@ -558,10 +558,10 @@ RT_B RT_API RtComputeLongPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBuffer
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   *lpWritten += unWritten;
   return bResult;
@@ -594,7 +594,7 @@ RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallB
   {
     if (GetLastError() == ERROR_FILE_NOT_FOUND)
     {
-      bResult = RT_TRUE;
+      bResult = RT_SUCCESS;
       goto free_resources;
     }
     else
@@ -635,7 +635,7 @@ RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallB
     goto handle_error;
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (hFind != INVALID_HANDLE_VALUE)
   {
@@ -649,7 +649,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 
 #else /* NOT RT_DEFINE_WINDOWS */
@@ -695,7 +695,7 @@ handle_error:
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (lpDir)
   {
@@ -710,7 +710,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 #endif
 }
@@ -730,27 +730,27 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
 
   if (!RtComputeLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten))
   {
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
   }
   else
   {
     nAttributes = GetFileAttributes(lpLongPath);
     if (nAttributes == INVALID_FILE_ATTRIBUTES)
     {
-      bResult = RT_FALSE;
+      bResult = RT_FAILURE;
     }
     else if (nAttributes & FILE_ATTRIBUTE_DIRECTORY)
     {
       /* The path is a directory. */
       if (unType & RT_FILE_SYSTEM_TYPE_DIRECTORY)
       {
-        bResult = RT_TRUE;
+        bResult = RT_SUCCESS;
       }
       else
       {
         /* We did not expect a directory. */
         RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
     }
     else
@@ -758,13 +758,13 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
       /* The path is a file. */
       if (unType & RT_FILE_SYSTEM_TYPE_FILE)
       {
-        bResult = RT_TRUE;
+        bResult = RT_SUCCESS;
       }
       else
       {
         /* We did not expect a file. */
         RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
     }
   }
@@ -772,7 +772,7 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
 
   if (stat(lpPath, &stats))
   {
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
   }
   else
   {
@@ -781,13 +781,13 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
       /* The path is a directory. */
       if (unType & RT_FILE_SYSTEM_TYPE_DIRECTORY)
       {
-        bResult = RT_TRUE;
+        bResult = RT_SUCCESS;
       }
       else
       {
         /* We did not expect a directory. */
         RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
     }
     else
@@ -795,13 +795,13 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
       /* The path is a file. */
       if (unType & RT_FILE_SYSTEM_TYPE_FILE)
       {
-        bResult = RT_TRUE;
+        bResult = RT_SUCCESS;
       }
       else
       {
         /* We did not expect a file. */
         RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
     }
   }
@@ -822,10 +822,10 @@ RT_B RT_API RtExtractFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuff
   if (!RtCopyString(&lpPath[unLastSeparator + 1], lpBuffer, unBufferSize, &unWritten)) goto handle_error;
   RtRemoveTrailingSeparators(lpBuffer, unWritten, &unWritten);
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   *lpWritten += unWritten;
   return bResult;
@@ -863,10 +863,10 @@ RT_B RT_CALL RtMoveOrRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePa
   }
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -885,7 +885,7 @@ RT_B RT_API RtAppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferS
   if (RT_FILE_SYSTEM_IS_SEPARATOR(nLastChar))
   {
     /* Separator already exists. */
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   else
   {
@@ -905,14 +905,14 @@ RT_B RT_API RtBuildPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* 
   if (!RtCopyString(lpChildName, &lpParentPath[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
   *lpWritten += unWritten - unParentPathSize;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
   if (unBufferSize > 0)
   {
     lpParentPath[0] = 0;
   }
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -928,14 +928,14 @@ RT_B RT_API RtBuildNewPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHA
   if (!RtCopyString(lpChildName, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
   lpWritten += unWritten;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
   if (unBufferSize > 0)
   {
     lpBuffer[0] = 0;
   }
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -952,10 +952,10 @@ RT_B RT_API RtRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFileName)
   if (!RtCopyString(lpNewFileName, &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   if (!RtMoveOrRenameFile(lpCurrentFilePath, lpNewFilePath, RT_TRUE)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -994,10 +994,10 @@ RT_B RT_API RtDeleteFile(RT_CHAR* lpFilePath)
 file_does_not_exist:
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }

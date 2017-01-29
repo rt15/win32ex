@@ -221,10 +221,10 @@ RT_B RT_CALL TtCreateFile(RT_CHAR* lpFilePath)
   bFileCreated = RT_TRUE;
   if (!RtWriteToFile(&rtFile, "Hello, world!", 13)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   if (bFileCreated)
   {

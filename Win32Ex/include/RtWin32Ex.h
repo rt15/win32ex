@@ -21,8 +21,6 @@ http://javahungry.blogspot.com/2013/08/hashing-how-hash-map-works-in-java-or.htm
 Ensure that there cannot be memory leaks while setting array/list size.
 The items must remain accessible and untouched.
 
-Use RT_SUCCESS/RT_FAILURE.
-
 Implement an index system for lists (b-tree?).
 
 Check structure values and flag values against operating system (Like AF_INET).
@@ -33,6 +31,7 @@ producingopensourcesoftware.pdf
 Modify resource management.
 Normal execution flow should not branch.
 That will put return in the middle of the code and errors treatments at the end.
+Remove the_end.
 
 See http://corelibrary.sourceforge.net/.
 The xml part and maybe others.

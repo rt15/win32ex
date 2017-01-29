@@ -42,10 +42,10 @@ RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *
   if (!RtCopyString(lpMessage, lpBuffer, unBufferSize, &unWritten)) goto handle_error;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   *lpWritten += unWritten;
   return bResult;

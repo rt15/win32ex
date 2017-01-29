@@ -76,12 +76,12 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
   if (lpFile->nFile == -1) goto handle_error;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -92,7 +92,7 @@ RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToR
 #endif
   RT_B bResult;
 
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 
 #ifdef RT_DEFINE_WINDOWS
   /* TODO: Manage more than 4Go? */
@@ -102,10 +102,10 @@ RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToR
                &unBytesRead,
                NULL))
     if (unBytesRead == unBytesToRead)
-      bResult = RT_TRUE;
+      bResult = RT_SUCCESS;
 #else
   if (read(lpFile->nFile, lpBuffer, unBytesToRead) != -1)
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
 #endif
 
   return bResult;
@@ -118,7 +118,7 @@ RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrit
 #endif
   RT_B bResult;
 
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 
 #ifdef RT_DEFINE_WINDOWS
   if (WriteFile(lpFile->hFile,
@@ -127,10 +127,10 @@ RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrit
                 &unBytesWritten,
                 NULL))
     if (unBytesWritten == unBytesToWrite)
-      bResult = RT_TRUE;
+      bResult = RT_SUCCESS;
 #else
   if (write(lpFile->nFile, lpData, unBytesToWrite) != -1)
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
 #endif
 
   return bResult;
@@ -167,12 +167,12 @@ RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
 #endif
   RT_B bResult;
 
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 
 #ifdef RT_DEFINE_WINDOWS
   if (SetFilePointer(lpFile->hFile, (LONG)nOffset, NULL, (DWORD)unFrom) != INVALID_SET_FILE_POINTER)
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
 #else
   switch (unFrom)
@@ -189,7 +189,7 @@ RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
   }
   if (lseek(lpFile->nFile, nOffset, nFlag) != -1)
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
 #endif
 

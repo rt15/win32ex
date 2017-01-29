@@ -34,10 +34,10 @@ RT_B RT_API RtFillDc(RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_UN32 unColor)
   rect.bottom = nHeight;
   if (!FillRect(hDc, &rect, hBrush)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   if (!DeleteObject(hBrush))
   {
@@ -59,10 +59,10 @@ RT_B RT_API RtStretchImage(RT_H hSourceDc, RT_N32 nSourceWidth, RT_N32 nSourceHe
   if (!SetBrushOrgEx(hDestinationDc, 0, 0, RT_NULL)) goto handle_error;
   if (!StretchBlt(hDestinationDc, 0, 0, nDestinationWidth, nDestinationHeight, hSourceDc, 0, 0, nSourceWidth, nSourceHeight, SRCCOPY)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }

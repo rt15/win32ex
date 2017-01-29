@@ -90,7 +90,7 @@ RT_B RT_API RtFreePage(void** lpArea)
   }
   else
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   return bResult;
 }

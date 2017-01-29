@@ -278,7 +278,7 @@ RT_B RT_API RtFreeList(void** lpList)
   RT_UN unI;
   RT_B bResult;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 
   if (*lpList)
   {
@@ -294,14 +294,14 @@ RT_B RT_API RtFreeList(void** lpList)
     {
       if (!(*lpHeap)->lpFree(lpHeap, &lpChunks[unI]))
       {
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
     }
 
     /* Free pointers array. */
     if (!RtFreeArray(lpList))
     {
-      bResult = RT_FALSE;
+      bResult = RT_FAILURE;
     }
   }
 

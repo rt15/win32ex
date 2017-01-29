@@ -49,7 +49,7 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
   if (nBegin == -1)
   {
     RtWriteStringToConsole(_R("Tag not found"));
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
     goto the_end;
   }
   nBegin += RtGetStringSize(lpTagName);
@@ -78,7 +78,7 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
 
   RtWriteStringsToConsole(2, _R("\t"), lpValue);
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 
 the_end:
   return bResult;
@@ -98,7 +98,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
   RT_N nI;
   RT_B bResult;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 
   if (unType == RT_FILE_SYSTEM_TYPE_FILE)
   {
@@ -118,14 +118,14 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
       if (nDataSize == -1)
       {
         WriteLastErrorMessage(_R("Failed to read file: "));
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
 
       nFileContentSize = RtDecodeWithHeap(lpData, nDataSize, RT_ENCODING_UTF_8, &lpFileContent, lpHeap);
       if (nFileContentSize == -1)
       {
         WriteLastErrorMessage(_R("Failed to decode file content: "));
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
       else
       {
@@ -133,7 +133,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
         {
           if (!XsManageTag(lpFileContent, xs_lpTagsNames[nI]))
           {
-            bResult = RT_FALSE;
+            bResult = RT_FAILURE;
             break;
           }
         }
@@ -141,14 +141,14 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
         if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
         {
           WriteLastErrorMessage(_R("Failed to free decoded file content: "));
-          bResult = RT_FALSE;
+          bResult = RT_FAILURE;
         }
       }
 
       if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpData))
       {
         WriteLastErrorMessage(_R("Failed to free file content: "));
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
       }
 
       RtWriteStringToConsoleWithSize(_R("\n"), 1);

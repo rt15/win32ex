@@ -10,7 +10,7 @@ RT_B RT_API RtCreateTable(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata,
   RT_UN unI;
   RT_B bResult;
 
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 
   lpTable->lpTableMetadata = lpTableMetadata;
 
@@ -46,7 +46,7 @@ RT_B RT_API RtCreateTable(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata,
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto the_end;
 cleanup_table_indexes:
   for (unI = 0; unI < unTableIndexesCount; unI++)
@@ -93,7 +93,7 @@ RT_B RT_API RtIndexNewTableItem(RT_TABLE* lpTable)
       unInsertionIndex = RtAddItemToSortableArray((void**)&lpTableIndex->lpIndexes, &unNewItemIndex);
       if (unInsertionIndex == RT_TYPE_MAX_UN)
       {
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
         goto the_end;
       }
 
@@ -112,7 +112,7 @@ RT_B RT_API RtIndexNewTableItem(RT_TABLE* lpTable)
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 the_end:
   return bResult;
 }
@@ -145,7 +145,7 @@ RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN unItemIndex)
 
       if (!RtDeleteSortableArrayItemIndex((void**)&lpTableIndex->lpIndexes, unIndexInTableIndex))
       {
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
         goto the_end;
       }
 
@@ -159,7 +159,7 @@ RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN unItemIndex)
       /* Delete the data item by copying the last item to the item to delete. */
       if (!RtDeleteArrayItemIndex((void**)&lpTable->lpTableData, unItemIndex))
       {
-        bResult = RT_FALSE;
+        bResult = RT_FAILURE;
         goto the_end;
       }
 
@@ -174,7 +174,7 @@ RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN unItemIndex)
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 the_end:
   return bResult;
 }
@@ -185,7 +185,7 @@ RT_B RT_API RtFreeTable(RT_TABLE* lpTable)
   RT_UN unI;
   RT_B bResult;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   if (lpTable)
   {
     unTableIndexesCount = lpTable->lpTableMetadata->unTableIndexesCount;

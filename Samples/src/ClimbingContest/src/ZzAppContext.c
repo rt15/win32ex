@@ -40,13 +40,13 @@ RT_B RT_CALL ZzCreateAppContext(ZZ_APP_CONTEXT* lpAppContext)
   lpAppContext->hFont = GetStockObject(DEFAULT_GUI_FONT);
   if (!lpAppContext->hFont) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
   ZzFreeAppContext(lpAppContext);
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -55,7 +55,7 @@ RT_B RT_CALL ZzFreeAppContext(ZZ_APP_CONTEXT* lpAppContext)
   RT_UN unI;
   RT_B bResult;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   for (unI = 0; unI < ZZ_RESOURCES_ENTITIES_COUNT; unI++)
   {
@@ -72,6 +72,6 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

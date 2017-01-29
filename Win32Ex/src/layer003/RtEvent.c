@@ -17,12 +17,12 @@ RT_B RT_API RtCreateEvent(RT_EVENT* lpEvent)
   if (lpEvent->nFileDescriptor == -1) goto handle_error;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -42,12 +42,12 @@ RT_B RT_API RtSignalEvent(RT_EVENT* lpEvent)
   if (write(lpEvent->nFileDescriptor, &unValue, sizeof(uint64_t)) != sizeof(uint64_t)) goto handle_error;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -65,12 +65,12 @@ RT_B RT_API RtWaitForEvent(RT_EVENT* lpEvent)
   if (read(lpEvent->nFileDescriptor, &unValue, sizeof(uint64_t)) != sizeof(uint64_t)) goto handle_error;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -85,11 +85,11 @@ RT_B RT_API RtFreeEvent(RT_EVENT* lpEvent)
   if (close(lpEvent->nFileDescriptor)) goto handle_error;
 #endif
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

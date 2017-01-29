@@ -114,11 +114,11 @@ RT_B RT_API RtGetRandomUIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperB
   unUnsigned = unUnsigned % (unUpperBound + 1 - unLowerBound);
   *lpResult = unUnsigned + unLowerBound;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -131,10 +131,10 @@ RT_B RT_API RtGetRandomIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperBound,
   unUnsigned = unUnsigned % (RT_UN)(nUpperBound + 1 - nLowerBound);
   *lpResult = unUnsigned + nLowerBound;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

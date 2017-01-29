@@ -88,7 +88,7 @@ RT_B RT_API RtWriteToSmallFile(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpF
   }
   if (!RtWriteToFile(&rtFile, lpInput, unDataSize)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (bFileOpen)
   {
@@ -98,6 +98,6 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

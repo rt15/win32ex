@@ -40,7 +40,7 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
 
   if (!RtShutdownSocket(&rtAcceptedSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
 
-  nResult = RT_TRUE;
+  nResult = RT_SUCCESS;
 free_resources:
   if (bAcceptedSocketCreated)
   {
@@ -58,7 +58,7 @@ handle_error:
   ZzWriteLastErrorMessage(_R("Error in server socket thread: "));
   /* Ensure that main thread will not wait for ever. */
   RtSignalEvent(lpEvent);
-  nResult = RT_FALSE;
+  nResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -110,7 +110,7 @@ RT_B RT_CALL TtTestSockets()
 
   if (!RtJoinAndCheckThread(&rtThread)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (bSocketCreated)
   {
@@ -130,7 +130,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 

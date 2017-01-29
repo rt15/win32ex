@@ -31,7 +31,7 @@ RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
   if (lpArea != lpHeapBuffer) goto handle_error;
   if (unHeapBufferSize != 40) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   if (lpHeapBuffer)
   {
@@ -45,6 +45,6 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }

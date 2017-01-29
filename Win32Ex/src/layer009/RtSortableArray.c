@@ -116,7 +116,7 @@ RT_B RT_API RtSortSortableArray(void* lpSortableArray)
 
   if (lpHeader->bSorted)
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   else
   {
@@ -157,11 +157,11 @@ RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, 
 
   if (!RtBinarySearchIndex(lpSortableArray, lpItem, lpHeader->rtArrayHeader.unSize, lpHeader->rtArrayHeader.unItemSize, lpHeader->lpComparisonCallback, lpHeader->lpContext, lpItemIndex)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resource;
 handle_error:
   *lpItemIndex = RT_TYPE_MAX_UN;
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resource:
   return bResult;
 }

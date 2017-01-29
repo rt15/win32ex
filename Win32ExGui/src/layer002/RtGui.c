@@ -17,14 +17,14 @@ RT_B RT_API RtInitCommonControls(RT_UN32 nClasses)
   rtInitCommonControls.dwICC = nClasses;
 
   if (!InitCommonControlsEx(&rtInitCommonControls)) goto handle_error;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
   /* InitCommonControlsEx might not call SetLastError. */
   RtSetLastError(RT_ERROR_FUNCTION_FAILED);
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -271,7 +271,7 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
     }
   }
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
   /* Free allocated content in case of error. */
@@ -294,7 +294,7 @@ handle_error:
       DeleteObject(lpCommandMenuItems[unI].hBitmap);
     }
   }
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   if (hDc)
   {
@@ -324,7 +324,7 @@ RT_B RT_API RtFreeGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* lp
   RT_UN unI;
   RT_B bResult;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 
   for (unI = 0; unI < lpGuiCommandMenuItemManager->unCommandMenuItemsCount; unI++)
   {
@@ -333,16 +333,16 @@ RT_B RT_API RtFreeGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* lp
     /* Free icons generated from system image lists. */
     if (lpGuiCommandMenuItem->unSystemImageIndex != RT_TYPE_MAX_UN)
     {
-      if (!DestroyIcon(lpGuiCommandMenuItem->hIcon)) bResult = RT_FALSE;
+      if (!DestroyIcon(lpGuiCommandMenuItem->hIcon)) bResult = RT_FAILURE;
     }
     if (lpGuiCommandMenuItem->hBitmap)
     {
-      if (!DeleteObject(lpGuiCommandMenuItem->hBitmap)) bResult = RT_FALSE;
+      if (!DeleteObject(lpGuiCommandMenuItem->hBitmap)) bResult = RT_FAILURE;
     }
   }
 
   /* Free the image list. */
-  if (!ImageList_Destroy(lpGuiCommandMenuItemManager->hToolBarImageList)) bResult = RT_FALSE;
+  if (!ImageList_Destroy(lpGuiCommandMenuItemManager->hToolBarImageList)) bResult = RT_FAILURE;
 
   return bResult;
 }
@@ -731,11 +731,11 @@ RT_B RT_API RtSetWindowUserData(RT_H hWindow, void* lpUserData)
   nReturnedValue = SetWindowLongPtr(hWindow, GWLP_USERDATA, RT_TYPE_MAKE_UINTEGER(lpUserData));
   if (!nReturnedValue && GetLastError())
   {
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
   }
   else
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   return bResult;
 }

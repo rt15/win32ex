@@ -44,12 +44,12 @@ RT_B RT_API RtConvertStringToInteger(RT_CHAR* lpInput, RT_N* lpResult)
   }
   *lpResult = nResult;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -182,10 +182,10 @@ RT_B RT_API RtReplaceString(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_CHAR* lpR
   /* Copy remaining characters. */
   if (!RtCopyString(lpInString, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   *lpWritten += unWritten;
   return bResult;
@@ -213,13 +213,13 @@ RT_B RT_API RtCopyStringWithSize(RT_CHAR* lpSource, RT_UN unSize, RT_CHAR* lpBuf
   /* Copy only unBufferSize - 1 if the buffer is too small. */
   if (unSize > unBufferSize - 1)
   {
-    bResult = RT_FALSE;
+    bResult = RT_FAILURE;
     RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
     unSize = unBufferSize - 1;
   }
   else
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
 
   /* Manage overlapping. */
@@ -244,7 +244,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -261,10 +261,10 @@ RT_B RT_API RtCopyChar(RT_CHAR nChar, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_
   lpBuffer[1] = 0;
   (*lpWritten)++;
 
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   goto free_resources;
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
 free_resources:
   return bResult;
 }
@@ -307,12 +307,12 @@ RT_B RT_API RtCopyString(RT_CHAR* lpSource, RT_CHAR* lpBuffer, RT_UN unBufferSiz
   lpBuffer[unI] = 0;
 
   *lpWritten += unI;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -369,7 +369,7 @@ RT_B RT_CDECL_API RtVConcatStrings(va_list vaList, RT_UN unStringsCount, RT_CHAR
   RT_UN unI;
 
   unWritten = 0;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
   for (unI = 0; unI < unStringsCount; unI++)
   {
     lpString = va_arg(vaList, RT_CHAR*);
@@ -442,12 +442,12 @@ RT_B RT_API RtLeftPadStringWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_CHAR
   }
 
   *lpWritten = unWritten;
-  bResult = RT_TRUE;
+  bResult = RT_SUCCESS;
 free_resources:
   return bResult;
 
 handle_error:
-  bResult = RT_FALSE;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 

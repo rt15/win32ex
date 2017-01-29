@@ -71,13 +71,13 @@ RT_B RT_API RtFree(void** lpArea)
 #else
     /* The free function returns void. */
     free(*lpArea);
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
 #endif
     *lpArea = RT_NULL;
   }
   else
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
   return bResult;
 }

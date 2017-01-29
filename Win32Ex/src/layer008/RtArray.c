@@ -198,7 +198,7 @@ RT_B RT_API RtFreeArray(void** lpArray)
   }
   else
   {
-    bResult = RT_TRUE;
+    bResult = RT_SUCCESS;
   }
 
   return bResult;
