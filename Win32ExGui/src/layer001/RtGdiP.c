@@ -50,8 +50,48 @@ RT_B RT_API RtGdipCleanUp()
 
 void RT_API RtGdipSetLastErrorFromGpStatus(RT_UN unStatus)
 {
-  /* TODO: Implement. */
-  RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+  switch (unStatus)
+  {
+    case Ok:
+      SetLastError(ERROR_SUCCESS);
+      break;
+    case InvalidParameter:
+      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+      break;
+    case OutOfMemory:
+      SetLastError(ERROR_OUTOFMEMORY);
+      break;
+    case ObjectBusy:
+      SetLastError(ERROR_BUSY);
+      break;
+    case InsufficientBuffer:
+      RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
+      break;
+    case FileNotFound:
+      SetLastError(ERROR_FILE_NOT_FOUND);
+      break;
+    case ValueOverflow:
+      RtSetLastError(RT_ERROR_ARITHMETIC_OVERFLOW);
+      break;
+    case AccessDenied:
+      SetLastError(ERROR_ACCESS_DENIED);
+      break;
+    case Win32Error:
+    case NotImplemented:
+    case WrongState:
+    case Aborted:
+    case UnknownImageFormat:
+    case FontFamilyNotFound:
+    case FontStyleNotFound:
+    case GdiplusNotInitialized:
+    case PropertyNotFound:
+    case PropertyNotSupported:
+    case GenericError:
+    case NotTrueTypeFont:
+    case UnsupportedGdiplusVersion:
+    default:
+       RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+  }
 }
 
 RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode)

@@ -571,7 +571,6 @@ typedef enum ImageType {
 	ImageTypeMetafile = 2
 } ImageType;
 
-/* TODO: InterpolationMode */
 typedef enum InterpolationMode {
 	/*InterpolationModeInvalid = QualityModeInvalid,*/
 	InterpolationModeDefault = 0,
@@ -674,7 +673,6 @@ typedef enum PenType {
 	PenTypeLinearGradient = 4
 } PenType;
 
-/* TODO: PixelOffsetMode */
 typedef enum PixelOffsetMode {
 	/*PixelOffsetModeInvalid = QualityModeInvalid,*/
 	PixelOffsetModeDefault = 0,
@@ -684,7 +682,6 @@ typedef enum PixelOffsetMode {
 	PixelOffsetModeHalf = 4
 } PixelOffsetMode;
 
-/* TODO: QualityMode */
 typedef enum QualityMode {
 	/*QualityModeInvalid = ?,*/
 	QualityModeDefault = 0,
@@ -692,7 +689,6 @@ typedef enum QualityMode {
 	QualityModeHigh = 2
 } QualityMode;
 
-/* TODO: SmoothingMode */
 typedef enum SmoothingMode {
 	/*SmoothingModeInvalid = QualityModeInvalid,*/
 	SmoothingModeDefault = 0,
