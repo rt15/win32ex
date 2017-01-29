@@ -18,8 +18,6 @@
 Better hash map implementation (Java like)? Use it in Properties?
 http://javahungry.blogspot.com/2013/08/hashing-how-hash-map-works-in-java-or.html
 
-Use unsigned when possible as DWORD on Windows and size_t on Linux are widely used.
-
 Ensure that there cannot be memory leaks while setting array/list size.
 The items must remain accessible and untouched.
 
