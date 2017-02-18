@@ -6,6 +6,13 @@
 /**
  * @file
  * Memory utility functions.
+ *
+ * <p>
+ * To compare/copy/move/set memory, use macros.<br>
+ * If the CRT is used, then CRT/intrinsics will be used.<br>
+ * If CRT is not used then implementations from RtWin32ExMem.h/intrinsicts will be used.<br>
+ * Intrinsics are much faster than CRT/RtWin32ExMem.h (They are "inlined" and the size is known).
+ * </p>
  */
 
 #ifdef RT_DEFINE_GCC
@@ -20,52 +27,53 @@
 
 #endif
 
+/* memmove is not available as intrinsic for VC and not declared outside CRT. */
+#if (!defined(RT_DEFINE_USE_CRT)) && (defined(RT_DEFINE_VC))
+void*  __cdecl memmove(void*, const void*, size_t);
+#endif
+
 /**
  * Compare two memory areas.<br>
- * Return a positive number if the first different byte is greater in <tt>lpArea1</tt>
+ * Return a positive number if the first different byte is greater in <tt>AREA1</tt>
  *
  * <p>
  * Like for memcmp, values inside areas are considered unsigned chars.
  * </p>
- *
- * <p>
- * Same prototype as <tt>memcmp</tt> except calling convention.
- * </p>
  */
-RT_N RT_API RtCompareMemory(void* lpArea1, void* lpArea2, RT_UN unSize);
+#define RT_MEMORY_COMPARE(AREA1, AREA2, SIZE) memcmp(AREA1, AREA2, SIZE)
 
 /**
+ * Copy SIZE bytes from SOURCE to DESTINATION. 
  *
  * <p>
  * Order of source and destination are the opposite of memcpy.
  * </p>
  *
- * <p>
- * Same prototype as <tt>memcpy</tt> except calling convention.
- * </p>
- *
- * @return <tt>lpDestination</tt>
+ * @return <tt>DESTINATION</tt>
  */
-void* RT_API RtCopyMemory(void* lpSource, void* lpDestination, RT_UN unSize);
+#define RT_MEMORY_COPY(SOURCE, DESTINATION, SIZE) memcpy(DESTINATION, SOURCE, SIZE)
 
 /**
+ * Copy SIZE bytes from SOURCE to DESTINATION. 
+ *
+ * <p>
  * Act like if a temporary buffer would have been used to avoid overwritting issues.
- *
- * <p>
- * Same prototype as <tt>memmove</tt> except calling convention.
  * </p>
  *
- * @return <tt>lpDestination</tt>
+ * @return <tt>DESTINATION</tt>
  */
-void* RT_API RtMoveMemory(void* lpSource, void* lpDestination, RT_UN unSize);
+#define RT_MEMORY_MOVE(SOURCE, DESTINATION, SIZE) memmove(DESTINATION, SOURCE, SIZE)
 
 /**
- * <p>
- * Same prototype as <tt>memset</tt> except calling convention.
- * </p>
+ * Set SIZE bytes with VALUE in AREA.
  *
- * @param unValue Value set to each byte in the area.
+ * @param VALUE Value set to each byte in the area.
  */
+#define RT_MEMORY_SET(AREA, VALUE, SIZE) memset(AREA, VALUE, SIZE)
+
+RT_N RT_API RtCompareMemory(void* lpArea1, void* lpArea2, RT_UN unSize);
+void* RT_API RtCopyMemory(void* lpSource, void* lpDestination, RT_UN unSize);
+void* RT_API RtMoveMemory(void* lpSource, void* lpDestination, RT_UN unSize);
 void* RT_API RtSetMemory(void* lpArea, RT_UN unValue, RT_UN unSize);
 
 void* RT_API RtZeroMemory(void* lpArea, RT_UN unSize);

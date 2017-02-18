@@ -25,7 +25,10 @@
 
 /* Allow to define memcmp, memcpy and memset while they are intrinsic and intrinsics are activated. */
 #ifdef RT_DEFINE_VC
+
+/* memmove is not available as intrinsic. */
 #pragma function(memcmp, memcpy, memset)
+
 #endif
 
 #ifdef RT_DEFINE_VC
@@ -40,51 +43,159 @@ typedef RT_UN RT_SIZE_T;
 
 int RT_CDECL memcmp(void* lpArea1, void* lpArea2, RT_SIZE_T unSize)
 {
-  RT_CHAR8* lpCharArea1;   /* Facilite l'accès aux octets de lpArea1              */
-  RT_CHAR8* lpCharArea2;   /* Idem pour lpArea2                                   */
-  RT_SIZE_T unI;
+  RT_UN unWordsCount;
+  RT_UN* lpWordArea1;
+  RT_UN* lpWordArea2;
+  RT_UN unRemainder;
+  RT_UCHAR8* lpUCharArea1;
+  RT_UCHAR8* lpUCharArea2;
+  RT_UN unI;
 
-  lpCharArea1 = (RT_CHAR8*)lpArea1;
-  lpCharArea2 = (RT_CHAR8*)lpArea2;
+  unWordsCount = unSize / sizeof(RT_UN);
+  if (unWordsCount)
+  {
+    lpWordArea1 = lpArea1;
+    lpWordArea2 = lpArea2;
+    for (unI = 0; unI < unWordsCount; unI++)
+    {
+      if (lpWordArea1[unI] != lpWordArea2[unI])
+      {
+        unRemainder = unSize - unI * sizeof(RT_UN);
+        lpUCharArea1 = (RT_UCHAR8*)&lpWordArea1[unI];
+        lpUCharArea2 = (RT_UCHAR8*)&lpWordArea2[unI];
+        goto handleRemainder;
+      }
+    }
+    unRemainder = unSize % sizeof(RT_UN);
+    lpUCharArea1 = (RT_UCHAR8*)&lpWordArea1[unWordsCount];
+    lpUCharArea2 = (RT_UCHAR8*)&lpWordArea2[unWordsCount];
+  }
+  else
+  {
+    unRemainder = unSize;
+    lpUCharArea1 = lpArea1;
+    lpUCharArea2 = lpArea2;
+  }
+
+handleRemainder:
   unI = 0;
-  while ((unI < unSize) && (lpCharArea1[unI] == lpCharArea2[unI]))
+  while ((unI < unRemainder) && (lpUCharArea1[unI] == lpUCharArea2[unI]))
     unI++;
-  if (unI == unSize) unI--;
-  return lpCharArea1[unI] - lpCharArea2[unI];
+  if (unI == unRemainder) unI--;
+  return lpUCharArea1[unI] - lpUCharArea2[unI];
 }
 
 void* RT_CDECL memcpy(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
 {
-  RT_CHAR8* lpCharDest;    /* Facilite l'accès à la zone de destination           */
-  RT_CHAR8* lpCharSrc;     /* Facilite l'accès à la zone source                   */
-  RT_SIZE_T unI;
+  RT_UN unWordsCount;
+  RT_UN* lpWordSource;
+  RT_UN* lpWordDestination;
+  RT_UN unRemainder;
+  RT_CHAR8* lpCharSource;
+  RT_CHAR8* lpCharDestination;
+  RT_UN unI;
 
-  lpCharDest = lpDestination;
-  lpCharSrc = lpSource;
-  for (unI = 0; unI < unSize; unI++)
-    lpCharDest[unI] = lpCharSrc[unI];
+  unWordsCount = unSize / sizeof(RT_UN);
+  if (unWordsCount)
+  {
+    lpWordSource = lpSource;
+    lpWordDestination = lpDestination;
+    for (unI = 0; unI < unWordsCount; unI++)
+    {
+      lpWordDestination[unI] = lpWordSource[unI];
+    }
+    unRemainder = unSize % sizeof(RT_UN);
+    if (unRemainder)
+    {
+      lpCharSource = (RT_CHAR8*)&lpWordSource[unWordsCount];
+      lpCharDestination = (RT_CHAR8*)&lpWordDestination[unWordsCount];
+      for (unI = 0; unI < unRemainder; unI++)
+      {
+        lpCharDestination[unI] = lpCharSource[unI];
+      }
+    }
+  }
+  else
+  {
+    lpCharSource = lpSource;
+    lpCharDestination = lpDestination;
+    for (unI = 0; unI < unSize; unI++)
+    {
+      lpCharDestination[unI] = lpCharSource[unI];
+    }
+  }
 
   return lpDestination;
 }
 
 void* RT_CDECL memmove(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
 {
-  RT_CHAR8* lpCharDest;    /* Facilite l'accès à la zone de destination           */
-  RT_CHAR8* lpCharSrc;     /* Facilite l'accès à la zone source                   */
-  RT_SIZE_T unI;
+  RT_UN unWordsCount;
+  RT_UN* lpWordSource;
+  RT_UN* lpWordDestination;
+  RT_UN unRemainder;
+  RT_CHAR8* lpCharSource;
+  RT_CHAR8* lpCharDestination;
+  RT_UN unI;
 
-  lpCharDest = lpDestination;
-  lpCharSrc = lpSource;
-
+  unWordsCount = unSize / sizeof(RT_UN);
   if (lpDestination > lpSource)
   {
-    for (unI = unSize - 1; unI != 0; unI--)
-      lpCharDest[unI] = lpCharSrc[unI];
-    lpCharDest[0] = lpCharSrc[0];
+    if (unWordsCount)
+    {
+      lpWordSource = (RT_UN*)&((RT_CHAR8*)lpSource)[unSize];
+      lpWordDestination = (RT_UN*)&((RT_CHAR8*)lpDestination)[unSize];
+      for (unI = 1; unI <= unWordsCount; unI++)
+      {
+        lpWordDestination[-(RT_N)unI] = lpWordSource[-(RT_N)unI];
+      }
+      unRemainder = unSize % sizeof(RT_UN);
+      lpCharSource = (RT_CHAR8*)&lpWordSource[-(RT_N)unWordsCount];
+      lpCharDestination = (RT_CHAR8*)&lpWordDestination[-(RT_N)unWordsCount];;
+    }
+    else
+    {
+      unRemainder = unSize;
+      lpCharSource = &((RT_CHAR8*)lpSource)[unSize];
+      lpCharDestination = &((RT_CHAR8*)lpDestination)[unSize];
+    }
+    for (unI = 1; unI <= unRemainder; unI++)
+    {
+      lpCharDestination[-(RT_N)unI] = lpCharSource[-(RT_N)unI];
+    }
   }
   else
-    for (unI = 0; unI < unSize; unI++)
-      lpCharDest[unI] = lpCharSrc[unI];
+  {
+    /* No overwriting possible, same code as RtCopyMemory. */
+    if (unWordsCount)
+    {
+      lpWordSource = lpSource;
+      lpWordDestination = lpDestination;
+      for (unI = 0; unI < unWordsCount; unI++)
+      {
+        lpWordDestination[unI] = lpWordSource[unI];
+      }
+      unRemainder = unSize % sizeof(RT_UN);
+      if (unRemainder)
+      {
+        lpCharSource = (RT_CHAR8*)&lpWordSource[unWordsCount];
+        lpCharDestination = (RT_CHAR8*)&lpWordDestination[unWordsCount];
+        for (unI = 0; unI < unRemainder; unI++)
+        {
+          lpCharDestination[unI] = lpCharSource[unI];
+        }
+      }
+    }
+    else
+    {
+      lpCharSource = lpSource;
+      lpCharDestination = lpDestination;
+      for (unI = 0; unI < unSize; unI++)
+      {
+        lpCharDestination[unI] = lpCharSource[unI];
+      }
+    }
+  }
 
   return lpDestination;
 }

@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="shell32.lib"
+				AdditionalDependencies="Win32Exd.lib shell32.lib user32.lib"
 				OutputFile="$(OutDir)\$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="shell32.lib"
+				AdditionalDependencies="Win32Ex.lib shell32.lib user32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
@@ -192,7 +192,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\src\TestsWithCrt\src\ZzCompareMemory.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TestsWithCrt\src\ZzCopyMemory.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TestsWithCrt\src\ZzMoveMemory.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\TestsWithCrt\src\ZzTestsWithCrt.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TestsWithCrt\src\ZzUtils.c"
 				>
 			</File>
 		</Filter>
@@ -201,6 +217,14 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\src\TestsWithCrt\include\ZzResources.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TestsWithCrt\include\ZzUtils.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
