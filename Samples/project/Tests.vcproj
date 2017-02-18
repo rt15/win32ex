@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="ClimbingContest"
-	ProjectGUID="{02498908-EBD9-4812-A6C3-AD8B07A0A13F}"
-	RootNamespace="ClimbingContest"
+	Name="Tests"
+	ProjectGUID="{E9109A59-87B1-457F-93A0-D5DD9B5C2DE7}"
+	RootNamespace="Tests"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -41,7 +41,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\Win32ExGui\include;..\..\Win32Ex\include;..\src\$(ProjectName)\include"
+				FavorSizeOrSpeed="2"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
@@ -65,15 +67,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32ExGuid.lib Win32Exd.lib Comctl32.lib Gdi32.lib Shell32.lib User32.lib Kernel32.lib"
+				AdditionalDependencies="Win32Exd.lib ws2_32.lib shell32.lib user32.lib"
 				OutputFile="$(OutDir)\$(ProjectName)d.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\Win32ExGui\lib;..\..\Win32Ex\lib"
+				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
-				ManifestFile=""
 				IgnoreAllDefaultLibraries="true"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -81,7 +82,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="..\src\$(ProjectName)\resources\app.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -127,8 +127,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="1"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\Win32ExGui\include;..\..\Win32Ex\include;..\src\$(ProjectName)\include"
+				FavorSizeOrSpeed="2"
+				WholeProgramOptimization="false"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="0"
@@ -151,16 +154,16 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32ExGui.lib Win32Ex.lib Comctl32.lib Gdi32.lib Shell32.lib User32.lib Kernel32.lib"
+				AdditionalDependencies="Win32Ex.lib ws2_32.lib user32.lib shell32.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\Win32ExGui\lib;..\..\Win32Ex\lib"
+				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
-				ManifestFile=""
 				IgnoreAllDefaultLibraries="true"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -168,7 +171,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="..\src\$(ProjectName)\resources\app.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -199,19 +201,71 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\ClimbingContest\src\ZzAppContext.c"
+				RelativePath="..\src\Tests\src\Tests.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\ClimbingContest\src\ZzClimbingContest.c"
+				RelativePath="..\src\Tests\src\ttatomic.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\ClimbingContest\src\ZzGui.c"
+				RelativePath="..\src\Tests\src\ttchar.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\ClimbingContest\src\ZzStrings.c"
+				RelativePath="..\src\Tests\src\ttencoding.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttevent.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttfilesystem.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttinitialization.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttlist.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttmemory.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttproperties.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttsocket.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ttthread.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\tttypes.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTestHeap.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTestRandom.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTools.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTools.h"
 				>
 			</File>
 		</Filter>
@@ -220,36 +274,12 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\src\ClimbingContest\include\ZzAppContext.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\ClimbingContest\include\ZzGui.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\ClimbingContest\include\ZzResources.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\ClimbingContest\include\ZzStrings.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\ClimbingContest\include\ZzWindows.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath="..\src\ClimbingContest\resources\app.manifest"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

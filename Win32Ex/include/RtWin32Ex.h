@@ -15,6 +15,10 @@
 
 #### TODO :
 
+Add a TestsWithCrt Project.
+Same as Tests, but linked with CRT.
+To test performance of low level memory functions (CRT vs Win32Ex).
+
 Better hash map implementation (Java like)? Use it in Properties?
 http://javahungry.blogspot.com/2013/08/hashing-how-hash-map-works-in-java-or.html
 

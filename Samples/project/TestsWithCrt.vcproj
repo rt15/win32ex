@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="Test"
-	ProjectGUID="{E9109A59-87B1-457F-93A0-D5DD9B5C2DE7}"
-	RootNamespace="Test"
+	Name="TestsWithCrt"
+	ProjectGUID="{D77C1F62-F878-454E-8ED0-A8739C38E42C}"
+	RootNamespace="TestsWithCrt"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -18,7 +18,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="..\bin"
-			IntermediateDirectory="..\obj\$(ConfigurationName)"
+			IntermediateDirectory="..\obj\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -41,13 +41,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\Win32Ex\include"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include;..\src\$(ProjectName)\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
-				BasicRuntimeChecks="0"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="false"
 				UsePrecompiledHeader="0"
@@ -67,12 +65,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32Exd.lib ws2_32.lib shell32.lib user32.lib"
+				AdditionalDependencies="shell32.lib"
 				OutputFile="$(OutDir)\$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
-				IgnoreAllDefaultLibraries="true"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -105,7 +102,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="..\bin"
-			IntermediateDirectory="..\obj\$(ConfigurationName)"
+			IntermediateDirectory="..\obj\$(ConfigurationName)\$(ProjectName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -127,14 +124,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="1"
 				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="2"
-				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\Win32Ex\include"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include;..\src\$(ProjectName)\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				ExceptionHandling="0"
-				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
 				UsePrecompiledHeader="0"
@@ -154,16 +147,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32Ex.lib ws2_32.lib user32.lib shell32.lib"
+				AdditionalDependencies="shell32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
-				IgnoreAllDefaultLibraries="true"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				LinkTimeCodeGeneration="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -201,71 +192,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\Tests\src\Tests.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttatomic.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttchar.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttencoding.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttevent.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttfilesystem.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttinitialization.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttlist.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttmemory.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttproperties.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttsocket.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ttthread.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\tttypes.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestHeap.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestRandom.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTools.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTools.h"
+				RelativePath="..\src\TestsWithCrt\src\ZzTestsWithCrt.c"
 				>
 			</File>
 		</Filter>

@@ -226,7 +226,7 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
   return nResult;
 }
 
-RT_B RT_CALL RtMainWithBoolean(RT_N32 nArgC, RT_CHAR* lpArgV[])
+RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   ZZ_APP_CONTEXT rtAppContext;
   RT_B bMainWindowCreated;
@@ -311,7 +311,7 @@ handle_error:
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   RT_UN16 unResult;
-  if (RtMainWithBoolean(nArgC, lpArgV))
+  if (ZzMain(nArgC, lpArgV))
   {
     unResult = 0;
   }
