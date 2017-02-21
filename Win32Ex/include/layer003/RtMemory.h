@@ -40,9 +40,11 @@ void* __cdecl memmove(void*, const void*, size_t);
 void* __cdecl memset(void*, int, size_t);
 
 #endif
-#endif
+#else
 
-#if (!defined(RT_DEFINE_USE_CRT)) && (defined(RT_DEFINE_VC))
+/* We will use CRT memcmp/memcpy/memmove/memset below. */
+#include <string.h>
+
 #endif
 
 /**
