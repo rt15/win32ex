@@ -10,5 +10,6 @@
 		<Project filename="Climbing.cbp" />
 		<Project filename="ReplaceInFile.cbp" />
 		<Project filename="ClimbingContest.cbp" />
+		<Project filename="TestsWithCrt.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

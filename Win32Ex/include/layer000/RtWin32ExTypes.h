@@ -5,7 +5,9 @@
 /* a library feature.                                    */
 /* It is a C runtime header included in all cases but    */
 /* it should have a very small footprint.                */
+/* Defines _W64 that is used below.                      */
 #include <stdarg.h>
+
 
 /**
  * @file
@@ -178,6 +180,11 @@ typedef void* RT_H;                  /* HANDLE.  */
 
 /* Needed for Visual Studio compiler built-in, should be light... */
 #include <intrin.h>
+
+#else
+
+/* Needed for size_t, should be light... */
+#include <stddef.h>
 
 #endif
 

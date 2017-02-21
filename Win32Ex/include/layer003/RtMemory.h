@@ -27,9 +27,22 @@
 
 #endif
 
+#ifndef RT_DEFINE_USE_CRT
+#ifdef RT_DEFINE_VC
 /* memmove is not available as intrinsic for VC and not declared outside CRT. */
-#if (!defined(RT_DEFINE_USE_CRT)) && (defined(RT_DEFINE_VC))
 void*  __cdecl memmove(void*, const void*, size_t);
+#else
+
+/* No CRT so we define built-ins. */
+int __cdecl memcmp(const void*, const void*, size_t);
+void* __cdecl memcpy(void*, const void*, size_t);
+void* __cdecl memmove(void*, const void*, size_t);
+void* __cdecl memset(void*, int, size_t);
+
+#endif
+#endif
+
+#if (!defined(RT_DEFINE_USE_CRT)) && (defined(RT_DEFINE_VC))
 #endif
 
 /**
@@ -43,7 +56,7 @@ void*  __cdecl memmove(void*, const void*, size_t);
 #define RT_MEMORY_COMPARE(AREA1, AREA2, SIZE) memcmp(AREA1, AREA2, SIZE)
 
 /**
- * Copy SIZE bytes from SOURCE to DESTINATION. 
+ * Copy SIZE bytes from SOURCE to DESTINATION.
  *
  * <p>
  * Order of source and destination are the opposite of memcpy.
@@ -54,7 +67,7 @@ void*  __cdecl memmove(void*, const void*, size_t);
 #define RT_MEMORY_COPY(SOURCE, DESTINATION, SIZE) memcpy(DESTINATION, SOURCE, SIZE)
 
 /**
- * Copy SIZE bytes from SOURCE to DESTINATION. 
+ * Copy SIZE bytes from SOURCE to DESTINATION.
  *
  * <p>
  * Act like if a temporary buffer would have been used to avoid overwritting issues.

@@ -15,7 +15,6 @@
  * <li>function names to memcmp, memcpy, memmove and memset.</li>
  * <li>Calling convention from RT_API to RT_CDECL.</li>
  * <li>Orders of sources and destinations in prototypes.</li>
- * <li>RT_UN into RT_SIZE_T.</li>
  * <li>RT_N into int.</li>
  * </ul>
  */
@@ -31,24 +30,14 @@
 
 #endif
 
-#ifdef RT_DEFINE_VC
-
-typedef size_t RT_SIZE_T;
-
-#else /* NOT RT_DEFINE_VC */
-
-typedef RT_UN RT_SIZE_T;
-
-#endif
-
-int RT_CDECL memcmp(void* lpArea1, void* lpArea2, RT_SIZE_T unSize)
+int RT_CDECL memcmp(const void* lpArea1, const void* lpArea2, size_t unSize)
 {
   RT_UN unWordsCount;
-  RT_UN* lpWordArea1;
-  RT_UN* lpWordArea2;
+  const RT_UN* lpWordArea1;
+  const RT_UN* lpWordArea2;
   RT_UN unRemainder;
-  RT_UCHAR8* lpUCharArea1;
-  RT_UCHAR8* lpUCharArea2;
+  const RT_UCHAR8* lpUCharArea1;
+  const RT_UCHAR8* lpUCharArea2;
   RT_UN unI;
 
   unWordsCount = unSize / sizeof(RT_UN);
@@ -85,13 +74,13 @@ handleRemainder:
   return lpUCharArea1[unI] - lpUCharArea2[unI];
 }
 
-void* RT_CDECL memcpy(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
+void* RT_CDECL memcpy(void* lpDestination, const void* lpSource, size_t unSize)
 {
   RT_UN unWordsCount;
-  RT_UN* lpWordSource;
+  const RT_UN* lpWordSource;
   RT_UN* lpWordDestination;
   RT_UN unRemainder;
-  RT_CHAR8* lpCharSource;
+  const RT_CHAR8* lpCharSource;
   RT_CHAR8* lpCharDestination;
   RT_UN unI;
 
@@ -128,13 +117,13 @@ void* RT_CDECL memcpy(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
   return lpDestination;
 }
 
-void* RT_CDECL memmove(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
+void* RT_CDECL memmove(void* lpDestination, const void* lpSource, size_t unSize)
 {
   RT_UN unWordsCount;
-  RT_UN* lpWordSource;
+  const RT_UN* lpWordSource;
   RT_UN* lpWordDestination;
   RT_UN unRemainder;
-  RT_CHAR8* lpCharSource;
+  const RT_CHAR8* lpCharSource;
   RT_CHAR8* lpCharDestination;
   RT_UN unI;
 
@@ -200,10 +189,10 @@ void* RT_CDECL memmove(void* lpDestination, void* lpSource, RT_SIZE_T unSize)
   return lpDestination;
 }
 
-void* RT_CDECL memset(void* lpArea, int nValue, RT_SIZE_T unSize)
+void* RT_CDECL memset(void* lpArea, int nValue, size_t unSize)
 {
   RT_UCHAR8* lpByteArea;    /* Facilite l'accès à la zone                        */
-  RT_SIZE_T unI;
+  size_t unI;
 
   lpByteArea = (RT_UCHAR8*)lpArea;
   for (unI = 0; unI < unSize; unI++)
