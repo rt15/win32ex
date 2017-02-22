@@ -11,7 +11,7 @@ RT_N RT_CALL ZzCompareMemory(void* lpArea1, void* lpArea2, RT_UN unSize)
 
 RT_B RT_CALL ZzTestCompareMemory()
 {
-  LARGE_INTEGER rtStartCounter;
+  RT_CHRONO rtChrono;
   RT_UCHAR8 lpArea1[ZZ_BUFFER_SIZE];
   RT_UCHAR8 lpArea2[ZZ_BUFFER_SIZE];
   RT_UN unI;
@@ -27,36 +27,36 @@ RT_B RT_CALL ZzTestCompareMemory()
   lpArea2[ZZ_BUFFER_SIZE - 1] = 'a';
 
   /* Test memcmp. */
-  if (!ZzStartChrono(&rtStartCounter)) goto handle_error;
+  if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
     if (memcmp(lpArea1, lpArea2, ZZ_BUFFER_SIZE) <= 0) goto handle_error;
   }
-  if (!ZzStopChrono(_R("memcmp"), &rtStartCounter)) goto handle_error;
+  if (!ZzStopChrono(_R("memcmp"), &rtChrono)) goto handle_error;
 
   /* Test memcmp in function. */
-  if (!ZzStartChrono(&rtStartCounter)) goto handle_error;
+  if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
     if (ZzCompareMemory(lpArea1, lpArea2, ZZ_BUFFER_SIZE) <= 0) goto handle_error;
   }
-  if (!ZzStopChrono(_R("memcmp in function"), &rtStartCounter)) goto handle_error;
+  if (!ZzStopChrono(_R("memcmp in function"), &rtChrono)) goto handle_error;
 
   /* Test RtCompareMemory. */
-  if (!ZzStartChrono(&rtStartCounter)) goto handle_error;
+  if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
     if (RtCompareMemory(lpArea1, lpArea2, ZZ_BUFFER_SIZE) <= 0) goto handle_error;
   }
-  if (!ZzStopChrono(_R("RtCompareMemory"), &rtStartCounter)) goto handle_error;
+  if (!ZzStopChrono(_R("RtCompareMemory"), &rtChrono)) goto handle_error;
 
   /* Test RT_MEMORY_COMPARE. */
-  if (!ZzStartChrono(&rtStartCounter)) goto handle_error;
+  if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
     if (RT_MEMORY_COMPARE(lpArea1, lpArea2, ZZ_BUFFER_SIZE) <= 0) goto handle_error;
   }
-  if (!ZzStopChrono(_R("RT_MEMORY_COMPARE"), &rtStartCounter)) goto handle_error;
+  if (!ZzStopChrono(_R("RT_MEMORY_COMPARE"), &rtChrono)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

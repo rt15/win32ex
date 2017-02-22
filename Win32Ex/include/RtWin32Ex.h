@@ -301,6 +301,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer002/RtErrorCode.h"
 
 #include "layer003/RtAtomic.h"
+#include "layer003/RtChrono.h"
 #include "layer003/RtComparisonCallback.h"
 #include "layer003/RtCriticalsection.h"
 #include "layer003/RtEnvironmentVariable.h"

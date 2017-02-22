@@ -181,6 +181,10 @@
 				Name="layer003"
 				>
 				<File
+					RelativePath="..\src\layer003\RtChrono.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\layer003\RtComparisonCallback.c"
 					>
 				</File>
@@ -392,6 +396,10 @@
 				>
 				<File
 					RelativePath="..\include\layer003\RtAtomic.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer003\RtChrono.h"
 					>
 				</File>
 				<File

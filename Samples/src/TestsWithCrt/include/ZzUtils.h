@@ -3,10 +3,8 @@
 
 #include <RtWin32Ex.h>
 
-#include <windows.h>
+RT_B RT_CALL ZzStartChrono(RT_CHRONO* lpChrono);
 
-RT_B RT_CALL ZzStartChrono(LARGE_INTEGER* lpStartCounter);
-
-RT_B RT_CALL ZzStopChrono(RT_CHAR* lpIdentifier, LARGE_INTEGER* lpStartCounter);
+RT_B RT_CALL ZzStopChrono(RT_CHAR* lpIdentifier, RT_CHRONO* lpChrono);
 
 #endif /* ZZ_UTILS_H */
