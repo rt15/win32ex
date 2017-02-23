@@ -204,11 +204,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\TestsWithCrt\src\ZzSetMemory.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\TestsWithCrt\src\ZzTestsWithCrt.c"
 				>
 			</File>
 			<File
 				RelativePath="..\src\TestsWithCrt\src\ZzUtils.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\TestsWithCrt\src\ZzZeroMemory.c"
 				>
 			</File>
 		</Filter>

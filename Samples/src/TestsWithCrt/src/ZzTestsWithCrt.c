@@ -6,6 +6,8 @@
 RT_B RT_CALL ZzTestCompareMemory();
 RT_B RT_CALL ZzTestCopyMemory();
 RT_B RT_CALL ZzTestMoveMemory();
+RT_B RT_CALL ZzTestSetMemory();
+RT_B RT_CALL ZzTestZeroMemory();
 
 RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
@@ -18,6 +20,12 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   RtWriteStringToConsoleWithSize(_R("\n"), 1);
 
   if (!ZzTestMoveMemory()) goto handle_error;
+  RtWriteStringToConsoleWithSize(_R("\n"), 1);
+
+  if (!ZzTestSetMemory()) goto handle_error;
+  RtWriteStringToConsoleWithSize(_R("\n"), 1);
+
+  if (!ZzTestZeroMemory()) goto handle_error;
   RtWriteStringToConsoleWithSize(_R("\n"), 1);
 
   bResult = RT_SUCCESS;

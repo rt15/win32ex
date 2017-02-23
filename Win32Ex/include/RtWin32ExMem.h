@@ -191,12 +191,53 @@ void* RT_CDECL memmove(void* lpDestination, const void* lpSource, size_t unSize)
 
 void* RT_CDECL memset(void* lpArea, int nValue, size_t unSize)
 {
-  RT_UCHAR8* lpByteArea;    /* Facilite l'accès à la zone                        */
-  size_t unI;
+  RT_UN unWordsCount;
+  RT_N* lpWordArea;
+  RT_N nWord;
+  RT_UN unRemainder;
+  RT_CHAR8* lpCharArea;
+  RT_UN unI;
 
-  lpByteArea = (RT_UCHAR8*)lpArea;
-  for (unI = 0; unI < unSize; unI++)
-    lpByteArea[unI] = nValue;
+  unWordsCount = unSize / sizeof(RT_N);
+  if (unWordsCount)
+  {
+    if (nValue)
+    {
+#ifdef RT_DEFINE_64
+      nWord = 0x0101010101010101 * (RT_UCHAR8)nValue;
+#else
+      nWord = 0x01010101 * (RT_UCHAR8)nValue;
+#endif
+    }
+    else
+    {
+      nWord = 0;
+    }
+
+    lpWordArea = lpArea;
+    for (unI = 0; unI < unWordsCount; unI++)
+    {
+      lpWordArea[unI] = nWord;
+    }
+    unRemainder = unSize % sizeof(RT_N);
+    if (unRemainder)
+    {
+      lpCharArea = (RT_CHAR8*)&lpWordArea[unWordsCount];
+      for (unI = 0; unI < unRemainder; unI++)
+      {
+        lpCharArea[unI] = (RT_CHAR8)nValue;
+      }
+    }
+  }
+  else
+  {
+    lpCharArea = lpArea;
+    for (unI = 0; unI < unSize; unI++)
+    {
+      lpCharArea[unI] = (RT_CHAR8)nValue;
+    }
+  }
+
   return lpArea;
 }
 

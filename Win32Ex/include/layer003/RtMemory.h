@@ -86,10 +86,12 @@ void* __cdecl memset(void*, int, size_t);
  */
 #define RT_MEMORY_SET(AREA, VALUE, SIZE) memset(AREA, VALUE, SIZE)
 
+#define RT_MEMORY_ZERO(AREA, SIZE) memset(AREA, 0, SIZE)
+
 RT_N RT_API RtCompareMemory(void* lpArea1, void* lpArea2, RT_UN unSize);
 void* RT_API RtCopyMemory(void* lpSource, void* lpDestination, RT_UN unSize);
 void* RT_API RtMoveMemory(void* lpSource, void* lpDestination, RT_UN unSize);
-void* RT_API RtSetMemory(void* lpArea, RT_UN unValue, RT_UN unSize);
+void* RT_API RtSetMemory(void* lpArea, RT_N32 nValue, RT_UN unSize);
 
 void* RT_API RtZeroMemory(void* lpArea, RT_UN unSize);
 void RT_API RtSwapMemory(void* lpArea1, void* lpArea2, RT_UN unSize);

@@ -3,6 +3,7 @@
 #include <RtWin32Ex.h>
 #include <RtWin32ExGui.h>
 #include <RtWin32ExMain.h>
+#include <RtWin32ExMem.h>
 
 #include "ZzAppContext.h"
 #include "ZzResources.h"

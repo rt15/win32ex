@@ -75,6 +75,7 @@ Vérification du chemin du fichier exécutable.
 Récupération de variable d'environement.
 Récupération du répertoires de configuration de l'application.
 Messages correspondants aux erreurs supportées.
+Affichage de la fréquence des compteurs (QueryPerformanceFrequency et équivalent sous Linux).
 
 
 Fonction pour récupérer un nom de fichier temporaire ?

@@ -89,10 +89,16 @@
 		<Unit filename="../src/TestsWithCrt/src/ZzMoveMemory.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/TestsWithCrt/src/ZzSetMemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/TestsWithCrt/src/ZzTestsWithCrt.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/TestsWithCrt/src/ZzUtils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/TestsWithCrt/src/ZzZeroMemory.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

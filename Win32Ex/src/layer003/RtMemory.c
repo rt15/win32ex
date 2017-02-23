@@ -161,27 +161,94 @@ void* RT_API RtMoveMemory(void* lpSource, void* lpDestination, RT_UN unSize)
   return lpDestination;
 }
 
-void* RT_API RtSetMemory(void* lpArea, RT_UN unValue, RT_UN unSize)
+void* RT_API RtSetMemory(void* lpArea, RT_N32 nValue, RT_UN unSize)
 {
-  /* TODO: Optimize. */
-
-  RT_UCHAR8* lpByteArea;    /* Facilite l'accès à la zone                        */
+  RT_UN unWordsCount;
+  RT_N* lpWordArea;
+  RT_N nWord;
+  RT_UN unRemainder;
+  RT_CHAR8* lpCharArea;
   RT_UN unI;
 
-  lpByteArea = (RT_UCHAR8*)lpArea;
-  for (unI = 0; unI < unSize; unI++)
+  unWordsCount = unSize / sizeof(RT_N);
+  if (unWordsCount)
   {
-    lpByteArea[unI] = (RT_UCHAR8)unValue;
+    if (nValue)
+    {
+#ifdef RT_DEFINE_64
+      nWord = 0x0101010101010101 * (RT_UCHAR8)nValue;
+#else
+      nWord = 0x01010101 * (RT_UCHAR8)nValue;
+#endif
+    }
+    else
+    {
+      nWord = 0;
+    }
+
+    lpWordArea = lpArea;
+    for (unI = 0; unI < unWordsCount; unI++)
+    {
+      lpWordArea[unI] = nWord;
+    }
+    unRemainder = unSize % sizeof(RT_N);
+    if (unRemainder)
+    {
+      lpCharArea = (RT_CHAR8*)&lpWordArea[unWordsCount];
+      for (unI = 0; unI < unRemainder; unI++)
+      {
+        lpCharArea[unI] = (RT_CHAR8)nValue;
+      }
+    }
   }
+  else
+  {
+    lpCharArea = lpArea;
+    for (unI = 0; unI < unSize; unI++)
+    {
+      lpCharArea[unI] = (RT_CHAR8)nValue;
+    }
+  }
+
   return lpArea;
 }
 
-/**
- * Affecte à zéro un objet
- */
 void* RT_API RtZeroMemory(void* lpArea, RT_UN unSize)
 {
-  return RtSetMemory(lpArea, 0, unSize);
+  RT_UN unWordsCount;
+  RT_N* lpWordArea;
+  RT_UN unRemainder;
+  RT_CHAR8* lpCharArea;
+  RT_UN unI;
+
+  unWordsCount = unSize / sizeof(RT_N);
+  if (unWordsCount)
+  {
+    lpWordArea = lpArea;
+    for (unI = 0; unI < unWordsCount; unI++)
+    {
+      lpWordArea[unI] = 0;
+    }
+    unRemainder = unSize % sizeof(RT_N);
+    if (unRemainder)
+    {
+      lpCharArea = (RT_CHAR8*)&lpWordArea[unWordsCount];
+      for (unI = 0; unI < unRemainder; unI++)
+      {
+        lpCharArea[unI] = 0;
+      }
+    }
+  }
+  else
+  {
+    lpCharArea = lpArea;
+    for (unI = 0; unI < unSize; unI++)
+    {
+      lpCharArea[unI] = 0;
+    }
+  }
+
+  return lpArea;
 }
 
 void RT_API RtSwapMemory(void* lpArea1, void* lpArea2, RT_UN unSize)

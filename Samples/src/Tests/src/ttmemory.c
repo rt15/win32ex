@@ -183,6 +183,78 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzCheckSetMemory(RT_UCHAR8* lpBuffer, RT_UN unSize, RT_UCHAR8 unExpected, RT_UCHAR8 unTrailing)
+{
+  RT_UN unI;
+  RT_B bResult;
+
+  for (unI = 0; unI < unSize; unI++)
+  {
+    if (lpBuffer[unI] != unExpected) goto handle_error;
+  }
+  if (lpBuffer[unSize] != unTrailing) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzDoTestSetMemory(RT_UN unSize)
+{
+  RT_UCHAR8 lpBuffer[32];
+  void* lpResult;
+  RT_UN unI;
+  RT_B bResult;
+
+  for (unI = 0; unI <= unSize; unI++) lpBuffer[unI] = 85;
+  lpResult = RtSetMemory(lpBuffer, 170, unSize);
+  if (lpResult != lpBuffer) goto handle_error;
+  if (!ZzCheckSetMemory(lpBuffer, unSize, 170, 85)) goto handle_error;
+
+  for (unI = 0; unI <= unSize; unI++) lpBuffer[unI] = 85;
+  lpResult = RT_MEMORY_SET(lpBuffer, 170, unSize);
+  if (lpResult != lpBuffer) goto handle_error;
+  if (!ZzCheckSetMemory(lpBuffer, unSize, 170, 85)) goto handle_error;
+
+  for (unI = 0; unI <= unSize; unI++) lpBuffer[unI] = 85;
+  lpResult = RtZeroMemory(lpBuffer, unSize);
+  if (lpResult != lpBuffer) goto handle_error;
+  if (!ZzCheckSetMemory(lpBuffer, unSize, 0, 85)) goto handle_error;
+
+  for (unI = 0; unI <= unSize; unI++) lpBuffer[unI] = 85;
+  lpResult = RT_MEMORY_ZERO(lpBuffer, unSize);
+  if (lpResult != lpBuffer) goto handle_error;
+  if (!ZzCheckSetMemory(lpBuffer, unSize, 0, 85)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzTestSetMemory()
+{
+  RT_UN unI;
+  RT_B bResult;
+
+  for (unI = 1; unI < 28; unI++)
+  {
+    if (!ZzDoTestSetMemory(unI)) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzTestComputeChunksCount()
 {
   RT_B bResult;
@@ -209,6 +281,7 @@ RT_B RT_CALL ZzTestMemory()
   if (!ZzTestCompareMemory()) goto handle_error;
   if (!ZzTestCopyMemory()) goto handle_error;
   if (!ZzTestMoveMemory()) goto handle_error;
+  if (!ZzTestSetMemory()) goto handle_error;  
   if (!ZzTestComputeChunksCount()) goto handle_error;
 
   bResult = RT_SUCCESS;
