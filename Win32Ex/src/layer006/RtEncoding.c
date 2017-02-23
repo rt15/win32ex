@@ -496,7 +496,7 @@ RT_UN RT_CALL RtEncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_UN unInputCharSize, 
         case RT_ENCODING_UTF_16:
         case RT_ENCODING_UTF_16LE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
+          RT_MEMORY_COPY(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
         case RT_ENCODING_UTF_16BE:
           /* Swap 16. */
@@ -521,7 +521,7 @@ RT_UN RT_CALL RtEncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_UN unInputCharSize, 
           break;
         case RT_ENCODING_UTF_16BE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
+          RT_MEMORY_COPY(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
         case RT_ENCODING_UTF_32:
         case RT_ENCODING_UTF_32LE:
@@ -545,7 +545,7 @@ RT_UN RT_CALL RtEncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_UN unInputCharSize, 
         case RT_ENCODING_UTF_32:
         case RT_ENCODING_UTF_32LE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
+          RT_MEMORY_COPY(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
         case RT_ENCODING_UTF_32BE:
           /* Swap 32. */
@@ -570,7 +570,7 @@ RT_UN RT_CALL RtEncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_UN unInputCharSize, 
           break;
         case RT_ENCODING_UTF_32BE:
           /* No transformation. */
-          RtCopyMemory(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
+          RT_MEMORY_COPY(lpInput, lpOutputPayload, unInputCharSize * unInputTerminatingZeroSize);
           break;
       }
       break;

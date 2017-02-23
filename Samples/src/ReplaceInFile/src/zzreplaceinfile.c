@@ -1,5 +1,6 @@
 #include <RtWin32Ex.h>
 #include <RtWin32ExMain.h>
+#include <RtWin32ExMem.h>
 
 RT_UN16 ZzWriteLastErrorMessage(RT_CHAR* lpLabel)
 {

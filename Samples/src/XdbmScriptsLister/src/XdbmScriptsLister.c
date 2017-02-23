@@ -1,5 +1,6 @@
 #include <RtWin32Ex.h>
 #include <RtWin32ExMain.h>
+#include <RTWin32ExMem.h>
 
 /*
 select XDBM_LOG_SCRIPT_NAME, XDBM_LOG_MODEL, XDBM_LOG_SCRIPT_VERSION from ITEM_MAIN21.XDBM_LOG

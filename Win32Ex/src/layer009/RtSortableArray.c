@@ -67,11 +67,11 @@ RT_UN RT_API RtAddItemToSortableArray(void** lpSortableArray, void* lpNewItem)
     {
       /* Create an hole at insertion point. */
       lpDestination = ((RT_UCHAR8*)*lpSortableArray) + unItemSize * (unResult + 1);
-      RtMoveMemory(lpSource, lpDestination, (unSize - (unResult + 1)) * unItemSize);
+      RT_MEMORY_MOVE(lpSource, lpDestination, (unSize - (unResult + 1)) * unItemSize);
     }
   }
   /* Fill the hole. */
-  RtCopyMemory(lpNewItem, lpSource, unItemSize);
+  RT_MEMORY_COPY(lpNewItem, lpSource, unItemSize);
 
 the_end:
   return unResult;
@@ -97,7 +97,7 @@ void* RT_API RtDeleteSortableArrayItemIndex(void** lpSortableArray, RT_UN unItem
     unItemSize = lpHeader->rtArrayHeader.unItemSize;
     lpSource = ((RT_UCHAR8*)*lpSortableArray) + unItemSize * (unItemIndex + 1);
     lpDestination = ((RT_UCHAR8*)*lpSortableArray) + unItemSize * unItemIndex;
-    RtMoveMemory(lpSource, lpDestination, unItemSize * (unSize - (unItemIndex + 1)));
+    RT_MEMORY_MOVE(lpSource, lpDestination, unItemSize * (unSize - (unItemIndex + 1)));
   }
 
   /* Truncate the array. */

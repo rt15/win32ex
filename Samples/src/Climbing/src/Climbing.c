@@ -1,5 +1,6 @@
 #include <RtWin32Ex.h>
 #include <RtWin32ExMain.h>
+#include <RtWin32ExMem.h>
 
 #include "cbmenu.h"
 #include "cbtools.h"

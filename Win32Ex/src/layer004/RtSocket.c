@@ -202,10 +202,10 @@ void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress)
 
 void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN unPort)
 {
-  RtZeroMemory(lpSocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV4));
+  RT_MEMORY_ZERO(lpSocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV4));
   lpSocketAddress->unAddressFamily = RT_SOCKET_ADDRESS_FAMILY_IPV4;
   lpSocketAddress->unPort = htons((RT_UN16)unPort);
-  RtCopyMemory(lpAddress, &lpSocketAddress->rtAddress, sizeof(RT_ADDRESS_IPV4));
+  RT_MEMORY_COPY(lpAddress, &lpSocketAddress->rtAddress, sizeof(RT_ADDRESS_IPV4));
 }
 
 RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPort)
@@ -260,15 +260,15 @@ RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPo
   switch (unAddressFamily)
   {
     case RT_SOCKET_ADDRESS_FAMILY_IPV4:
-      RtZeroMemory(&rtIpv4SocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV4));
+      RT_MEMORY_ZERO(&rtIpv4SocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV4));
       rtIpv4SocketAddress.unPort = htons((RT_UN16)unPort);
-      RtCopyMemory(lpAddress, &rtIpv4SocketAddress.rtAddress, sizeof(RT_ADDRESS_IPV4));
+      RT_MEMORY_COPY(lpAddress, &rtIpv4SocketAddress.rtAddress, sizeof(RT_ADDRESS_IPV4));
       lpSocketAddress = (RT_SOCKET_ADDRESS*)&rtIpv4SocketAddress;
       break;
     case RT_SOCKET_ADDRESS_FAMILY_IPV6:
-      RtZeroMemory(&rtIpv6SocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV6));
+      RT_MEMORY_ZERO(&rtIpv6SocketAddress, sizeof(RT_SOCKET_ADDRESS_IPV6));
       rtIpv4SocketAddress.unPort = htons((RT_UN16)unPort);
-      RtCopyMemory(lpAddress, &rtIpv6SocketAddress.rtAddress, sizeof(RT_ADDRESS_IPV6));
+      RT_MEMORY_COPY(lpAddress, &rtIpv6SocketAddress.rtAddress, sizeof(RT_ADDRESS_IPV6));
       lpSocketAddress = (RT_SOCKET_ADDRESS*)&rtIpv6SocketAddress;
       break;
     default:
@@ -346,7 +346,7 @@ RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort)
   switch (lpSocket->unAddressFamily)
   {
     case RT_SOCKET_ADDRESS_FAMILY_IPV4:
-      RtZeroMemory(&rtIpv4SocketAddress, sizeof(rtIpv4SocketAddress));
+      RT_MEMORY_ZERO(&rtIpv4SocketAddress, sizeof(rtIpv4SocketAddress));
       rtIpv4SocketAddress.sin_port = htons((RT_UN16)unPort);
 #ifdef RT_DEFINE_WINDOWS
       rtIpv4SocketAddress.sin_addr.S_un.S_addr = INADDR_ANY;
@@ -357,7 +357,7 @@ RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort)
       lpSocketAddress = (struct sockaddr*)&rtIpv4SocketAddress;
       break;
     case RT_SOCKET_ADDRESS_FAMILY_IPV6:
-      RtZeroMemory(&rtIpv6SocketAddress, sizeof(rtIpv6SocketAddress));
+      RT_MEMORY_ZERO(&rtIpv6SocketAddress, sizeof(rtIpv6SocketAddress));
       rtIpv6SocketAddress.sin6_port = htons((RT_UN16)unPort);
       rtIpv6SocketAddress.sin6_addr = in6addr_any;
       nAddressSize = sizeof(rtIpv6SocketAddress);
@@ -499,7 +499,7 @@ RT_B RT_API RtAcceptSocketConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedS
 
   if (lpSocketAddress)
   {
-    RtZeroMemory(lpSocketAddress, sizeof(RT_SOCKET_ADDRESS));
+    RT_MEMORY_ZERO(lpSocketAddress, sizeof(RT_SOCKET_ADDRESS));
     lpActualSocketAddress = lpSocketAddress;
   }
   else

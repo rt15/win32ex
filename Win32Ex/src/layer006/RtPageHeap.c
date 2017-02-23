@@ -67,7 +67,7 @@ void* RT_API RtReAllocPage(void** lpArea, void* lpCurrentArea, RT_UN unSize)
     {
        unContentSize = unSize;
     }
-    RtCopyMemory(lpCurrentArea, *lpArea, unContentSize);
+    RT_MEMORY_COPY(lpCurrentArea, *lpArea, unContentSize);
 
     /* Free current area only in case of success to let callee cleanup content if needed. */
     RtFreePage(&lpCurrentArea);

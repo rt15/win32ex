@@ -143,7 +143,7 @@ void* RT_API RtDeleteArrayItemIndex(void** lpArray, RT_UN unItemIndex)
   if (unItemIndex != unLastItemIndex)
   {
     /* Copy the last item in the deleted item */
-    RtCopyMemory(((RT_UCHAR8*)*lpArray) + unLastItemIndex * unItemSize, ((RT_UCHAR8*)*lpArray) + unItemIndex * unItemSize, unItemSize);
+    RT_MEMORY_COPY(((RT_UCHAR8*)*lpArray) + unLastItemIndex * unItemSize, ((RT_UCHAR8*)*lpArray) + unItemIndex * unItemSize, unItemSize);
   }
   return RtSetArraySize(lpArray, unLastItemIndex);
 }

@@ -218,7 +218,7 @@ void* RT_API RtDeleteListItemIndex(void** lpList, RT_UN unItemIndex)
     /* TODO: Manage errors in two next lines. */
     RtGetListItem(*lpList, unLastItemIndex, &lpLastItem);
     RtGetListItem(*lpList, unItemIndex, &lpItemToDelete);
-    RtCopyMemory(lpLastItem, lpItemToDelete, unItemSize);
+    RT_MEMORY_COPY(lpLastItem, lpItemToDelete, unItemSize);
   }
 
   return RtSetListSize(lpList, unLastItemIndex);

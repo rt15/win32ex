@@ -361,7 +361,7 @@ RT_H RT_API RtCreateMenu(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[]
   if (hResult)
   {
     /* Prepare MENUITEMINFO structure. */
-    RtZeroMemory(&menuItemInfo, sizeof(MENUITEMINFO));
+    RT_MEMORY_ZERO(&menuItemInfo, sizeof(MENUITEMINFO));
     menuItemInfo.cbSize = sizeof(MENUITEMINFO);
 
     for (unI = 0; unI < unMenuItemsCount; unI++)

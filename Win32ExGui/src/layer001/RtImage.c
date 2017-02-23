@@ -138,7 +138,7 @@ RT_B RT_API RtGetPixels(RT_H hBitmap, RT_N32 nWidth, RT_N32 nHeight, RT_UN32* lp
 {
   BITMAPINFO bitmapInfo;
 
-  RtZeroMemory(&bitmapInfo, sizeof(BITMAPINFO));
+  RT_MEMORY_ZERO(&bitmapInfo, sizeof(BITMAPINFO));
   bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
   bitmapInfo.bmiHeader.biWidth = nWidth;
   bitmapInfo.bmiHeader.biHeight = -nHeight; /* Top down DIB. */
@@ -153,7 +153,7 @@ RT_H RT_API RtCreateBitmap(RT_N32 nWidth, RT_N32 nHeight, RT_UN32** lpPixels, RT
 {
   BITMAPINFO bitmapInfo;
 
-  RtZeroMemory(&bitmapInfo, sizeof(BITMAPINFO));
+  RT_MEMORY_ZERO(&bitmapInfo, sizeof(BITMAPINFO));
   bitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
   bitmapInfo.bmiHeader.biWidth = nWidth;
   bitmapInfo.bmiHeader.biHeight = -nHeight; /* Top down DIB. */

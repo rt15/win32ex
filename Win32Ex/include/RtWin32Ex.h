@@ -13,13 +13,9 @@
 
 /**
 
-#### TODO :
-
-RtZeroMemory should be a macro !?
+#### TODO:
 
 Optimize RtSwapMemory.
-
-Replace usages of RtXxxxMemory by associated macros.
 
 Better hash map implementation (Java like)? Use it in Properties?
 http://javahungry.blogspot.com/2013/08/hashing-how-hash-map-works-in-java-or.html

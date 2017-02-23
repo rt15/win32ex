@@ -42,7 +42,7 @@ RT_UN16 RT_CALL TtTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, 
   if (!bDecodeOnly)
   {
     if (RtEncodeWithBuffer(lpCharacters, RT_TYPE_MAX_UN, unEncoding, lpBuffer, 512) != unEncodedLength) goto the_end;
-    if (RtCompareMemory(lpBuffer, lpEncoded, unEncodedLength + unEncodedCharSize)) goto the_end;
+    if (RT_MEMORY_COMPARE(lpBuffer, lpEncoded, unEncodedLength + unEncodedCharSize)) goto the_end;
   }
 
   /* Decode. */
