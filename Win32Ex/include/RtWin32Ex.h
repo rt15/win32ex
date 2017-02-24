@@ -23,7 +23,7 @@ The items must remain accessible and untouched.
 
 Implement an index system for lists (b-tree?).
 
-Check structure values and flag values against operating system (Like AF_INET).
+Check structure fields sizes and flag values against operating system (Like AF_INET).
 
 Implement:
 producingopensourcesoftware.pdf
@@ -60,17 +60,12 @@ See __attribute__ ((aligned (16))) et  __declspec(align(#)), I might define a ma
 
 Fix memory leaks in RtList.c (See TODOs in this file).
 
-Complete ttmemorytest.
-
-Optimize memory copy and other memory functions.
-
 Faire des tests "manuels".
 Vérification du chemin du fichier exécutable.
 Récupération de variable d'environement.
 Récupération du répertoires de configuration de l'application.
 Messages correspondants aux erreurs supportées.
 Affichage de la fréquence des compteurs (QueryPerformanceFrequency et équivalent sous Linux).
-
 
 Fonction pour récupérer un nom de fichier temporaire ?
 
@@ -206,10 +201,6 @@ Then it is sorted if required.
 
 ## Better implementation for RtConvertIntegerToString
 
-## A code lines counter.
-
-Taking a list of extensions as parameters.
-
 ## Build rtchar8.h/rtchar8.c
 
 I must get ride of "win32exosdefines".
@@ -227,10 +218,6 @@ Remplacer par RtEncode.
 ## CreateFile and MAX_PATH.
 
 I probably need to call LongPath.
-
-## Update samples architecture.
-
-There should be different source folder, and even different folder by project.
 
 ## Source check
 
