@@ -253,20 +253,50 @@ void* RT_API RtZeroMemory(void* lpArea, RT_UN unSize)
 
 void RT_API RtSwapMemory(void* lpArea1, void* lpArea2, RT_UN unSize)
 {
-  RT_CHAR8* lpChars1;
-  RT_CHAR8* lpChars2;
-  RT_CHAR8 nTemp;
+  RT_UN unWordsCount;
+  RT_UN* lpWordArea1;
+  RT_UN* lpWordArea2;
+  RT_UN unTempWord;
+  RT_UN unRemainder;
+  RT_UCHAR8* lpCharArea1;
+  RT_UCHAR8* lpCharArea2;
+  RT_UCHAR8 unTempChar;
+  RT_UN unI;
 
-  /* TODO: Optimize. */
-
-  lpChars1 = lpArea1;
-  lpChars2 = lpArea2;
-
-  while (unSize--)
+  unWordsCount = unSize / sizeof(RT_UN);
+  if (unWordsCount)
   {
-    nTemp = *lpChars1;
-    *lpChars1++ = *lpChars2;
-    *lpChars2++ = nTemp;
+    lpWordArea1 = lpArea1;
+    lpWordArea2 = lpArea2;
+    for (unI = 0; unI < unWordsCount; unI++)
+    {
+      unTempWord = lpWordArea1[unI];
+      lpWordArea1[unI] = lpWordArea2[unI];
+      lpWordArea2[unI] = unTempWord;
+    }
+    unRemainder = unSize % sizeof(RT_UN);
+    if (unRemainder)
+    {
+      lpCharArea1 = (RT_UCHAR8*)&lpWordArea1[unWordsCount];
+      lpCharArea2 = (RT_UCHAR8*)&lpWordArea2[unWordsCount];
+      for (unI = 0; unI < unRemainder; unI++)
+      {
+        unTempChar = lpCharArea1[unI];
+        lpCharArea1[unI] = lpCharArea2[unI];
+        lpCharArea2[unI] = unTempChar;
+      }
+    }
+  }
+  else
+  {
+    lpCharArea1 = lpArea1;
+    lpCharArea2 = lpArea2;
+    for (unI = 0; unI < unSize; unI++)
+    {
+        unTempChar = lpCharArea1[unI];
+        lpCharArea1[unI] = lpCharArea2[unI];
+        lpCharArea2[unI] = unTempChar;
+    }
   }
 }
 

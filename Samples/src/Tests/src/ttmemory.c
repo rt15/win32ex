@@ -255,6 +255,56 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzDoTestSwapMemory(RT_UN unSize)
+{
+  RT_UCHAR8 lpArea1[32];
+  RT_UCHAR8 lpArea2[32];
+  RT_UCHAR8 unI;
+  RT_B bResult;
+
+  for (unI = 0; unI < unSize; unI++)
+  {
+    lpArea1[unI] = 'a' + unI;
+    lpArea2[unI] = 'A' + unI;
+  }
+  lpArea1[unSize] = 1;
+  lpArea2[unSize] = 2;
+
+  RtSwapMemory(lpArea1, lpArea2, unSize);
+  for (unI = 0; unI < unSize; unI++)
+  {
+    if (lpArea1[unI] != 'A' + unI) goto handle_error;
+    if (lpArea2[unI] != 'a' + unI) goto handle_error;
+  }
+  if (lpArea1[unSize] != 1) goto handle_error;
+  if (lpArea2[unSize] != 2) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzTestSwapMemory()
+{
+  RT_UN unI;
+  RT_B bResult;
+
+  for (unI = 0; unI < 27; unI++)
+  {
+    if (!ZzDoTestSwapMemory(unI)) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzTestComputeChunksCount()
 {
   RT_B bResult;
@@ -282,6 +332,7 @@ RT_B RT_CALL ZzTestMemory()
   if (!ZzTestCopyMemory()) goto handle_error;
   if (!ZzTestMoveMemory()) goto handle_error;
   if (!ZzTestSetMemory()) goto handle_error;
+  if (!ZzTestSwapMemory()) goto handle_error;
   if (!ZzTestComputeChunksCount()) goto handle_error;
 
   bResult = RT_SUCCESS;
