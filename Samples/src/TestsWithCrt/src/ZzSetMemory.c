@@ -53,7 +53,7 @@ RT_B RT_CALL ZzTestSetMemory()
   /* Ensure that lpDestination is used. */
   for (unI = 0; unI < ZZ_BUFFER_SIZE; unI++)
   {
-    if (!lpBuffer[unI] == 4) goto handle_error;
+    if (lpBuffer[unI] != 4) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
