@@ -327,6 +327,7 @@ RT_B RT_API RtConnectSocketWithAddress(RT_SOCKET* lpSocket, RT_SOCKET_ADDRESS* l
   }
 #endif
 
+  bResult = RT_TRUE;
 free_resources:
   return bResult;
 
