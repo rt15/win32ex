@@ -7,7 +7,7 @@ typedef struct _TT_LIST_ITEM
 }
 TT_LIST_ITEM;
 
-void RT_CALL TtDisplayList(void* lpList)
+void RT_CALL ZzTestDisplayList(void* lpList)
 {
   RT_CHAR lpBuffer[512];
   RT_UN unSize;
@@ -38,7 +38,7 @@ void RT_CALL TtDisplayList(void* lpList)
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 }
 
-RT_UN16 RT_CALL TtCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpectedItemSize, RT_UN unExpectedChunkSize, RT_UN unExpectedChunksCount)
+RT_UN16 RT_CALL ZzTestCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpectedItemSize, RT_UN unExpectedChunkSize, RT_UN unExpectedChunksCount)
 {
   RT_UN unSize;
   RT_UN unItemSize;
@@ -85,7 +85,7 @@ the_end:
   return unResult;
 }
 
-RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
+RT_UN16 RT_CALL ZzTestList(RT_HEAP** lpHeap)
 {
   void* lpList;
   RT_UN32 unI;
@@ -101,7 +101,7 @@ RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
 
   if (!RtCreateList(&lpList, lpHeap, 23, sizeof(TT_LIST_ITEM), 10)) goto the_end;
 
-  if (TtCheckList(lpList, 23, unItemSize, 10, 3)) goto the_end;
+  if (ZzTestCheckList(lpList, 23, unItemSize, 10, 3)) goto the_end;
 
   for (unI = 0; unI < 23; unI++)
   {
@@ -110,19 +110,19 @@ RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
     RtCopyString(_R("This is item characters."), lpItem->lpValue, 32, &unWritten);
   }
 
-  TtDisplayList(lpList);
+  ZzTestDisplayList(lpList);
 
   /* Reduce the size of the list. */
   if (!RtSetListSize(&lpList, 17)) goto the_end;
 
 
-  if (TtCheckList(lpList, 17, unItemSize, 10, 2)) goto the_end;
-  TtDisplayList(lpList);
+  if (ZzTestCheckList(lpList, 17, unItemSize, 10, 2)) goto the_end;
+  ZzTestDisplayList(lpList);
 
   /* Increase the size of the list. */
   if (!RtSetListSize(&lpList, 31)) goto the_end;
 
-  if (TtCheckList(lpList, 31, unItemSize, 10, 4)) goto the_end;
+  if (ZzTestCheckList(lpList, 31, unItemSize, 10, 4)) goto the_end;
 
   for (unI = 0; unI < 31; unI++)
   {
@@ -130,16 +130,16 @@ RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap)
     lpItem->unValue = unI;
   }
 
-  TtDisplayList(lpList);
+  ZzTestDisplayList(lpList);
 
   if (!RtDeleteListItemIndex(&lpList, 12)) goto the_end;
 
-  TtDisplayList(lpList);
+  ZzTestDisplayList(lpList);
 
   if (!RtNewListItem(&lpList, (void**)&lpItem)) goto the_end;
   lpItem->unValue = 42;
 
-  TtDisplayList(lpList);
+  ZzTestDisplayList(lpList);
 
   if (RtNewListItemIndex(&lpList, &unItemIndex) == RT_TYPE_MAX_UN) goto the_end;
 

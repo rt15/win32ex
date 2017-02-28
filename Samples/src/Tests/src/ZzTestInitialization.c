@@ -2,7 +2,7 @@
 
 RT_INITIALIZATION tt_Initialization;
 
-void RT_CALL TtCommonFunction()
+void RT_CALL ZzTestCommonFunction()
 {
   RT_UN unI;
 
@@ -23,13 +23,13 @@ void RT_CALL TtCommonFunction()
   }
 }
 
-RT_UN32 RT_CALL TtInitializationThreadCallback(void* lpParameter)
+RT_UN32 RT_CALL ZzTestInitializationThreadCallback(void* lpParameter)
 {
-  TtCommonFunction();
+  ZzTestCommonFunction();
   return 0;
 }
 
-RT_UN16 RT_CALL TtTestInitialization()
+RT_UN16 RT_CALL ZzTestInitialization()
 {
   RT_THREAD thread;
   RT_UN16 unResult;
@@ -38,9 +38,9 @@ RT_UN16 RT_CALL TtTestInitialization()
 
   RtCreateInitialization(&tt_Initialization);
 
-  if (!RtCreateThread(&thread, &TtInitializationThreadCallback, RT_NULL)) goto free_initialization;
+  if (!RtCreateThread(&thread, &ZzTestInitializationThreadCallback, RT_NULL)) goto free_initialization;
 
-  TtCommonFunction();
+  ZzTestCommonFunction();
 
   if (!RtJoinThread(&thread)) goto free_thread;
   RtWriteStringToConsole(_R("Joined.\n"));

@@ -95,7 +95,7 @@
 		<Linker>
 			<Add directory="../../win32ex/lib" />
 		</Linker>
-		<Unit filename="../src/Tests/src/Tests.c">
+		<Unit filename="../src/Tests/src/ZZTests.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/ZzTestHeap.c">
@@ -108,40 +108,40 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/ZzTools.h" />
-		<Unit filename="../src/Tests/src/ttatomic.c">
+		<Unit filename="../src/Tests/src/ZzTestAtomic.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttchar.c">
+		<Unit filename="../src/Tests/src/ZzTestChar.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttencoding.c">
+		<Unit filename="../src/Tests/src/ZzTestEncoding.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttevent.c">
+		<Unit filename="../src/Tests/src/ZzTestEvent.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttfilesystem.c">
+		<Unit filename="../src/Tests/src/ZzTestFileSystem.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttinitialization.c">
+		<Unit filename="../src/Tests/src/ZzTestInitialization.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttlist.c">
+		<Unit filename="../src/Tests/src/ZzTestList.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttmemory.c">
+		<Unit filename="../src/Tests/src/ZzTestMemory.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttproperties.c">
+		<Unit filename="../src/Tests/src/ZzTestProperties.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttsocket.c">
+		<Unit filename="../src/Tests/src/ZzTestSocket.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ttthread.c">
+		<Unit filename="../src/Tests/src/ZzTestThread.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/tttypes.c">
+		<Unit filename="../src/Tests/src/ZzTestTypes.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

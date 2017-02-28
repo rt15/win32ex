@@ -201,55 +201,55 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\Tests\src\Tests.c"
+				RelativePath="..\src\Tests\src\ZzTests.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttatomic.c"
+				RelativePath="..\src\Tests\src\ZzTestAtomic.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttchar.c"
+				RelativePath="..\src\Tests\src\ZzTestChar.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttencoding.c"
+				RelativePath="..\src\Tests\src\ZzTestEncoding.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttevent.c"
+				RelativePath="..\src\Tests\src\ZzTestEvent.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttfilesystem.c"
+				RelativePath="..\src\Tests\src\ZzTestFileSystem.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttinitialization.c"
+				RelativePath="..\src\Tests\src\ZzTestInitialization.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttlist.c"
+				RelativePath="..\src\Tests\src\ZzTestList.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttmemory.c"
+				RelativePath="..\src\Tests\src\ZzTestMemory.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttproperties.c"
+				RelativePath="..\src\Tests\src\ZzTestProperties.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttsocket.c"
+				RelativePath="..\src\Tests\src\ZzTestSocket.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ttthread.c"
+				RelativePath="..\src\Tests\src\ZzTestThread.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\tttypes.c"
+				RelativePath="..\src\Tests\src\ZzTestTypes.c"
 				>
 			</File>
 			<File

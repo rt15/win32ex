@@ -65,7 +65,7 @@ handle_error:
 /**
  * Tests socket assuming RtInitializeSockets/RtCleanUpSockets are called.
  */
-RT_B RT_CALL TtTestSockets()
+RT_B RT_CALL ZzTestSockets()
 {
   RT_EVENT rtEvent;
   RT_B bEventCreated;
@@ -134,7 +134,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_UN16 RT_CALL TtTestSocket()
+RT_UN16 RT_CALL ZzTestSocket()
 {
   RT_UN16 unResult;
 
@@ -142,7 +142,7 @@ RT_UN16 RT_CALL TtTestSocket()
 
   if (!RtInitializeSockets()) goto the_end;
 
-  if (!TtTestSockets()) goto clean_up_sockets;
+  if (!ZzTestSockets()) goto clean_up_sockets;
 
   unResult = 0;
 

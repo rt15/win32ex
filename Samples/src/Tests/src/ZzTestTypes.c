@@ -2,7 +2,7 @@
 
 #define TT_IS_UNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
 
-void RT_CALL TtDisplayFlags()
+void RT_CALL ZzTestDisplayFlags()
 {
 #ifdef RT_DEFINE_32
   RtWriteStringToConsole(_R("Architecture = 32 bits.\n"));
@@ -29,7 +29,7 @@ void RT_CALL TtDisplayFlags()
 #endif
 }
 
-RT_UN16 RT_CALL TtTestType(RT_CHAR* lpTypeName, RT_UN unSize, RT_B bSigned, RT_UN unExpectedSize, RT_B bExpectedSignedness)
+RT_UN16 RT_CALL ZzTestType(RT_CHAR* lpTypeName, RT_UN unSize, RT_B bSigned, RT_UN unExpectedSize, RT_B bExpectedSignedness)
 {
   RT_CHAR lpBuffer[RT_CHAR_THIRD_BIG_STRING_SIZE];
   RT_UN unWritten;
@@ -52,7 +52,7 @@ the_end:
   return unResult;
 }
 
-RT_UN16 RT_CALL TtTestTypesSizes()
+RT_UN16 RT_CALL ZzTestTypesSizes()
 {
   RT_UN unExpectedCharSize;
   RT_UN unExpectedArchiSize;
@@ -86,51 +86,51 @@ RT_UN16 RT_CALL TtTestTypesSizes()
 #endif
 
   cChar8 = -1;
-  if (TtTestType(_R("RT_CHAR8"), sizeof(RT_CHAR8) * 8, cChar8 < 0, 8, cChar8 < 0)) goto the_end;
+  if (ZzTestType(_R("RT_CHAR8"), sizeof(RT_CHAR8) * 8, cChar8 < 0, 8, cChar8 < 0)) goto the_end;
 
   ucUChar8 = -1;
-  if (TtTestType(_R("RT_UCHAR8"), sizeof(RT_UCHAR8) * 8, ucUChar8 < 0, 8, RT_FALSE)) goto the_end;
+  if (ZzTestType(_R("RT_UCHAR8"), sizeof(RT_UCHAR8) * 8, ucUChar8 < 0, 8, RT_FALSE)) goto the_end;
 
   unUn16 = -1;
-  if (TtTestType(_R("RT_UN16"), sizeof(RT_UN16) * 8, unUn16 < 0, 16, RT_FALSE)) goto the_end;
+  if (ZzTestType(_R("RT_UN16"), sizeof(RT_UN16) * 8, unUn16 < 0, 16, RT_FALSE)) goto the_end;
 
   cChar = -1;
-  if (TtTestType(_R("RT_CHAR"), sizeof(RT_CHAR) * 8, cChar < 0, unExpectedCharSize, cChar < 0)) goto the_end;
+  if (ZzTestType(_R("RT_CHAR"), sizeof(RT_CHAR) * 8, cChar < 0, unExpectedCharSize, cChar < 0)) goto the_end;
 
   ucUChar = -1;
-  if (TtTestType(_R("RT_UCHAR"), sizeof(RT_UCHAR) * 8, ucUChar < 0, unExpectedCharSize, RT_FALSE)) goto the_end;
+  if (ZzTestType(_R("RT_UCHAR"), sizeof(RT_UCHAR) * 8, ucUChar < 0, unExpectedCharSize, RT_FALSE)) goto the_end;
 
   nN32 = -1;
-  if (TtTestType(_R("RT_N32"), sizeof(RT_N32) * 8, nN32 < 0, 32, RT_TRUE)) goto the_end;
+  if (ZzTestType(_R("RT_N32"), sizeof(RT_N32) * 8, nN32 < 0, 32, RT_TRUE)) goto the_end;
 
   unUn32 = -1;
-  if (TtTestType(_R("RT_UN32"), sizeof(RT_UN32) * 8, unUn32 < 0, 32, RT_FALSE)) goto the_end;
+  if (ZzTestType(_R("RT_UN32"), sizeof(RT_UN32) * 8, unUn32 < 0, 32, RT_FALSE)) goto the_end;
 
   nN64 = -1;
-  if (TtTestType(_R("RT_N64"), sizeof(RT_N64) * 8, nN64 < 0, 64, RT_TRUE)) goto the_end;
+  if (ZzTestType(_R("RT_N64"), sizeof(RT_N64) * 8, nN64 < 0, 64, RT_TRUE)) goto the_end;
 
   unUn64 = -1;
-  if (TtTestType(_R("RT_UN64"), sizeof(RT_UN64) * 8, unUn64 < 0, 64, RT_FALSE)) goto the_end;
+  if (ZzTestType(_R("RT_UN64"), sizeof(RT_UN64) * 8, unUn64 < 0, 64, RT_FALSE)) goto the_end;
 
   nN = -1;
-  if (TtTestType(_R("RT_N"), sizeof(RT_N) * 8, nN < 0, unExpectedArchiSize, RT_TRUE)) goto the_end;
+  if (ZzTestType(_R("RT_N"), sizeof(RT_N) * 8, nN < 0, unExpectedArchiSize, RT_TRUE)) goto the_end;
 
   unUn = -1;
-  if (TtTestType(_R("RT_UN"), sizeof(RT_UN) * 8, unUn < 0, unExpectedArchiSize, RT_FALSE)) goto the_end;
+  if (ZzTestType(_R("RT_UN"), sizeof(RT_UN) * 8, unUn < 0, unExpectedArchiSize, RT_FALSE)) goto the_end;
 
   unResult = 0;
 the_end:
   return unResult;
 }
 
-RT_UN16 RT_CALL TtTestTypes()
+RT_UN16 RT_CALL ZzTestTypes()
 {
   RT_UN16 unResult;
 
   unResult = 1;
 
-  TtDisplayFlags();
-  if (TtTestTypesSizes()) goto the_end;
+  ZzTestDisplayFlags();
+  if (ZzTestTypesSizes()) goto the_end;
 
   unResult = 0;
 the_end:

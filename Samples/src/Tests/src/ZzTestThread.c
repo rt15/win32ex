@@ -1,6 +1,6 @@
 #include <RtWin32Ex.h>
 
-RT_UN32 RT_CALL TtSimpleThreadCallback(void* lpParameter)
+RT_UN32 RT_CALL ZzTestSimpleThreadCallback(void* lpParameter)
 {
   RT_UN unI;
 
@@ -13,7 +13,7 @@ RT_UN32 RT_CALL TtSimpleThreadCallback(void* lpParameter)
   return 12;
 }
 
-RT_UN16 RT_CALL TtTestThread()
+RT_UN16 RT_CALL ZzTestThread()
 {
   RT_THREAD thread;
   RT_UN32 unExitCode;
@@ -21,7 +21,7 @@ RT_UN16 RT_CALL TtTestThread()
 
   unResult = 1;
 
-  if (!RtCreateThread(&thread, &TtSimpleThreadCallback, _R("Hello from thread\n"))) goto the_end;
+  if (!RtCreateThread(&thread, &ZzTestSimpleThreadCallback, _R("Hello from thread\n"))) goto the_end;
   if (!RtJoinThread(&thread)) goto free_thread;
   RtWriteStringToConsole(_R("Joined!\n"));
   if (!RtGetThreadExitCode(&thread, &unExitCode)) goto free_thread;

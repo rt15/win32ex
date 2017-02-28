@@ -1,6 +1,6 @@
 #include <RtWin32Ex.h>
 
-RT_UN16 RT_CALL TtTestAtomic()
+RT_UN16 RT_CALL ZzTestAtomic()
 {
   RT_N nVar;
   RT_N32 nVar32;

@@ -222,20 +222,20 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
   }
 }
 
-RT_UN16 RT_CALL TtTestTypes();
+RT_UN16 RT_CALL ZzTestTypes();
 RT_B RT_CALL ZzTestMemory();
 RT_B RT_CALL ZzTestRandom();
 RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap);
-RT_UN16 RT_CALL TtTestFileSystem();
-RT_UN16 RT_CALL TtTestChar();
-RT_UN16 RT_CALL TtTestEncoding();
-RT_UN16 RT_CALL TtTestProperties(RT_HEAP** lpHeap);
-RT_UN16 RT_CALL TtTestAtomic();
-RT_UN16 RT_CALL TtTestThread();
-RT_UN16 RT_CALL TtTestInitialization();
+RT_UN16 RT_CALL ZzTestFileSystem();
+RT_B RT_CALL ZzTestChar();
+RT_UN16 RT_CALL ZzTestEncoding();
+RT_UN16 RT_CALL ZzTestProperties(RT_HEAP** lpHeap);
+RT_UN16 RT_CALL ZzTestAtomic();
+RT_UN16 RT_CALL ZzTestThread();
+RT_UN16 RT_CALL ZzTestInitialization();
 RT_B RT_CALL ZzTestEvent();
-RT_UN16 RT_CALL TtTestSocket();
-RT_UN16 RT_CALL TtTestList(RT_HEAP** lpHeap);
+RT_UN16 RT_CALL ZzTestSocket();
+RT_UN16 RT_CALL ZzTestList(RT_HEAP** lpHeap);
 
 /**
  * The tests must be executed in the right directory.
@@ -299,20 +299,20 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
     goto the_end;
   }
 
-  if (TtTestTypes()) goto tests_failed;
+  if (ZzTestTypes()) goto tests_failed;
   if (!ZzTestMemory()) goto tests_failed;
   if (!ZzTestRandom()) goto tests_failed;
   if (!ZzTestHeap(&runtimeHeap.lpHeap)) goto tests_failed;
-  if (TtTestFileSystem()) goto tests_failed;
-  if (TtTestChar()) goto tests_failed;
-  if (TtTestEncoding()) goto tests_failed;
-  if (TtTestProperties(&runtimeHeap.lpHeap)) goto tests_failed;
-  if (TtTestAtomic()) goto tests_failed;
-  if (TtTestThread()) goto tests_failed;
-  if (TtTestInitialization()) goto tests_failed;
+  if (ZzTestFileSystem()) goto tests_failed;
+  if (!ZzTestChar()) goto tests_failed;
+  if (ZzTestEncoding()) goto tests_failed;
+  if (ZzTestProperties(&runtimeHeap.lpHeap)) goto tests_failed;
+  if (ZzTestAtomic()) goto tests_failed;
+  if (ZzTestThread()) goto tests_failed;
+  if (ZzTestInitialization()) goto tests_failed;
   if (!ZzTestEvent()) goto tests_failed;
-  if (TtTestSocket()) goto tests_failed;
-  if (TtTestList(&runtimeHeap.lpHeap)) goto tests_failed;
+  if (ZzTestSocket()) goto tests_failed;
+  if (ZzTestList(&runtimeHeap.lpHeap)) goto tests_failed;
 
   RtWriteStringToConsole(_R("Tests successful!!\n\n"));
   goto end_of_tests;
