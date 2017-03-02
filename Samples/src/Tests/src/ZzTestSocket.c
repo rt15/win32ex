@@ -4,7 +4,6 @@
 #define ZZ_PORT_NUMBER 42334
 
 
-
 /**
  * Thread that create a server socket and send "Hello, world!" to the first connecting socket.
  */
@@ -17,7 +16,7 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
   RT_B bAcceptedSocketCreated;
   RT_EVENT* lpEvent;
   RT_CHAR8* lpMsg;
-  RT_UN32 nResult;
+  RT_UN32 unResult;
 
   bSocketCreated = RT_FALSE;
   bAcceptedSocketCreated = RT_FALSE;
@@ -40,25 +39,25 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
 
   if (!RtShutdownSocket(&rtAcceptedSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
 
-  nResult = RT_SUCCESS;
+  unResult = RT_SUCCESS;
 free_resources:
   if (bAcceptedSocketCreated)
   {
     bAcceptedSocketCreated = RT_FALSE;
-    if (!RtFreeSocket(&rtAcceptedSocket) && nResult) goto handle_error;
+    if (!RtFreeSocket(&rtAcceptedSocket) && unResult) goto handle_error;
   }
   if (bSocketCreated)
   {
     bSocketCreated = RT_FALSE;
-    if (!RtFreeSocket(&rtSocket) && nResult) goto handle_error;
+    if (!RtFreeSocket(&rtSocket) && unResult) goto handle_error;
   }
-  return nResult;
+  return unResult;
 
 handle_error:
   ZzWriteLastErrorMessage(_R("Error in server socket thread: "));
   /* Ensure that main thread will not wait for ever. */
   RtSignalEvent(lpEvent);
-  nResult = RT_FAILURE;
+  unResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -134,20 +133,28 @@ handle_error:
   goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestSocket()
+RT_B RT_CALL ZzTestSocket()
 {
-  RT_UN16 unResult;
+  RT_B bSocketsInitialized;
+  RT_B bResult;
 
-  unResult = 1;
+  bSocketsInitialized = RT_FALSE;
 
-  if (!RtInitializeSockets()) goto the_end;
+  if (!RtInitializeSockets()) goto handle_error;
+  bSocketsInitialized = RT_TRUE;
 
-  if (!ZzTestSockets()) goto clean_up_sockets;
+  if (!ZzTestSockets()) goto handle_error;
 
-  unResult = 0;
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bSocketsInitialized)
+  {
+    bSocketsInitialized = RT_FALSE;
+    if (!RtCleanUpSockets() && bResult) goto handle_error;
+  }
+  return bResult;
 
-clean_up_sockets:
-  if (!RtCleanUpSockets()) unResult = 1;
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

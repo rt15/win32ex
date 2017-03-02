@@ -35,12 +35,7 @@ RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
 free_resources:
   if (lpHeapBuffer)
   {
-    if (!(*lpHeap)->lpFree(lpHeap, &lpHeapBuffer))
-    {
-      lpHeapBuffer = RT_NULL;
-      goto handle_error;
-    }
-    lpHeapBuffer = RT_NULL;
+    if (!(*lpHeap)->lpFree(lpHeap, &lpHeapBuffer)) goto handle_error;
   }
   return bResult;
 

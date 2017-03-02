@@ -1,6 +1,6 @@
 #include "ZzTools.h"
 
-RT_UN16 ZzWriteLastErrorMessage(RT_CHAR* lpLabel)
+void RT_CALL ZzWriteLastErrorMessage(RT_CHAR* lpLabel)
 {
   RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
   RT_UN unWritten;
@@ -11,6 +11,4 @@ RT_UN16 ZzWriteLastErrorMessage(RT_CHAR* lpLabel)
   RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
 
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
-
-  return 1;
 }

@@ -19,6 +19,7 @@ RT_B RT_CALL ZzTestGetRandomIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperB
   bResult = RT_SUCCESS;
 free_resources:
   return bResult;
+
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;

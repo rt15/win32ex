@@ -43,7 +43,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\Win32Ex\include"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include;..\src\$(ProjectName)\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
@@ -131,7 +131,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="2"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\Win32Ex\include"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include;..\src\$(ProjectName)\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="0"
@@ -201,10 +201,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\Tests\src\ZzTests.c"
-				>
-			</File>
-			<File
 				RelativePath="..\src\Tests\src\ZzTestAtomic.c"
 				>
 			</File>
@@ -225,6 +221,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\Tests\src\ZzTestHeap.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\Tests\src\ZzTestInitialization.c"
 				>
 			</File>
@@ -241,6 +241,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\Tests\src\ZzTestRandom.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTests.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\Tests\src\ZzTestSocket.c"
 				>
 			</File>
@@ -253,19 +261,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ZzTestHeap.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestRandom.c"
-				>
-			</File>
-			<File
 				RelativePath="..\src\Tests\src\ZzTools.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTools.h"
 				>
 			</File>
 		</Filter>
@@ -274,6 +270,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\src\Tests\include\ZzTools.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

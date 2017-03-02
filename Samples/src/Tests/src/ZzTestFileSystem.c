@@ -1,13 +1,11 @@
 #include <RtWin32Ex.h>
 
-RT_UN16 RT_CALL ZzTestDoGetLastSeparator(RT_CHAR* lpPath, RT_UN unExpected)
+RT_B RT_CALL ZzTestDoGetLastSeparator(RT_CHAR* lpPath, RT_UN unExpected)
 {
   RT_CHAR lpBuffer[512];
   RT_UN unWritten;
   RT_UN unIndex;
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
   unWritten = 0;
   RtCopyString(_R("Testing RtGetLastSeparator with \""), lpBuffer, 512, &unWritten);
@@ -26,188 +24,203 @@ RT_UN16 RT_CALL ZzTestDoGetLastSeparator(RT_CHAR* lpPath, RT_UN unExpected)
     RtConvertUIntegerToString(unIndex, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
     RtCopyString(_R(".\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
     RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
-    goto the_end;
+    goto handle_error;
   }
-  unResult = 0;
 
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestGetLastSeparator()
+RT_B RT_CALL ZzTestGetLastSeparator()
 {
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
+  if (!ZzTestDoGetLastSeparator(_R("Foo"), RT_TYPE_MAX_UN)) goto handle_error;
+  if (!ZzTestDoGetLastSeparator(_R("Foo/"), RT_TYPE_MAX_UN)) goto handle_error;
+  if (!ZzTestDoGetLastSeparator(_R("/Foo/"), 0)) goto handle_error;
+  if (!ZzTestDoGetLastSeparator(_R("bar/Foo/"), 3)) goto handle_error;
+  if (!ZzTestDoGetLastSeparator(_R("/bar/Foo/"), 4)) goto handle_error;
 
-  if (ZzTestDoGetLastSeparator(_R("Foo"), RT_TYPE_MAX_UN)) goto the_end;
-  if (ZzTestDoGetLastSeparator(_R("Foo/"), RT_TYPE_MAX_UN)) goto the_end;
-  if (ZzTestDoGetLastSeparator(_R("/Foo/"), 0)) goto the_end;
-  if (ZzTestDoGetLastSeparator(_R("bar/Foo/"), 3)) goto the_end;
-  if (ZzTestDoGetLastSeparator(_R("/bar/Foo/"), 4)) goto the_end;
-  unResult = 0;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 
-RT_UN16 RT_CALL ZzTestDoRemoveTrailingSeparators(RT_CHAR* lpPath, RT_CHAR* lpExpected)
+RT_B RT_CALL ZzTestDoRemoveTrailingSeparators(RT_CHAR* lpPath, RT_CHAR* lpExpected)
 {
   RT_CHAR lpBuffer[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
   unWritten = 0;
   RtCopyString(lpPath, lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
 
   RtRemoveTrailingSeparators(lpBuffer, unWritten, &unWritten);
-  if (RtCompareStrings(lpBuffer, lpExpected)) goto the_end;
-  if (unWritten != RtGetStringSize(lpExpected)) goto the_end;
+  if (RtCompareStrings(lpBuffer, lpExpected)) goto handle_error;
+  if (unWritten != RtGetStringSize(lpExpected)) goto handle_error;
 
-  unResult = 0;
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestRemoveTrailingSeparators()
+RT_B RT_CALL ZzTestRemoveTrailingSeparators()
 {
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (ZzTestDoRemoveTrailingSeparators(_R("/"), _R("."))) goto the_end;
-  if (ZzTestDoRemoveTrailingSeparators(_R("//"), _R("."))) goto the_end;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("/"), _R("."))) goto handle_error;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("//"), _R("."))) goto handle_error;
 #else /* NOT RT_DEFINE_WINDOWS */
-  if (ZzTestDoRemoveTrailingSeparators(_R("/"), _R("/"))) goto the_end;
-  if (ZzTestDoRemoveTrailingSeparators(_R("//"), _R("/"))) goto the_end;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("/"), _R("/"))) goto handle_error;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("//"), _R("/"))) goto handle_error;
 #endif
-  if (ZzTestDoRemoveTrailingSeparators(_R("Foo"), _R("Foo"))) goto the_end;
-  if (ZzTestDoRemoveTrailingSeparators(_R("Foo/"), _R("Foo"))) goto the_end;
-  if (ZzTestDoRemoveTrailingSeparators(_R("Bar/Foo/"), _R("Bar/Foo"))) goto the_end;
-  if (ZzTestDoRemoveTrailingSeparators(_R("/Bar/Foo//"), _R("/Bar/Foo"))) goto the_end;
-  if (ZzTestDoRemoveTrailingSeparators(_R(""), _R(""))) goto the_end;
-  unResult = 0;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("Foo"), _R("Foo"))) goto handle_error;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("Foo/"), _R("Foo"))) goto handle_error;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("Bar/Foo/"), _R("Bar/Foo"))) goto handle_error;
+  if (!ZzTestDoRemoveTrailingSeparators(_R("/Bar/Foo//"), _R("/Bar/Foo"))) goto handle_error;
+  if (!ZzTestDoRemoveTrailingSeparators(_R(""), _R(""))) goto handle_error;
+  bResult = 0;
 
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestDoExtractFileName(RT_CHAR* lpPath, RT_CHAR* lpExpected)
+RT_B RT_CALL ZzTestDoExtractFileName(RT_CHAR* lpPath, RT_CHAR* lpExpected)
 {
   RT_CHAR lpBuffer[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
   unWritten = 0;
-  if (!RtCopyString(_R("Testing RtExtractFileName on \""), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(lpPath,                                &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(_R("\", expecting \""),                &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(lpExpected,                            &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(_R("\", found \""),                    &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtExtractFileName(lpPath, RtGetStringSize(lpPath),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(_R("\"\n"),                            &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
+  if (!RtCopyString(_R("Testing RtExtractFileName on \""), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(lpPath,                                &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(_R("\", expecting \""),                &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(lpExpected,                            &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(_R("\", found \""),                    &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtExtractFileName(lpPath, RtGetStringSize(lpPath),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(_R("\"\n"),                            &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   unWritten = 0;
-  if (!RtExtractFileName(lpPath, RtGetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (RtCompareStrings(lpBuffer, lpExpected)) goto the_end;
+  if (!RtExtractFileName(lpPath, RtGetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (RtCompareStrings(lpBuffer, lpExpected)) goto handle_error;
 
-  unResult = 0;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestExtractFileName()
+RT_B RT_CALL ZzTestExtractFileName()
 {
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
-
-  if (ZzTestDoExtractFileName(_R("bar.txt"), _R("bar.txt"))) goto the_end;
-  if (ZzTestDoExtractFileName(_R("foo/bar.txt"), _R("bar.txt"))) goto the_end;
-  if (ZzTestDoExtractFileName(_R("./bar.txt"), _R("bar.txt"))) goto the_end;
-  if (ZzTestDoExtractFileName(_R("/foo/bar.txt"), _R("bar.txt"))) goto the_end;
-  if (ZzTestDoExtractFileName(_R("/foo/data"), _R("data"))) goto the_end;
-  if (ZzTestDoExtractFileName(_R("/foo/data/"), _R("data"))) goto the_end;
-  if (ZzTestDoExtractFileName(_R("../data"), _R("data"))) goto the_end;
-  if (ZzTestDoExtractFileName(_R("/bar.txt"), _R("bar.txt"))) goto the_end;
+  if (!ZzTestDoExtractFileName(_R("bar.txt"), _R("bar.txt"))) goto handle_error;
+  if (!ZzTestDoExtractFileName(_R("foo/bar.txt"), _R("bar.txt"))) goto handle_error;
+  if (!ZzTestDoExtractFileName(_R("./bar.txt"), _R("bar.txt"))) goto handle_error;
+  if (!ZzTestDoExtractFileName(_R("/foo/bar.txt"), _R("bar.txt"))) goto handle_error;
+  if (!ZzTestDoExtractFileName(_R("/foo/data"), _R("data"))) goto handle_error;
+  if (!ZzTestDoExtractFileName(_R("/foo/data/"), _R("data"))) goto handle_error;
+  if (!ZzTestDoExtractFileName(_R("../data"), _R("data"))) goto handle_error;
+  if (!ZzTestDoExtractFileName(_R("/bar.txt"), _R("bar.txt"))) goto handle_error;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (ZzTestDoExtractFileName(_R("/"), _R("."))) goto the_end;
+  if (!ZzTestDoExtractFileName(_R("/"), _R("."))) goto handle_error;
 #else /* NOT RT_DEFINE_WINDOWS */
-  if (ZzTestDoExtractFileName(_R("/"), _R("/"))) goto the_end;
+  if (!ZzTestDoExtractFileName(_R("/"), _R("/"))) goto handle_error;
 #endif
 
-  unResult = 0;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestDoExtractParentPath(RT_CHAR* lpPath, RT_CHAR* lpExpected)
+RT_B RT_CALL ZzTestDoExtractParentPath(RT_CHAR* lpPath, RT_CHAR* lpExpected)
 {
   RT_CHAR lpBuffer[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
   unWritten = 0;
-  if (!RtCopyString(_R("Testing RtExtractParentPath on \""), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(lpPath,                                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(_R("\", expecting \""),                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(lpExpected,                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(_R("\", found \""),                      &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtExtractParentPath(lpPath, RtGetStringSize(lpPath),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (!RtCopyString(_R("\"\n"),                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
+  if (!RtCopyString(_R("Testing RtExtractParentPath on \""), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(lpPath,                                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(_R("\", expecting \""),                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(lpExpected,                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(_R("\", found \""),                      &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtExtractParentPath(lpPath, RtGetStringSize(lpPath),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyString(_R("\"\n"),                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   unWritten = 0;
-  if (!RtExtractParentPath(lpPath, RtGetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto the_end;
-  if (RtCompareStrings(lpBuffer, lpExpected)) goto the_end;
+  if (!RtExtractParentPath(lpPath, RtGetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (RtCompareStrings(lpBuffer, lpExpected)) goto handle_error;
 
-  unResult = 0;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestExtractParentPath()
+RT_B RT_CALL ZzTestExtractParentPath()
 {
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
-
-  if (ZzTestDoExtractParentPath(_R("foo.txt"), _R("."))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("../data.txt"), _R(".."))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("./data.txt"), _R("."))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("data/foo.txt"), _R("data"))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("data//foo.txt"), _R("data"))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("/data/foo.txt"), _R("/data"))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("/foo/../data.txt"), _R("/foo/.."))) goto the_end;
+  if (!ZzTestDoExtractParentPath(_R("foo.txt"), _R("."))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("../data.txt"), _R(".."))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("./data.txt"), _R("."))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("data/foo.txt"), _R("data"))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("data//foo.txt"), _R("data"))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("/data/foo.txt"), _R("/data"))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("/foo/../data.txt"), _R("/foo/.."))) goto handle_error;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (ZzTestDoExtractParentPath(_R("/"), _R("."))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("/data"), _R("."))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("//data"), _R("."))) goto the_end;
+  if (!ZzTestDoExtractParentPath(_R("/"), _R("."))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("/data"), _R("."))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("//data"), _R("."))) goto handle_error;
 #else /* NOT RT_DEFINE_WINDOWS */
-  if (ZzTestDoExtractParentPath(_R("/"), _R("/"))) goto the_end;
-  if (ZzTestDoExtractParentPath(_R("/data"), _R("/"))) goto the_end;
+  if (!ZzTestDoExtractParentPath(_R("/"), _R("/"))) goto handle_error;
+  if (!ZzTestDoExtractParentPath(_R("/data"), _R("/"))) goto handle_error;
 #endif
 
-  unResult = 0;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_B RT_CALL ZzTestCreateFile(RT_CHAR* lpFilePath)
@@ -222,83 +235,85 @@ RT_B RT_CALL ZzTestCreateFile(RT_CHAR* lpFilePath)
   if (!RtWriteToFile(&rtFile, "Hello, world!", 13)) goto handle_error;
 
   bResult = RT_SUCCESS;
-  goto free_resources;
-handle_error:
-  bResult = RT_FAILURE;
 free_resources:
   if (bFileCreated)
   {
-    if (!RtFreeFile(&rtFile) && bResult)
-    {
-      bFileCreated = RT_FALSE;
-      goto handle_error;
-    }
     bFileCreated = RT_FALSE;
+    if (!RtFreeFile(&rtFile) && bResult) goto handle_error;
   }
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestMiscWithTemp(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryPathSize)
+RT_B RT_CALL ZzTestMiscWithTemp(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryPathSize)
 {
   RT_CHAR lpFilePath1[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpFilePath2[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
+  if (!RtBuildNewPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest1.txt"), lpFilePath1, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtBuildNewPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest2.txt"), lpFilePath2, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
-  if (!RtBuildNewPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest1.txt"), lpFilePath1, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto the_end;
-  if (!RtBuildNewPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest2.txt"), lpFilePath2, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto the_end;
+  if (!ZzTestCreateFile(lpFilePath1)) goto handle_error;
 
-  if (!ZzTestCreateFile(lpFilePath1)) goto the_end;
+  if (!RtDeleteFile(lpFilePath2)) goto handle_error;
+  if (!RtRenameFile(lpFilePath1, _R("ttest2.txt"))) goto handle_error;
 
-  if (!RtDeleteFile(lpFilePath2)) goto the_end;
-  if (!RtRenameFile(lpFilePath1, _R("ttest2.txt"))) goto the_end;
+  if (!RtCopyFile(lpFilePath2, lpFilePath1)) goto handle_error;
 
-  if (!RtCopyFile(lpFilePath2, lpFilePath1)) goto the_end;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-  unResult = 0;
-
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestMisc()
+RT_B RT_CALL ZzTestMisc()
 {
   RT_CHAR lpTempDirectory[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unTempDirectoryPathSize;
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
   unTempDirectoryPathSize = 0;
-  if (!RtGetTempDirectory(lpTempDirectory, RT_FILE_SYSTEM_MAX_FILE_PATH, &unTempDirectoryPathSize)) goto the_end;
-  if (!RtBuildPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest"), RT_FILE_SYSTEM_MAX_FILE_PATH, &unTempDirectoryPathSize)) goto the_end;
+  if (!RtGetTempDirectory(lpTempDirectory, RT_FILE_SYSTEM_MAX_FILE_PATH, &unTempDirectoryPathSize)) goto handle_error;
+  if (!RtBuildPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest"), RT_FILE_SYSTEM_MAX_FILE_PATH, &unTempDirectoryPathSize)) goto handle_error;
 
   if (!RtCheckPath(lpTempDirectory, RT_FILE_SYSTEM_TYPE_DIRECTORY))
   {
-    if (!RtCreateDirectory(lpTempDirectory)) goto the_end;
+    if (!RtCreateDirectory(lpTempDirectory)) goto handle_error;
   }
 
-  unResult = ZzTestMiscWithTemp(lpTempDirectory, unTempDirectoryPathSize);
+  bResult = ZzTestMiscWithTemp(lpTempDirectory, unTempDirectoryPathSize);
 
-the_end:
-  return unResult;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestFileSystem()
+RT_B RT_CALL ZzTestFileSystem()
 {
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
+  if (!ZzTestGetLastSeparator()) goto handle_error;
+  if (!ZzTestRemoveTrailingSeparators()) goto handle_error;
+  if (!ZzTestExtractFileName()) goto handle_error;
+  if (!ZzTestExtractParentPath()) goto handle_error;
+  if (!ZzTestMisc()) goto handle_error;
 
-  if (ZzTestGetLastSeparator()) goto the_end;
-  if (ZzTestRemoveTrailingSeparators()) goto the_end;
-  if (ZzTestExtractFileName()) goto the_end;
-  if (ZzTestExtractParentPath()) goto the_end;
-  if (ZzTestMisc()) goto the_end;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-  unResult = 0;
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

@@ -53,6 +53,11 @@ void* RT_API RtNewListItem(void** lpList, void** lpItem);
  */
 RT_UN RT_API RtNewListItemIndex(void** lpList, RT_UN* lpItemIndex);
 
+/**
+ * <p>
+ * Set the list to RT_NULL.
+ * </p>
+ */
 RT_B RT_API RtFreeList(void** lpList);
 
 #endif /* RT_LIST_H */

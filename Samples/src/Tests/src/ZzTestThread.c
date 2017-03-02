@@ -13,23 +13,33 @@ RT_UN32 RT_CALL ZzTestSimpleThreadCallback(void* lpParameter)
   return 12;
 }
 
-RT_UN16 RT_CALL ZzTestThread()
+RT_B RT_CALL ZzTestThread()
 {
-  RT_THREAD thread;
+  RT_B bThreadCreated;
+  RT_THREAD rtThread;
   RT_UN32 unExitCode;
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
+  bThreadCreated = RT_FALSE;
 
-  if (!RtCreateThread(&thread, &ZzTestSimpleThreadCallback, _R("Hello from thread\n"))) goto the_end;
-  if (!RtJoinThread(&thread)) goto free_thread;
+  if (!RtCreateThread(&rtThread, &ZzTestSimpleThreadCallback, _R("Hello from thread\n"))) goto handle_error;
+  bThreadCreated = RT_TRUE;
+
+  if (!RtJoinThread(&rtThread)) goto handle_error;
   RtWriteStringToConsole(_R("Joined!\n"));
-  if (!RtGetThreadExitCode(&thread, &unExitCode)) goto free_thread;
-  if (unExitCode != 12) goto free_thread;
+  if (!RtGetThreadExitCode(&rtThread, &unExitCode)) goto handle_error;
+  if (unExitCode != 12) goto handle_error;
 
-  unResult = 0;
-free_thread:
-  if (!RtFreeThread(&thread)) unResult = 1;
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bThreadCreated)
+  {
+    bThreadCreated = RT_FALSE;
+    if ((!RtFreeThread(&rtThread)) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

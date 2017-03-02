@@ -3,6 +3,6 @@
 
 #include <RtWin32Ex.h>
 
-RT_UN16 ZzWriteLastErrorMessage(RT_CHAR* lpLabel);
+void RT_CALL ZzWriteLastErrorMessage(RT_CHAR* lpLabel);
 
 #endif /* ZZ_TOOLS_H */

@@ -26,59 +26,63 @@ RT_CHAR* tt_System_2 = _R("é\u0163");
 RT_UCHAR8 tt_ISO88592[3] = { 0xE9, 0xFE, 0x00 };
 RT_UCHAR8 tt_Utf8_2[5] = { 0xC3, 0xA9, 0xC5, 0xA3, 0x00 };
 
-RT_UN16 RT_CALL ZzTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, RT_UN unEncoding, RT_UN unEncodedLength, RT_UN unEncodedCharSize, RT_B bDecodeOnly)
+RT_B RT_CALL ZzTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, RT_UN unEncoding, RT_UN unEncodedLength, RT_UN unEncodedCharSize, RT_B bDecodeOnly)
 {
   RT_UN unExpectedStringSize;
   RT_CHAR8 lpBuffer[512];
   RT_CHAR lpCharBuffer[512];
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
-
-  if (RtGetTerminatingZeroSize(unEncoding) != unEncodedCharSize) goto the_end;
-  if (RtGetDataSize((RT_CHAR8*)lpEncoded, unEncodedCharSize) != unEncodedLength) goto the_end;
+  if (RtGetTerminatingZeroSize(unEncoding) != unEncodedCharSize) goto handle_error;
+  if (RtGetDataSize((RT_CHAR8*)lpEncoded, unEncodedCharSize) != unEncodedLength) goto handle_error;
 
   /* Encode. */
   if (!bDecodeOnly)
   {
-    if (RtEncodeWithBuffer(lpCharacters, RT_TYPE_MAX_UN, unEncoding, lpBuffer, 512) != unEncodedLength) goto the_end;
-    if (RT_MEMORY_COMPARE(lpBuffer, lpEncoded, unEncodedLength + unEncodedCharSize)) goto the_end;
+    if (RtEncodeWithBuffer(lpCharacters, RT_TYPE_MAX_UN, unEncoding, lpBuffer, 512) != unEncodedLength) goto handle_error;
+    if (RT_MEMORY_COMPARE(lpBuffer, lpEncoded, unEncodedLength + unEncodedCharSize)) goto handle_error;
   }
 
   /* Decode. */
   unExpectedStringSize = RtGetStringSize(lpCharacters);
-  if (RtDecodeWithBuffer((RT_CHAR8*)lpEncoded, RT_TYPE_MAX_UN, unEncoding, lpCharBuffer, 512) != unExpectedStringSize) goto the_end;
-  if (RtCompareStrings(lpCharBuffer, lpCharacters)) goto the_end;
+  if (RtDecodeWithBuffer((RT_CHAR8*)lpEncoded, RT_TYPE_MAX_UN, unEncoding, lpCharBuffer, 512) != unExpectedStringSize) goto handle_error;
+  if (RtCompareStrings(lpCharBuffer, lpCharacters)) goto handle_error;
 
-  unResult = 0;
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestEncoding()
+RT_B RT_CALL ZzTestEncoding()
 {
-  RT_UN16 unResult;
+  RT_B bResult;
 
-  unResult = 1;
+  if (!ZzTestEncodeDecode(tt_System_0, tt_Ascii, RT_ENCODING_US_ASCII, 2, 1, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_0, tt_Ascii, RT_ENCODING_UTF_8, 2, 1, RT_FALSE)) goto handle_error;
 
-  if (ZzTestEncodeDecode(tt_System_0, tt_Ascii, RT_ENCODING_US_ASCII, 2, 1, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_0, tt_Ascii, RT_ENCODING_UTF_8, 2, 1, RT_FALSE)) goto the_end;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_ISO88591, RT_ENCODING_ISO_8859_1, 2, 1, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf8_1, RT_ENCODING_UTF_8, 4, 1, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf16, RT_ENCODING_UTF_16, 6, 2, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf16BeWithBom, RT_ENCODING_UTF_16, 6, 2, RT_TRUE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf16Le, RT_ENCODING_UTF_16LE, 4, 2, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf16Be, RT_ENCODING_UTF_16BE, 4, 2, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf32, RT_ENCODING_UTF_32, 12, 4, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf32BeWithBom, RT_ENCODING_UTF_32, 12, 4, RT_TRUE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf32Le, RT_ENCODING_UTF_32LE, 8, 4, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_1, tt_Utf32Be, RT_ENCODING_UTF_32BE, 8, 4, RT_FALSE)) goto handle_error;
 
-  if (ZzTestEncodeDecode(tt_System_1, tt_ISO88591, RT_ENCODING_ISO_8859_1, 2, 1, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf8_1, RT_ENCODING_UTF_8, 4, 1, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf16, RT_ENCODING_UTF_16, 6, 2, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf16BeWithBom, RT_ENCODING_UTF_16, 6, 2, RT_TRUE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf16Le, RT_ENCODING_UTF_16LE, 4, 2, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf16Be, RT_ENCODING_UTF_16BE, 4, 2, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf32, RT_ENCODING_UTF_32, 12, 4, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf32BeWithBom, RT_ENCODING_UTF_32, 12, 4, RT_TRUE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf32Le, RT_ENCODING_UTF_32LE, 8, 4, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_1, tt_Utf32Be, RT_ENCODING_UTF_32BE, 8, 4, RT_FALSE)) goto the_end;
+  if (!ZzTestEncodeDecode(tt_System_2, tt_ISO88592, RT_ENCODING_ISO_8859_2, 2, 1, RT_FALSE)) goto handle_error;
+  if (!ZzTestEncodeDecode(tt_System_2, tt_Utf8_2, RT_ENCODING_UTF_8, 4, 1, RT_FALSE)) goto handle_error;
 
-  if (ZzTestEncodeDecode(tt_System_2, tt_ISO88592, RT_ENCODING_ISO_8859_2, 2, 1, RT_FALSE)) goto the_end;
-  if (ZzTestEncodeDecode(tt_System_2, tt_Utf8_2, RT_ENCODING_UTF_8, 4, 1, RT_FALSE)) goto the_end;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
 
-  unResult = 0;
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

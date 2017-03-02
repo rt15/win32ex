@@ -6,10 +6,10 @@
 
 RT_UN zz_unTestEventThreadStatus;
 
-RT_UN32 RT_CALL ZZTestEventThreadCallback(void* lpParameter)
+RT_UN32 RT_CALL ZzTestEventThreadCallback(void* lpParameter)
 {
   RT_EVENT* lpEvent;
-  RT_UN32 nResult;
+  RT_UN32 unResult;
 
   lpEvent = (RT_EVENT*)lpParameter;
 
@@ -21,12 +21,12 @@ RT_UN32 RT_CALL ZZTestEventThreadCallback(void* lpParameter)
 
   zz_unTestEventThreadStatus = ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_2;
 
-  nResult = RT_SUCCESS;
+  unResult = RT_SUCCESS;
 free_resources:
-  return nResult;
+  return unResult;
 
 handle_error:
-  nResult = RT_FAILURE;
+  unResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -46,7 +46,7 @@ RT_B RT_CALL ZzTestEvent()
   if (!RtCreateEvent(&rtEvent)) goto handle_error;
   bEventCreated = RT_TRUE;
 
-  if (!RtCreateThread(&rtThread, &ZZTestEventThreadCallback, &rtEvent)) goto handle_error;
+  if (!RtCreateThread(&rtThread, &ZzTestEventThreadCallback, &rtEvent)) goto handle_error;
   bThreadCreated = RT_TRUE;
 
   /* Let other thread wait for the event. */

@@ -1,6 +1,6 @@
 #include <RtWin32Ex.h>
 
-RT_UN16 RT_CALL ZzTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
+RT_B RT_CALL ZzTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
 {
   RT_CHAR* lpValue;
 
@@ -10,62 +10,67 @@ RT_UN16 RT_CALL ZzTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
     lpValue = _R("NULL");
   }
   RtWriteStringsToConsole(4, lpKey, _R(" = \""), lpValue, _R("\"\n"));
-  return 0;
+
+  return RT_SUCCESS;
 }
 
-RT_UN16 RT_CALL ZzTestIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue, RT_N nExpected)
+RT_B RT_CALL ZzTestIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue, RT_N nExpected)
 {
   RT_N nValue;
-  RT_UN16 unResult;
 
   nValue = RtGetIntegerProperty(lpProperties, lpKey, nDefaultValue);
-  unResult = (nValue == nExpected) ? 0 : 1;
 
-  return unResult;
+  return (nValue == nExpected);
 }
 
-RT_UN16 RT_CALL ZzTestBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue, RT_B bExpected)
+RT_B RT_CALL ZzTestBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue, RT_B bExpected)
 {
   RT_B bValue;
-  RT_UN16 unResult;
+  RT_B bResult;
 
   bValue = RtGetBooleanProperty(lpProperties, lpKey, bDefaultValue);
-  unResult = ((bValue && bExpected) || ((!bValue) && (!bExpected))) ? 0 : 1;
+  bResult = ((bValue && bExpected) || ((!bValue) && (!bExpected)));
 
-  return unResult;
+  return bResult;
 }
 
-RT_UN16 RT_CALL ZzTestProperties(RT_HEAP** lpHeap)
+RT_B RT_CALL ZzTestProperties(RT_HEAP** lpHeap)
 {
-  RT_PROPERTIES properties;
-  RT_UN16 unResult;
+  RT_B bPropertiesCreated;
+  RT_PROPERTIES rtProperties;
+  RT_B bResult;
 
-  unResult = 1;
+  bPropertiesCreated = RT_FALSE;
 
-  if (!RtCreateProperties(&properties, _R("data/properties.txt"), RT_ENCODING_ISO_8859_1, lpHeap))
+  if (!RtCreateProperties(&rtProperties, _R("data/properties.txt"), RT_ENCODING_ISO_8859_1, lpHeap)) goto handle_error;
+  bPropertiesCreated = RT_TRUE;
+
+  if (!ZzTestProperty(&rtProperties, _R("my_key"))) goto handle_error;
+  if (!ZzTestProperty(&rtProperties, _R("my_other_key"))) goto handle_error;
+  if (!ZzTestProperty(&rtProperties, _R("my_wrong_key"))) goto handle_error;
+  if (!ZzTestProperty(&rtProperties, _R(""))) goto handle_error;
+  if (!ZzTestProperty(&rtProperties, _R("key_with_empty_value"))) goto handle_error;
+  if (!ZzTestProperty(&rtProperties, _R("key_without_value"))) goto handle_error;
+
+  if (!ZzTestIntegerProperty(&rtProperties, _R("key_with_number"), 5, 12)) goto handle_error;
+  if (!ZzTestIntegerProperty(&rtProperties, _R("key_with_zero"), 5, 0)) goto handle_error;
+  if (!ZzTestIntegerProperty(&rtProperties, _R("wrong_number_key"), 5, 5)) goto handle_error;
+
+  if (!ZzTestBooleanProperty(&rtProperties, _R("key_with_true"), RT_FALSE, RT_TRUE)) goto handle_error;
+  if (!ZzTestBooleanProperty(&rtProperties, _R("key_with_false"), RT_TRUE, RT_FALSE)) goto handle_error;
+  if (!ZzTestBooleanProperty(&rtProperties, _R("wrong_boolean_key"), RT_FALSE, RT_FALSE)) goto handle_error;
+  if (!ZzTestBooleanProperty(&rtProperties, _R("wrong_boolean_key"), RT_TRUE, RT_TRUE)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bPropertiesCreated)
   {
-    goto the_end;
+    bPropertiesCreated = RT_FALSE;
+    if (!RtFreeProperties(&rtProperties) && bResult) goto handle_error;
   }
+  return bResult;
 
-  if (ZzTestProperty(&properties, _R("my_key"))) goto the_end;
-  if (ZzTestProperty(&properties, _R("my_other_key"))) goto the_end;
-  if (ZzTestProperty(&properties, _R("my_wrong_key"))) goto the_end;
-  if (ZzTestProperty(&properties, _R(""))) goto the_end;
-  if (ZzTestProperty(&properties, _R("key_with_empty_value"))) goto the_end;
-  if (ZzTestProperty(&properties, _R("key_without_value"))) goto the_end;
-
-  if (ZzTestIntegerProperty(&properties, _R("key_with_number"), 5, 12)) goto the_end;
-  if (ZzTestIntegerProperty(&properties, _R("key_with_zero"), 5, 0)) goto the_end;
-  if (ZzTestIntegerProperty(&properties, _R("wrong_number_key"), 5, 5)) goto the_end;
-
-  if (ZzTestBooleanProperty(&properties, _R("key_with_true"), RT_FALSE, RT_TRUE)) goto the_end;
-  if (ZzTestBooleanProperty(&properties, _R("key_with_false"), RT_TRUE, RT_FALSE)) goto the_end;
-  if (ZzTestBooleanProperty(&properties, _R("wrong_boolean_key"), RT_FALSE, RT_FALSE)) goto the_end;
-  if (ZzTestBooleanProperty(&properties, _R("wrong_boolean_key"), RT_TRUE, RT_TRUE)) goto the_end;
-
-  if (!RtFreeProperties(&properties)) goto the_end;
-
-  unResult = 0;
-the_end:
-  return unResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

@@ -14,6 +14,13 @@
 
 typedef void* (RT_CALL *RT_HEAP_ALLOC)(void* lpThis, void** lpArea, RT_UN unSize, RT_CHAR* lpName);
 typedef void* (RT_CALL *RT_HEAP_RE_ALLOC)(void* lpThis, void** lpArea, void* lpCurrentArea, RT_UN unSize);
+/**
+ *
+ * <p>
+ * lpArea is set to RT_NULL.
+ * </p>
+ *
+ */
 typedef RT_B (RT_CALL *RT_HEAP_FREE)(void* lpThis, void** lpArea);
 typedef RT_B (RT_CALL *RT_HEAP_CLOSE)(void* lpThis);
 

@@ -29,30 +29,32 @@ void RT_CALL ZzTestDisplayFlags()
 #endif
 }
 
-RT_UN16 RT_CALL ZzTestType(RT_CHAR* lpTypeName, RT_UN unSize, RT_B bSigned, RT_UN unExpectedSize, RT_B bExpectedSignedness)
+RT_B RT_CALL ZzTestType(RT_CHAR* lpTypeName, RT_UN unSize, RT_B bSigned, RT_UN unExpectedSize, RT_B bExpectedSignedness)
 {
   RT_CHAR lpBuffer[RT_CHAR_THIRD_BIG_STRING_SIZE];
   RT_UN unWritten;
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
   unWritten = 0;
   RtCopyString(lpTypeName,                                        &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
   RtCopyString(_R(" size = "),                                    &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
-  RtConvertIntegerToString(unSize,                                  &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
+  RtConvertIntegerToString(unSize,                                &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
   RtCopyString(bSigned ? _R(", signed.\n") : _R(", unsigned.\n"), &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
-  if (unSize != unExpectedSize) goto the_end;
-  if ((bExpectedSignedness && !bSigned) || (!bExpectedSignedness && bSigned)) goto the_end;
+  if (unSize != unExpectedSize) goto handle_error;
+  if ((bExpectedSignedness && !bSigned) || (!bExpectedSignedness && bSigned)) goto handle_error;
 
-  unResult = 0;
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestTypesSizes()
+RT_B RT_CALL ZzTestTypesSizes()
 {
   RT_UN unExpectedCharSize;
   RT_UN unExpectedArchiSize;
@@ -69,9 +71,7 @@ RT_UN16 RT_CALL ZzTestTypesSizes()
   RT_N nN;
   RT_UN unUn;
 
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
   unExpectedCharSize = 16;
@@ -86,53 +86,59 @@ RT_UN16 RT_CALL ZzTestTypesSizes()
 #endif
 
   cChar8 = -1;
-  if (ZzTestType(_R("RT_CHAR8"), sizeof(RT_CHAR8) * 8, cChar8 < 0, 8, cChar8 < 0)) goto the_end;
+  if (!ZzTestType(_R("RT_CHAR8"), sizeof(RT_CHAR8) * 8, cChar8 < 0, 8, cChar8 < 0)) goto handle_error;
 
   ucUChar8 = -1;
-  if (ZzTestType(_R("RT_UCHAR8"), sizeof(RT_UCHAR8) * 8, ucUChar8 < 0, 8, RT_FALSE)) goto the_end;
+  if (!ZzTestType(_R("RT_UCHAR8"), sizeof(RT_UCHAR8) * 8, ucUChar8 < 0, 8, RT_FALSE)) goto handle_error;
 
   unUn16 = -1;
-  if (ZzTestType(_R("RT_UN16"), sizeof(RT_UN16) * 8, unUn16 < 0, 16, RT_FALSE)) goto the_end;
+  if (!ZzTestType(_R("RT_UN16"), sizeof(RT_UN16) * 8, unUn16 < 0, 16, RT_FALSE)) goto handle_error;
 
   cChar = -1;
-  if (ZzTestType(_R("RT_CHAR"), sizeof(RT_CHAR) * 8, cChar < 0, unExpectedCharSize, cChar < 0)) goto the_end;
+  if (!ZzTestType(_R("RT_CHAR"), sizeof(RT_CHAR) * 8, cChar < 0, unExpectedCharSize, cChar < 0)) goto handle_error;
 
   ucUChar = -1;
-  if (ZzTestType(_R("RT_UCHAR"), sizeof(RT_UCHAR) * 8, ucUChar < 0, unExpectedCharSize, RT_FALSE)) goto the_end;
+  if (!ZzTestType(_R("RT_UCHAR"), sizeof(RT_UCHAR) * 8, ucUChar < 0, unExpectedCharSize, RT_FALSE)) goto handle_error;
 
   nN32 = -1;
-  if (ZzTestType(_R("RT_N32"), sizeof(RT_N32) * 8, nN32 < 0, 32, RT_TRUE)) goto the_end;
+  if (!ZzTestType(_R("RT_N32"), sizeof(RT_N32) * 8, nN32 < 0, 32, RT_TRUE)) goto handle_error;
 
   unUn32 = -1;
-  if (ZzTestType(_R("RT_UN32"), sizeof(RT_UN32) * 8, unUn32 < 0, 32, RT_FALSE)) goto the_end;
+  if (!ZzTestType(_R("RT_UN32"), sizeof(RT_UN32) * 8, unUn32 < 0, 32, RT_FALSE)) goto handle_error;
 
   nN64 = -1;
-  if (ZzTestType(_R("RT_N64"), sizeof(RT_N64) * 8, nN64 < 0, 64, RT_TRUE)) goto the_end;
+  if (!ZzTestType(_R("RT_N64"), sizeof(RT_N64) * 8, nN64 < 0, 64, RT_TRUE)) goto handle_error;
 
   unUn64 = -1;
-  if (ZzTestType(_R("RT_UN64"), sizeof(RT_UN64) * 8, unUn64 < 0, 64, RT_FALSE)) goto the_end;
+  if (!ZzTestType(_R("RT_UN64"), sizeof(RT_UN64) * 8, unUn64 < 0, 64, RT_FALSE)) goto handle_error;
 
   nN = -1;
-  if (ZzTestType(_R("RT_N"), sizeof(RT_N) * 8, nN < 0, unExpectedArchiSize, RT_TRUE)) goto the_end;
+  if (!ZzTestType(_R("RT_N"), sizeof(RT_N) * 8, nN < 0, unExpectedArchiSize, RT_TRUE)) goto handle_error;
 
   unUn = -1;
-  if (ZzTestType(_R("RT_UN"), sizeof(RT_UN) * 8, unUn < 0, unExpectedArchiSize, RT_FALSE)) goto the_end;
+  if (!ZzTestType(_R("RT_UN"), sizeof(RT_UN) * 8, unUn < 0, unExpectedArchiSize, RT_FALSE)) goto handle_error;
 
-  unResult = 0;
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_UN16 RT_CALL ZzTestTypes()
+RT_B RT_CALL ZzTestTypes()
 {
-  RT_UN16 unResult;
-
-  unResult = 1;
+  RT_B bResult;
 
   ZzTestDisplayFlags();
-  if (ZzTestTypesSizes()) goto the_end;
+  if (!ZzTestTypesSizes()) goto handle_error;
 
-  unResult = 0;
-the_end:
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

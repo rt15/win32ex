@@ -29,26 +29,36 @@ RT_UN32 RT_CALL ZzTestInitializationThreadCallback(void* lpParameter)
   return 0;
 }
 
-RT_UN16 RT_CALL ZzTestInitialization()
+RT_B RT_CALL ZzTestInitialization()
 {
-  RT_THREAD thread;
-  RT_UN16 unResult;
+  RT_B bThreadCreated;
+  RT_THREAD rtThread;
+  RT_B bResult;
 
-  unResult = 1;
+  bThreadCreated = RT_FALSE;
 
+  /* RtCreateInitialization cannot fail. */
   RtCreateInitialization(&tt_Initialization);
 
-  if (!RtCreateThread(&thread, &ZzTestInitializationThreadCallback, RT_NULL)) goto free_initialization;
+  if (!RtCreateThread(&rtThread, &ZzTestInitializationThreadCallback, RT_NULL)) goto handle_error;
 
   ZzTestCommonFunction();
 
-  if (!RtJoinThread(&thread)) goto free_thread;
+  if (!RtJoinThread(&rtThread)) goto handle_error;
   RtWriteStringToConsole(_R("Joined.\n"));
 
-  unResult = 0;
-free_thread:
-  if (!RtFreeThread(&thread)) unResult = 1;
-free_initialization:
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bThreadCreated)
+  {
+    bThreadCreated = RT_FALSE;
+    if (!RtFreeThread(&rtThread) && bResult) goto handle_error;
+  }
+  /* RtFreeInitialization cannot fail. */
   RtFreeInitialization(&tt_Initialization);
-  return unResult;
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
