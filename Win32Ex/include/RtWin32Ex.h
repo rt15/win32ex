@@ -15,6 +15,13 @@
 
 #### TODO:
 
+Function to retrieve current thread id.
+
+Replace:
+" tt_" by " zz_".
+" TT_" by " tt_".
+" rt" by " " zz" in tests.
+
 Add a test case on RtConvertStringToInteger.
 Manage negative values.
 Add an RtConvertStringToUInteger.
