@@ -22,6 +22,18 @@
  * </p>
  */
 
+/* Is debug build? */
+#ifdef _DEBUG
+  #ifdef NDEBUG
+    #error Both _DEBUG and NDEBUG are defined.
+  #else
+    #define RT_DEFINE_DEBUG
+  #endif
+#else
+  #ifndef NDEBUG
+    #error Neither _DEBUG or NDEBUG is defined.
+  #endif
+#endif
 
 /* Operating system. */
 #if defined(WIN32) || defined(WIN64) || defined(_WIN32) || defined(_WIN64)

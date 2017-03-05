@@ -22,6 +22,8 @@
 
 /* Only unicode is supported by the library under Windows. */
 #ifndef UNICODE
+/* UNICODE flag is used by win32 api. */
+/* _UNICODE flag is used by Microsoft CRT implementation and should not be necessary for RtWin32ExOsDefines.h. */
 #define UNICODE
 #endif
 

@@ -2,30 +2,30 @@
 
 #define TT_IS_UNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
 
-void RT_CALL ZzTestDisplayFlags()
+void RT_CALL ZzTestFlags()
 {
-#ifdef RT_DEFINE_32
-  RtWriteStringToConsole(_R("Architecture = 32 bits.\n"));
-#else
-  RtWriteStringToConsole(_R("Architecture = 64 bits\n");
+#if defined(RT_DEFINE_32) && defined(RT_DEFINE_64)
+  #error Both RT_DEFINE_32 and RT_DEFINE_64 are defined.
 #endif
 
-#ifdef RT_DEFINE_WINDOWS
-  RtWriteStringToConsole(_R("Operating system = Windows.\n"));
-#else
-  RtWriteStringToConsole(_R("Operating system = Linux.\n"));
+#if !defined(RT_DEFINE_32) && !defined(RT_DEFINE_64)
+  #error Either RT_DEFINE_32 or RT_DEFINE_64 must be defined.
 #endif
 
-#ifdef RT_DEFINE_VC
-  RtWriteStringToConsole(_R("Compiler = Visual C++.\n"));
-#else
-  RtWriteStringToConsole(_R("Compiler = GCC.\n"));
+#if defined(RT_DEFINE_VC) && defined(RT_DEFINE_GCC)
+  #error Both RT_DEFINE_VC and RT_DEFINE_GCC are defined.
 #endif
 
-#ifdef RT_DEFINE_USE_CRT
-  RtWriteStringToConsole(_R("Use CRT = true.\n"));
-#else
-  RtWriteStringToConsole(_R("Use CRT = false.\n"));
+#if !defined(RT_DEFINE_VC) && !defined(RT_DEFINE_GCC)
+  #error Either RT_DEFINE_VC or RT_DEFINE_GCC must be defined.
+#endif
+
+#if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_LINUX)
+  #error Both RT_DEFINE_WINDOWS and RT_DEFINE_LINUX are defined.
+#endif
+
+#if !defined(RT_DEFINE_WINDOWS) && !defined(RT_DEFINE_LINUX)
+  #error Either RT_DEFINE_WINDOWS or RT_DEFINE_LINUX must be defined.
 #endif
 }
 
@@ -131,7 +131,8 @@ RT_B RT_CALL ZzTestTypes()
 {
   RT_B bResult;
 
-  ZzTestDisplayFlags();
+  /* ZzTestFlags is testing using #error. */
+  ZzTestFlags();
   if (!ZzTestTypesSizes()) goto handle_error;
 
   bResult = RT_SUCCESS;

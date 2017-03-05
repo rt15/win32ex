@@ -15,6 +15,19 @@
 
 #### TODO:
 
+Document CRT usage.
+Document 32/64 bits support.
+Document flags.
+Document unicode support.
+Document compilers/IDE support.
+
+Port to 64 bits.
+
+Port to Makefiles?
+
+Add flags tests:
+if Windows, then not Linux.
+
 Function to retrieve current thread id.
 
 Replace:
@@ -60,10 +73,6 @@ Signals management under Linux.
 
 Create an "Hello, world!" sample project.
 
-Use more flags :
-/D "WIN32" /D "_UNICODE" /D "UNICODE"
-/D "NDEBUG" /D _DEBUG
-/D "_WINDOWS" /D _CONSOLE
 Console/GUI app with gcc?
 
 Take care of alignement for atomic usage.
@@ -71,12 +80,13 @@ See __attribute__ ((aligned (16))) et  __declspec(align(#)), I might define a ma
 
 Fix memory leaks in RtList.c (See TODOs in this file).
 
-Faire des tests "manuels".
+Create manual test project:
 Vérification du chemin du fichier exécutable.
 Récupération de variable d'environement.
 Récupération du répertoires de configuration de l'application.
 Messages correspondants aux erreurs supportées.
 Affichage de la fréquence des compteurs (QueryPerformanceFrequency et équivalent sous Linux).
+Stuff from Console!?
 
 Fonction pour récupérer un nom de fichier temporaire ?
 

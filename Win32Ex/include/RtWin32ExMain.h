@@ -21,8 +21,8 @@
  * </p>
  *
  * <p>
- * Define RT_DEFINE_GUI before including this header to build a GUI application.<br>
  * Define RT_DEFINE_USE_CRT when your application is using CRT on Windows. CRT is always used on linux.
+ * Under Windows, either _CONSOLE or _WINDOWS (For a Windows GUI) must be defined.
  * </p>
  */
 
@@ -34,6 +34,15 @@
  * @return Process exit code. Should be zero if the execution is a success.
  */
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[]);
+
+
+#if defined(_WINDOWS) && defined(_CONSOLE)
+  #error Both _WINDOWS and _CONSOLE are defined.
+#endif
+
+#if !defined(_WINDOWS) && !defined(_CONSOLE)
+  #error Either _WINDOWS or _CONSOLE must be defined.
+#endif
 
 #ifdef RT_DEFINE_WINDOWS
 
@@ -52,7 +61,7 @@ void RT_API RtMainLocalFree(RT_CHAR** lpArgV);
  */
 RT_CHAR** RT_API RtMainCommandLineToArgvW(RT_N32* lpArgC);
 
-#else /* NOT RT_DEFINE_GUI */
+#else /* NOT RT_DEFINE_WINDOWS */
 
 void RT_API RtSetLocale();
 
@@ -63,9 +72,9 @@ void RT_API RtSetLocale();
 #ifdef RT_DEFINE_USE_CRT
 int RT_CDECL main(int argc, char* argv[])
 #else /* NOT RT_DEFINE_USE_CRT */
-#ifdef RT_DEFINE_GUI
+#ifdef _WINDOWS
 int RT_CDECL WinMainCRTStartup()
-#else /* NOT RT_DEFINE_GUI */
+#else /* NOT _WINDOWS */
 int RT_CDECL mainCRTStartup()
 #endif
 #endif

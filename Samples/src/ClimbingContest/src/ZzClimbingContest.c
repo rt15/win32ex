@@ -1,5 +1,3 @@
-#define RT_DEFINE_GUI
-
 #include <RtWin32Ex.h>
 #include <RtWin32ExGui.h>
 #include <RtWin32ExMain.h>

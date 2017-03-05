@@ -16,6 +16,8 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
 					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
@@ -36,6 +38,8 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -97,6 +101,9 @@
 			<Add directory="../../win32ex/lib" />
 		</Linker>
 		<Unit filename="../src/Tests/include/ZzTools.h" />
+		<Unit filename="../src/Tests/src/ZzManualTests.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/Tests/src/ZzTestAtomic.c">
 			<Option compilerVar="CC" />
 		</Unit>

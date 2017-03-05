@@ -102,6 +102,8 @@ RT_B RT_CALL ZzTestEvent();
 RT_B RT_CALL ZzTestSocket();
 RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap);
 
+RT_B RT_CALL ZzManualTests();
+
 /**
  * The tests must be executed in the right directory.
  */
@@ -137,7 +139,10 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+/**
+ * All automated tests.
+ */
+RT_B RT_CALL ZzTests()
 {
   RT_B bResult;
 
@@ -318,6 +323,47 @@ free_resources:
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
+}
+
+RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
+{
+  RtWriteStringToConsole(_R("Test rtlib.\n\n")
+                         _R("Tests [-m|--manual|-h|--help]\n\n")
+                         _R("  --manual          Perform manual tests.\n"));
+  return bResult;
+}
+
+RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+{
+  RT_B bResult;
+
+  if (nArgC == 1)
+  {
+    bResult = ZzTests();
+  }
+  else if (nArgC == 2)
+  {
+    if (!RtCompareStrings(lpArgV[1], _R("--manual")) ||
+        !RtCompareStrings(lpArgV[1], _R("-m")))
+    {
+      bResult = ZzManualTests();
+    }
+    else if (!RtCompareStrings(lpArgV[1], _R("--help")) ||
+             !RtCompareStrings(lpArgV[1], _R("-h")) ||
+             !RtCompareStrings(lpArgV[1], _R("/?")))
+    {
+      bResult = ZzDisplayHelp(RT_SUCCESS);
+    }
+    else
+    {
+      bResult = ZzDisplayHelp(RT_FAILURE);
+    }
+  }
+  else
+  {
+    bResult = ZzDisplayHelp(RT_FAILURE);
+  }
+  return bResult;
 }
 
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])

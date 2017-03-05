@@ -16,6 +16,8 @@
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
 					<Add library="win32exd" />
@@ -34,6 +36,8 @@
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
