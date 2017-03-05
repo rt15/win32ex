@@ -80,6 +80,7 @@ RT_B RT_API RtGetChrono(RT_CHRONO* lpChrono, RT_UN* lpMicroSeconds)
 
   if (!QueryPerformanceCounter(&rtCounterValue)) goto handle_error;
 
+  /* Beware that returned frequency can be greater than processor frequency and RT_TYPE_MAX_UN32. */
   if (!QueryPerformanceFrequency(&rtFrequency)) goto handle_error;
 
   *lpMicroSeconds = (RT_UN)((rtCounterValue.QuadPart - lpStartCounter->QuadPart) * 1000000 / rtFrequency.QuadPart);
