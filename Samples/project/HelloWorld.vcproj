@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="Tests"
-	ProjectGUID="{E9109A59-87B1-457F-93A0-D5DD9B5C2DE7}"
-	RootNamespace="Tests"
+	Name="HelloWorld"
+	ProjectGUID="{058D26DA-035C-4877-A37B-C66F5FE48603}"
+	RootNamespace="HelloWorld"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\Win32Ex\include;..\src\$(ProjectName)\include"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				ExceptionHandling="0"
@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32Exd.lib ws2_32.lib shell32.lib user32.lib"
+				AdditionalDependencies="Win32Exd.lib shell32.lib user32.lib"
 				OutputFile="$(OutDir)\$(ProjectName)d.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
@@ -126,7 +126,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\Win32Ex\include;..\src\$(ProjectName)\include"
+				AdditionalIncludeDirectories="..\..\Win32Ex\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				ExceptionHandling="0"
 				BasicRuntimeChecks="0"
@@ -149,7 +149,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Win32Ex.lib ws2_32.lib user32.lib shell32.lib"
+				AdditionalDependencies="Win32Ex.lib shell32.lib user32.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\Win32Ex\lib"
 				GenerateManifest="false"
@@ -195,75 +195,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\Tests\src\ZzManualTests.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestAtomic.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestChar.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestEncoding.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestEnvironmentVariable.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestEvent.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestFileSystem.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestHeap.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestInitialization.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestList.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestMemory.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestProperties.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestRandom.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTests.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestSocket.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestThread.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestTypes.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTools.c"
+				RelativePath="..\src\HelloWorld\src\ZzHelloWorld.c"
 				>
 			</File>
 		</Filter>
@@ -272,10 +204,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\src\Tests\include\ZzTools.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

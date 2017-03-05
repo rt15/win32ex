@@ -72,7 +72,7 @@ void* __cdecl memset(void*, int, size_t);
  * Copy SIZE bytes from SOURCE to DESTINATION.
  *
  * <p>
- * Act like if a temporary buffer would have been used to avoid overwritting issues.
+ * Act like if a temporary buffer would have been used to avoid overwriting issues.
  * </p>
  *
  * @return <tt>DESTINATION</tt>

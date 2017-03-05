@@ -101,43 +101,9 @@ RT_B RT_CALL ZzTestInitialization();
 RT_B RT_CALL ZzTestEvent();
 RT_B RT_CALL ZzTestSocket();
 RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap);
+RT_B RT_CALL ZzTestEnvironmentVariable();
 
 RT_B RT_CALL ZzManualTests();
-
-/**
- * The tests must be executed in the right directory.
- */
-RT_B RT_CALL ZzAdjustDirectory()
-{
-  RT_CHAR lpPath[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
-  RT_UN unPathSize;
-  RT_B bResult;
-
-  unWritten = 0;
-  if (!RtGetExecutableFilePath(lpPath, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-
-  unPathSize = unWritten;
-  unWritten = 0;
-  if (!RtExtractParentPath(lpPath, unPathSize, lpPath, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-
-  unPathSize = unWritten;
-  unWritten = 0;
-  if (!RtExtractParentPath(lpPath, unPathSize, lpPath, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-
-  if (!RtBuildPath(lpPath, unWritten, _R("src"), RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-
-  if (!RtBuildPath(lpPath, unWritten, _R("Tests"), RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-
-  if (!RtSetCurrentDirectory(lpPath)) goto handle_error;
-
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
-}
 
 /**
  * All automated tests.
@@ -188,6 +154,7 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestEvent()) goto tests_failed;
   if (!ZzTestSocket()) goto tests_failed;
   if (!ZzTestList(&zzRuntimeHeap.lpHeap)) goto tests_failed;
+  if (!ZzTestEnvironmentVariable()) goto tests_failed;
 
   RtWriteStringToConsole(_R("Tests successful!!\n\n"));
   goto end_of_tests;
@@ -196,9 +163,6 @@ tests_failed:
   RtWriteStringToConsole(_R("Tests failed!!\n\n"));
   goto handle_error;
 end_of_tests:
-
-  RtGetExecutableFilePath(lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(2, lpBuffer, _R("\n"));
 
   RtConvertIntegerToString(RtCheckPath(_R("data/file.txt"), RT_FILE_SYSTEM_TYPE_DIRECTORY), lpBuffer, 500, &unWritten);
   RtWriteStringsToConsole(3, _R("dir file.txt: "), lpBuffer, _R("\n"));

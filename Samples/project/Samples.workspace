@@ -3,7 +3,7 @@
 	<Workspace title="Workspace">
 		<Project filename="../../Win32Ex/project/Win32Ex.cbp" />
 		<Project filename="../../Win32ExGui/project/Win32ExGui.cbp" />
-		<Project filename="Console.cbp" />
+		<Project filename="HelloWorld.cbp" />
 		<Project filename="Tests.cbp" />
 		<Project filename="PicturesNamer.cbp" />
 		<Project filename="XdbmScriptsLister.cbp" />

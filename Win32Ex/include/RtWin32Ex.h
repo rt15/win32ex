@@ -15,11 +15,25 @@
 
 #### TODO:
 
+Cleanup ZzTest.c.
+
+Error management in RtReadCharFromConsole.
+
+Add display error message functions for Console/GUI within the library.
+
+Rename Console Code::Blocks project to HelloWorld.
+Create HelloWorld project for VC.
+
+Create manual test project:
+Messages correspondants aux erreurs supportées.
+Page size?
+
 Document CRT usage.
 Document 32/64 bits support.
 Document flags.
 Document unicode support.
 Document compilers/IDE support.
+Document minimal supported Windows version.
 
 Port to 64 bits.
 
@@ -71,14 +85,6 @@ Take care of alignement for atomic usage.
 See __attribute__ ((aligned (16))) et  __declspec(align(#)), I might define a macro in RtWin32ExTypes.h.
 
 Fix memory leaks in RtList.c (See TODOs in this file).
-
-Create manual test project:
-Vérification du chemin du fichier exécutable.
-Récupération de variable d'environement.
-Récupération du répertoires de configuration de l'application.
-Messages correspondants aux erreurs supportées.
-Affichage de la fréquence des compteurs (QueryPerformanceFrequency et équivalent sous Linux).
-Stuff from Console!?
 
 Fonction pour récupérer un nom de fichier temporaire ?
 

@@ -49,6 +49,7 @@
 					<Add option="-m32" />
 					<Add option="-g" />
 					<Add option="-pthread" />
+					<Add option="-D_DEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-m32" />
@@ -65,6 +66,7 @@
 					<Add option="-O2" />
 					<Add option="-m32" />
 					<Add option="-pthread" />
+					<Add option="-DNDEBUG" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

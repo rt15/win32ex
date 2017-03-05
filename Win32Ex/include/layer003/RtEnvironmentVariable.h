@@ -4,6 +4,8 @@
 #include "layer000/RtWin32ExTypes.h"
 
 /**
+ * Fails if the variable does not exist.
+ * 
  * <p>
  * In case of error, lpBuffer start with a zero character and <tt>lpWritten</tt> is left untouched.
  * </p>

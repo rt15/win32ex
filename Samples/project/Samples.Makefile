@@ -1,7 +1,7 @@
 CFLAGS=-I $(WIN32EX)/include
 
 PROJECTS=Tests \
-         Console
+         HelloWorld
 
 PROJECTS_EXECUTABLES=$(addsuffix $(OUTPUT_SUFFIX)$(EXE_EXT),$(addprefix $(ROOT)/bin/,$(PROJECTS)))
 

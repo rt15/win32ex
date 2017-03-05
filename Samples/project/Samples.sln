@@ -10,8 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests.vcproj", "{E
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClimbingContest", "ClimbingContest.vcproj", "{02498908-EBD9-4812-A6C3-AD8B07A0A13F}"
 	ProjectSection(ProjectDependencies) = postProject
-		{5FAF20B8-9C9D-4B63-B661-B8A4931D4428} = {5FAF20B8-9C9D-4B63-B661-B8A4931D4428}
 		{7E9F1B31-8774-482E-87F6-832781D90031} = {7E9F1B31-8774-482E-87F6-832781D90031}
+		{5FAF20B8-9C9D-4B63-B661-B8A4931D4428} = {5FAF20B8-9C9D-4B63-B661-B8A4931D4428}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Win32ExGui", "..\..\Win32ExGui\project\Win32ExGui.vcproj", "{7E9F1B31-8774-482E-87F6-832781D90031}"
@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestsWithCrt", "TestsWithCr
 	ProjectSection(ProjectDependencies) = postProject
 		{5FAF20B8-9C9D-4B63-B661-B8A4931D4428} = {5FAF20B8-9C9D-4B63-B661-B8A4931D4428}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld", "HelloWorld.vcproj", "{058D26DA-035C-4877-A37B-C66F5FE48603}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +52,10 @@ Global
 		{D77C1F62-F878-454E-8ED0-A8739C38E42C}.Debug|Win32.Build.0 = Debug|Win32
 		{D77C1F62-F878-454E-8ED0-A8739C38E42C}.Release|Win32.ActiveCfg = Release|Win32
 		{D77C1F62-F878-454E-8ED0-A8739C38E42C}.Release|Win32.Build.0 = Release|Win32
+		{058D26DA-035C-4877-A37B-C66F5FE48603}.Debug|Win32.ActiveCfg = Debug|Win32
+		{058D26DA-035C-4877-A37B-C66F5FE48603}.Debug|Win32.Build.0 = Debug|Win32
+		{058D26DA-035C-4877-A37B-C66F5FE48603}.Release|Win32.ActiveCfg = Release|Win32
+		{058D26DA-035C-4877-A37B-C66F5FE48603}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

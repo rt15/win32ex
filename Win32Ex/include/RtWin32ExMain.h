@@ -35,6 +35,7 @@
  */
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[]);
 
+#ifdef RT_DEFINE_WINDOWS
 
 #if defined(_WINDOWS) && defined(_CONSOLE)
   #error Both _WINDOWS and _CONSOLE are defined.
@@ -43,8 +44,6 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[]);
 #if !defined(_WINDOWS) && !defined(_CONSOLE)
   #error Either _WINDOWS or _CONSOLE must be defined.
 #endif
-
-#ifdef RT_DEFINE_WINDOWS
 
 /**
  * Should not be use outside this file.
