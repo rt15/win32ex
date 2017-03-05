@@ -226,20 +226,20 @@ handle_error:
 RT_B RT_CALL ZzTestCreateFile(RT_CHAR* lpFilePath)
 {
   RT_B bFileCreated;
-  RT_FILE rtFile;
+  RT_FILE zzFile;
   RT_B bResult;
 
   bFileCreated = RT_FALSE;
-  if (!RtCreateFile(&rtFile, lpFilePath, RT_FILE_MODE_TRUNCATE)) goto handle_error;
+  if (!RtCreateFile(&zzFile, lpFilePath, RT_FILE_MODE_TRUNCATE)) goto handle_error;
   bFileCreated = RT_TRUE;
-  if (!RtWriteToFile(&rtFile, "Hello, world!", 13)) goto handle_error;
+  if (!RtWriteToFile(&zzFile, "Hello, world!", 13)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFreeFile(&rtFile) && bResult) goto handle_error;
+    if (!RtFreeFile(&zzFile) && bResult) goto handle_error;
   }
   return bResult;
 

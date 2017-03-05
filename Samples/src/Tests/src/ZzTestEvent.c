@@ -33,9 +33,9 @@ handle_error:
 RT_B RT_CALL ZzTestEvent()
 {
   RT_B bEventCreated;
-  RT_THREAD rtThread;
+  RT_THREAD zzThread;
   RT_B bThreadCreated;
-  RT_EVENT rtEvent;
+  RT_EVENT zzEvent;
   RT_B bResult;
 
   bEventCreated = RT_FALSE;
@@ -43,10 +43,10 @@ RT_B RT_CALL ZzTestEvent()
   bThreadCreated = RT_FALSE;
   zz_unTestEventThreadStatus = ZZ_TEST_EVENT_THREAD_STATUS_INIT;
 
-  if (!RtCreateEvent(&rtEvent)) goto handle_error;
+  if (!RtCreateEvent(&zzEvent)) goto handle_error;
   bEventCreated = RT_TRUE;
 
-  if (!RtCreateThread(&rtThread, &ZzTestEventThreadCallback, &rtEvent)) goto handle_error;
+  if (!RtCreateThread(&zzThread, &ZzTestEventThreadCallback, &zzEvent)) goto handle_error;
   bThreadCreated = RT_TRUE;
 
   /* Let other thread wait for the event. */
@@ -54,31 +54,31 @@ RT_B RT_CALL ZzTestEvent()
 
   if (zz_unTestEventThreadStatus != ZZ_TEST_EVENT_THREAD_STATUS_INIT) goto handle_error;
 
-  if (!RtSignalEvent(&rtEvent)) goto handle_error;
+  if (!RtSignalEvent(&zzEvent)) goto handle_error;
 
   /* Wait for thread to set status flag. */
   RtSleep(10);
   if (zz_unTestEventThreadStatus != ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_1) goto handle_error;
 
-  if (!RtSignalEvent(&rtEvent)) goto handle_error;
+  if (!RtSignalEvent(&zzEvent)) goto handle_error;
 
   /* Wait for thread to set status flag. */
   RtSleep(10);
   if (zz_unTestEventThreadStatus != ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_2) goto handle_error;
 
-  if (!RtJoinAndCheckThread(&rtThread)) goto handle_error;
+  if (!RtJoinAndCheckThread(&zzThread)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bThreadCreated)
   {
     bThreadCreated = RT_FALSE;
-    if (!RtFreeThread(&rtThread) && bResult) goto handle_error;
+    if (!RtFreeThread(&zzThread) && bResult) goto handle_error;
   }
   if (bEventCreated)
   {
     bEventCreated = RT_FALSE;
-    if (!RtFreeEvent(&rtEvent) && bResult) goto handle_error;
+    if (!RtFreeEvent(&zzEvent) && bResult) goto handle_error;
   }
   return bResult;
 

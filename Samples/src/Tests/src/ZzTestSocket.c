@@ -9,9 +9,9 @@
  */
 RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
 {
-  RT_SOCKET rtSocket;
-  RT_SOCKET rtAcceptedSocket;
-  RT_SOCKET_ADDRESS rtSocketAddress;
+  RT_SOCKET zzSocket;
+  RT_SOCKET zzAcceptedSocket;
+  RT_SOCKET_ADDRESS zzSocketAddress;
   RT_B bSocketCreated;
   RT_B bAcceptedSocketCreated;
   RT_EVENT* lpEvent;
@@ -23,33 +23,33 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
 
   lpEvent = (RT_EVENT*)lpParameter;
 
-  if (!RtCreateSocket(&rtSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_TRUE)) goto handle_error;
+  if (!RtCreateSocket(&zzSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_TRUE)) goto handle_error;
   bSocketCreated = RT_TRUE;
 
-  if (!RtBindSocket(&rtSocket, ZZ_PORT_NUMBER)) goto handle_error;
-  if (!RtListenFromSocket(&rtSocket)) goto handle_error;
+  if (!RtBindSocket(&zzSocket, ZZ_PORT_NUMBER)) goto handle_error;
+  if (!RtListenFromSocket(&zzSocket)) goto handle_error;
 
   if (!RtSignalEvent(lpEvent)) goto handle_error;
 
-  if (!RtAcceptSocketConnection(&rtSocket, &rtAcceptedSocket, &rtSocketAddress)) goto handle_error;
+  if (!RtAcceptSocketConnection(&zzSocket, &zzAcceptedSocket, &zzSocketAddress)) goto handle_error;
   bAcceptedSocketCreated = RT_TRUE;
 
   lpMsg = "Hello, world!";
-  if (RtSendThroughSocket(&rtAcceptedSocket, lpMsg, RtGetString8Size(lpMsg) + 1, 0) == RT_TYPE_MAX_UN) goto handle_error;
+  if (RtSendThroughSocket(&zzAcceptedSocket, lpMsg, RtGetString8Size(lpMsg) + 1, 0) == RT_TYPE_MAX_UN) goto handle_error;
 
-  if (!RtShutdownSocket(&rtAcceptedSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
+  if (!RtShutdownSocket(&zzAcceptedSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
 
   unResult = RT_SUCCESS;
 free_resources:
   if (bAcceptedSocketCreated)
   {
     bAcceptedSocketCreated = RT_FALSE;
-    if (!RtFreeSocket(&rtAcceptedSocket) && unResult) goto handle_error;
+    if (!RtFreeSocket(&zzAcceptedSocket) && unResult) goto handle_error;
   }
   if (bSocketCreated)
   {
     bSocketCreated = RT_FALSE;
-    if (!RtFreeSocket(&rtSocket) && unResult) goto handle_error;
+    if (!RtFreeSocket(&zzSocket) && unResult) goto handle_error;
   }
   return unResult;
 
@@ -66,65 +66,65 @@ handle_error:
  */
 RT_B RT_CALL ZzTestSockets()
 {
-  RT_EVENT rtEvent;
+  RT_EVENT zzEvent;
   RT_B bEventCreated;
-  RT_THREAD rtThread;
+  RT_THREAD zzThread;
   RT_B bThreadCreated;
   RT_B bSocketCreated;
   RT_CHAR8 lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_SOCKET rtSocket;
+  RT_SOCKET zzSocket;
   RT_UN unReceived;
-  RT_ADDRESS_IPV4 rtAddress;
-  RT_SOCKET_ADDRESS_IPV4 rtSocketAddress;
+  RT_ADDRESS_IPV4 zzAddress;
+  RT_SOCKET_ADDRESS_IPV4 zzSocketAddress;
   RT_B bResult;
 
   bEventCreated = RT_FALSE;
   bThreadCreated = RT_FALSE;
   bSocketCreated = RT_FALSE;
 
-  if (!RtCreateEvent(&rtEvent)) goto handle_error;
+  if (!RtCreateEvent(&zzEvent)) goto handle_error;
   bEventCreated = RT_TRUE;
 
-  if (!RtCreateThread(&rtThread, &ZzServerSocketThreadCallback, &rtEvent)) goto handle_error;
+  if (!RtCreateThread(&zzThread, &ZzServerSocketThreadCallback, &zzEvent)) goto handle_error;
   bThreadCreated = RT_TRUE;
 
-  if (!RtWaitForEvent(&rtEvent)) goto handle_error;
+  if (!RtWaitForEvent(&zzEvent)) goto handle_error;
 
   /* Let some time for the server socket to accept connections. */
   RtSleep(10);
 
-  if (!RtCreateSocket(&rtSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_TRUE)) goto handle_error;
+  if (!RtCreateSocket(&zzSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_TRUE)) goto handle_error;
   bSocketCreated = RT_TRUE;
 
-  RtCreateIpv4LoopbackAddress(&rtAddress);
-  RtCreateIpv4SocketAddress(&rtSocketAddress, &rtAddress, ZZ_PORT_NUMBER);
+  RtCreateIpv4LoopbackAddress(&zzAddress);
+  RtCreateIpv4SocketAddress(&zzSocketAddress, &zzAddress, ZZ_PORT_NUMBER);
 
-  if (!RtConnectSocketWithAddress(&rtSocket, (RT_SOCKET_ADDRESS*)&rtSocketAddress)) goto handle_error;
+  if (!RtConnectSocketWithAddress(&zzSocket, (RT_SOCKET_ADDRESS*)&zzSocketAddress)) goto handle_error;
 
-  unReceived = RtReceiveFromSocket(&rtSocket, lpBuffer, RT_CHAR_BIG_STRING_SIZE, 0);
+  unReceived = RtReceiveFromSocket(&zzSocket, lpBuffer, RT_CHAR_BIG_STRING_SIZE, 0);
   if (unReceived == RT_TYPE_MAX_UN) goto handle_error;
   if (unReceived != RtGetString8Size("Hello, world!") + 1) goto handle_error;
   if (RtCompareString8s(lpBuffer, "Hello, world!")) goto handle_error;
-  if (!RtShutdownSocket(&rtSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
+  if (!RtShutdownSocket(&zzSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
 
-  if (!RtJoinAndCheckThread(&rtThread)) goto handle_error;
+  if (!RtJoinAndCheckThread(&zzThread)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bSocketCreated)
   {
     bSocketCreated = RT_FALSE;
-    if (!RtFreeSocket(&rtSocket) && bResult) goto handle_error;
+    if (!RtFreeSocket(&zzSocket) && bResult) goto handle_error;
   }
   if (bThreadCreated)
   {
     bThreadCreated = RT_FALSE;
-    if (!RtFreeThread(&rtThread) && bResult) goto handle_error;
+    if (!RtFreeThread(&zzThread) && bResult) goto handle_error;
   }
   if (bEventCreated)
   {
     bEventCreated = RT_FALSE;
-    if (!RtFreeEvent(&rtEvent) && bResult) goto handle_error;
+    if (!RtFreeEvent(&zzEvent) && bResult) goto handle_error;
   }
   return bResult;
 

@@ -1,17 +1,17 @@
 #include <RtWin32Ex.h>
 
-typedef struct _TT_LIST_ITEM
+typedef struct _ZZ_LIST_ITEM
 {
   RT_UN32 unValue;
   RT_CHAR lpValue[32];
 }
-TT_LIST_ITEM;
+ZZ_LIST_ITEM;
 
 void RT_CALL ZzTestDisplayList(void* lpList)
 {
   RT_CHAR lpBuffer[512];
   RT_UN unSize;
-  TT_LIST_ITEM* lpItem;
+  ZZ_LIST_ITEM* lpItem;
   RT_UN unWritten;
   RT_B bFirst;
   RT_UN unI;
@@ -91,7 +91,7 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
 {
   void* lpList;
   RT_UN32 unI;
-  TT_LIST_ITEM* lpItem;
+  ZZ_LIST_ITEM* lpItem;
   RT_UN unItemIndex;
   RT_UN unWritten;
   RT_UN unItemSize;
@@ -101,7 +101,7 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
 
   unItemSize = sizeof(RT_UN32) + 32 * sizeof(RT_CHAR);
 
-  if (!RtCreateList(&lpList, lpHeap, 23, sizeof(TT_LIST_ITEM), 10)) goto handle_error;
+  if (!RtCreateList(&lpList, lpHeap, 23, sizeof(ZZ_LIST_ITEM), 10)) goto handle_error;
 
   if (!ZzTestCheckList(lpList, 23, unItemSize, 10, 3)) goto handle_error;
 

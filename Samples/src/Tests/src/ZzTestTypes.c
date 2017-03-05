@@ -1,6 +1,6 @@
 #include <RtWin32Ex.h>
 
-#define TT_IS_UNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
+#define ZZ_IS_UNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
 
 void RT_CALL ZzTestFlags()
 {

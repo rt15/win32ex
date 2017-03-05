@@ -148,7 +148,7 @@ RT_B RT_CALL ZzTests()
 
   RT_B bHeapCreated;
 
-  RtRuntimeHeap rtRuntimeHeap;
+  RtRuntimeHeap zzRuntimeHeap;
   void* lpArea;
   RT_UN32* lpArray;
   MY_ITEM* lpLinkedList;
@@ -161,7 +161,7 @@ RT_B RT_CALL ZzTests()
 
   bHeapCreated = RT_FALSE;
 
-  if (!RtRuntimeHeapCreate(&rtRuntimeHeap))
+  if (!RtRuntimeHeapCreate(&zzRuntimeHeap))
   {
     ZzWriteLastErrorMessage(_R("Runtime heap creation failed: "));
     goto handle_error;
@@ -177,17 +177,17 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestTypes()) goto tests_failed;
   if (!ZzTestMemory()) goto tests_failed;
   if (!ZzTestRandom()) goto tests_failed;
-  if (!ZzTestHeap(&rtRuntimeHeap.lpHeap)) goto tests_failed;
+  if (!ZzTestHeap(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestFileSystem()) goto tests_failed;
   if (!ZzTestChar()) goto tests_failed;
   if (!ZzTestEncoding()) goto tests_failed;
-  if (!ZzTestProperties(&rtRuntimeHeap.lpHeap)) goto tests_failed;
+  if (!ZzTestProperties(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestAtomic()) goto tests_failed;
   if (!ZzTestThread()) goto tests_failed;
   if (!ZzTestInitialization()) goto tests_failed;
   if (!ZzTestEvent()) goto tests_failed;
   if (!ZzTestSocket()) goto tests_failed;
-  if (!ZzTestList(&rtRuntimeHeap.lpHeap)) goto tests_failed;
+  if (!ZzTestList(&zzRuntimeHeap.lpHeap)) goto tests_failed;
 
   RtWriteStringToConsole(_R("Tests successful!!\n\n"));
   goto end_of_tests;
@@ -242,24 +242,24 @@ end_of_tests:
   RtConcatStrings(lpBuffer, 500, &unWritten, 4, _R("foo"), _R("bar"), _R("team"), _R("\n"));
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
-  DiplayFileContent(_R("data/file.txt"), 0, 0, &rtRuntimeHeap.lpHeap);
-  DiplayFileContent(_R("data/latin1.txt"), RT_ENCODING_ISO_8859_15, 0, &rtRuntimeHeap.lpHeap);
-  DiplayFileContent(_R("data/utf8.txt"), RT_ENCODING_UTF_8, 3, &rtRuntimeHeap.lpHeap);
+  DiplayFileContent(_R("data/file.txt"), 0, 0, &zzRuntimeHeap.lpHeap);
+  DiplayFileContent(_R("data/latin1.txt"), RT_ENCODING_ISO_8859_15, 0, &zzRuntimeHeap.lpHeap);
+  DiplayFileContent(_R("data/utf8.txt"), RT_ENCODING_UTF_8, 3, &zzRuntimeHeap.lpHeap);
 
   lpTestingString = _R("OOOOéOOOO");
 
   RtWriteStringsToConsole(2, lpTestingString, _R("\n"));
 
-  ZzWriteToFile(_R("temp/latin1_test.txt"), lpTestingString, RT_ENCODING_ISO_8859_15, &rtRuntimeHeap.lpHeap);
-  ZzWriteToFile(_R("temp/utf8_test.txt"), lpTestingString, RT_ENCODING_UTF_8, &rtRuntimeHeap.lpHeap);
+  ZzWriteToFile(_R("temp/latin1_test.txt"), lpTestingString, RT_ENCODING_ISO_8859_15, &zzRuntimeHeap.lpHeap);
+  ZzWriteToFile(_R("temp/utf8_test.txt"), lpTestingString, RT_ENCODING_UTF_8, &zzRuntimeHeap.lpHeap);
 
-  if (!rtRuntimeHeap.lpHeap->lpAlloc(&rtRuntimeHeap, &lpArea, 256, _R("Some bytes")))
+  if (!zzRuntimeHeap.lpHeap->lpAlloc(&zzRuntimeHeap, &lpArea, 256, _R("Some bytes")))
   {
     ZzWriteLastErrorMessage(_R("Failed to allocate some bytes: "));
     goto handle_error;
   }
 
-  RtCreateLinkedList((void**)&lpLinkedList, &rtRuntimeHeap.lpHeap, 20, sizeof(MY_ITEM));
+  RtCreateLinkedList((void**)&lpLinkedList, &zzRuntimeHeap.lpHeap, 20, sizeof(MY_ITEM));
   for (unI = 0; unI < 5; unI++)
   {
     RtNewLinkedListItemIndex((void**)&lpLinkedList, &unIndex);
@@ -270,7 +270,7 @@ end_of_tests:
   }
   RtFreeArray((void**)&lpLinkedList);
 
-  RtCreateSortableArray((void**)&lpArray, &rtRuntimeHeap.lpHeap, 200, sizeof(RT_UN32), &ZzCompare, RT_NULL);
+  RtCreateSortableArray((void**)&lpArray, &zzRuntimeHeap.lpHeap, 200, sizeof(RT_UN32), &ZzCompare, RT_NULL);
   for (unI = 0; unI < 200; unI++)
   {
     lpArray[unI] = unI + 1000;
@@ -301,7 +301,7 @@ end_of_tests:
 
   RtFreeArray((void**)&lpArray);
 
-  if (!rtRuntimeHeap.lpHeap->lpFree(&rtRuntimeHeap, &lpArea))
+  if (!zzRuntimeHeap.lpHeap->lpFree(&zzRuntimeHeap, &lpArea))
   {
     ZzWriteLastErrorMessage(_R("Failed to free some bytes: "));
     goto handle_error;
@@ -312,7 +312,7 @@ free_resources:
   if (bHeapCreated)
   {
     bHeapCreated = RT_FALSE;
-    if (!rtRuntimeHeap.lpHeap->lpClose(&rtRuntimeHeap) && bResult)
+    if (!zzRuntimeHeap.lpHeap->lpClose(&zzRuntimeHeap) && bResult)
     {
       ZzWriteLastErrorMessage(_R("Failed to close runtime heap: "));
       goto handle_error;

@@ -1,6 +1,6 @@
 #include <RtWin32Ex.h>
 
-RT_INITIALIZATION tt_Initialization;
+RT_INITIALIZATION zz_Initialization;
 RT_B zz_bInitialized;
 
 RT_B RT_CALL ZzTestCommonFunction()
@@ -9,7 +9,7 @@ RT_B RT_CALL ZzTestCommonFunction()
   RT_B bResult;
 
   RtWriteStringToConsole(_R("Initialize?\n"));
-  if (RtInitializationRequired(&tt_Initialization))
+  if (RtInitializationRequired(&zz_Initialization))
   {
     if (zz_bInitialized) goto handle_error;
     zz_bInitialized = RT_TRUE;
@@ -20,7 +20,7 @@ RT_B RT_CALL ZzTestCommonFunction()
       RtSleep(1);
     }
     RtWriteStringToConsole(_R("Initialized.\n"));
-    RtNotifyInitializationDone(&tt_Initialization);
+    RtNotifyInitializationDone(&zz_Initialization);
   }
   else
   {
@@ -52,7 +52,7 @@ RT_B RT_CALL ZzTestInitialization()
   bThreadCreated = RT_FALSE;
 
   /* RtCreateInitialization cannot fail. */
-  RtCreateInitialization(&tt_Initialization);
+  RtCreateInitialization(&zz_Initialization);
 
   zz_bInitialized = RT_FALSE;
  
@@ -75,7 +75,7 @@ free_resources:
     if (!RtFreeThread(&zzThread) && bResult) goto handle_error;
   }
   /* RtFreeInitialization cannot fail. */
-  RtFreeInitialization(&tt_Initialization);
+  RtFreeInitialization(&zz_Initialization);
   return bResult;
 
 handle_error:

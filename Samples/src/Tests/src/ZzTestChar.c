@@ -1,9 +1,9 @@
 #include <RtWin32Ex.h>
 
-#define TT_BIG_STRING_SIZE 7000
-#define TT_STRING_SIZE_COUNT 2
-RT_CHAR* tt_StringSizeStrings[] = { _R("Foo Bar."), _R("") };
-RT_N tt_StringSizeSizes[] =       { 8        ,      0      };
+#define ZZ_BIG_STRING_SIZE 7000
+#define ZZ_STRING_SIZE_COUNT 2
+RT_CHAR* zz_StringSizeStrings[] = { _R("Foo Bar."), _R("") };
+RT_N zz_StringSizeSizes[] =       { 8        ,      0      };
 
 RT_B RT_CALL ZzTestGetStringSize()
 {
@@ -14,29 +14,29 @@ RT_B RT_CALL ZzTestGetStringSize()
   lpBigString = RT_NULL;
 
   /* Testing various strings sizes. */
-  for (unI = 0; unI < TT_STRING_SIZE_COUNT; unI++)
+  for (unI = 0; unI < ZZ_STRING_SIZE_COUNT; unI++)
   {
-    RtWriteStringsToConsole(3, _R("Testing \""), tt_StringSizeStrings[unI], _R("\" size...\n"));
-    if (RtGetStringSize(tt_StringSizeStrings[unI]) != tt_StringSizeSizes[unI]) goto handle_error;
+    RtWriteStringsToConsole(3, _R("Testing \""), zz_StringSizeStrings[unI], _R("\" size...\n"));
+    if (RtGetStringSize(zz_StringSizeStrings[unI]) != zz_StringSizeSizes[unI]) goto handle_error;
   }
 
   RtWriteStringToConsole(_R("Testing big string size...\n"));
 
   /* Allocate some memory. */
-  if (!RtAlloc((void**)&lpBigString, TT_BIG_STRING_SIZE * sizeof(RT_CHAR)))
+  if (!RtAlloc((void**)&lpBigString, ZZ_BIG_STRING_SIZE * sizeof(RT_CHAR)))
   {
     goto handle_error;
   }
 
   /* Fill the allocated memory with some 'a'. */
-  for (unI = 0; unI < TT_BIG_STRING_SIZE - 1; unI++)
+  for (unI = 0; unI < ZZ_BIG_STRING_SIZE - 1; unI++)
   {
     lpBigString[unI] = _R('a');
   }
-  lpBigString[TT_BIG_STRING_SIZE - 1] = 0;
+  lpBigString[ZZ_BIG_STRING_SIZE - 1] = 0;
 
   /* Check the string size. */
-  if (RtGetStringSize(lpBigString) != TT_BIG_STRING_SIZE - 1) goto handle_error;
+  if (RtGetStringSize(lpBigString) != ZZ_BIG_STRING_SIZE - 1) goto handle_error;
  
   
   bResult = RT_SUCCESS;

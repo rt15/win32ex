@@ -16,18 +16,18 @@ RT_UN32 RT_CALL ZzTestSimpleThreadCallback(void* lpParameter)
 RT_B RT_CALL ZzTestThread()
 {
   RT_B bThreadCreated;
-  RT_THREAD rtThread;
+  RT_THREAD zzThread;
   RT_UN32 unExitCode;
   RT_B bResult;
 
   bThreadCreated = RT_FALSE;
 
-  if (!RtCreateThread(&rtThread, &ZzTestSimpleThreadCallback, _R("Hello from thread\n"))) goto handle_error;
+  if (!RtCreateThread(&zzThread, &ZzTestSimpleThreadCallback, _R("Hello from thread\n"))) goto handle_error;
   bThreadCreated = RT_TRUE;
 
-  if (!RtJoinThread(&rtThread)) goto handle_error;
+  if (!RtJoinThread(&zzThread)) goto handle_error;
   RtWriteStringToConsole(_R("Joined!\n"));
-  if (!RtGetThreadExitCode(&rtThread, &unExitCode)) goto handle_error;
+  if (!RtGetThreadExitCode(&zzThread, &unExitCode)) goto handle_error;
   if (unExitCode != 12) goto handle_error;
 
   bResult = RT_SUCCESS;
@@ -35,7 +35,7 @@ free_resources:
   if (bThreadCreated)
   {
     bThreadCreated = RT_FALSE;
-    if ((!RtFreeThread(&rtThread)) && bResult) goto handle_error;
+    if ((!RtFreeThread(&zzThread)) && bResult) goto handle_error;
   }
   return bResult;
 
