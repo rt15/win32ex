@@ -319,7 +319,6 @@ Il y a des TODO un peu partout dans le code.
 #include "layer004/RtQuickSort.h"
 #include "layer004/RtSocket.h"
 
-#include "layer005/RtErrorMessage.h"
 #include "layer005/RtFileSystem.h"
 #include "layer005/RtHeap.h"
 #include "layer005/RtProcess.h"
@@ -332,6 +331,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer006/RtPageHeap.h"
 #include "layer006/RtRuntimeHeap.h"
 
+#include "layer007/RtErrorMessage.h"
 #include "layer007/RtFileUtils.h"
 #include "layer007/RtTableMetadata.h"
 

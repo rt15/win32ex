@@ -253,10 +253,6 @@
 				Name="layer005"
 				>
 				<File
-					RelativePath="..\src\layer005\RtErrorMessage.c"
-					>
-				</File>
-				<File
 					RelativePath="..\src\layer005\RtFileSystem.c"
 					>
 				</File>
@@ -304,6 +300,10 @@
 			<Filter
 				Name="layer007"
 				>
+				<File
+					RelativePath="..\src\layer007\RtErrorMessage.c"
+					>
+				</File>
 				<File
 					RelativePath="..\src\layer007\RtFileUtils.c"
 					>
@@ -475,10 +475,6 @@
 				Name="layer005"
 				>
 				<File
-					RelativePath="..\include\layer005\RtErrorMessage.h"
-					>
-				</File>
-				<File
 					RelativePath="..\include\layer005\RtFileSystem.h"
 					>
 				</File>
@@ -526,6 +522,10 @@
 			<Filter
 				Name="layer007"
 				>
+				<File
+					RelativePath="..\include\layer007\RtErrorMessage.h"
+					>
+				</File>
 				<File
 					RelativePath="..\include\layer007\RtFileUtils.h"
 					>
