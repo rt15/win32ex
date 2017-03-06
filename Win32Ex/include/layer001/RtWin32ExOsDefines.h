@@ -72,6 +72,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/eventfd.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <fcntl.h>

@@ -106,7 +106,41 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzTestInput()
+RT_B RT_CALL ZzManuallyTestProcess()
+{
+  RT_PROCESS zzProcess;
+  RT_UN32 unExitCode;
+  RT_B bResult;
+
+  if (!RtWriteStringToConsole(_R("## Processes:\n\n"))) goto handle_error;
+
+  if (!RtWriteStringToConsole(_R("=========================="))) goto handle_error;
+
+#ifdef RT_DEFINE_WINDOWS
+  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("localhost"), RT_NULL)) goto handle_error;
+#else
+  if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
+  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("-c"), _R("4"), _R("localhost"), RT_NULL)) goto handle_error;
+#endif
+  if (!RtJoinProcess(&zzProcess)) goto handle_error;
+  if (!RtWriteStringToConsole(_R("==========================\n"))) goto handle_error;
+  if (!RtWriteStringToConsole(_R("Joined!\n"))) goto handle_error;
+  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (unExitCode) goto handle_error;
+  if (!RtFreeProcess(&zzProcess)) goto handle_error;
+
+  if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzManuallyTestInput()
 {
   RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_CHAR lpLine[RT_CHAR_THIRD_BIG_STRING_SIZE];
@@ -161,7 +195,8 @@ RT_B RT_CALL ZzManualTests()
 
   ZzDisplayFlags();
   if (!ZzMisc()) goto handle_error;
-  if (!ZzTestInput()) goto handle_error;
+  if (!ZzManuallyTestProcess()) goto handle_error;
+  if (!ZzManuallyTestInput()) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

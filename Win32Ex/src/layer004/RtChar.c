@@ -351,17 +351,17 @@ RT_CHAR RT_API RtFastLowerChar(RT_CHAR nChar)
 
 RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, RT_UN unStringsCount, ...)
 {
-  va_list vaList;
+  va_list lpVaList;
   RT_B bResult;
 
-  va_start(vaList, unStringsCount);
-  bResult = RtVConcatStrings(vaList, unStringsCount, lpBuffer, unBufferSize, lpWritten);
-  va_end(vaList);
+  va_start(lpVaList, unStringsCount);
+  bResult = RtVConcatStrings(lpVaList, unStringsCount, lpBuffer, unBufferSize, lpWritten);
+  va_end(lpVaList);
 
   return bResult;
 }
 
-RT_B RT_CDECL_API RtVConcatStrings(va_list vaList, RT_UN unStringsCount, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_CDECL_API RtVConcatStrings(va_list lpVaList, RT_UN unStringsCount, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_CHAR* lpString;
   RT_UN unWritten;
@@ -372,7 +372,7 @@ RT_B RT_CDECL_API RtVConcatStrings(va_list vaList, RT_UN unStringsCount, RT_CHAR
   bResult = RT_SUCCESS;
   for (unI = 0; unI < unStringsCount; unI++)
   {
-    lpString = va_arg(vaList, RT_CHAR*);
+    lpString = va_arg(lpVaList, RT_CHAR*);
     bResult = RtCopyString(lpString, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten);
     if (!bResult)
     {

@@ -15,14 +15,13 @@
 
 #### TODO:
 
+RtWriteStringsToConsole et RtConcatStrings devraient prendre RT_NULL en dernier argument et pas de nombre.
+
 Cleanup ZzTest.c.
 
 Error management in RtReadCharFromConsole.
 
 Add display error message functions for Console/GUI within the library.
-
-Rename Console Code::Blocks project to HelloWorld.
-Create HelloWorld project for VC.
 
 Create manual test project:
 Messages correspondants aux erreurs supportées.
@@ -323,6 +322,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer005/RtErrorMessage.h"
 #include "layer005/RtFileSystem.h"
 #include "layer005/RtHeap.h"
+#include "layer005/RtProcess.h"
 #include "layer005/RtRandom.h"
 #include "layer005/RtStaticHeap.h"
 

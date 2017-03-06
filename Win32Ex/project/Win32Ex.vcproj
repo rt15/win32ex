@@ -265,6 +265,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\layer005\RtProcess.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\layer005\RtRandom.c"
 					>
 				</File>
@@ -480,6 +484,10 @@
 				</File>
 				<File
 					RelativePath="..\include\layer005\RtHeap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer005\RtProcess.h"
 					>
 				</File>
 				<File

@@ -128,6 +128,7 @@
 		<Unit filename="../include/layer005/RtErrorMessage.h" />
 		<Unit filename="../include/layer005/RtFileSystem.h" />
 		<Unit filename="../include/layer005/RtHeap.h" />
+		<Unit filename="../include/layer005/RtProcess.h" />
 		<Unit filename="../include/layer005/RtRandom.h" />
 		<Unit filename="../include/layer005/RtStaticHeap.h" />
 		<Unit filename="../include/layer006/RtConsole.h" />
@@ -205,6 +206,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/RtHeap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/RtProcess.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/RtRandom.c">
