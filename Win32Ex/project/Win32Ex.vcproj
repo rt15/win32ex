@@ -261,10 +261,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtProcess.c"
-					>
-				</File>
-				<File
 					RelativePath="..\src\layer005\RtRandom.c"
 					>
 				</File>
@@ -318,6 +314,10 @@
 				>
 				<File
 					RelativePath="..\src\layer008\RtArray.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\layer008\RtProcess.c"
 					>
 				</File>
 				<File
@@ -483,10 +483,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtProcess.h"
-					>
-				</File>
-				<File
 					RelativePath="..\include\layer005\RtRandom.h"
 					>
 				</File>
@@ -540,6 +536,10 @@
 				>
 				<File
 					RelativePath="..\include\layer008\RtArray.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer008\RtProcess.h"
 					>
 				</File>
 				<File
