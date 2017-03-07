@@ -40,7 +40,7 @@ RT_B RT_CALL RtWriteToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bErr
   lpHeapBuffer = RT_NULL;
   unHeapBufferSize = 0;
 
-  if (!RtAllocIfNeeded(lpBuffer, RT_CHAR_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, (void**)&lpOemText, unSize)) goto handle_error;
+  if (!RtAllocIfNeeded(lpBuffer, RT_CHAR_BIG_STRING_SIZE * sizeof(RT_CHAR8), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpOemText, unSize)) goto handle_error;
 
   /* Translate אשיט characters... Never fails if arguments are different. */
   CharToOemBuff(lpString, lpOemText, (DWORD)unSize);
@@ -59,12 +59,7 @@ RT_B RT_CALL RtWriteToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bErr
 free_resources:
   if (lpHeapBuffer)
   {
-    if (!RtFree(&lpHeapBuffer))
-    {
-      lpHeapBuffer = RT_NULL;
-      goto handle_error;
-    }
-    lpHeapBuffer = RT_NULL;
+    if (!RtFree(&lpHeapBuffer)) goto handle_error;
   }
   return bResult;
 

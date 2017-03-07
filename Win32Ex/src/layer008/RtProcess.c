@@ -4,6 +4,7 @@
 #include "layer002/RtErrorCode.h"
 #include "layer003/RtMemory.h"
 #include "layer004/RtChar.h"
+#include "layer005/RtStaticHeap.h"
 #include "layer007/RtErrorMessage.h"
 
 RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
@@ -16,7 +17,11 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
   STARTUPINFO rtStartupInfo;
 #else
   pid_t nPid;
-  RT_CHAR* lpPArgs[20];
+  RT_UN unArgsCount;
+  void* lpBuffer[240];                             /* 240 * 8 = 1920, to consume half of 4000 under 64 bits. */
+  void* lpHeapBuffer;
+  RT_CHAR** lpPArgs;
+  RT_UN unHeapBufferSize;
   RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
   RT_UN unI;
@@ -66,8 +71,44 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
                      (PROCESS_INFORMATION*)lpProcess
                      )) goto handle_error;
 
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+
 #else /* NOT RT_DEFINE_WINDOWS */
 
+  lpHeapBuffer = RT_NULL;
+  unHeapBufferSize = 0;
+
+  /* Count the size of the array of pointers to arguments. First is application name, last is null. */
+
+  /* lpApplicationName and trailing RT_NULL. */
+  unArgsCount = 2;
+
+  va_start(lpVaList, lpApplicationName);
+  while (RT_TRUE)
+  {
+    lpArg = va_arg(lpVaList, RT_CHAR*);
+    if (lpArg)
+    {
+      unArgsCount++;
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  va_end(lpVaList);
+
+  /* Ensure to have an array of pointers of the right size. */
+  if (!RtAllocIfNeeded(lpBuffer, 240 * sizeof(RT_CHAR*), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpPArgs, unArgsCount * sizeof(RT_CHAR*))) goto handle_error;
+
+  /* First "arg" is application name. */
   lpPArgs[0] = lpApplicationName;
 
   va_start(lpVaList, lpApplicationName);
@@ -85,6 +126,7 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
       break;
     }
   }
+  /* We must have RT_NULL as last "arg". */
   lpPArgs[unI] = RT_NULL;
 
   va_end(lpVaList);
@@ -133,15 +175,20 @@ write_message_failed:
     /* On failure, fork returns -1 and set errno. */
     goto handle_error;
   }
-#endif
 
   bResult = RT_SUCCESS;
 free_resources:
+  if (lpHeapBuffer)
+  {
+    if (!RtFree(&lpHeapBuffer)) goto handle_error;
+  }
   return bResult;
 
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
+
+#endif
 }
 
 RT_B RT_API RtJoinProcess(RT_PROCESS* lpProcess)

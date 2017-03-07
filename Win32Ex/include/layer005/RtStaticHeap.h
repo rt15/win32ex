@@ -20,6 +20,8 @@ RT_B RT_API RtFree(void** lpArea);
 
 /**
  * Perform an heap allocation only if lpBuffer is too small.
+ *
+ * @param lpHeapBufferSize If not RT_NULL, must be initialized with zero or the size of heap buffer.
  */
 void* RT_API RtAllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea, RT_UN unSize);
 
