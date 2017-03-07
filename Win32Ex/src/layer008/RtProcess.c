@@ -4,6 +4,7 @@
 #include "layer002/RtErrorCode.h"
 #include "layer003/RtMemory.h"
 #include "layer004/RtChar.h"
+#include "layer007/RtErrorMessage.h"
 
 RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
 {
@@ -16,6 +17,8 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
 #else
   pid_t nPid;
   RT_CHAR* lpPArgs[20];
+  RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_UN unWritten;
   RT_UN unI;
 #endif
   RT_B bResult;
@@ -97,16 +100,27 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
       /* chdir Returns zero in case of success, set errno. As we are in the child process, we simply print an error.*/
        if (chdir(lpCurrentDirectory))
        {
-         /* TODO: Print error message. */
-         fprintf(stderr, "Failed chdir to \"%s\".\n", lpCurrentDirectory);
+         unWritten = 0;
+         if (!RtCopyString(_R("Failed to chdir to \""),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
+         if (!RtCopyString(lpCurrentDirectory,           &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
+         if (!RtCopyString(_R("\": "),                   &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
+         RtWriteLastErrorMessage(lpMessage);
        }
     }
 
+write_message_failed:
+
     /* Returns only if an error has occurred. The return value is -1, and errno is set to indicate the error.  */
     execvp(lpApplicationName, lpPArgs);
-    /* TODO: Print error message. */
-    fprintf(stderr, "Failed to execvp.\n");
-    /* Kill child process. */
+
+    /* We execute following code only if execvp failed. */
+    unWritten = 0;
+    if (!RtCopyString(_R("Failed to execute \""),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
+    if (!RtCopyString(lpApplicationName,           &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
+    if (!RtCopyString(_R("\": "),                  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
+    RtWriteLastErrorMessage(lpMessage);
+
+    /* Kill forked child process. */
     exit(1);
   }
   else if (nPid > 0)

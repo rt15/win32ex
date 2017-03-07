@@ -19,7 +19,7 @@ RT_B RT_CALL ZzTestProcess()
 
   if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
 
-  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("pong"), _R("localhost"), RT_NULL)) goto handle_error;
+  if (!RtCreateProcess(&zzProcess, _R("Z:\\fake_directory"), _R("pong"), _R("localhost"), RT_NULL)) goto handle_error;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
   if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
