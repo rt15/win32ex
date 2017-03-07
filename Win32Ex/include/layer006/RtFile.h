@@ -43,6 +43,27 @@ RT_FILE;
 RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
 
 /**
+ * <p>
+ * Do not call RtFreeFile on this RT_FILE.
+ * </p>
+ */
+RT_B RT_API RtCreateStdInput(RT_FILE* lpFile);
+
+/**
+ * <p>
+ * Do not call RtFreeFile on this RT_FILE.
+ * </p>
+ */
+RT_B RT_API RtCreateStdOutput(RT_FILE* lpFile);
+
+/**
+ * <p>
+ * Do not call RtFreeFile on this RT_FILE.
+ * </p>
+ */
+RT_B RT_API RtCreateStdError(RT_FILE* lpFile);
+
+/**
  * Lit un certain nombre d'octets dans un fichier
  *
  * @param lpBuffer Récupération des données

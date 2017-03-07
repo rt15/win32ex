@@ -2,6 +2,7 @@
 #define RT_PROCESS_H
 
 #include "layer000/RtWin32ExTypes.h"
+#include "layer006/RtFile.h"
 
 /**
  * @file
@@ -31,14 +32,21 @@ RT_PROCESS;
  * Start a process.
  *
  * <p>
- * If successful, ensure to call RtJoinProcess and RtFreeProcess.
+ * If successful, ensure to call RtFreeProcess (And optionally RtJoinProcess to avoid zombies).
  * </p>
  *
  * @param lpCurrentDirectory Current directory of the started process. Same as current process if RT_NULL.
+ * @param ... Process arguments (RT_CHAR*). Must end with RT_NULL.
  */
 RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...);
 
-RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName);
+RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+                                            RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                            RT_CHAR* lpApplicationName, ...);
+
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory,
+                             RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                             RT_CHAR* lpApplicationName);
 
 RT_B RT_API RtJoinProcess(RT_PROCESS* lpProcess);
 

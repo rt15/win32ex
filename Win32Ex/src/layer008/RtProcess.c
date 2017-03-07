@@ -13,19 +13,70 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
   RT_B bResult;
 
   va_start(lpVaList, lpApplicationName);
-  bResult = RtVCreateProcess(lpProcess, lpVaList, lpCurrentDirectory, lpApplicationName);
+  bResult = RtVCreateProcess(lpProcess, lpVaList, lpCurrentDirectory, RT_NULL, RT_NULL, RT_NULL, lpApplicationName);
   va_end(lpVaList);
 
   return bResult;
 }
 
-RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName)
+RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+                                            RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                            RT_CHAR* lpApplicationName, ...)
+{
+  va_list lpVaList;
+  RT_B bResult;
+
+  va_start(lpVaList, lpApplicationName);
+  bResult = RtVCreateProcess(lpProcess, lpVaList, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName);
+  va_end(lpVaList);
+
+  return bResult;
+}
+
+#ifdef RT_DEFINE_WINDOWS
+
+
+/**
+ * Make an handle inheritable if it is not already.
+ */
+RT_B RT_CALL RtInheritHandle(HANDLE hHandle)
+{
+  DWORD unFlags;
+  RT_B bResult;
+
+  if (!GetHandleInformation(hHandle, &unFlags)) goto handle_error;
+  if (!(unFlags & HANDLE_FLAG_INHERIT))
+  {
+    if (!SetHandleInformation(hHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+#endif
+
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory,
+                             RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                             RT_CHAR* lpApplicationName)
 {
   RT_CHAR* lpArg;
 #ifdef RT_DEFINE_WINDOWS
+  RT_FILE rtStdInput;
+  RT_FILE rtStdOutput;
+  RT_FILE rtStdError;
+  RT_FILE* lpActualStdInput;
+  RT_FILE* lpActualStdOutput;
+  RT_FILE* lpActualStdError;
   RT_CHAR lpCommandLine[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
   STARTUPINFO rtStartupInfo;
+  BOOL bInheritHandles;
 #else
   va_list lpVaList2;
   pid_t nPid;
@@ -43,6 +94,54 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* l
 #ifdef RT_DEFINE_WINDOWS
   RT_MEMORY_ZERO(&rtStartupInfo, sizeof(rtStartupInfo));
   rtStartupInfo.cb = sizeof(rtStartupInfo);
+  bInheritHandles = FALSE;
+
+  /* Manage redirection if needed. */
+  if (lpStdInput || lpStdOutput || lpStdError)
+  {
+    rtStartupInfo.dwFlags |= STARTF_USESTDHANDLES;
+    /* Required to use redirections. */
+    bInheritHandles = TRUE;
+
+    /* Std input. */
+    if (lpStdInput)
+    {
+      lpActualStdInput = lpStdInput;
+    }
+    else
+    {
+       if (!RtCreateStdInput(&rtStdInput)) goto handle_error;
+       lpActualStdInput = &rtStdInput;
+    }
+    if (!RtInheritHandle(lpActualStdInput->hFile)) goto handle_error;
+    rtStartupInfo.hStdInput = lpActualStdInput->hFile;
+
+    /* Std output. */
+    if (lpStdOutput)
+    {
+      lpActualStdOutput = lpStdOutput;
+    }
+    else
+    {
+      if (!RtCreateStdOutput(&rtStdOutput)) goto handle_error;
+      lpActualStdOutput = &rtStdOutput;
+    }
+    if (!RtInheritHandle(lpActualStdOutput->hFile)) goto handle_error;
+    rtStartupInfo.hStdOutput = lpActualStdOutput->hFile;
+
+    /* Std error. */
+    if (lpStdError)
+    {
+      lpActualStdError = lpStdError;
+    }
+    else
+    {
+      if (!RtCreateStdError(&rtStdError)) goto handle_error;
+      lpActualStdError = &rtStdError;
+    }
+    if (!RtInheritHandle(lpActualStdError->hFile)) goto handle_error;
+    rtStartupInfo.hStdError = lpActualStdError->hFile;
+  }
 
   unWritten = 0;
   if (!RtCopyString(lpApplicationName, &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
@@ -65,7 +164,7 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* l
                      lpCommandLine,
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpProcessAttributes.                                 */
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpThreadAttributes.                                  */
-                     RT_FALSE,                       /* bInheritHandles.                                                           */
+                     bInheritHandles,
                      0,                              /* dwCreationFlags.                                                           */
                      RT_NULL,                        /* lpEnvironment.                                                             */
                      lpCurrentDirectory,             /* If NULL, the new process will have the same current directory as this one. */

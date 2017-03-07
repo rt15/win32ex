@@ -62,13 +62,14 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
   }
 
 #ifdef RT_DEFINE_WINDOWS
+
   lpFile->hFile = CreateFile(lpFilePath,
-                              unFlags,
-                              FILE_SHARE_READ | FILE_SHARE_WRITE,
-                              NULL,
-                              unCreationDistribution,
-                              FILE_ATTRIBUTE_NORMAL,
-                              NULL);
+                             unFlags,
+                             FILE_SHARE_READ | FILE_SHARE_WRITE,
+                             NULL,
+                             unCreationDistribution,
+                             FILE_ATTRIBUTE_NORMAL,
+                             NULL);
   if (lpFile->hFile == INVALID_HANDLE_VALUE) goto handle_error;
 
 #else /* NOT RT_DEFINE_WINDOWS */
@@ -83,6 +84,57 @@ free_resources:
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
+}
+
+#ifdef RT_DEFINE_WINDOWS
+
+RT_B RT_CALL RtCreateStdFile(RT_FILE* lpFile, DWORD unStdHandle)
+{
+  RT_B bResult;
+
+  /* GetStdHandle can return NULL but we do not consider it an error. */
+  lpFile->hFile = GetStdHandle(unStdHandle);
+  if (lpFile->hFile == INVALID_HANDLE_VALUE) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+#endif
+
+RT_B RT_API RtCreateStdInput(RT_FILE* lpFile)
+{
+#ifdef RT_DEFINE_WINDOWS
+  return RtCreateStdFile(lpFile, STD_INPUT_HANDLE);
+#else
+  lpFile->nFile = 0;
+  return RT_SUCCESS;
+#endif
+}
+
+RT_B RT_API RtCreateStdOutput(RT_FILE* lpFile)
+{
+#ifdef RT_DEFINE_WINDOWS
+  return RtCreateStdFile(lpFile, STD_OUTPUT_HANDLE);
+#else
+  lpFile->nFile = 1;
+  return RT_SUCCESS;
+#endif
+}
+
+RT_B RT_API RtCreateStdError(RT_FILE* lpFile)
+{
+#ifdef RT_DEFINE_WINDOWS
+  return RtCreateStdFile(lpFile, STD_ERROR_HANDLE);
+#else
+  lpFile->nFile = 2;
+  return RT_SUCCESS;
+#endif
 }
 
 RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead)

@@ -293,12 +293,12 @@ handle_error:
 
 RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
 {
-  RtWriteStringToConsole(_R("Test rtlib.\n\n")
-                         _R("Tests [-m|--manual|-h|--help]\n")
-                         _R("Tests [-a|--args ARGS]\n\n")
-                         _R("  --manual          Perform manual tests.\n")
-                         _R("  --args            Display arguments.\n")
-                         );
+  RtWriteStringOrErrorToConsole(_R("Test rtlib.\n\n")
+                                _R("Tests [-m|--manual|-h|--help]\n")
+                                _R("Tests [-a|--args ARGS]\n\n")
+                                _R("  --manual          Perform manual tests.\n")
+                                _R("  --args            Display arguments.\n")
+                                , bResult);
   return bResult;
 }
 

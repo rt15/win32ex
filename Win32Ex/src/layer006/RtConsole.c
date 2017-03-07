@@ -15,6 +15,11 @@ RT_B RT_API RtWriteStringToConsole(RT_CHAR* lpString)
   return RtWriteStringToConsoleWithSize(lpString, RtGetStringSize(lpString));
 }
 
+RT_B RT_API RtWriteStringOrErrorToConsole(RT_CHAR* lpString, RT_B bString)
+{
+  return RtWriteStringOrErrorToConsoleWithSize(lpString, RtGetStringSize(lpString), bString);
+}
+
 /**
  * Affiche le texte indiqué dans la console
  *
@@ -22,7 +27,7 @@ RT_B RT_API RtWriteStringToConsole(RT_CHAR* lpString)
  * @param unSize Nombre de caractères à afficher
  * @return Zero en cas de problème
  */
-RT_B RT_CALL RtWriteToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bError)
+RT_B RT_API RtWriteStringOrErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bString)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unWritten;       /* Réception du nombre de caractère écris                   */
@@ -45,16 +50,19 @@ RT_B RT_CALL RtWriteToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bErr
   /* Translate àùéè characters... Never fails if arguments are different. */
   CharToOemBuff(lpString, lpOemText, (DWORD)unSize);
 
-  if (bError)
+  if (bString)
   {
-    hStream = GetStdHandle(STD_ERROR_HANDLE);
+    /* TODO: Check GetStdHandle result. */
+    hStream = GetStdHandle(STD_OUTPUT_HANDLE);
   }
   else
   {
-    hStream = GetStdHandle(STD_OUTPUT_HANDLE);
+    /* TODO: Check GetStdHandle result. */
+    hStream = GetStdHandle(STD_ERROR_HANDLE);
   }
 
-  bResult = WriteConsoleA(hStream, lpOemText, (DWORD)unSize, &unWritten, NULL);
+  /* WriteConsoleA must not be used as it does not manage redirection to a file. */
+  bResult = WriteFile(hStream, lpOemText, (DWORD)unSize, &unWritten, NULL);
 
 free_resources:
   if (lpHeapBuffer)
@@ -67,7 +75,7 @@ handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
 #else
-  if (bError)
+  if (bString)
   {
     nFileDescriptor = 2;
   }
@@ -81,7 +89,7 @@ handle_error:
 
 RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
 {
-  return RtWriteToConsoleWithSize(lpString, unSize, RT_FALSE);
+  return RtWriteStringOrErrorToConsoleWithSize(lpString, unSize, RT_TRUE);
 }
 
 RT_B RT_API RtWriteErrorToConsole(RT_CHAR* lpString)
@@ -91,7 +99,7 @@ RT_B RT_API RtWriteErrorToConsole(RT_CHAR* lpString)
 
 RT_B RT_API RtWriteErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
 {
-  return RtWriteToConsoleWithSize(lpString, unSize, RT_TRUE);
+  return RtWriteStringOrErrorToConsoleWithSize(lpString, unSize, RT_FALSE);
 }
 
 RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
@@ -176,6 +184,7 @@ RT_UN RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_UN unBufferSize)
   RT_UN unResult;
 
 #ifdef RT_DEFINE_WINDOWS
+  /* TODO: Check GetStdHandle result. */
   hInput = GetStdHandle(STD_INPUT_HANDLE);
   GetConsoleMode(hInput, &unOldMode);
   SetConsoleMode(hInput, ENABLE_PROCESSED_INPUT | ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
@@ -253,6 +262,7 @@ RT_CHAR RT_API RtReadCharFromConsole()
   RT_CHAR nResult;
 
 #ifdef RT_DEFINE_WINDOWS
+  /* TODO: Check GetStdHandle result. */
   hInput = GetStdHandle(STD_INPUT_HANDLE);
   GetConsoleMode(hInput, &unOldMode);
   SetConsoleMode(hInput, 0);
