@@ -294,9 +294,31 @@ handle_error:
 RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
 {
   RtWriteStringToConsole(_R("Test rtlib.\n\n")
-                         _R("Tests [-m|--manual|-h|--help]\n\n")
-                         _R("  --manual          Perform manual tests.\n"));
+                         _R("Tests [-m|--manual|-h|--help]\n")
+                         _R("Tests [-a|--args ARGS]\n\n")
+                         _R("  --manual          Perform manual tests.\n")
+                         _R("  --args            Display arguments.\n")
+                         );
   return bResult;
+}
+
+RT_B RT_CALL ZzDisplayArgs(RT_N32 nArgC, RT_CHAR* lpArgV[])
+{
+  RT_UN unI;
+  RT_B bResult;
+
+  for (unI = 0; unI < nArgC; unI++)
+  {
+    if (!RtWriteStringsToConsole(2, lpArgV[unI], _R("\n"))) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
@@ -324,6 +346,11 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
     {
       bResult = ZzDisplayHelp(RT_FAILURE);
     }
+  }
+  else if (!RtCompareStrings(lpArgV[1], _R("--args")) ||
+           !RtCompareStrings(lpArgV[1], _R("-a")))
+  {
+    bResult = ZzDisplayArgs(nArgC, lpArgV);
   }
   else
   {
