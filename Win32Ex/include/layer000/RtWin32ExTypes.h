@@ -8,6 +8,10 @@
 /* Defines _W64 that is used below.                      */
 #include <stdarg.h>
 
+/* va_copy is not defined under old MS VC versions. */
+#if defined(_MSC_VER) && _MSC_VER < 1800 && !defined(va_copy)
+  #define va_copy(dst, src) ((dst) = (src))
+#endif
 
 /**
  * @file
@@ -86,6 +90,13 @@
 #define RT_API RT_STDCALL
 /* Calling convention for few public cdecl functions. */
 #define RT_CDECL_API RT_CDECL
+
+/* Use gccc __va_copy if va_copy is not available. */
+#if defined(RT_DEFINE_GCC) && !defined(va_copy)
+  #define RT_VA_COPY __va_copy
+#else
+  #define RT_VA_COPY va_copy
+#endif
 
 /* On Visual C++ and GCC, char is most likely to be signed (But different from "signed char") however there are flags to make it unsigned. */
 typedef char RT_CHAR8;

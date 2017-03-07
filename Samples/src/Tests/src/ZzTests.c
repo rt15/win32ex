@@ -304,12 +304,12 @@ RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
 
 RT_B RT_CALL ZzDisplayArgs(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
-  RT_UN unI;
+  RT_N32 nI;
   RT_B bResult;
 
-  for (unI = 0; unI < nArgC; unI++)
+  for (nI = 0; nI < nArgC; nI++)
   {
-    if (!RtWriteStringsToConsole(2, lpArgV[unI], _R("\n"))) goto handle_error;
+    if (!RtWriteStringsToConsole(2, lpArgV[nI], _R("\n"))) goto handle_error;
   }
 
   bResult = RT_SUCCESS;

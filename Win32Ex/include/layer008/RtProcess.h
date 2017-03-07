@@ -38,6 +38,8 @@ RT_PROCESS;
  */
 RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...);
 
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName);
+
 RT_B RT_API RtJoinProcess(RT_PROCESS* lpProcess);
 
 /**

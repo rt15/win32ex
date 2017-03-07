@@ -25,6 +25,7 @@ Ajout de double quotes s'il y a des espaces ? Quid de Linux ?
 RtCreateProcess avec un va_list.
 A chaque fois que l'on utilise une va_list, faut une fonction qui prend une va_list pour pouvoir avoir des parents avec des va_list.
 Bien documenter tout ça dans le style guide.
+Noter qu'il faut bien appeler va_end après un va_copy.
 
 Avoir la possibilité de démarrer un processus sans l'attendre.
 Attention aux zombies !

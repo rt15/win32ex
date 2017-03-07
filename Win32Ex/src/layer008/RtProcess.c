@@ -10,12 +10,24 @@
 RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
 {
   va_list lpVaList;
+  RT_B bResult;
+
+  va_start(lpVaList, lpApplicationName);
+  bResult = RtVCreateProcess(lpProcess, lpVaList, lpCurrentDirectory, lpApplicationName);
+  va_end(lpVaList);
+
+  return bResult;
+}
+
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName)
+{
   RT_CHAR* lpArg;
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpCommandLine[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
   STARTUPINFO rtStartupInfo;
 #else
+  va_list lpVaList2;
   pid_t nPid;
   RT_UN unArgsCount;
   void* lpBuffer[240];                             /* 240 * 8 = 1920, to consume half of 4000 under 64 bits. */
@@ -35,29 +47,19 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
   unWritten = 0;
   if (!RtCopyString(lpApplicationName, &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
 
-  va_start(lpVaList, lpApplicationName);
   while (RT_TRUE)
   {
     lpArg = va_arg(lpVaList, RT_CHAR*);
     if (lpArg)
     {
-      if (!RtCopyStringWithSize(_R(" "), 1, &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten))
-      {
-        va_end(lpVaList);
-        goto handle_error;
-      }
-      if (!RtCopyString(lpArg, &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten))
-      {
-        va_end(lpVaList);
-        goto handle_error;
-      }
+      if (!RtCopyStringWithSize(_R(" "), 1,  &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+      if (!RtCopyString(lpArg,               &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
     }
     else
     {
       break;
     }
   }
-  va_end(lpVaList);
 
   if (!CreateProcess(RT_NULL,                        /* lpApplicationName.                                                         */
                      lpCommandLine,
@@ -81,6 +83,7 @@ handle_error:
 
 #else /* NOT RT_DEFINE_WINDOWS */
 
+  RT_VA_COPY(lpVaList2, lpVaList);
   lpHeapBuffer = RT_NULL;
   unHeapBufferSize = 0;
 
@@ -89,7 +92,6 @@ handle_error:
   /* lpApplicationName and trailing RT_NULL. */
   unArgsCount = 2;
 
-  va_start(lpVaList, lpApplicationName);
   while (RT_TRUE)
   {
     lpArg = va_arg(lpVaList, RT_CHAR*);
@@ -103,19 +105,16 @@ handle_error:
     }
   }
 
-  va_end(lpVaList);
-
   /* Ensure to have an array of pointers of the right size. */
   if (!RtAllocIfNeeded(lpBuffer, 240 * sizeof(RT_CHAR*), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpPArgs, unArgsCount * sizeof(RT_CHAR*))) goto handle_error;
 
   /* First "arg" is application name. */
   lpPArgs[0] = lpApplicationName;
 
-  va_start(lpVaList, lpApplicationName);
   unI = 1;
   while (RT_TRUE)
   {
-    lpArg = va_arg(lpVaList, RT_CHAR*);
+    lpArg = va_arg(lpVaList2, RT_CHAR*);
     if (lpArg)
     {
       lpPArgs[unI] = lpArg;
@@ -128,8 +127,6 @@ handle_error:
   }
   /* We must have RT_NULL as last "arg". */
   lpPArgs[unI] = RT_NULL;
-
-  va_end(lpVaList);
 
   nPid = fork();
   if (nPid == 0)
@@ -182,6 +179,8 @@ free_resources:
   {
     if (!RtFree(&lpHeapBuffer)) goto handle_error;
   }
+  /* va_end must be the last resource. */
+  va_end(lpVaList2);
   return bResult;
 
 handle_error:

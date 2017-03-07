@@ -19,7 +19,7 @@ RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
   if (lpArea != lpHeapBuffer) goto handle_error;
   if (unHeapBufferSize != 30) goto handle_error;
 
-  /* Heap buffer big enough. */
+  /* Big enough heap buffer . */
   lpArea = RT_NULL;
   if (!RtAllocIfNeededWithHeap(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 15, _R("foo"), lpHeap)) goto handle_error;
   if (lpArea != lpHeapBuffer) goto handle_error;
