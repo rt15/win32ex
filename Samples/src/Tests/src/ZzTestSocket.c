@@ -54,7 +54,7 @@ free_resources:
   return unResult;
 
 handle_error:
-  ZzWriteLastErrorMessage(_R("Error in server socket thread: "));
+  RtWriteLastErrorMessage(_R("Error in server socket thread: "));
   /* Ensure that main thread will not wait for ever. */
   RtSignalEvent(lpEvent);
   unResult = RT_FAILURE;

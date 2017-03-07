@@ -3,6 +3,7 @@
 #include "layer001/RtWin32ExOsDefines.h"
 #include "layer002/RtErrorCode.h"
 #include "layer004/RtChar.h"
+#include "layer006/RtConsole.h"
 
 RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
 {
@@ -43,10 +44,33 @@ RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *
 #endif
 
   bResult = RT_SUCCESS;
-  goto free_resources;
-handle_error:
-  bResult = RT_FAILURE;
 free_resources:
   *lpWritten += unWritten;
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtWriteLastErrorMessage(RT_CHAR* lpPrefix)
+{
+  RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
+  RT_UN unWritten;
+  RT_B bResult;
+
+  unWritten = 0;
+  if (!RtCopyString(lpPrefix,             &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtGetLastErrorMessage(             &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyStringWithSize(_R("\n"), 1,  &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+
+  if (!RtWriteErrorToConsoleWithSize(lpBuffer, unWritten)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

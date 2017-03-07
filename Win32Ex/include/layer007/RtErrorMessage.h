@@ -19,4 +19,13 @@
  */
 RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
+/**
+ * Write last error message into console standard error stream.
+ *
+ * <p>
+ * The optional <tt>lpPrefix</tt> is directly concatenated before the operating system error.
+ * </p>
+ */
+RT_B RT_API RtWriteLastErrorMessage(RT_CHAR* lpPrefix);
+
 #endif /* RT_ERROR_MESSAGE_H */

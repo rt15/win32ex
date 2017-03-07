@@ -2,20 +2,6 @@
 #include <RtWin32ExMain.h>
 #include <RtWin32ExMem.h>
 
-RT_UN16 ZzWriteLastErrorMessage(RT_CHAR* lpLabel)
-{
-  RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_UN unWritten;
-
-  unWritten = 0;
-  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten);
-  RtGetLastErrorMessage(&lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
-  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
-
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
-
-  return 1;
-}
 
 RT_UN16 ZzDisplayHelp(RT_UN32 unResult)
 {
@@ -47,7 +33,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   /* Check file path. */
   if (!RtCheckPath(lpFilePath, RT_FILE_SYSTEM_TYPE_FILE))
   {
-    ZzWriteLastErrorMessage(_R("Issue with input file: "));
+    RtWriteLastErrorMessage(_R("Issue with input file: "));
     goto handle_error;
   }
 
@@ -55,7 +41,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   unFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent, lpHeap);
   if (unFileSize == RT_TYPE_MAX_UN)
   {
-    ZzWriteLastErrorMessage(_R("Failed to read input file: "));
+    RtWriteLastErrorMessage(_R("Failed to read input file: "));
     goto handle_error;
   }
 
@@ -63,7 +49,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   nFileContentAsStringSize = RtDecodeWithHeap(lpFileContent, unFileSize, 0, &lpFileContentAsString, lpHeap);
   if (nFileContentAsStringSize == -1)
   {
-    ZzWriteLastErrorMessage(_R("Failed to decode input file: "));
+    RtWriteLastErrorMessage(_R("Failed to decode input file: "));
     goto handle_error;
   }
 
@@ -74,20 +60,20 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
     nNewFileContentAsStringSize = nFileContentAsStringSize + nDelta;
     if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpNewFileContentAsString, (nNewFileContentAsStringSize + 1) * sizeof(RT_CHAR), _R("New file content as string.")))
     {
-      ZzWriteLastErrorMessage(_R("Failed to allocate result buffer: "));
+      RtWriteLastErrorMessage(_R("Failed to allocate result buffer: "));
       goto handle_error;
     }
     unWritten = 0;
     if (!RtReplaceString(lpFileContentAsString, lpSearched, lpReplacement, lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &unWritten))
     {
-      ZzWriteLastErrorMessage(_R("Replacement failed: "));
+      RtWriteLastErrorMessage(_R("Replacement failed: "));
       goto handle_error;
     }
 
     unNewFileSize = RtEncodeWithHeap(lpNewFileContentAsString, unWritten, 0, &lpNewFileContent, lpHeap);
     if (unNewFileSize == -1)
     {
-      ZzWriteLastErrorMessage(_R("Failed to encode output file: "));
+      RtWriteLastErrorMessage(_R("Failed to encode output file: "));
       goto handle_error;
     }
 
@@ -103,7 +89,7 @@ free_resources:
   {
     if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpNewFileContent))
     {
-      ZzWriteLastErrorMessage(_R("Failed free new file content: "));
+      RtWriteLastErrorMessage(_R("Failed free new file content: "));
       goto handle_error;
     }
   }
@@ -111,7 +97,7 @@ free_resources:
   {
     if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpNewFileContentAsString))
     {
-      ZzWriteLastErrorMessage(_R("Failed free new file content as string: "));
+      RtWriteLastErrorMessage(_R("Failed free new file content as string: "));
       goto handle_error;
     }
   }
@@ -119,7 +105,7 @@ free_resources:
   {
     if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContentAsString))
     {
-      ZzWriteLastErrorMessage(_R("Failed free file content as string: "));
+      RtWriteLastErrorMessage(_R("Failed free file content as string: "));
       goto handle_error;
     }
   }
@@ -127,7 +113,7 @@ free_resources:
   {
     if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
     {
-      ZzWriteLastErrorMessage(_R("Failed free file content: "));
+      RtWriteLastErrorMessage(_R("Failed free file content: "));
       goto handle_error;
     }
   }
@@ -144,7 +130,7 @@ RT_B ZzPerform(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpFilePath)
 
   if (!RtRuntimeHeapCreate(&runtimeHeap))
   {
-    ZzWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
     goto handle_error;
   }
   bCloseRuntimeHeap = RT_TRUE;
@@ -159,7 +145,7 @@ free_resources:
   {
     if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
     {
-      ZzWriteLastErrorMessage(_R("Failed to close runtime heap: "));
+      RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
       bCloseRuntimeHeap = RT_FALSE;
       goto handle_error;
     }

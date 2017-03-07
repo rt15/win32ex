@@ -22,7 +22,7 @@ RT_B RT_API RtWriteStringToConsole(RT_CHAR* lpString)
  * @param unSize Nombre de caractères à afficher
  * @return Zero en cas de problème
  */
-RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
+RT_B RT_CALL RtWriteToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bError)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unWritten;       /* Réception du nombre de caractère écris                   */
@@ -30,7 +30,10 @@ RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
   void* lpHeapBuffer;
   RT_UN unHeapBufferSize;
   RT_CHAR8 lpBuffer[RT_CHAR_BIG_STRING_SIZE];
+  HANDLE hStream;
   RT_B bResult;
+#else
+  int nFileDescriptor;
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
@@ -42,7 +45,16 @@ RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
   /* Translate àùéè characters... Never fails if arguments are different. */
   CharToOemBuff(lpString, lpOemText, (DWORD)unSize);
 
-  bResult = WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), lpOemText, (DWORD)unSize, &unWritten, NULL);
+  if (bError)
+  {
+    hStream = GetStdHandle(STD_ERROR_HANDLE);
+  }
+  else
+  {
+    hStream = GetStdHandle(STD_OUTPUT_HANDLE);
+  }
+
+  bResult = WriteConsoleA(hStream, lpOemText, (DWORD)unSize, &unWritten, NULL);
 
 free_resources:
   if (lpHeapBuffer)
@@ -60,8 +72,31 @@ handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
 #else
-  return (write(1, lpString, (size_t)unSize) != -1);
+  if (bError)
+  {
+    nFileDescriptor = 2;
+  }
+  else
+  {
+    nFileDescriptor = 1;
+  }
+  return (write(nFileDescriptor, lpString, (size_t)unSize) != -1);
 #endif
+}
+
+RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
+{
+  return RtWriteToConsoleWithSize(lpString, unSize, RT_FALSE);
+}
+
+RT_B RT_API RtWriteErrorToConsole(RT_CHAR* lpString)
+{
+  return RtWriteErrorToConsoleWithSize(lpString, RtGetStringSize(lpString));
+}
+
+RT_B RT_API RtWriteErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
+{
+  return RtWriteToConsoleWithSize(lpString, unSize, RT_TRUE);
 }
 
 RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)

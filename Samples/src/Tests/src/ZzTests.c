@@ -39,17 +39,17 @@ void RT_CALL ZzWriteToFile(RT_CHAR* lpPath, RT_CHAR* lpString, RT_UN unEncoding,
   unFileContentSize = RtEncodeWithHeap(lpString, RT_TYPE_MAX_UN, unEncoding, &lpFileContent, lpHeap);
   if (unFileContentSize == RT_TYPE_MAX_UN)
   {
-    ZzWriteLastErrorMessage(_R("Encoding failed: "));
+    RtWriteLastErrorMessage(_R("Encoding failed: "));
   }
 
   if (!RtWriteToSmallFile(lpFileContent, unFileContentSize, lpPath, RT_SMALL_FILE_MODE_TRUNCATE))
   {
-    ZzWriteLastErrorMessage(_R("Data writing failed: "));
+    RtWriteLastErrorMessage(_R("Data writing failed: "));
   }
 
   if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
   {
-    ZzWriteLastErrorMessage(_R("Failed free file content: "));
+    RtWriteLastErrorMessage(_R("Failed free file content: "));
   }
 }
 
@@ -72,18 +72,18 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
 
   if (RtDecodeWithHeap(lpData, unDataSize, unEncoding, &lpFileContentAsString, lpHeap) == RT_TYPE_MAX_UN)
   {
-    ZzWriteLastErrorMessage(_R("Decoding failed: "));
+    RtWriteLastErrorMessage(_R("Decoding failed: "));
   }
   RtWriteStringsToConsole(3, _R("OOOO"), lpFileContentAsString, _R("OOOO\n"));
 
   if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContentAsString))
   {
-    ZzWriteLastErrorMessage(_R("Failed free string file content: "));
+    RtWriteLastErrorMessage(_R("Failed free string file content: "));
   }
 
   if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
   {
-    ZzWriteLastErrorMessage(_R("Failed free file content: "));
+    RtWriteLastErrorMessage(_R("Failed free file content: "));
   }
 }
 
@@ -130,14 +130,14 @@ RT_B RT_CALL ZzTests()
 
   if (!RtRuntimeHeapCreate(&zzRuntimeHeap))
   {
-    ZzWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
     goto handle_error;
   }
   bHeapCreated = RT_TRUE;
 
   if (!ZzAdjustDirectory())
   {
-    ZzWriteLastErrorMessage(_R("Directory adjustement failed: "));
+    RtWriteLastErrorMessage(_R("Directory adjustement failed: "));
     goto handle_error;
   }
 
@@ -221,7 +221,7 @@ end_of_tests:
 
   if (!zzRuntimeHeap.lpHeap->lpAlloc(&zzRuntimeHeap, &lpArea, 256, _R("Some bytes")))
   {
-    ZzWriteLastErrorMessage(_R("Failed to allocate some bytes: "));
+    RtWriteLastErrorMessage(_R("Failed to allocate some bytes: "));
     goto handle_error;
   }
 
@@ -269,7 +269,7 @@ end_of_tests:
 
   if (!zzRuntimeHeap.lpHeap->lpFree(&zzRuntimeHeap, &lpArea))
   {
-    ZzWriteLastErrorMessage(_R("Failed to free some bytes: "));
+    RtWriteLastErrorMessage(_R("Failed to free some bytes: "));
     goto handle_error;
   }
 
@@ -280,7 +280,7 @@ free_resources:
     bHeapCreated = RT_FALSE;
     if (!zzRuntimeHeap.lpHeap->lpClose(&zzRuntimeHeap) && bResult)
     {
-      ZzWriteLastErrorMessage(_R("Failed to close runtime heap: "));
+      RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
       goto handle_error;
     }
   }

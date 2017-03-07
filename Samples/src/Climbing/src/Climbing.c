@@ -84,7 +84,8 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
   if (!RtRuntimeHeapCreate(&runtimeHeap))
   {
-    unResult = CbWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    unResult = 1;
     goto the_end;
   }
 
@@ -92,7 +93,8 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   {
     if (!RtCreateTable(&competition.lpTables[nI], &cb_lpTablesMetadata[nI], &runtimeHeap.lpHeap))
     {
-      unResult = CbWriteLastErrorMessage(_R("Tables creation failed: "));
+      RtWriteLastErrorMessage(_R("Tables creation failed: "));
+      unResult = 1;
       goto cleanup_tables;
     }
   }
@@ -105,14 +107,14 @@ cleanup_tables:
   {
     if (!RtFreeTable(&competition.lpTables[unJ]))
     {
-      CbWriteLastErrorMessage(_R("Failed to free tables: "));
+      RtWriteLastErrorMessage(_R("Failed to free tables: "));
       unResult = 1;
     }
   }
 
   if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
   {
-    CbWriteLastErrorMessage(_R("Failed to close runtime heap: "));
+    RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
     unResult = 1;
   }
 the_end:

@@ -15,7 +15,33 @@
 
 #### TODO:
 
+Récupération du code de sortie.
+Test d'un processus qui n'existe pas.
+Test d'un mauvais paramètre.
+Portage sur CB et Linux.
+
+Exécution et redirection de la sortie/entrée.
+
+Enlever la taille fixe de lpCommandLine.
+-> Ajouter une fonction de concaténation avec séparateurs !? A priori non.
+Attention au double quotes!!!
+Ajout de double quotes s'il y a des espaces ? Quid de Linux ?
+
+Enlever la taille fixe de :
+  RT_CHAR* lpPArgs[20];
+
+Tester le mauvais répertoire sous Linux.
+
+RtCreateProcess avec un va_list.
+A chaque fois que l'on utilise une va_list, faut une fonction qui prend une va_list pour pouvoir avoir des parents avec des va_list.
+Bien documenter tout ça dans le style guide.
+
+Avoir la possibilité de démarrer un processus sans l'attendre.
+Attention aux zombies !
+
 RtWriteStringsToConsole et RtConcatStrings devraient prendre RT_NULL en dernier argument et pas de nombre.
+
+RtDisplayLastErrorMessage
 
 Cleanup ZzTest.c.
 

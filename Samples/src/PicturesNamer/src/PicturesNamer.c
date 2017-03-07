@@ -17,21 +17,6 @@ typedef struct _FILE_INFO
 }
 FILE_INFO;
 
-RT_UN16 WriteLastErrorMessage(RT_CHAR* lpLabel)
-{
-  RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_UN unWritten;
-
-  unWritten = 0;
-  RtCopyString(lpLabel, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten);
-  RtGetLastErrorMessage(&lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
-  RtCopyStringWithSize(_R("\n"), 1, &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten);
-
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
-
-  return 1;
-}
-
 RT_UN16 DisplayHelp(RT_UN32 unResult)
 {
   RtWriteStringToConsole(_R("Rename jpg files by date.\nUsage:\nPicturesNamer directory\n"));
@@ -53,7 +38,7 @@ RT_N RetrieveOriginalDate(RT_CHAR* lpFile, RT_CHAR* lpBuffer)
 
   if (RtEncodeWithBuffer(lpFile, -1, 0, lpPathBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH) == -1)
   {
-    WriteLastErrorMessage(_R("Failed to convert to multibytes: "));
+    RtWriteLastErrorMessage(_R("Failed to convert to multibytes: "));
     goto the_end;
   }
 
@@ -102,7 +87,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
       {
         if (!RtNewArrayItem((void**)lpContext, (void**)&lpFileInfo))
         {
-          WriteLastErrorMessage(_R("New item failed: "));
+          RtWriteLastErrorMessage(_R("New item failed: "));
           bResult = RT_FAILURE;
           goto the_end;
         }
@@ -150,19 +135,19 @@ RT_UN16 Perform(RT_CHAR* lpPath)
     unWritten = 0;
     RtCopyString(lpPath, lpMessage, RT_FILE_SYSTEM_MAX_FILE_PATH + 200, &unWritten);
     RtCopyString(_R(" is not a directory: "), &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unWritten);
-    unResult = WriteLastErrorMessage(lpMessage);
+    RtWriteLastErrorMessage(lpMessage);
     goto the_end;
   }
 
   if (!RtRuntimeHeapCreate(&runtimeHeap))
   {
-    unResult = WriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
     goto the_end;
   }
 
   if (!RtCreateSortableArray((void**)&lpFileInfos, &runtimeHeap.lpHeap, 0, sizeof(FILE_INFO), &CompareFileInfos, RT_NULL))
   {
-    unResult = WriteLastErrorMessage(_R("Array creation failed: "));
+    RtWriteLastErrorMessage(_R("Array creation failed: "));
     goto close_heap;
   }
 
@@ -214,8 +199,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 
     if (!RtMoveFile(lpOldFilePath, lpNewFilePath))
     {
-      WriteLastErrorMessage(_R("Failed to rename file: "));
-      unResult = 1;
+      RtWriteLastErrorMessage(_R("Failed to rename file: "));
       goto close_array;
     }
   }
@@ -224,13 +208,13 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 close_array:
   if (!RtFreeArray((void**)&lpFileInfos))
   {
-    WriteLastErrorMessage(_R("Failed to close array: "));
+    RtWriteLastErrorMessage(_R("Failed to close array: "));
     unResult = 1;
   }
 close_heap:
   if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
   {
-    WriteLastErrorMessage(_R("Failed to close runtime heap: "));
+    RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
     unResult = 1;
   }
 
