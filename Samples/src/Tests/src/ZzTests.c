@@ -102,7 +102,7 @@ RT_B RT_CALL ZzTestEvent();
 RT_B RT_CALL ZzTestSocket();
 RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap);
 RT_B RT_CALL ZzTestEnvironmentVariable();
-RT_B RT_CALL ZzTestProcess();
+RT_B RT_CALL ZzTestProcess(RT_HEAP** lpHeap);
 
 RT_B RT_CALL ZzManualTests();
 
@@ -156,7 +156,7 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestSocket()) goto tests_failed;
   if (!ZzTestList(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestEnvironmentVariable()) goto tests_failed;
-  if (!ZzTestProcess()) goto tests_failed;
+  if (!ZzTestProcess(&zzRuntimeHeap.lpHeap)) goto tests_failed;
 
   RtWriteStringToConsole(_R("Tests successful!!\n\n"));
   goto end_of_tests;

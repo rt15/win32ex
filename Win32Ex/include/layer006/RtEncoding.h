@@ -226,7 +226,7 @@
  * @param unBufferSize Buffer size in characters.
  * @param lpHeapBufferSize Heap buffer size in bytes.
  * @param lpOutput Can be lpInput if no decoding is required.
- * @return The character count or RT_TYPE_MAX_UN in case of failure.
+ * @return The character count (Not counting the trailing RT_NULL character) or RT_TYPE_MAX_UN in case of failure.
  */
 RT_UN RT_API RtDecode(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN unEncoding, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpOutput, RT_HEAP** lpHeap);
 

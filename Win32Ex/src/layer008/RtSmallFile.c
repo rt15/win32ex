@@ -44,11 +44,8 @@ handle_error:
 free_resources:
   if (bFreeFile)
   {
-    if (!RtFreeFile(&rtFile) && unResult != RT_TYPE_MAX_UN)
-    {
-      bFreeFile = RT_FALSE;
-      goto handle_error;
-    }
+    bFreeFile = RT_FALSE;
+    if (!RtFreeFile(&rtFile) && unResult != RT_TYPE_MAX_UN) goto handle_error;
     bFreeFile = RT_FALSE;
   }
   return unResult;

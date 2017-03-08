@@ -15,6 +15,12 @@
 
 #### TODO:
 
+Le RT_NULL en fin de ... devrait être casté (Car zéro en C++).
+
+Test error redirected to file.
+
+Test input? (Using manual test?)
+
 Execute and redirect input/output.
 
 Enlever la taille fixe de lpCommandLine.

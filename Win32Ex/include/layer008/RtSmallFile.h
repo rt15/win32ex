@@ -21,7 +21,7 @@
  * 0xFE, 0xFF for big endian.
  * </p>
  *
- * @return The file size or RT_TYPE_MAX_UN in case of failure.
+ * @return The file size (so without trailing RT_NULL character) or RT_TYPE_MAX_UN in case of failure.
  */
 RT_UN RT_API RtReadFromSmallFile(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
 

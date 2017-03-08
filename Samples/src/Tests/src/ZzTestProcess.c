@@ -1,6 +1,8 @@
 #include <RtWin32Ex.h>
 
-RT_B RT_CALL ZzTestProcessArgs()
+#include "ZzTools.h"
+
+RT_B RT_CALL ZzTestRedirectToFile(RT_HEAP** lpHeap)
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpTempFile[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -31,6 +33,11 @@ RT_B RT_CALL ZzTestProcessArgs()
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
   if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (unExitCode) goto handle_error;
+
+  if (!ZzCheckTextFile(lpTempFile, lpHeap, lpExecutablePath,
+                                           _R("--args"),
+                                           _R("foo"),
+                                           RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -114,11 +121,11 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzTestProcess()
+RT_B RT_CALL ZzTestProcess(RT_HEAP** lpHeap)
 {
   RT_B bResult;
 
-  if (!ZzTestProcessArgs()) goto handle_error;
+  if (!ZzTestRedirectToFile(lpHeap)) goto handle_error;
   if (!ZzTestFailingProcess()) goto handle_error;
 
   bResult = RT_SUCCESS;
