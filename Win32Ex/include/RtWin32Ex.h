@@ -257,7 +257,8 @@ I probably need to call LongPath.
 ## Source check
 
 No length or count (Use size).
-No folder (Use directory).
+No folder (Use directory. Or dir?).
+No Temporary, use Temp.
 No tabs.
 No trailing spaces.
 No char (Use RT_CHAR and RT_CHAR8).

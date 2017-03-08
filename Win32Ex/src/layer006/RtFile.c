@@ -2,6 +2,7 @@
 
 #include "layer001/RtWin32ExOsDefines.h"
 #include "layer002/RtErrorCode.h"
+#include "layer004/RtChar.h"
 #include "layer005/RtFileSystem.h"
 
 #ifndef RT_DEFINE_WINDOWS
@@ -75,6 +76,63 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
 #else /* NOT RT_DEFINE_WINDOWS */
   lpFile->nFile = open(lpFilePath, nFlags, RT_FILE_RIGHTS);
   if (lpFile->nFile == -1) goto handle_error;
+#endif
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+{
+  RT_UN unWritten;
+  RT_B bResult;
+
+  /* Little trick: use the buffer to store the temp directory. */
+  unWritten = 0;
+  if (!RtGetTempDirectory(lpBuffer, unBufferSize, &unWritten)) goto handle_error;
+
+  if (!RtCreateTempFileWithParentPath(lpFile, lpPrefix, lpBuffer, unWritten, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+{
+#ifdef RT_DEFINE_LINUX
+  RT_UN unWritten;
+#endif
+  RT_B bResult;
+
+#ifdef RT_DEFINE_WINDOWS
+  /* GetTempFileName create an empty file. */
+  if (!GetTempFileName(lpParentPath, lpPrefix, 0, lpBuffer)) goto handle_error;
+
+  if (!RtCreateFile(lpFile, lpBuffer, RT_FILE_MODE_TRUNCATE)) goto handle_error;
+
+  *lpWritten += RtGetStringSize(lpBuffer);
+#else
+  unWritten = unParentPathSize;
+  if (!RtBuildPath(lpParentPath, unParentPathSize, lpPrefix, unBufferSize, &unWritten)) goto handle_error;
+
+  /* The 6 last characters of mkstemp template must be "XXXXXX" and they will be replaced by mkstemp. */
+  if (!RtCopyStringWithSize(_R("XXXXXX"), 6, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+
+  /* Returns -1 and set errno in case of error. */
+  lpFile->nFile = mkstemp(lpBuffer);
+  if (lpFile->nFile == -1) goto handle_error;
+
+  *lpWritten += unWritten;
 #endif
 
   bResult = RT_SUCCESS;

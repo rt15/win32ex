@@ -43,6 +43,23 @@ RT_FILE;
 RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
 
 /**
+ * Create a temporary file.
+ *
+ * @param lpBuffer Receive the path to the file so the caller can delete the file.
+ * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
+ */
+RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+
+/**
+ * Create a temporary file in given path.
+ *
+ * @param lpParentPath Directory in which the temporary file is created.
+ * @param lpBuffer Receive the path to the file so the caller can delete the file.
+ * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
+ */
+RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+
+/**
  * <p>
  * Do not call RtFreeFile on this RT_FILE.
  * </p>

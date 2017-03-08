@@ -2,6 +2,7 @@
 #define RT_FILE_SYSTEM_H
 
 #include "layer000/RtWin32ExTypes.h"
+#include "layer004/RtChar.h"
 
 /**
  * @file
@@ -129,6 +130,7 @@ RT_B RT_API RtBuildPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* 
  * Build a new path concatenating <tt>lpParentPath</tt> and <tt>lpChildName</tt> and managing separator.
  *
  * @param lpParentPath Can ends with a separator or not.
+ * @param lpWritten Incremented with the characters written to lpParentPath.
  */
 RT_B RT_API RtBuildNewPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 

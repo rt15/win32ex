@@ -3,8 +3,10 @@
 RT_B RT_CALL ZzTestProcessArgs()
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_CHAR lpTempFile[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
   RT_B bFileCreated;
+  RT_B bDeleteTempFile;
   RT_FILE zzFile;
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
@@ -13,11 +15,15 @@ RT_B RT_CALL ZzTestProcessArgs()
 
   bFileCreated = RT_FALSE;
   bProcessCreated = RT_FALSE;
+  bDeleteTempFile = RT_FALSE;
 
   unWritten = 0;
   if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
-  if (!RtCreateFile(&zzFile, _R("C:\\Temp\\Output.txt"), RT_FILE_MODE_TRUNCATE)) goto handle_error;
+  unWritten = 0;
+  if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  bFileCreated = RT_TRUE;
+  bDeleteTempFile = RT_TRUE;
 
   if (!RtCreateProcessWithRedirections(&zzProcess, RT_NULL, RT_NULL, &zzFile, RT_NULL, lpExecutablePath, _R("--args"), _R("foo"), RT_NULL)) goto handle_error;
   bProcessCreated = RT_TRUE;
@@ -37,6 +43,11 @@ free_resources:
   {
     bFileCreated = RT_FALSE;
     if (!RtFreeFile(&zzFile) && bResult) goto handle_error;
+  }
+  if (bDeleteTempFile)
+  {
+    bDeleteTempFile = RT_FALSE;
+    if (!RtDeleteFile(lpTempFile) && bResult) goto handle_error;
   }
   return bResult;
 
