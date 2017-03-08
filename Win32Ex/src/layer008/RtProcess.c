@@ -58,6 +58,30 @@ handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
 }
+#else
+
+/**
+ * Perform redirection.
+ *
+ * <p>
+ * As we are in the forked process, does not fail but print error message.
+ * </p>
+ */
+void RT_CALL RtDup2(RT_N32 nOldFd, RT_N32 nNewFd, RT_CHAR* lpStreamName)
+{
+  RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_UN unWritten;
+
+  /* Returns -1 in case of error and set errno. */
+  if (dup2(nOldFd, nNewFd) == -1)
+  {
+    unWritten = 0;
+    if (!RtCopyString(_R("Failed to redirect "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) return;
+    if (!RtCopyString(lpStreamName,               &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) return;
+    if (!RtCopyString(_R("\": "),                 &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) return;
+    RtWriteLastErrorMessage(lpMessage);
+  }
+}
 
 #endif
 
@@ -231,6 +255,11 @@ handle_error:
   if (nPid == 0)
   {
     /* We are in the child process. */
+
+    /* Attempt to perform redirections. */
+    if (lpStdInput)  RtDup2(lpStdInput->nFile,  1, _R("stdin"));
+    if (lpStdOutput) RtDup2(lpStdOutput->nFile, 2, _R("stdout"));
+    if (lpStdError)  RtDup2(lpStdError->nFile,  3, _R("sterr"));
 
     /* Change current directory if provided. */
     if (lpCurrentDirectory)
