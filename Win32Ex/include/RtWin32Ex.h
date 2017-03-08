@@ -17,18 +17,14 @@
 
 Le RT_NULL en fin de ... devrait être casté (Car zéro en C++).
 
-Test error redirected to file.
-
-Test input? (Using manual test?)
-
-Execute and redirect input/output.
+Create argvtocommandline.
+Test it using --args and redirecting to a pipe.
 
 Enlever la taille fixe de lpCommandLine.
 -> Ajouter une fonction de concaténation avec séparateurs !? A priori non.
 Attention au double quotes!!!
 Ajout de double quotes s'il y a des espaces ? Quid de Linux ?
 
-RtCreateProcess avec un va_list.
 A chaque fois que l'on utilise une va_list, faut une fonction qui prend une va_list pour pouvoir avoir des parents avec des va_list.
 Bien documenter tout ça dans le style guide.
 Noter qu'il faut bien appeler va_end après un va_copy.
