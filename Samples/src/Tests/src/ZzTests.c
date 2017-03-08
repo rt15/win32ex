@@ -294,8 +294,9 @@ handle_error:
 RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
 {
   RtWriteStringOrErrorToConsole(_R("Test rtlib.\n\n")
-                                _R("Tests [-m|--manual|-h|--help]\n")
+                                _R("Tests [-m|--manual|-h|--help|-r|--read-line]\n")
                                 _R("Tests [-a|--args ARGS]\n\n")
+                                _R("  --read-line       Read and write a line.\n")
                                 _R("  --manual          Perform manual tests.\n")
                                 _R("  --args            Display arguments.\n")
                                 , bResult);
@@ -321,6 +322,23 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzReadLine()
+{
+  RT_CHAR lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_B bResult;
+
+  if (!RtReadLineFromConsole(lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE)) goto handle_error;
+  if (!RtWriteStringsToConsole(3, _R("\""), lpBuffer, _R("\"\n"))) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   RT_B bResult;
@@ -335,6 +353,11 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
         !RtCompareStrings(lpArgV[1], _R("-m")))
     {
       bResult = ZzManualTests();
+    }
+    else if (!RtCompareStrings(lpArgV[1], _R("--read-line")) ||
+             !RtCompareStrings(lpArgV[1], _R("-r")))
+    {
+      bResult = ZzReadLine();
     }
     else if (!RtCompareStrings(lpArgV[1], _R("--help")) ||
              !RtCompareStrings(lpArgV[1], _R("-h")) ||

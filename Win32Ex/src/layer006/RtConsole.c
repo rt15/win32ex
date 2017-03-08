@@ -1,6 +1,7 @@
 #include "layer006/RtConsole.h"
 
 #include "layer001/RtWin32ExOsDefines.h"
+#include "layer003/RtMemory.h"
 #include "layer004/RtChar.h"
 #include "layer005/RtStaticHeap.h"
 
@@ -172,6 +173,63 @@ void RT_API RtPauseConsole()
   RtReadCharFromConsole();
 }
 
+#ifdef RT_DEFINE_WINDOWS
+
+/**
+ * ReadConsole cannot work if stdin has been redirected to a pipe.<br>
+ * So ReadFile is used instead.
+ */
+RT_UN RT_CALL RtReadLineFromFile(RT_CHAR* lpCalleeBuffer, RT_UN unBufferSize, RT_H hInput)
+{
+  RT_CHAR8 lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+  void* lpHeapBuffer;
+  RT_UN unHeapBufferSize;
+  RT_CHAR8* lpReadChars;
+  RT_CHAR8 nReadChar;
+  DWORD unNumberOfBytesRead;
+  RT_UN unResult;
+
+  lpHeapBuffer = RT_NULL;
+
+  /* Allocate a buffer to receive chars from ReadFile. */
+  unHeapBufferSize = 0;
+  if (!RtAllocIfNeeded(lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, (void**)&lpReadChars, unBufferSize)) goto handle_error;
+
+  RT_MEMORY_ZERO(lpReadChars, unBufferSize);
+
+  unResult = 0;
+  while (unResult < unBufferSize - 1)
+  {
+    if (!ReadFile(hInput, &nReadChar, 1, &unNumberOfBytesRead, RT_NULL)) goto handle_error;
+    if (nReadChar == '\n')
+    {
+      break;
+    }
+    else if (nReadChar != '\r')
+    {
+      lpReadChars[unResult] = nReadChar;
+      unResult++;
+    }
+  }
+  if (unResult == unBufferSize - 1) goto handle_error;
+
+  if (!OemToCharBuff(lpReadChars, lpCalleeBuffer, (DWORD)unBufferSize)) goto handle_error;
+  lpBuffer[unResult] = 0;
+
+free_resources:
+  if (lpHeapBuffer)
+  {
+    if ((!RtFree(&lpHeapBuffer)) && (unResult != -1)) goto handle_error;
+  }
+  return unResult;
+
+handle_error:
+  unResult = -1;
+  goto free_resources;
+}
+
+#endif
+
 RT_UN RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_UN unBufferSize)
 {
 #ifdef RT_DEFINE_WINDOWS
@@ -186,36 +244,44 @@ RT_UN RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_UN unBufferSize)
 #ifdef RT_DEFINE_WINDOWS
   /* TODO: Check GetStdHandle result. */
   hInput = GetStdHandle(STD_INPUT_HANDLE);
-  GetConsoleMode(hInput, &unOldMode);
-  SetConsoleMode(hInput, ENABLE_PROCESSED_INPUT | ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
-  if (ReadConsole(hInput, lpBuffer, (DWORD)unBufferSize, &unRead, RT_NULL))
+
+  if (GetConsoleMode(hInput, &unOldMode))
   {
-    if (unRead == unBufferSize)
+    SetConsoleMode(hInput, ENABLE_PROCESSED_INPUT | ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_WRAP_AT_EOL_OUTPUT);
+    if (ReadConsole(hInput, lpBuffer, (DWORD)unBufferSize, &unRead, RT_NULL))
     {
-      /* Keep reading until LF is found to discard characters (FlushConsoleInputBuffer cannot be used with ReadConsole). */
-      while (lpBuffer[unRead - 1] != _R('\n'))
+      if (unRead == unBufferSize)
       {
-        if (!ReadConsole(hInput, lpBuffer, (DWORD)unBufferSize, &unRead, RT_NULL))
+        /* Keep reading until LF is found to discard characters (FlushConsoleInputBuffer cannot be used with ReadConsole). */
+        while (lpBuffer[unRead - 1] != _R('\n'))
         {
-          break;
+          if (!ReadConsole(hInput, lpBuffer, (DWORD)unBufferSize, &unRead, RT_NULL))
+          {
+            break;
+          }
         }
+        unResult = RT_TYPE_MAX_UN;
       }
-      unResult = RT_TYPE_MAX_UN;
+      else
+      {
+        /* Skip CR/LF. */
+        unRead -= 2;
+        /* Zero terminated String. */
+        lpBuffer[unRead] = 0;
+        unResult = unRead;
+      }
     }
     else
     {
-      /* Skip CR/LF. */
-      unRead -= 2;
-      /* Zero terminated String. */
-      lpBuffer[unRead] = 0;
-      unResult = unRead;
+      unResult = RT_TYPE_MAX_UN;
     }
+    SetConsoleMode(hInput, unOldMode);
   }
   else
   {
-    unResult = RT_TYPE_MAX_UN;
+    /* GetConsoleMode has failed, we assume that the handle is a pipe handle. */
+    unResult = RtReadLineFromFile(lpBuffer, unBufferSize, hInput);
   }
-  SetConsoleMode(hInput, unOldMode);
 #else
   /* The getline function cannot be used as first parameter must be a pointer on memory allocated with malloc. */
   unResult = 0;

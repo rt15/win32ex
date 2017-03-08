@@ -144,6 +144,32 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_API RtCreatePipe(RT_FILE* lpReadPipe, RT_FILE* lpWritePipe)
+{
+#ifdef RT_DEFINE_LINUX
+  int lpPipes[2];
+#endif
+  RT_B bResult;
+
+#ifdef RT_DEFINE_WINDOWS
+  /* In case of failure, returns zero and set last error. */
+  if (!CreatePipe(&lpReadPipe->hFile, &lpWritePipe->hFile, RT_NULL, 0)) goto handle_error;
+#else
+  /* In case of failure, returns -1 and set errno. */
+  if (pipe(lpPipes) == -1) goto handle_error;
+  lpReadPipe->nFile = lpPipes[0];
+  lpWritePipe->nFile = lpPipes[1];
+#endif
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 #ifdef RT_DEFINE_WINDOWS
 
 RT_B RT_CALL RtCreateStdFile(RT_FILE* lpFile, DWORD unStdHandle)

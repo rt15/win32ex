@@ -59,6 +59,8 @@ RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuff
  */
 RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
+RT_B RT_API RtCreatePipe(RT_FILE* lpReadFile, RT_FILE* lpWriteFile);
+
 /**
  * <p>
  * Do not call RtFreeFile on this RT_FILE.

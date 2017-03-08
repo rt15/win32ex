@@ -1,26 +1,15 @@
 #include "ZzTools.h"
 
-RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
+RT_B RT_CALL ZzVConcatLines(va_list lpVaList, RT_HEAP** lpHeap, void** lpBuffer)
 {
-  va_list lpVaList;
   va_list lpVaList2;
-
   RT_UN unWritten;
   RT_CHAR* lpLine;
-  RT_CHAR* lpReference;
+  RT_CHAR* lpBufferChars;
   RT_UN unReferenceSize;
   RT_UN unReferenceBufferSize;
-  RT_UN unFileSize;
-  RT_CHAR8* lpRawFileContent;
-  RT_CHAR* lpFileContent;
-  RT_UN unContentSize;
   RT_B bResult;
 
-  lpReference = RT_NULL;
-  lpRawFileContent = RT_NULL;
-  lpFileContent = RT_NULL;
-
-  va_start(lpVaList, lpHeap);
   RT_VA_COPY(lpVaList2, lpVaList);
 
   /* Compute reference size. */
@@ -41,7 +30,9 @@ RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
   /* Trailing zero. */
   unReferenceBufferSize = unReferenceSize + 1;
 
-  if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpReference, unReferenceBufferSize * sizeof(RT_CHAR), _R("Reference buffer"))) goto handle_error;
+  if (!(*lpHeap)->lpAlloc(lpHeap, lpBuffer, unReferenceBufferSize * sizeof(RT_CHAR), _R("Reference buffer"))) goto handle_error;
+
+  lpBufferChars = *lpBuffer;
 
   unWritten = 0;
   while (RT_TRUE)
@@ -49,8 +40,8 @@ RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
     lpLine = va_arg(lpVaList2, RT_CHAR*);
     if (lpLine)
     {
-      if (!RtCopyString(lpLine,               &lpReference[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
-      if (!RtCopyStringWithSize(_R("\n"), 1,  &lpReference[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtCopyString(lpLine,               &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtCopyStringWithSize(_R("\n"), 1,  &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
     }
     else
     {
@@ -58,15 +49,42 @@ RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
     }
   }
 
+  bResult = RT_SUCCESS;
+free_resources:
+  va_end(lpVaList2);
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
+{
+  va_list lpVaList;
+  RT_CHAR* lpReference;
+  RT_UN unFileSize;
+  RT_CHAR8* lpRawFileContent;
+  RT_CHAR* lpFileContent;
+  RT_UN unContentSize;
+  RT_B bResult;
+
+  lpReference = RT_NULL;
+  lpRawFileContent = RT_NULL;
+  lpFileContent = RT_NULL;
+
+  va_start(lpVaList, lpHeap);
+
+  if (!ZzVConcatLines(lpVaList, lpHeap, (void**)&lpReference)) goto handle_error;
+
   unFileSize = RtReadFromSmallFile(lpFilePath, &lpRawFileContent, lpHeap);
   if (unFileSize == -1) goto handle_error;
 
   unContentSize = RtDecodeWithHeap(lpRawFileContent, unFileSize, RT_ENCODING_US_ASCII, &lpFileContent, lpHeap);
   if (unContentSize == -1) goto handle_error;
 
-  if (unReferenceSize != unContentSize) goto handle_error;
+  if (RtGetStringSize(lpReference) != unContentSize) goto handle_error;
 
-  if (RT_MEMORY_COMPARE(lpFileContent, lpReference, unReferenceSize)) goto handle_error;
+  if (RT_MEMORY_COMPARE(lpFileContent, lpReference, unContentSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -82,7 +100,43 @@ free_resources:
   {
     if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpReference) && bResult) goto handle_error;
   }
-  va_end(lpVaList2);
+  va_end(lpVaList);
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...)
+{
+  va_list lpVaList;
+  RT_CHAR* lpLines;
+  RT_CHAR8* lpRawFileContent;
+  RT_UN unRawFileContentSize;
+  RT_B bResult;
+
+  lpLines = RT_NULL;
+  lpRawFileContent = RT_NULL;
+
+  va_start(lpVaList, lpHeap);
+
+  if (!ZzVConcatLines(lpVaList, lpHeap, (void**)&lpLines)) goto handle_error;
+
+  unRawFileContentSize = RtEncodeWithHeap(lpLines, RT_TYPE_MAX_UN, RT_ENCODING_US_ASCII, &lpRawFileContent, lpHeap);
+  if (unRawFileContentSize == -1) goto handle_error;
+
+  if (!RtWriteToFile(lpFile, lpRawFileContent, unRawFileContentSize)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (lpRawFileContent)
+  {
+    if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpRawFileContent) && bResult) goto handle_error;
+  }
+  if (lpLines)
+  {
+    if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpLines) && bResult) goto handle_error;
+  }
   va_end(lpVaList);
   return bResult;
 handle_error:
