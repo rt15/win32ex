@@ -257,9 +257,9 @@ handle_error:
     /* We are in the child process. */
 
     /* Attempt to perform redirections. */
-    if (lpStdInput)  RtDup2(lpStdInput->nFile,  1, _R("stdin"));
-    if (lpStdOutput) RtDup2(lpStdOutput->nFile, 2, _R("stdout"));
-    if (lpStdError)  RtDup2(lpStdError->nFile,  3, _R("sterr"));
+    if (lpStdInput)  RtDup2(lpStdInput->nFile,  0, _R("stdin"));
+    if (lpStdOutput) RtDup2(lpStdOutput->nFile, 1, _R("stdout"));
+    if (lpStdError)  RtDup2(lpStdError->nFile,  2, _R("sterr"));
 
     /* Change current directory if provided. */
     if (lpCurrentDirectory)

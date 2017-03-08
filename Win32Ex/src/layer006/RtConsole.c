@@ -77,11 +77,11 @@ handle_error:
 #else
   if (bString)
   {
-    nFileDescriptor = 2;
+    nFileDescriptor = 1;
   }
   else
   {
-    nFileDescriptor = 1;
+    nFileDescriptor = 2;
   }
   return (write(nFileDescriptor, lpString, (size_t)unSize) != -1);
 #endif

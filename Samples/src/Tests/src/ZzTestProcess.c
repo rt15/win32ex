@@ -2,7 +2,7 @@
 
 #include "ZzTools.h"
 
-RT_B RT_CALL ZzTestRedirectToFile(RT_HEAP** lpHeap)
+RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpTempFile[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -38,6 +38,66 @@ RT_B RT_CALL ZzTestRedirectToFile(RT_HEAP** lpHeap)
                                            _R("--args"),
                                            _R("foo"),
                                            RT_NULL)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bProcessCreated)
+  {
+    bProcessCreated = RT_FALSE;
+    if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
+  }
+  if (bFileCreated)
+  {
+    bFileCreated = RT_FALSE;
+    if (!RtFreeFile(&zzFile) && bResult) goto handle_error;
+  }
+  if (bDeleteTempFile)
+  {
+    bDeleteTempFile = RT_FALSE;
+    if (!RtDeleteFile(lpTempFile) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzTestRedirectStdErrToFile()
+{
+  RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_CHAR lpTempFile[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_UN unWritten;
+  RT_B bFileCreated;
+  RT_B bDeleteTempFile;
+  RT_FILE zzFile;
+  RT_PROCESS zzProcess;
+  RT_B bProcessCreated;
+  RT_UN32 unExitCode;
+  RT_UN unFileSize;
+  RT_B bResult;
+
+  bFileCreated = RT_FALSE;
+  bProcessCreated = RT_FALSE;
+  bDeleteTempFile = RT_FALSE;
+
+  unWritten = 0;
+  if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+
+  unWritten = 0;
+  if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  bFileCreated = RT_TRUE;
+  bDeleteTempFile = RT_TRUE;
+
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_NULL, RT_NULL, RT_NULL, &zzFile, lpExecutablePath, _R("--bad"), RT_NULL)) goto handle_error;
+  bProcessCreated = RT_TRUE;
+
+  if (!RtJoinProcess(&zzProcess)) goto handle_error;
+  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (!unExitCode) goto handle_error;
+
+  unFileSize = RtGetFileSize(lpTempFile);
+  if (unFileSize == RT_TYPE_MAX_UN || unFileSize < 10) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -125,7 +185,8 @@ RT_B RT_CALL ZzTestProcess(RT_HEAP** lpHeap)
 {
   RT_B bResult;
 
-  if (!ZzTestRedirectToFile(lpHeap)) goto handle_error;
+  if (!ZzTestRedirectStdOutToFile(lpHeap)) goto handle_error;
+  if (!ZzTestRedirectStdErrToFile()) goto handle_error;
   if (!ZzTestFailingProcess()) goto handle_error;
 
   bResult = RT_SUCCESS;
