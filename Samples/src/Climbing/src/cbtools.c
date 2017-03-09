@@ -7,5 +7,5 @@ void RT_CALL CbWriteSeparator()
 
 void RT_CALL CbWriteMenuTitle(RT_CHAR* lpLabel)
 {
-    RtWriteStringsToConsole(3, _R("\n"), lpLabel, _R(" menu\n\n"));
+    RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("\n"), lpLabel, _R(" menu\n\n"), (RT_CHAR*)RT_NULL);
 }

@@ -91,6 +91,7 @@ RT_B RT_CALL ZzTestTypes();
 RT_B RT_CALL ZzTestMemory();
 RT_B RT_CALL ZzTestRandom();
 RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap);
+RT_B RT_CALL ZzTestFile();
 RT_B RT_CALL ZzTestFileSystem();
 RT_B RT_CALL ZzTestChar();
 RT_B RT_CALL ZzTestEncoding();
@@ -145,6 +146,7 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestMemory()) goto tests_failed;
   if (!ZzTestRandom()) goto tests_failed;
   if (!ZzTestHeap(&zzRuntimeHeap.lpHeap)) goto tests_failed;
+  if (!ZzTestFile()) goto tests_failed;
   if (!ZzTestFileSystem()) goto tests_failed;
   if (!ZzTestChar()) goto tests_failed;
   if (!ZzTestEncoding()) goto tests_failed;

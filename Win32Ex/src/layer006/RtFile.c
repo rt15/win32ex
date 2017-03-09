@@ -30,7 +30,7 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
       unFlags = GENERIC_READ;
       unCreationDistribution = OPEN_EXISTING;
 #else
-      nFlags = O_RDONLY;
+      nFlags = O_CLOEXEC | O_RDONLY;
 #endif
       break;
     case RT_FILE_MODE_READ_WRITE:
@@ -38,7 +38,7 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
       unFlags = GENERIC_READ | GENERIC_WRITE;
       unCreationDistribution = OPEN_ALWAYS;
 #else
-      nFlags = O_CREAT | O_RDWR;
+      nFlags = O_CLOEXEC | O_CREAT | O_RDWR;
 #endif
       break;
     case RT_FILE_MODE_TRUNCATE:
@@ -46,7 +46,7 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
       unFlags = GENERIC_READ | GENERIC_WRITE;
       unCreationDistribution = CREATE_ALWAYS;
 #else
-      nFlags = O_CREAT | O_RDWR | O_TRUNC;
+      nFlags = O_CLOEXEC | O_CREAT | O_RDWR | O_TRUNC;
 #endif
       break;
     case RT_FILE_MODE_NEW:
@@ -54,7 +54,7 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
       unFlags = GENERIC_READ | GENERIC_WRITE;
       unCreationDistribution = CREATE_NEW;
 #else
-      nFlags = O_CREAT | O_EXCL | O_RDWR;
+      nFlags = O_CLOEXEC | O_CREAT | O_EXCL | O_RDWR;
 #endif
       break;
     default:
@@ -156,7 +156,7 @@ RT_B RT_API RtCreatePipe(RT_FILE* lpReadPipe, RT_FILE* lpWritePipe)
   if (!CreatePipe(&lpReadPipe->hFile, &lpWritePipe->hFile, RT_NULL, 0)) goto handle_error;
 #else
   /* In case of failure, returns -1 and set errno. */
-  if (pipe(lpPipes) == -1) goto handle_error;
+  if (pipe2(lpPipes, O_CLOEXEC) == -1) goto handle_error;
   lpReadPipe->nFile = lpPipes[0];
   lpWritePipe->nFile = lpPipes[1];
 #endif
@@ -221,10 +221,12 @@ RT_B RT_API RtCreateStdError(RT_FILE* lpFile)
 #endif
 }
 
-RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead)
+RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead)
 {
 #ifdef RT_DEFINE_WINDOWS
-  RT_UN32 unBytesRead;    /* Récupération du nombre d'octets lus                 */
+  DWORD unBytesRead;
+#else
+  ssize_t nBytesRead;
 #endif
   RT_B bResult;
 
@@ -232,25 +234,28 @@ RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToR
 
 #ifdef RT_DEFINE_WINDOWS
   /* TODO: Manage more than 4Go? */
-  if (ReadFile(lpFile->hFile,
-               lpBuffer,
-               (DWORD)unBytesToRead,
-               &unBytesRead,
-               NULL))
-    if (unBytesRead == unBytesToRead)
-      bResult = RT_SUCCESS;
+  if (!ReadFile(lpFile->hFile, lpBuffer, (DWORD)unBytesToRead, &unBytesRead, NULL)) goto handle_error;
+  *lpBytesRead = unBytesRead;
 #else
-  if (read(lpFile->nFile, lpBuffer, unBytesToRead) != -1)
-    bResult = RT_SUCCESS;
+  /* read returns -1 and set errno in case of issue. */
+  nBytesRead = read(lpFile->nFile, lpBuffer, unBytesToRead);
+  if (nBytesRead == -1) goto handle_error;
+  *lpBytesRead = nBytesRead;
 #endif
 
+  bResult = RT_SUCCESS;
+free_resources:
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite)
 {
 #ifdef RT_DEFINE_WINDOWS
-  DWORD unBytesWritten;     /* Récupération du nombre d'octets écris           */
+  DWORD unBytesWritten;
 #endif
   RT_B bResult;
 

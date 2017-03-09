@@ -83,13 +83,13 @@ RT_B RT_API RtCreateStdOutput(RT_FILE* lpFile);
 RT_B RT_API RtCreateStdError(RT_FILE* lpFile);
 
 /**
- * Lit un certain nombre d'octets dans un fichier
+ * Read from a file.
  *
- * @param lpBuffer Récupération des données
- * @param nNumberOfBytesToRead Nombre d'octets à lire
- * @return Zero en cas d'échec
+ * @param unBytesToRead Count of bytes to read.
+ * @param lpBytesRead Count of bytes actually read as we may have reached the end of file/pipe.
+ * @return RT_FAILURE in cas of failure.
  */
-RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead);
+RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead);
 
 /**
  * Ecrit un certain nombre d'octets dans un fichier

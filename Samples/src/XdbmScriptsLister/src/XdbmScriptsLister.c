@@ -62,7 +62,7 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
   }
   lpValue[unJ] = 0;
 
-  RtWriteStringsToConsole(2, _R("\t"), lpValue);
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("\t"), lpValue, (RT_CHAR*)RT_NULL);
 
   bResult = RT_SUCCESS;
 

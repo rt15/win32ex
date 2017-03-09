@@ -17,6 +17,7 @@ RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuff
 {
   RT_FILE rtFile;
   RT_B bFreeFile;
+  RT_UN unBytesRead;
   RT_UN unResult;
 
   bFreeFile = RT_FALSE;
@@ -32,7 +33,14 @@ RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuff
   if (!RtAllocIfNeededWithHeap(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unResult + 1, _R("File buffer"), lpHeap)) goto handle_error;
 
   /* Write file content into buffer. */
-  if (!RtReadFromFile(&rtFile, *lpOutput, unResult)) goto handle_error;
+  if (!RtReadFromFile(&rtFile, *lpOutput, unResult, &unBytesRead)) goto handle_error;
+
+  /* We know the size of the file so we should be able to read it completely. */
+  if (unResult != unBytesRead)
+  {
+    RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+    goto handle_error;
+  }
 
   /* Add trailing zero. */
   (*lpOutput)[unResult] = 0;

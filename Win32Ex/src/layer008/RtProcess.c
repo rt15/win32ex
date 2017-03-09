@@ -58,30 +58,6 @@ handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
 }
-#else
-
-/**
- * Perform redirection.
- *
- * <p>
- * As we are in the forked process, does not fail but print error message.
- * </p>
- */
-void RT_CALL RtDup2(RT_N32 nOldFd, RT_N32 nNewFd, RT_CHAR* lpStreamName)
-{
-  RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
-
-  /* Returns -1 in case of error and set errno. */
-  if (dup2(nOldFd, nNewFd) == -1)
-  {
-    unWritten = 0;
-    if (!RtCopyString(_R("Failed to redirect "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) return;
-    if (!RtCopyString(lpStreamName,               &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) return;
-    if (!RtCopyString(_R("\": "),                 &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) return;
-    RtWriteLastErrorMessage(lpMessage);
-  }
-}
 
 #endif
 
@@ -307,6 +283,137 @@ handle_error:
   goto free_resources;
 }
 
+#ifdef RT_DEFINE_LINUX
+
+/**
+ * Same as RtVCreateProcess but <tt>RT_CHAR** lpPArgs</tt>.has been computed from the va_list.
+ */
+RT_B RT_CALL RtCreateLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+                                  RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                  RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
+{
+  RT_UN unErrno;
+  RT_FILE rtReadPipe;
+  RT_FILE rtWritePipe;
+  RT_B bReadPipeCreated;
+  RT_B bWritePipeCreated;
+  pid_t nPid;
+  RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_UN unWritten;
+  RT_UN unBytesRead;
+  RT_B bResult;
+
+  bReadPipeCreated = RT_FALSE;
+  bWritePipeCreated = RT_FALSE;
+
+  if (!RtCreatePipe(&rtReadPipe, &rtWritePipe)) goto handle_error;
+  bReadPipeCreated = RT_TRUE;
+  bWritePipeCreated = RT_TRUE;
+
+  nPid = fork();
+  if (nPid == 0)
+  {
+    /* We are in the child process. */
+
+    /* Close the read pipe, used by the parent. */
+    if (!RtFreeFile(&rtReadPipe)) goto handle_child_error;
+
+    /* Attempt to perform redirections. */
+    /* dup2 returns -1 in case of error and set errno. */
+    if (lpStdInput)
+    {
+      if (dup2(lpStdInput->nFile, 0) == -1) goto handle_child_error;
+    }
+    if (lpStdOutput)
+    {
+      if (dup2(lpStdOutput->nFile, 1) == -1) goto handle_child_error;
+    }
+    if (lpStdError)
+    {
+      if (dup2(lpStdError->nFile, 2) == -1) goto handle_child_error;
+    }
+
+    /* Change current directory if provided. */
+    if (lpCurrentDirectory)
+    {
+      /* chdir Returns zero in case of success, set errno. */
+       if (chdir(lpCurrentDirectory)) goto handle_child_error;
+    }
+
+    /* Returns only if an error has occurred. The return value is -1, and errno is set to indicate the error.  */
+    execvp(lpApplicationName, lpPArgs);
+
+handle_child_error:
+
+    /* We will write errno in the pipe to be read by the parent. */
+    unErrno = errno;
+    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&unErrno, sizeof(unErrno)))
+    {
+      unWritten = 0;
+      if (RtCopyString(_R("Failed to write to parent pipe: "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten))
+      {
+        RtWriteLastErrorMessage(lpMessage);
+      }
+    }
+
+    /* We do not need the writing pipe anymore so we close it. */
+    if (!RtFreeFile(&rtWritePipe))
+    {
+      unWritten = 0;
+      if (RtCopyString(_R("Failed to close writing pipe: "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten))
+      {
+        RtWriteLastErrorMessage(lpMessage);
+      }
+    }
+
+    /* Kill forked child process. */
+    exit(1);
+  }
+  else if (nPid > 0)
+  {
+    /* We are still in the same parent process and the fork is ok. */
+    lpProcess->nPid = nPid;
+
+    /* We close writing pipe to avoid a dead lock. It will be used only by the child. */
+    bWritePipeCreated = RT_FALSE;
+    if (!RtFreeFile(&rtWritePipe)) goto handle_error;
+
+    /* Synchronously read errno or zero bytes from created child. */
+    if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&unErrno, sizeof(unErrno), &unBytesRead)) goto handle_error;
+    if (unBytesRead)
+    {
+      /* Copy errno read from child pipe into parent errno. */
+      errno = unErrno;
+      goto handle_error;
+    }
+  }
+  else
+  {
+    /* On failure, fork returns -1 and set errno. */
+    goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bWritePipeCreated)
+  {
+    bWritePipeCreated = RT_FALSE;
+    if (!RtFreeFile(&rtWritePipe) && bResult) goto handle_error;
+  }
+  if (bReadPipeCreated)
+  {
+    bReadPipeCreated = RT_FALSE;
+    if (!RtFreeFile(&rtReadPipe) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+#endif
+
 RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory,
                              RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                              RT_CHAR* lpApplicationName)
@@ -327,14 +434,11 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* l
 #else
   va_list lpVaList2;
   RT_CHAR* lpArg;
-  pid_t nPid;
   RT_UN unArgsCount;
   void* lpBuffer[240];                             /* 240 * 8 = 1920, to consume half of 4000 under 64 bits. */
   void* lpHeapBuffer;
   RT_CHAR** lpPArgs;
   RT_UN unHeapBufferSize;
-  RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
   RT_UN unI;
 #endif
   RT_B bResult;
@@ -468,55 +572,7 @@ handle_error:
   /* We must have RT_NULL as last "arg". */
   lpPArgs[unI] = RT_NULL;
 
-  nPid = fork();
-  if (nPid == 0)
-  {
-    /* We are in the child process. */
-
-    /* Attempt to perform redirections. */
-    if (lpStdInput)  RtDup2(lpStdInput->nFile,  0, _R("stdin"));
-    if (lpStdOutput) RtDup2(lpStdOutput->nFile, 1, _R("stdout"));
-    if (lpStdError)  RtDup2(lpStdError->nFile,  2, _R("sterr"));
-
-    /* Change current directory if provided. */
-    if (lpCurrentDirectory)
-    {
-      /* chdir Returns zero in case of success, set errno. As we are in the child process, we simply print an error.*/
-       if (chdir(lpCurrentDirectory))
-       {
-         unWritten = 0;
-         if (!RtCopyString(_R("Failed to chdir to \""),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
-         if (!RtCopyString(lpCurrentDirectory,           &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
-         if (!RtCopyString(_R("\": "),                   &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
-         RtWriteLastErrorMessage(lpMessage);
-       }
-    }
-
-write_message_failed:
-
-    /* Returns only if an error has occurred. The return value is -1, and errno is set to indicate the error.  */
-    execvp(lpApplicationName, lpPArgs);
-
-    /* We execute following code only if execvp failed. */
-    unWritten = 0;
-    if (!RtCopyString(_R("Failed to execute \""),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
-    if (!RtCopyString(lpApplicationName,           &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
-    if (!RtCopyString(_R("\": "),                  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto write_message_failed;
-    RtWriteLastErrorMessage(lpMessage);
-
-    /* Kill forked child process. */
-    exit(1);
-  }
-  else if (nPid > 0)
-  {
-    /* We are still in the same parent process and the fork is ok. */
-    lpProcess->nPid = nPid;
-  }
-  else
-  {
-    /* On failure, fork returns -1 and set errno. */
-    goto handle_error;
-  }
+  if (!RtCreateLinuxProcess(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

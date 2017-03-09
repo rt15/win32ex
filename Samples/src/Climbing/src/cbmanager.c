@@ -24,11 +24,11 @@ void RT_CALL CbDisplayList(CB_MANAGER_CONTEXT* lpManagerContext, RT_B bWithIndex
     if (bWithIndex)
     {
       RtConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
-      RtWriteStringsToConsole(4, lpBuffer, _R(": "), lpObject->lpName, _R("\n"));
+      RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R(": "), lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
     }
     else
     {
-      RtWriteStringsToConsole(2, lpObject->lpName, _R("\n"));
+      RtWriteStringsOrErrorsToConsole(RT_TRUE, lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
     }
   }
   CbWriteSeparator();

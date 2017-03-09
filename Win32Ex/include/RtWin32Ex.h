@@ -15,6 +15,8 @@
 
 #### TODO:
 
+Manage signals/interrupts in read calls!?
+
 Avoir la possibilité de démarrer un processus sans l'attendre.
 Attention aux zombies !
 

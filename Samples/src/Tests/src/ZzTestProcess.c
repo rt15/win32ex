@@ -232,27 +232,10 @@ RT_B RT_CALL ZzTestFailingProcess()
   bProcessCreated = RT_FALSE;
 
   /* Test wrong process name. */
-#ifdef RT_DEFINE_WINDOWS
   if (RtCreateProcess(&zzProcess, RT_NULL, _R("pong"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
-#else
 
-  /* Under Linux, the fork is ok then execvp fails but there is no way to know it. */
-
-  if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
-
-  if (!RtCreateProcess(&zzProcess, _R("Z:\\fake_directory"), _R("pong"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
-  bProcessCreated = RT_TRUE;
-
-  if (!RtJoinProcess(&zzProcess)) goto handle_error;
-  if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
-  if (!RtWriteStringToConsole(_R("Joined!\n"))) goto handle_error;
-  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
-  if (!unExitCode) goto handle_error;
-
-  bProcessCreated = RT_FALSE;
-  if (!RtFreeProcess(&zzProcess)) goto handle_error;
-
-#endif
+  /* Test wrong folder name. */
+  if (RtCreateProcess(&zzProcess, _R("Wrong, wrong directory"), _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* Test bad argument. */
   if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
