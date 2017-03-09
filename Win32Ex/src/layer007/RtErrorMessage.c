@@ -74,3 +74,34 @@ handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
 }
+
+RT_B RT_CDECL_API RtWriteLastErrorMessageVariadic(void* lpNull, ...)
+{
+  va_list lpVaList;
+  RT_B bResult;
+
+  va_start(lpVaList, lpNull);
+  bResult = RtVWriteLastErrorMessage(lpVaList);
+  va_end(lpVaList);
+
+  return bResult;
+}
+
+RT_B RT_API RtVWriteLastErrorMessage(va_list lpVaList)
+{
+  RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
+  RT_UN unWritten;
+  RT_B bResult;
+
+  unWritten = 0;
+  if (!RtVConcatStrings(lpVaList, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtWriteLastErrorMessage(lpBuffer)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}

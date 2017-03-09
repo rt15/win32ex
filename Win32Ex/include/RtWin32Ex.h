@@ -15,6 +15,16 @@
 
 #### TODO:
 
+Give environment variables to RtCreateProcess?
+
+O_CLOEXEC on sockets.
+
+Tests non-child process!?
+
+Redirect to null pipe/file!?
+
+Call waitpid of the intermediate to kill the zombie!
+
 Manage signals/interrupts in read calls!?
 
 Avoir la possibilité de démarrer un processus sans l'attendre.

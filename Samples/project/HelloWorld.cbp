@@ -9,7 +9,7 @@
 		<Build>
 			<Target title="Win32Debug">
 				<Option platforms="Windows;" />
-				<Option output="../bin/Consoled" prefix_auto="1" extension_auto="1" />
+				<Option output="../bin/HelloWorldd" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/Debug" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -51,11 +51,10 @@
 			</Target>
 			<Target title="Linux32Debug">
 				<Option platforms="Unix;" />
-				<Option output="../bin/Consoled" prefix_auto="1" extension_auto="1" />
+				<Option output="../bin/HelloWorldd" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/Debug" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
 				<Option parameters='toto &quot;t t&quot;' />
 				<Compiler>
 					<Add option="-m32" />

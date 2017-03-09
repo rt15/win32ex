@@ -120,7 +120,7 @@ RT_B RT_CALL ZzManuallyTestProcess()
   if (!RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 #else
   if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
-  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("-c"), _R("4"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, _R("ping"), _R("-c"), _R("4"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 #endif
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
   if (!RtWriteStringToConsole(_R("==========================\n"))) goto handle_error;

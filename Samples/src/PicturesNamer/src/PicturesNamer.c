@@ -132,10 +132,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 
   if (!RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_DIRECTORY))
   {
-    unWritten = 0;
-    RtCopyString(lpPath, lpMessage, RT_FILE_SYSTEM_MAX_FILE_PATH + 200, &unWritten);
-    RtCopyString(_R(" is not a directory: "), &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unWritten);
-    RtWriteLastErrorMessage(lpMessage);
+    RtWriteLastErrorMessageVariadic(RT_NULL, lpPath, _R(" is not a directory: "), (RT_CHAR*)RT_NULL);
     goto the_end;
   }
 

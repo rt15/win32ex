@@ -36,6 +36,10 @@ RT_FILE;
  *
  * Le fichier est créé s'il n'existe pas.
  *
+ * <p>
+ * The created file is not inheritable.
+ * </p>
+ *
  * @param lpFilePath Le fichier à ouvrir
  * @param nMode Le mode d'ouverture RT_FILE_MODE_XXX
  * @return Zero en cas d'échec
@@ -45,6 +49,10 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
 /**
  * Create a temporary file.
  *
+ * <p>
+ * The created file is not inheritable.
+ * </p>
+ *
  * @param lpBuffer Receive the path to the file so the caller can delete the file.
  * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
  */
@@ -53,12 +61,22 @@ RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuff
 /**
  * Create a temporary file in given path.
  *
+ * <p>
+ * The created file is not inheritable.
+ * </p>
+ *
  * @param lpParentPath Directory in which the temporary file is created.
  * @param lpBuffer Receive the path to the file so the caller can delete the file.
  * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
  */
 RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
+/**
+ *
+ * <p>
+ * The created file is not inheritable.
+ * </p>
+ */
 RT_B RT_API RtCreatePipe(RT_FILE* lpReadFile, RT_FILE* lpWriteFile);
 
 /**
@@ -81,6 +99,38 @@ RT_B RT_API RtCreateStdOutput(RT_FILE* lpFile);
  * </p>
  */
 RT_B RT_API RtCreateStdError(RT_FILE* lpFile);
+
+/**
+ * <p>
+ * Under Windows, an inheritable handle is valid in a child process created with CreateProcess and bInheritHandles TRUE.
+ * </p>
+ *
+ * <p>
+ * Under Linux, a non-inheritable file descriptor is closed when execl/execlp/execle/execv/execvp/execvpe is used.<br>
+ * It is not closed by a fork.
+ * </p>
+ */
+RT_B RT_API RtIsFileInheritable(RT_FILE* lpFile, RT_B* lpInheritable);
+
+/**
+ * Update inherability of given file if needed.
+ *
+ * <p>
+ * Beware that there can be a race condition with this function.<br>
+ * If another thread is performing fork/exec or CreateProcess, then there can be a file descriptor leak.<br>
+ * See O_CLOEXEC flag description in open manual.
+ * </p>
+ *
+ * <p>
+ * Under Windows, an inheritable handle can be used by a process created with CreateProcess and bInheritHandles TRUE.
+ * </p>
+ *
+ * <p>
+ * Under Linux, a non-inheritable file descriptor is closed when execl/execlp/execle/execv/execvp/execvpe is used.<br>
+ * It is not closed by a fork.
+ * </p>
+ */
+RT_B RT_API RtSetFileInheritable(RT_FILE* lpFile, RT_B bInheritable);
 
 /**
  * Read from a file.

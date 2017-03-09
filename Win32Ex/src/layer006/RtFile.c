@@ -129,7 +129,7 @@ RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, R
   if (!RtCopyStringWithSize(_R("XXXXXX"), 6, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
   /* Returns -1 and set errno in case of error. */
-  lpFile->nFile = mkstemp(lpBuffer);
+  lpFile->nFile = mkostemp(lpBuffer, O_CLOEXEC);
   if (lpFile->nFile == -1) goto handle_error;
 
   *lpWritten += unWritten;
@@ -219,6 +219,97 @@ RT_B RT_API RtCreateStdError(RT_FILE* lpFile)
   lpFile->nFile = 2;
   return RT_SUCCESS;
 #endif
+}
+
+RT_B RT_API RtIsFileInheritable(RT_FILE* lpFile, RT_B* lpInheritable)
+{
+#ifdef RT_DEFINE_WINDOWS
+  DWORD unFlags;
+#else
+  int nFlags;
+#endif
+  RT_B bResult;
+
+#ifdef RT_DEFINE_WINDOWS
+
+  if (!GetHandleInformation(lpFile->hFile, &unFlags)) goto handle_error;
+  if (unFlags & HANDLE_FLAG_INHERIT)
+  {
+    *lpInheritable = RT_TRUE;
+  }
+  else
+  {
+    *lpInheritable = RT_FALSE;
+  }
+
+#else /* NOT RT_DEFINE_WINDOWS */
+
+  nFlags = fcntl(lpFile->nFile, F_GETFD, 0);
+  if (nFlags == -1) goto handle_error;
+
+  if (nFlags & FD_CLOEXEC)
+  {
+    *lpInheritable = RT_FALSE;
+  }
+  else
+  {
+    *lpInheritable = RT_TRUE;
+  }
+
+#endif
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtSetFileInheritable(RT_FILE* lpFile, RT_B bInheritable)
+{
+  RT_B bCurrentValue;
+#ifdef RT_DEFINE_LINUX
+  int nFlags;
+#endif
+  RT_B bResult;
+
+  if (!RtIsFileInheritable(lpFile, &bCurrentValue)) goto handle_error;
+
+#ifdef RT_DEFINE_LINUX
+  nFlags = fcntl(lpFile->nFile, F_GETFD, 0);
+  if (nFlags == -1) goto handle_error;
+#endif
+
+  if (bInheritable && !bCurrentValue)
+  {
+#ifdef RT_DEFINE_WINDOWS
+    /* Add inheritance. */
+    if (!SetHandleInformation(lpFile->hFile, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)) goto handle_error;
+#else
+    /* Remove FD_CLOEXEC flag so that the descriptor will be valid in children. */
+    if (fcntl(lpFile->nFile, F_SETFD, nFlags & ~FD_CLOEXEC) == -1) goto handle_error;
+#endif
+  }
+  else if (!bInheritable && bCurrentValue)
+  {
+#ifdef RT_DEFINE_WINDOWS
+    /* Remove inheritance. */
+    if (!SetHandleInformation(lpFile->hFile, HANDLE_FLAG_INHERIT, 0)) goto handle_error;
+#else
+    /* Add FD_CLOEXEC flag so that the descriptor will not be available in children. */
+    if (fcntl(lpFile->nFile, F_SETFD, nFlags | FD_CLOEXEC) == -1) goto handle_error;
+#endif
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead)

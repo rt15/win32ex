@@ -28,4 +28,18 @@ RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *
  */
 RT_B RT_API RtWriteLastErrorMessage(RT_CHAR* lpPrefix);
 
+/**
+ * Write last error message into console standard error stream.
+ *
+ * <p>
+ * The optional parameters are directly concatenated before the operating system error.
+ * </p>
+ *
+ * @param lpNull Not used, should be RT_NULL.
+ * @param ... Do not forget trailing (RT_CHAR*)RT_NULL.
+ */
+RT_B RT_CDECL_API RtWriteLastErrorMessageVariadic(void* lpNull, ...);
+
+RT_B RT_API RtVWriteLastErrorMessage(va_list lpVaList);
+
 #endif /* RT_ERROR_MESSAGE_H */

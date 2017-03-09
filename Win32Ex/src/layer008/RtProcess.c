@@ -33,35 +33,6 @@ RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bC
   return bResult;
 }
 
-#ifdef RT_DEFINE_WINDOWS
-
-
-/**
- * Make an handle inheritable if it is not already.
- */
-RT_B RT_CALL RtInheritHandle(HANDLE hHandle)
-{
-  DWORD unFlags;
-  RT_B bResult;
-
-  if (!GetHandleInformation(hHandle, &unFlags)) goto handle_error;
-  if (!(unFlags & HANDLE_FLAG_INHERIT))
-  {
-    if (!SetHandleInformation(hHandle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT)) goto handle_error;
-  }
-
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
-
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
-}
-
-#endif
-
-
 /**
  * Convert given argv so it can be used in command line.<br>
  * See <tt>RtArgVToCommandLine</tt>.
@@ -286,26 +257,25 @@ handle_error:
 #ifdef RT_DEFINE_LINUX
 
 /**
- * Same as RtVCreateProcess but <tt>RT_CHAR** lpPArgs</tt>.has been computed from the va_list.
+ * Called either by the main process or by a forked process if bChild is RT_TRUE.
  */
-RT_B RT_CALL RtCreateLinuxProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory,
-                                  RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
-                                  RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
+RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+                                        RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                        RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
 {
-  RT_UN unErrno;
+  RT_N nErrno;
   RT_FILE rtReadPipe;
   RT_FILE rtWritePipe;
   RT_B bReadPipeCreated;
   RT_B bWritePipeCreated;
   pid_t nPid;
-  RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
   RT_UN unBytesRead;
   RT_B bResult;
 
   bReadPipeCreated = RT_FALSE;
   bWritePipeCreated = RT_FALSE;
 
+  /* Not inheritable, only used by the forked process before execvp/execvpe. */
   if (!RtCreatePipe(&rtReadPipe, &rtWritePipe)) goto handle_error;
   bReadPipeCreated = RT_TRUE;
   bWritePipeCreated = RT_TRUE;
@@ -315,55 +285,69 @@ RT_B RT_CALL RtCreateLinuxProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* l
   {
     /* We are in the child process. */
 
-    /* Close the read pipe, used by the parent. */
-    if (!RtFreeFile(&rtReadPipe)) goto handle_child_error;
+    /* Close the read pipe, used by the parent/intermediate. */
+    if (!RtFreeFile(&rtReadPipe))
+    {
+      RtWriteLastErrorMessage(_R("Failed to close reading pipe: "));
+      goto handle_child_error;
+    }
 
     /* Attempt to perform redirections. */
+    /* The copy of the file descriptor does not clone O_CLOEXEC. O_CLOEXEC is false in the copy. */
     /* dup2 returns -1 in case of error and set errno. */
     if (lpStdInput)
     {
-      if (dup2(lpStdInput->nFile, 0) == -1) goto handle_child_error;
+      if (dup2(lpStdInput->nFile, 0) == -1)
+      {
+        RtWriteLastErrorMessage(_R("Failed to duplicate stdin redirection: "));
+        goto handle_child_error;
+      }
     }
     if (lpStdOutput)
     {
-      if (dup2(lpStdOutput->nFile, 1) == -1) goto handle_child_error;
+      if (dup2(lpStdOutput->nFile, 1) == -1)
+      {
+        RtWriteLastErrorMessage(_R("Failed to duplicate stdout redirection: "));
+        goto handle_child_error;
+      }
     }
     if (lpStdError)
     {
-      if (dup2(lpStdError->nFile, 2) == -1) goto handle_child_error;
+      if (dup2(lpStdError->nFile, 2) == -1)
+      {
+        RtWriteLastErrorMessage(_R("Failed to duplicate stderr redirection: "));
+        goto handle_child_error;
+      }
     }
 
     /* Change current directory if provided. */
     if (lpCurrentDirectory)
     {
       /* chdir Returns zero in case of success, set errno. */
-       if (chdir(lpCurrentDirectory)) goto handle_child_error;
+       if (chdir(lpCurrentDirectory))
+       {
+         RtWriteLastErrorMessageVariadic(RT_NULL, _R("Failed to change current directory to \""), lpCurrentDirectory, _R("\": "), (RT_CHAR*)RT_NULL);
+         goto handle_child_error;
+       }
     }
 
     /* Returns only if an error has occurred. The return value is -1, and errno is set to indicate the error.  */
     execvp(lpApplicationName, lpPArgs);
+    RtWriteLastErrorMessageVariadic(RT_NULL, _R("Failed to start \""), lpApplicationName, _R("\": "), (RT_CHAR*)RT_NULL);
 
 handle_child_error:
 
     /* We will write errno in the pipe to be read by the parent. */
-    unErrno = errno;
-    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&unErrno, sizeof(unErrno)))
+    nErrno = errno;
+    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
     {
-      unWritten = 0;
-      if (RtCopyString(_R("Failed to write to parent pipe: "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten))
-      {
-        RtWriteLastErrorMessage(lpMessage);
-      }
+      RtWriteLastErrorMessage(_R("Failed to write to parent pipe: "));
     }
 
     /* We do not need the writing pipe anymore so we close it. */
     if (!RtFreeFile(&rtWritePipe))
     {
-      unWritten = 0;
-      if (RtCopyString(_R("Failed to close writing pipe: "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten))
-      {
-        RtWriteLastErrorMessage(lpMessage);
-      }
+      RtWriteLastErrorMessage(_R("Failed to close writing pipe: "));
     }
 
     /* Kill forked child process. */
@@ -371,20 +355,165 @@ handle_child_error:
   }
   else if (nPid > 0)
   {
-    /* We are still in the same parent process and the fork is ok. */
+    /* We are still in the same parent/intermediate process and the fork is ok. */
     lpProcess->nPid = nPid;
 
     /* We close writing pipe to avoid a dead lock. It will be used only by the child. */
     bWritePipeCreated = RT_FALSE;
     if (!RtFreeFile(&rtWritePipe)) goto handle_error;
 
-    /* Synchronously read errno or zero bytes from created child. */
-    if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&unErrno, sizeof(unErrno), &unBytesRead)) goto handle_error;
+    /* Synchronously read errno or zero bytes (success!) from created child. */
+    if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
     if (unBytesRead)
     {
-      /* Copy errno read from child pipe into parent errno. */
-      errno = unErrno;
+      /* Copy errno read from child pipe into parent/intermediate errno. */
+      errno = nErrno;
       goto handle_error;
+    }
+  }
+  else
+  {
+    /* On failure, fork returns -1 and set errno. */
+    goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bWritePipeCreated)
+  {
+    bWritePipeCreated = RT_FALSE;
+    if (!RtFreeFile(&rtWritePipe) && bResult) goto handle_error;
+  }
+  if (bReadPipeCreated)
+  {
+    bReadPipeCreated = RT_FALSE;
+    if (!RtFreeFile(&rtReadPipe) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+/**
+ * Fork a process that will fork again to avoid zombification.
+ */
+RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+                                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                                   RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
+{
+  RT_N nChildPid;
+  RT_N nErrno;
+  RT_FILE rtReadPipe;
+  RT_FILE rtWritePipe;
+  RT_B bReadPipeCreated;
+  RT_B bWritePipeCreated;
+  pid_t nPid;
+  RT_UN unBytesRead;
+  RT_PROCESS rtIntermediateProcess;
+  RT_UN32 unExitCode;
+  RT_B bResult;
+
+  bReadPipeCreated = RT_FALSE;
+  bWritePipeCreated = RT_FALSE;
+
+  /* Not inheritable, only used by the forked process. */
+  if (!RtCreatePipe(&rtReadPipe, &rtWritePipe)) goto handle_error;
+  bReadPipeCreated = RT_TRUE;
+  bWritePipeCreated = RT_TRUE;
+
+  nPid = fork();
+  if (nPid == 0)
+  {
+    /* We are in the intermediate process. */
+
+    /* Close the read pipe, used by the parent. */
+    if (!RtFreeFile(&rtReadPipe))
+    {
+      RtWriteLastErrorMessage(_R("Failed to close intermediate reading pipe: "));
+      goto handle_child_error;
+    }
+
+    /* Fork actual process from the current forked process. */
+    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_child_error;
+
+    /* Write child PID into the pipe. */
+    nChildPid = lpProcess->nPid;
+    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&nChildPid, sizeof(nChildPid)))
+    {
+      RtWriteLastErrorMessage(_R("Failed to write the child PID into the pipe: "));
+      goto handle_child_error;
+    }
+
+    /* Kill forked intermediate process. */
+    exit(0);
+
+handle_child_error:
+
+    /* We will write errno in the pipe to be read by the parent. */
+    nErrno = errno;
+    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
+    {
+      RtWriteLastErrorMessage(_R("Failed to write to parent pipe: "));
+    }
+
+    /* We do not need the writing pipe anymore so we close it. */
+    if (!RtFreeFile(&rtWritePipe))
+    {
+      RtWriteLastErrorMessage(_R("Failed to close writing pipe: "));
+    }
+
+    /* Kill forked intermediate process. */
+    exit(1);
+  }
+  else if (nPid > 0)
+  {
+    /* We are still in the same parent process and the fork is ok. */
+
+    /* Retrieve intermediate process. */
+    rtIntermediateProcess.nPid = nPid;
+
+    /* We close writing pipe to avoid a dead lock. It will be used only by the intermediate. */
+    bWritePipeCreated = RT_FALSE;
+    if (!RtFreeFile(&rtWritePipe)) goto handle_error;
+
+    /* Retrieve intermediate exit code. */
+    if (!RtJoinProcess(&rtIntermediateProcess)) goto handle_error;
+    if (!RtGetProcessExitCode(&rtIntermediateProcess, &unExitCode)) goto handle_error;
+
+    if (unExitCode)
+    {
+      /* Synchronously read errno or zero bytes (should not happen) from created intermediate. */
+      if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
+      if (unBytesRead)
+      {
+        /* Copy errno read from child pipe into parent errno. */
+        errno = nErrno;
+        goto handle_error;
+      }
+      else
+      {
+        /* We failed to retrieve errno from intermediate. Use generic error. */
+        RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+        goto handle_error;
+      }
+    }
+    else
+    {
+      /* Synchronously read pid or zero bytes (should not happen) from created intermediate. */
+      if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&nChildPid, sizeof(nChildPid), &unBytesRead)) goto handle_error;
+      if (unBytesRead)
+      {
+        /* Great, we have read the child pid from the intermediate pipe. */
+        lpProcess->nPid = nChildPid;
+      }
+      else
+      {
+        /* We failed to retrieve errno from intermediate. Use generic error. */
+        RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+        goto handle_error;
+      }
     }
   }
   else
@@ -422,15 +551,24 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
   RT_FILE rtStdInput;
   RT_FILE rtStdOutput;
   RT_FILE rtStdError;
+
   RT_FILE* lpActualStdInput;
   RT_FILE* lpActualStdOutput;
   RT_FILE* lpActualStdError;
+
+  RT_B bInputInheritable;
+  RT_B bOutputInheritable;
+  RT_B bErrorInheritable;
+
+  RT_B bRestoreInputNonInheritable;
+  RT_B bRestoreOutputNonInheritable;
+  RT_B bRestoreErrorNonInheritable;
+
   RT_CHAR lpCommandLineBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_CHAR* lpCommandLine;
   void* lpHeapBuffer;
   RT_UN unHeapBufferSize;
   STARTUPINFO rtStartupInfo;
-  BOOL bInheritHandles;
 #else
   va_list lpVaList2;
   RT_CHAR* lpArg;
@@ -448,16 +586,17 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
   lpHeapBuffer = RT_NULL;
   unHeapBufferSize = 0;
 
+  bRestoreInputNonInheritable = RT_FALSE;
+  bRestoreOutputNonInheritable = RT_FALSE;
+  bRestoreErrorNonInheritable = RT_FALSE;
+
   RT_MEMORY_ZERO(&rtStartupInfo, sizeof(rtStartupInfo));
   rtStartupInfo.cb = sizeof(rtStartupInfo);
-  bInheritHandles = FALSE;
 
-  /* Manage redirection if needed. */
+  /* Manage redirections if needed. */
   if (lpStdInput || lpStdOutput || lpStdError)
   {
     rtStartupInfo.dwFlags |= STARTF_USESTDHANDLES;
-    /* Required to use redirections. */
-    bInheritHandles = TRUE;
 
     /* Std input. */
     if (lpStdInput)
@@ -469,7 +608,6 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
        if (!RtCreateStdInput(&rtStdInput)) goto handle_error;
        lpActualStdInput = &rtStdInput;
     }
-    if (!RtInheritHandle(lpActualStdInput->hFile)) goto handle_error;
     rtStartupInfo.hStdInput = lpActualStdInput->hFile;
 
     /* Std output. */
@@ -482,7 +620,6 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
       if (!RtCreateStdOutput(&rtStdOutput)) goto handle_error;
       lpActualStdOutput = &rtStdOutput;
     }
-    if (!RtInheritHandle(lpActualStdOutput->hFile)) goto handle_error;
     rtStartupInfo.hStdOutput = lpActualStdOutput->hFile;
 
     /* Std error. */
@@ -495,8 +632,31 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
       if (!RtCreateStdError(&rtStdError)) goto handle_error;
       lpActualStdError = &rtStdError;
     }
-    if (!RtInheritHandle(lpActualStdError->hFile)) goto handle_error;
     rtStartupInfo.hStdError = lpActualStdError->hFile;
+
+    /* Temporarily update input inheritability if needed. */
+    if (!RtIsFileInheritable(lpActualStdInput,  &bInputInheritable))  goto handle_error;
+    if (!bInputInheritable)
+    {
+      if (!RtSetFileInheritable(lpActualStdInput, RT_TRUE)) goto handle_error;
+      bRestoreInputNonInheritable = RT_TRUE;
+    }
+
+    /* Temporarily update output inheritability if needed. */
+    if (!RtIsFileInheritable(lpActualStdOutput, &bOutputInheritable)) goto handle_error;
+    if (!bOutputInheritable)
+    {
+      if (!RtSetFileInheritable(lpActualStdOutput, RT_TRUE)) goto handle_error;
+      bRestoreOutputNonInheritable = RT_TRUE;
+    }
+
+    /* Temporarily update error inheritability if needed. */
+    if (!RtIsFileInheritable(lpActualStdError,  &bErrorInheritable))  goto handle_error;
+    if (!bErrorInheritable)
+    {
+      if (!RtSetFileInheritable(lpActualStdError, RT_TRUE)) goto handle_error;
+      bRestoreErrorNonInheritable = RT_TRUE;
+    }
   }
 
   if (!RtArgVToCommandLine(lpVaList, lpApplicationName, lpCommandLineBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, &lpCommandLine)) goto handle_error;
@@ -505,7 +665,7 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
                      lpCommandLine,
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpProcessAttributes.                                 */
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpThreadAttributes.                                  */
-                     bInheritHandles,
+                     TRUE,                           /* Align inheritance with Linux.                                              */
                      0,                              /* dwCreationFlags.                                                           */
                      RT_NULL,                        /* lpEnvironment.                                                             */
                      lpCurrentDirectory,             /* If NULL, the new process will have the same current directory as this one. */
@@ -518,6 +678,21 @@ free_resources:
   if (lpHeapBuffer)
   {
     if (!RtFree(&lpHeapBuffer) && bResult) goto handle_error;
+  }
+  if (bRestoreErrorNonInheritable)
+  {
+    bRestoreErrorNonInheritable = RT_FALSE;
+    if (!RtSetFileInheritable(lpActualStdError, RT_FALSE) && bResult) goto handle_error;
+  }
+  if (bRestoreOutputNonInheritable)
+  {
+    bRestoreOutputNonInheritable = RT_FALSE;
+    if (!RtSetFileInheritable(lpActualStdOutput, RT_FALSE) && bResult) goto handle_error;
+  }
+  if (bRestoreInputNonInheritable)
+  {
+    bRestoreInputNonInheritable = RT_FALSE;
+    if (!RtSetFileInheritable(lpActualStdInput, RT_FALSE) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -572,7 +747,14 @@ handle_error:
   /* We must have RT_NULL as last "arg". */
   lpPArgs[unI] = RT_NULL;
 
-  if (!RtCreateLinuxProcess(lpProcess, bChild, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+  if (bChild)
+  {
+    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+  }
+  else
+  {
+    if (!RtCreateLinuxProcessUsingIntermediate(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+  }
 
   bResult = RT_SUCCESS;
 free_resources:

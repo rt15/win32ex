@@ -233,9 +233,11 @@ RT_B RT_CALL ZzTestFailingProcess()
 
   /* Test wrong process name. */
   if (RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, _R("pong"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (RtCreateProcess(&zzProcess, RT_FALSE, RT_NULL, _R("pong"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* Test wrong folder name. */
   if (RtCreateProcess(&zzProcess, RT_TRUE, _R("Wrong, wrong directory"), _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (RtCreateProcess(&zzProcess, RT_FALSE, _R("Wrong, wrong directory"), _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* Test bad argument. */
   if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;

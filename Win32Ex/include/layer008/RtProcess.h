@@ -35,12 +35,33 @@ RT_PROCESS;
  * If successful, ensure to call RtFreeProcess (And optionally RtJoinProcess to avoid zombies if bChild is RT_TRUE).
  * </p>
  *
- * @param bChild Set to RT_TRUE if and only if you will call RtJoinProcess.
+ * <p>
+ * Watch out for handles/file descriptors leaks.<br>
+ * Under Linux, any file descriptor without FD_CLOEXEC/O_CLOEXEC will "leak".<br>
+ * Under Windows, any handle with HANDLE_FLAG_INHERIT/bInheritHandle of SECURITY_ATTRIBUTES will "leak".
+ * </p>
+ *
+ * @param bChild Set to RT_TRUE if and only if you will call RtJoinProcess. No effect under Windows.
  * @param lpCurrentDirectory Current directory of the started process. Same as current process if RT_NULL.
  * @param ... Process arguments (RT_CHAR*). Must end with RT_NULL.
  */
 RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...);
 
+/**
+ * Start a process with redirections.
+ *
+ * </p>
+ * Beware that there is no need for the redirected files to be inheritable.<br>
+ * Under Linux, dup2 is used for the redirection, and dup2 does not copy the FD_CLOEXEC into the duplicated file descriptor.<br>
+ * Under Windows, RtSetFileInheritable is used to temporarily configure the handle as inheritable if it is not already.<br>
+ * Be careful as this can cause a race conditions with other calls to CreateProcess from other threads.<br>
+ * Be sure to use a critical section to avoid handles leaks if needed.
+ * </p>
+ *
+ * @param lpStdInput Can be RT_NULL.
+ * @param lpStdOutput Can be RT_NULL.
+ * @param lpStdError Can be RT_NULL.
+ */
 RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory,
                                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                                   RT_CHAR* lpApplicationName, ...);
