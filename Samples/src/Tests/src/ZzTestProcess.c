@@ -35,7 +35,7 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   bReadPipeCreated = RT_TRUE;
   bWritePipeCreated = RT_TRUE;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_NULL, &zzReadPipe, &zzFile, RT_NULL, lpExecutablePath, _R("--read-line"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzReadPipe, &zzFile, RT_NULL, lpExecutablePath, _R("--read-line"), (RT_CHAR*)RT_NULL)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!ZzWriteLinesToFile(&zzWritePipe, lpHeap, _R("123"), (RT_CHAR*)RT_NULL)) goto handle_error;
@@ -105,19 +105,19 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_NULL, RT_NULL, &zzFile, RT_NULL, lpExecutablePath,
-                                                                                       _R("--args"),
-                                                                                       _R("foo"),
-                                                                                       _R("a b"),
-                                                                                       _R("c:\\"),
-                                                                                       _R("c:\\Program Files\\"),
-                                                                                       _R("c:\\\\Program Files\\\\"),
-                                                                                       _R("\"bar\""),
-                                                                                       _R("b\\a\\r"),
-                                                                                       _R("b\\\t\\r"),
-                                                                                       _R("b\"r"),
-                                                                                       _R("b\\\"r"),
-                                                                                       (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, &zzFile, RT_NULL, lpExecutablePath,
+                                                                                                _R("--args"),
+                                                                                                _R("foo"),
+                                                                                                _R("a b"),
+                                                                                                _R("c:\\"),
+                                                                                                _R("c:\\Program Files\\"),
+                                                                                                _R("c:\\\\Program Files\\\\"),
+                                                                                                _R("\"bar\""),
+                                                                                                _R("b\\a\\r"),
+                                                                                                _R("b\\\t\\r"),
+                                                                                                _R("b\"r"),
+                                                                                                _R("b\\\"r"),
+                                                                                                (RT_CHAR*)RT_NULL)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
@@ -188,7 +188,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_NULL, RT_NULL, RT_NULL, &zzFile, lpExecutablePath, _R("--bad"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFile, lpExecutablePath, _R("--bad"), (RT_CHAR*)RT_NULL)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
@@ -232,15 +232,15 @@ RT_B RT_CALL ZzTestFailingProcess()
   bProcessCreated = RT_FALSE;
 
   /* Test wrong process name. */
-  if (RtCreateProcess(&zzProcess, RT_NULL, _R("pong"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, _R("pong"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* Test wrong folder name. */
-  if (RtCreateProcess(&zzProcess, _R("Wrong, wrong directory"), _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (RtCreateProcess(&zzProcess, RT_TRUE, _R("Wrong, wrong directory"), _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* Test bad argument. */
   if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
 
-  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("-pong"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, _R("ping"), _R("-pong"), (RT_CHAR*)RT_NULL)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;

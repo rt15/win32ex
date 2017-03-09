@@ -32,22 +32,27 @@ RT_PROCESS;
  * Start a process.
  *
  * <p>
- * If successful, ensure to call RtFreeProcess (And optionally RtJoinProcess to avoid zombies).
+ * If successful, ensure to call RtFreeProcess (And optionally RtJoinProcess to avoid zombies if bChild is RT_TRUE).
  * </p>
  *
+ * @param bChild Set to RT_TRUE if and only if you will call RtJoinProcess.
  * @param lpCurrentDirectory Current directory of the started process. Same as current process if RT_NULL.
  * @param ... Process arguments (RT_CHAR*). Must end with RT_NULL.
  */
-RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...);
+RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...);
 
-RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory,
                                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                                   RT_CHAR* lpApplicationName, ...);
 
-RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory,
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChild, RT_CHAR* lpCurrentDirectory,
                              RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                              RT_CHAR* lpApplicationName);
 
+/**
+ * Can be used only if bChild was RT_TRUE while creating the process.<br>
+ * Called to read the exit code to kill a zombified process.
+ */
 RT_B RT_API RtJoinProcess(RT_PROCESS* lpProcess);
 
 /**

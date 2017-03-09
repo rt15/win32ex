@@ -7,19 +7,19 @@
 #include "layer005/RtStaticHeap.h"
 #include "layer007/RtErrorMessage.h"
 
-RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
+RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
 {
   va_list lpVaList;
   RT_B bResult;
 
   va_start(lpVaList, lpApplicationName);
-  bResult = RtVCreateProcess(lpProcess, lpVaList, lpCurrentDirectory, RT_NULL, RT_NULL, RT_NULL, lpApplicationName);
+  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, RT_NULL, RT_NULL, RT_NULL, lpApplicationName);
   va_end(lpVaList);
 
   return bResult;
 }
 
-RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory,
                                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                                   RT_CHAR* lpApplicationName, ...)
 {
@@ -27,7 +27,7 @@ RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_CHAR
   RT_B bResult;
 
   va_start(lpVaList, lpApplicationName);
-  bResult = RtVCreateProcess(lpProcess, lpVaList, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName);
+  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName);
   va_end(lpVaList);
 
   return bResult;
@@ -288,7 +288,7 @@ handle_error:
 /**
  * Same as RtVCreateProcess but <tt>RT_CHAR** lpPArgs</tt>.has been computed from the va_list.
  */
-RT_B RT_CALL RtCreateLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+RT_B RT_CALL RtCreateLinuxProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory,
                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                   RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
 {
@@ -414,7 +414,7 @@ handle_error:
 
 #endif
 
-RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory,
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChild, RT_CHAR* lpCurrentDirectory,
                              RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                              RT_CHAR* lpApplicationName)
 {
@@ -572,7 +572,7 @@ handle_error:
   /* We must have RT_NULL as last "arg". */
   lpPArgs[unI] = RT_NULL;
 
-  if (!RtCreateLinuxProcess(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+  if (!RtCreateLinuxProcess(lpProcess, bChild, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
