@@ -10,7 +10,7 @@ RT_B RT_CALL ZzVConcatLines(va_list lpVaList, RT_HEAP** lpHeap, void** lpBuffer)
   RT_UN unReferenceBufferSize;
   RT_B bResult;
 
-  RT_VA_COPY(lpVaList2, lpVaList);
+  RT_VA_COPY(lpVaList, lpVaList2);
 
   /* Compute reference size. */
   unReferenceSize = 0;

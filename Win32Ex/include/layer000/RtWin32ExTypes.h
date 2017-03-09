@@ -91,11 +91,12 @@
 /* Calling convention for few public cdecl functions. */
 #define RT_CDECL_API RT_CDECL
 
-/* Use gccc __va_copy if va_copy is not available. */
+/* Use gccc __va_copy if va_copy is not available.                                    */
+/* Unlike va_copy/__va_copy, First parameter is destination, next parameter is source. */
 #if defined(RT_DEFINE_GCC) && !defined(va_copy)
-  #define RT_VA_COPY __va_copy
+  #define RT_VA_COPY(SOURCE, DESTINATION) __va_copy(DESTINATION, SOURCE)
 #else
-  #define RT_VA_COPY va_copy
+  #define RT_VA_COPY(SOURCE, DESTINATION) va_copy(DESTINATION, SOURCE)
 #endif
 
 /* On Visual C++ and GCC, char is most likely to be signed (But different from "signed char") however there are flags to make it unsigned. */

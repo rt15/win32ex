@@ -105,7 +105,19 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_NULL, RT_NULL, &zzFile, RT_NULL, lpExecutablePath, _R("--args"), _R("foo"), RT_NULL)) goto handle_error;
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_NULL, RT_NULL, &zzFile, RT_NULL, lpExecutablePath,
+                                                                                       _R("--args"),
+                                                                                       _R("foo"),
+                                                                                       _R("a b"),
+                                                                                       _R("c:\\"),
+                                                                                       _R("c:\\Program Files\\"),
+                                                                                       _R("c:\\\\Program Files\\\\"),
+                                                                                       _R("\"bar\""),
+                                                                                       _R("b\\a\\r"),
+                                                                                       _R("b\\\t\\r"),
+                                                                                       _R("b\"r"),
+                                                                                       _R("b\\\"r"),
+                                                                                       RT_NULL)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
@@ -115,6 +127,15 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   if (!ZzCheckTextFile(lpTempFile, lpHeap, lpExecutablePath,
                                            _R("--args"),
                                            _R("foo"),
+                                           _R("a b"),
+                                           _R("c:\\"),
+                                           _R("c:\\Program Files\\"),
+                                           _R("c:\\\\Program Files\\\\"),
+                                           _R("\"bar\""),
+                                           _R("b\\a\\r"),
+                                           _R("b\\\t\\r"),
+                                           _R("b\"r"),
+                                           _R("b\\\"r"),
                                            RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;

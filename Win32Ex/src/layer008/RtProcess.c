@@ -85,11 +85,232 @@ void RT_CALL RtDup2(RT_N32 nOldFd, RT_N32 nNewFd, RT_CHAR* lpStreamName)
 
 #endif
 
+
+/**
+ * Convert given argv so it can be used in command line.<br>
+ * See <tt>RtArgVToCommandLine</tt>.
+ */
+RT_B RT_CALL RtConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+{
+  RT_B bNeedDoubleQuotes;
+  RT_UN unWritten;
+  RT_UN unAntiSlashes;
+  RT_UN unI;
+  RT_UN unJ;
+  RT_B bResult;
+
+  /* Need double-quotes? */
+  bNeedDoubleQuotes = RT_FALSE;
+  unI = 0;
+  while (lpArg[unI])
+  {
+    if ((lpArg[unI] == _R(' '))  ||
+        (lpArg[unI] == _R('\t')) ||
+        (lpArg[unI] == _R('"')))
+    {
+      bNeedDoubleQuotes = RT_TRUE;
+      break;
+    }
+    unI++;
+  }
+
+  unWritten = 0;
+  if (bNeedDoubleQuotes)
+  {
+    /* Open double-quotes. */
+    if (!RtCopyStringWithSize(_R("\""), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+
+    unI = 0;
+    unAntiSlashes = 0;
+    while (lpArg[unI])
+    {
+      if (lpArg[unI] == _R('\\'))
+      {
+        unAntiSlashes++;
+      }
+      else
+      {
+        if (lpArg[unI] == _R('"'))
+        {
+          for (unJ = 0; unJ < unAntiSlashes; unJ++)
+          {
+            /* Escape slashes just before the double quote. */
+            if (!RtCopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+          }
+
+          /* Escape double-quote. */
+          if (!RtCopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+        }
+        unAntiSlashes = 0;
+      }
+
+      /* Copy character. */
+      if (!RtCopyStringWithSize(&lpArg[unI], 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+
+      unI++;
+    }
+
+    /* Protect possible slashes before added closing double-quote. */
+    for (unJ = 0; unJ < unAntiSlashes; unJ++)
+    {
+      if (!RtCopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+    }
+
+    /* Close double-quotes. */
+    if (!RtCopyStringWithSize(_R("\""), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+  }
+  else
+  {
+    if (!RtCopyString(lpArg, lpBuffer, unBufferSize, &unWritten)) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  *lpWritten += unWritten;
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+/**
+ * Compute a command line size big enough for the given argV.
+ *
+ * <p>
+ * If there are ' ', tab or '"', we need 2 more characters for double-quotes.<br>
+ * If double-quotes are needed, add 1 character per anti-slash (Not always required) and '"' (Always required).
+ * </p>
+ */
+RT_UN RT_CALL RtComputeArgSizeInCommandLine(RT_CHAR* lpArg)
+{
+  RT_UN unAntiSlashes;
+  RT_UN unDoubleQuotes;
+  RT_UN unSpaces;
+  RT_UN unResult;
+
+  unAntiSlashes = 0;
+  unDoubleQuotes = 0;
+  unSpaces = 0;
+
+  unResult = 0;
+  while (lpArg[unResult])
+  {
+    if (lpArg[unResult] == _R(' ') || lpArg[unResult] == _R('\t'))
+    {
+      unSpaces++;
+    }
+    else if (lpArg[unResult] == _R('"'))
+    {
+      unDoubleQuotes++;
+    }
+    else if (lpArg[unResult] == _R('\\'))
+    {
+      unAntiSlashes++;
+    }
+    unResult++;
+  }
+
+  if (unSpaces || unDoubleQuotes)
+  {
+    /* We need to surround with double-quotes. */
+    unResult += 2;
+    unResult += unDoubleQuotes;
+    unResult += unAntiSlashes;
+  }
+
+  return unResult;
+}
+
+/**
+ * Opposite of CommandLineToArgvW.
+ *
+ * <p>
+ * If an argument contains ' ', tab or '"' then it must be surrounded with double-quotes (No need to surround arguments with anti-slashes only).<br>
+ * If an argument needs double-quotes then:<br>
+ * Prepend anti-slash before any double-quote.<br>
+ * Prepend anti-slash for every anti-slashes just before a double-quote.<br>
+ * </p>
+ *
+ * <ul>
+ *   <li>Use "      to start/end a double quoted part</li>
+ *   <li>Use \"     to insert a literal "</li>
+ *   <li>Use \\"    to insert a \ then start or end a double quoted part</li>
+ *   <li>Use \\\"   to insert a literal \"</li>
+ *   <li>Use \      to insert a literal \</li>
+ * </ul>
+ *
+ */
+RT_B RT_CALL RtArgVToCommandLine(va_list lpVaList, RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpCommandLine)
+{
+  va_list lpVaList2;
+  RT_UN unCommandLineSize;
+  RT_CHAR* lpArg;
+  RT_UN unCommandLineBufferSize;
+  RT_CHAR* lpLocalCommandLine;
+  RT_UN unWritten;
+  RT_B bResult;
+
+  RT_VA_COPY(lpVaList, lpVaList2);
+
+  /* First, compute the required command line size. */
+  unCommandLineSize = RtComputeArgSizeInCommandLine(lpApplicationName);
+
+  while (RT_TRUE)
+  {
+    lpArg = va_arg(lpVaList, RT_CHAR*);
+    if (lpArg)
+    {
+      unCommandLineSize += RtComputeArgSizeInCommandLine(lpArg);
+      unCommandLineSize++; /* Space separator between arguments. */
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  /* Add one for trailing zero. */
+  unCommandLineBufferSize = unCommandLineSize + 1;
+
+  if (!RtAllocIfNeeded(lpBuffer, unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpCommandLine, unCommandLineBufferSize)) goto handle_error;
+
+  lpLocalCommandLine = *lpCommandLine;
+
+  unWritten = 0;
+  if (!RtConvertArgToCommandLine(lpApplicationName, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+
+  while (RT_TRUE)
+  {
+    lpArg = va_arg(lpVaList2, RT_CHAR*);
+    if (lpArg)
+    {
+      /* Arguments separatory. */
+      if (!RtCopyStringWithSize(_R(" "), 1, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+
+      /* Convert argument. */
+      if (!RtConvertArgToCommandLine(lpArg, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  va_end(lpVaList2);
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* lpCurrentDirectory,
                              RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                              RT_CHAR* lpApplicationName)
 {
-  RT_CHAR* lpArg;
 #ifdef RT_DEFINE_WINDOWS
   RT_FILE rtStdInput;
   RT_FILE rtStdOutput;
@@ -97,12 +318,15 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* l
   RT_FILE* lpActualStdInput;
   RT_FILE* lpActualStdOutput;
   RT_FILE* lpActualStdError;
-  RT_CHAR lpCommandLine[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
+  RT_CHAR lpCommandLineBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_CHAR* lpCommandLine;
+  void* lpHeapBuffer;
+  RT_UN unHeapBufferSize;
   STARTUPINFO rtStartupInfo;
   BOOL bInheritHandles;
 #else
   va_list lpVaList2;
+  RT_CHAR* lpArg;
   pid_t nPid;
   RT_UN unArgsCount;
   void* lpBuffer[240];                             /* 240 * 8 = 1920, to consume half of 4000 under 64 bits. */
@@ -116,6 +340,10 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* l
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
+
+  lpHeapBuffer = RT_NULL;
+  unHeapBufferSize = 0;
+
   RT_MEMORY_ZERO(&rtStartupInfo, sizeof(rtStartupInfo));
   rtStartupInfo.cb = sizeof(rtStartupInfo);
   bInheritHandles = FALSE;
@@ -167,22 +395,7 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* l
     rtStartupInfo.hStdError = lpActualStdError->hFile;
   }
 
-  unWritten = 0;
-  if (!RtCopyString(lpApplicationName, &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-
-  while (RT_TRUE)
-  {
-    lpArg = va_arg(lpVaList, RT_CHAR*);
-    if (lpArg)
-    {
-      if (!RtCopyStringWithSize(_R(" "), 1,  &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-      if (!RtCopyString(lpArg,               &lpCommandLine[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-    }
-    else
-    {
-      break;
-    }
-  }
+  if (!RtArgVToCommandLine(lpVaList, lpApplicationName, lpCommandLineBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, &lpCommandLine)) goto handle_error;
 
   if (!CreateProcess(RT_NULL,                        /* lpApplicationName.                                                         */
                      lpCommandLine,
@@ -198,6 +411,10 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_CHAR* l
 
   bResult = RT_SUCCESS;
 free_resources:
+  if (lpHeapBuffer)
+  {
+    if (!RtFree(&lpHeapBuffer) && bResult) goto handle_error;
+  }
   return bResult;
 
 handle_error:
@@ -206,7 +423,7 @@ handle_error:
 
 #else /* NOT RT_DEFINE_WINDOWS */
 
-  RT_VA_COPY(lpVaList2, lpVaList);
+  RT_VA_COPY(lpVaList, lpVaList2);
   lpHeapBuffer = RT_NULL;
   unHeapBufferSize = 0;
 
