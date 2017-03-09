@@ -15,32 +15,16 @@
 
 #### TODO:
 
-Le RT_NULL en fin de ... devrait être casté (Car zéro en C++).
-
-Create argvtocommandline.
-Test it using --args and redirecting to a pipe.
-
-Enlever la taille fixe de lpCommandLine.
--> Ajouter une fonction de concaténation avec séparateurs !? A priori non.
-Attention au double quotes!!!
-Ajout de double quotes s'il y a des espaces ? Quid de Linux ?
-
-A chaque fois que l'on utilise une va_list, faut une fonction qui prend une va_list pour pouvoir avoir des parents avec des va_list.
-Bien documenter tout ça dans le style guide.
-Noter qu'il faut bien appeler va_end après un va_copy.
+Test RtConcatStrings (Including written).
 
 Avoir la possibilité de démarrer un processus sans l'attendre.
 Attention aux zombies !
-
-RtWriteStringsToConsole et RtConcatStrings devraient prendre RT_NULL en dernier argument et pas de nombre.
 
 RtDisplayLastErrorMessage
 
 Cleanup ZzTest.c.
 
 Error management in RtReadCharFromConsole.
-
-Add display error message functions for Console/GUI within the library.
 
 Create manual test project:
 Messages correspondants aux erreurs supportées.

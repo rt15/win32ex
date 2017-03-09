@@ -5,8 +5,10 @@
 
 RT_B RT_CALL ZzAdjustDirectory();
 
-RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...);
+RT_B RT_CDECL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...);
+RT_B RT_CALL ZzVCheckTextFile(va_list lpValist, RT_CHAR* lpFilePath, RT_HEAP** lpHeap);
 
-RT_B RT_CALL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...);
+RT_B RT_CDECL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...);
+RT_B RT_CALL ZzVWriteLinesToFile(va_list lpValist, RT_FILE* lpFile, RT_HEAP** lpHeap);
 
 #endif /* ZZ_TOOLS_H */

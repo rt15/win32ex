@@ -58,9 +58,20 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
+RT_B RT_CDECL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
 {
   va_list lpVaList;
+  RT_B bResult;
+
+  va_start(lpVaList, lpHeap);
+  bResult = ZzVCheckTextFile(lpVaList, lpFilePath, lpHeap);
+  va_end(lpVaList);
+
+  return bResult;
+}
+
+RT_B RT_CALL ZzVCheckTextFile(va_list lpVaList, RT_CHAR* lpFilePath, RT_HEAP** lpHeap)
+{
   RT_CHAR* lpReference;
   RT_UN unFileSize;
   RT_CHAR8* lpRawFileContent;
@@ -71,8 +82,6 @@ RT_B RT_CALL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...)
   lpReference = RT_NULL;
   lpRawFileContent = RT_NULL;
   lpFileContent = RT_NULL;
-
-  va_start(lpVaList, lpHeap);
 
   if (!ZzVConcatLines(lpVaList, lpHeap, (void**)&lpReference)) goto handle_error;
 
@@ -100,16 +109,26 @@ free_resources:
   {
     if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpReference) && bResult) goto handle_error;
   }
-  va_end(lpVaList);
   return bResult;
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
 }
 
-RT_B RT_CALL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...)
+RT_B RT_CDECL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...)
 {
   va_list lpVaList;
+  RT_B bResult;
+
+  va_start(lpVaList, lpHeap);
+  bResult = ZzVWriteLinesToFile(lpVaList, lpFile, lpHeap);
+  va_end(lpVaList);
+
+  return bResult;
+}
+
+RT_B RT_CALL ZzVWriteLinesToFile(va_list lpVaList, RT_FILE* lpFile, RT_HEAP** lpHeap)
+{
   RT_CHAR* lpLines;
   RT_CHAR8* lpRawFileContent;
   RT_UN unRawFileContentSize;
@@ -117,8 +136,6 @@ RT_B RT_CALL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...)
 
   lpLines = RT_NULL;
   lpRawFileContent = RT_NULL;
-
-  va_start(lpVaList, lpHeap);
 
   if (!ZzVConcatLines(lpVaList, lpHeap, (void**)&lpLines)) goto handle_error;
 
@@ -137,7 +154,6 @@ free_resources:
   {
     if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpLines) && bResult) goto handle_error;
   }
-  va_end(lpVaList);
   return bResult;
 handle_error:
   bResult = RT_FAILURE;

@@ -9,7 +9,7 @@ RT_B RT_CALL ZzTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
   {
     lpValue = _R("NULL");
   }
-  RtWriteStringsToConsole(4, lpKey, _R(" = \""), lpValue, _R("\"\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpKey, _R(" = \""), lpValue, _R("\"\n"), (RT_CHAR*)RT_NULL);
 
   return RT_SUCCESS;
 }

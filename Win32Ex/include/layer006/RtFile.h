@@ -37,7 +37,7 @@ RT_FILE;
  * Le fichier est créé s'il n'existe pas.
  *
  * @param lpFilePath Le fichier à ouvrir
- * @param nMode Le mode d'ouverture RT_FILE_MODE_...
+ * @param nMode Le mode d'ouverture RT_FILE_MODE_XXX
  * @return Zero en cas d'échec
  */
 RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
@@ -111,7 +111,7 @@ RT_UN RT_API RtComputeFileSize(RT_FILE* lpFile);
  * Déplace le pointeur dans le fichier
  *
  * @param nOffset Déplacement à effectué
- * @param nFrom Type de positionnement : RT_FILE_POS_...
+ * @param nFrom Type de positionnement : RT_FILE_POS_XXXX
  * @return Zero en cas d'échec
  */
 RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom);

@@ -7,7 +7,7 @@
 #include "layer005/RtStaticHeap.h"
 #include "layer007/RtErrorMessage.h"
 
-RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
+RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
 {
   va_list lpVaList;
   RT_B bResult;
@@ -19,9 +19,9 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, 
   return bResult;
 }
 
-RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
-                                            RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
-                                            RT_CHAR* lpApplicationName, ...)
+RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+                                                  RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                                  RT_CHAR* lpApplicationName, ...)
 {
   va_list lpVaList;
   RT_B bResult;

@@ -93,7 +93,7 @@ RT_B RT_CALL ZzMisc()
   /* Application configuration directory. */
   unWritten = 0;
   if (!RtGetApplicationDataDirectory(_R("Tests"), lpMessage, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-  if (!RtWriteStringsToConsole(3, _R("App config dir = "), lpMessage, _R("\n"))) goto handle_error;
+  if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("App config dir = "), lpMessage, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
 
@@ -117,10 +117,10 @@ RT_B RT_CALL ZzManuallyTestProcess()
   if (!RtWriteStringToConsole(_R("=========================="))) goto handle_error;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("localhost"), RT_NULL)) goto handle_error;
+  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 #else
   if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
-  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("-c"), _R("4"), _R("localhost"), RT_NULL)) goto handle_error;
+  if (!RtCreateProcess(&zzProcess, RT_NULL, _R("ping"), _R("-c"), _R("4"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
 #endif
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
   if (!RtWriteStringToConsole(_R("==========================\n"))) goto handle_error;

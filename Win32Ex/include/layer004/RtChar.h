@@ -99,9 +99,9 @@ RT_B RT_API RtLeftPadString(RT_CHAR* lpInput, RT_CHAR nChar, RT_UN unSize, RT_CH
  */
 RT_B RT_API RtLeftPadStringWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
-RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, RT_UN unStringsCount, ...);
+RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, ...);
 
-RT_B RT_CDECL_API RtVConcatStrings(va_list lpVaList, RT_UN unStringsCount, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtVConcatStrings(va_list lpVaList, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
 RT_B RT_API RtStringEndsWith(RT_CHAR* lpString, RT_CHAR* lpSearched);
 

@@ -103,11 +103,25 @@ RT_B RT_API RtWriteErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
   return RtWriteStringOrErrorToConsoleWithSize(lpString, unSize, RT_FALSE);
 }
 
-RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
+RT_B RT_CDECL_API RtWriteStringsOrErrorsToConsole(RT_B bString, ...)
 {
+  va_list lpVaList;
+  RT_B bResult;
+
+  va_start(lpVaList, bString);
+  bResult = RtVWriteStringsOrErrorsToConsole(lpVaList, bString);
+  va_end(lpVaList);
+
+  return bResult;
+}
+
+RT_B RT_API RtVWriteStringsOrErrorsToConsole(va_list lpVaList, RT_B bString)
+{
+  va_list lpVaList2;
+  va_list lpVaList3;
+  RT_UN unStringsCount;
   RT_UN unStringsLenght;
   RT_CHAR* lpString;
-  va_list lpVaList;
   RT_UN unWritten;
   RT_CHAR lpBuffer[512];
   RT_CHAR* lpStrings;
@@ -116,6 +130,16 @@ RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
   RT_UN unI;
   RT_B bResult;
 
+  RT_VA_COPY(lpVaList, lpVaList2);
+  RT_VA_COPY(lpVaList, lpVaList3);
+
+  unStringsCount = 0;
+  while (RT_TRUE)
+  {
+    if (!va_arg(lpVaList, RT_CHAR*)) break;
+    unStringsCount++;
+  }
+
   if (unStringsCount <= 0)
   {
     bResult = RT_SUCCESS;
@@ -123,32 +147,26 @@ RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
   else if (unStringsCount == 1)
   {
     /* If there is one String, directly call RtWriteToConsole. */
-    va_start(lpVaList, unStringsCount);
-    lpString = va_arg(lpVaList, RT_CHAR*);
-    va_end(lpVaList);
+    lpString = va_arg(lpVaList2, RT_CHAR*);
 
     bResult = RtWriteStringToConsole(lpString);
   }
   else
   {
     /* Compute total strings size. */
-    va_start(lpVaList, unStringsCount);
     unStringsLenght = 0;
     for (unI = 0; unI < unStringsCount; unI++)
     {
-      lpString = va_arg(lpVaList, RT_CHAR*);
+      lpString = va_arg(lpVaList2, RT_CHAR*);
       unStringsLenght += RtGetStringSize(lpString);
     }
-    va_end(lpVaList);
 
     lpHeapBuffer = RT_NULL;
     unHeapBufferSize = 0;
     if (RtAllocIfNeeded(lpBuffer, 512 * sizeof(RT_CHAR), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpStrings, (unStringsLenght + 1) * sizeof(RT_CHAR)))
     {
-      va_start(lpVaList, unStringsCount);
       unWritten = 0;
-      RtVConcatStrings(lpVaList, unStringsCount, lpStrings, unStringsLenght + 1, &unWritten);
-      va_end(lpVaList);
+      RtVConcatStrings(lpVaList3, lpStrings, unStringsLenght + 1, &unWritten);
 
       bResult = RtWriteStringToConsoleWithSize(lpStrings, unWritten);
       if (lpHeapBuffer)
@@ -162,6 +180,8 @@ RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...)
     }
   }
 
+  va_end(lpVaList3);
+  va_end(lpVaList2);
   return bResult;
 }
 

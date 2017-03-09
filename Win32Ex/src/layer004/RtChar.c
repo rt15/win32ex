@@ -349,40 +349,45 @@ RT_CHAR RT_API RtFastLowerChar(RT_CHAR nChar)
   return nResult;
 }
 
-RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, RT_UN unStringsCount, ...)
+RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, ...)
 {
   va_list lpVaList;
   RT_B bResult;
 
-  va_start(lpVaList, unStringsCount);
-  bResult = RtVConcatStrings(lpVaList, unStringsCount, lpBuffer, unBufferSize, lpWritten);
+  va_start(lpVaList, lpWritten);
+  bResult = RtVConcatStrings(lpVaList, lpBuffer, unBufferSize, lpWritten);
   va_end(lpVaList);
 
   return bResult;
 }
 
-RT_B RT_CDECL_API RtVConcatStrings(va_list lpVaList, RT_UN unStringsCount, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtVConcatStrings(va_list lpVaList, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_CHAR* lpString;
   RT_UN unWritten;
   RT_B bResult;
-  RT_UN unI;
 
   unWritten = 0;
-  bResult = RT_SUCCESS;
-  for (unI = 0; unI < unStringsCount; unI++)
+  while (RT_TRUE)
   {
     lpString = va_arg(lpVaList, RT_CHAR*);
-    bResult = RtCopyString(lpString, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten);
-    if (!bResult)
+    if (lpString)
+    {
+      if (!RtCopyString(lpString, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+    }
+    else
     {
       break;
     }
   }
 
+  bResult = RT_SUCCESS;
+free_resources:
   *lpWritten += unWritten;
-
   return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_B RT_API RtLeftPadString(RT_CHAR* lpInput, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)

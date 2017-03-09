@@ -26,7 +26,9 @@ RT_B RT_API RtWriteStringOrErrorToConsole(RT_CHAR* lpString, RT_B bString);
 
 RT_B RT_API RtWriteStringOrErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bString);
 
-RT_B RT_CDECL_API RtWriteStringsToConsole(RT_UN unStringsCount, ...);
+RT_B RT_CDECL_API RtWriteStringsOrErrorsToConsole(RT_B bString, ...);
+
+RT_B RT_API RtVWriteStringsOrErrorsToConsole(va_list lpVaList, RT_B bString);
 
 void RT_API RtPauseConsole();
 

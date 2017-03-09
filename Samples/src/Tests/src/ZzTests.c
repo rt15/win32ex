@@ -65,7 +65,7 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
 
   unFileSize = RtReadFromSmallFile(lpPath, &lpFileContent, lpHeap);
   RtConvertIntegerToString(unFileSize, lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(4, lpPath, _R(" file size: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpPath, _R(" file size: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   lpData = &lpFileContent[unBomSize];
   unDataSize = unFileSize - unBomSize;
@@ -74,7 +74,7 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
   {
     RtWriteLastErrorMessage(_R("Decoding failed: "));
   }
-  RtWriteStringsToConsole(3, _R("OOOO"), lpFileContentAsString, _R("OOOO\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("OOOO"), lpFileContentAsString, _R("OOOO\n"), (RT_CHAR*)RT_NULL);
 
   if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContentAsString))
   {
@@ -167,45 +167,45 @@ tests_failed:
 end_of_tests:
 
   RtConvertIntegerToString(RtCheckPath(_R("data/file.txt"), RT_FILE_SYSTEM_TYPE_DIRECTORY), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("dir file.txt: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("dir file.txt: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("data/file.txt"), RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("file file.txt: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("file file.txt: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("data/directory"), RT_FILE_SYSTEM_TYPE_DIRECTORY), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("dir directory: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("dir directory: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("data/directory"), RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("file directory: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("file directory: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("data/directory"), RT_FILE_SYSTEM_TYPE_DIRECTORY | RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("both directory: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("both directory: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("data/file.txt"), RT_FILE_SYSTEM_TYPE_DIRECTORY | RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("both file.txt: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("both file.txt: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("fake"), RT_FILE_SYSTEM_TYPE_DIRECTORY), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("dir fake: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("dir fake: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("fake"), RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("file fake: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("file fake: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(RtCheckPath(_R("fake"), RT_FILE_SYSTEM_TYPE_DIRECTORY | RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(3, _R("both fake: "), lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("both fake: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertUIntegerToString(RtGetFileSize(_R("data/file.txt")), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(2, lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(getPageSize(), lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(2, lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtCopyString(_R("FooBarPad"), lpBuffer, 500, &unWritten);
 
   RtLeftPadString(lpBuffer, _R('0'), 11, lpBuffer, 500, &unWritten);
-  RtWriteStringsToConsole(2, lpBuffer, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   unWritten = 0;
-  RtConcatStrings(lpBuffer, 500, &unWritten, 4, _R("foo"), _R("bar"), _R("team"), _R("\n"));
+  RtConcatStrings(lpBuffer, 500, &unWritten, _R("foo"), _R("bar"), _R("team"), _R("\n"), (RT_CHAR*)RT_NULL);
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   DiplayFileContent(_R("data/file.txt"), 0, 0, &zzRuntimeHeap.lpHeap);
@@ -214,7 +214,7 @@ end_of_tests:
 
   lpTestingString = _R("OOOOÈOOOO");
 
-  RtWriteStringsToConsole(2, lpTestingString, _R("\n"));
+  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpTestingString, _R("\n"), (RT_CHAR*)RT_NULL);
 
   ZzWriteToFile(_R("temp/latin1_test.txt"), lpTestingString, RT_ENCODING_ISO_8859_15, &zzRuntimeHeap.lpHeap);
   ZzWriteToFile(_R("temp/utf8_test.txt"), lpTestingString, RT_ENCODING_UTF_8, &zzRuntimeHeap.lpHeap);
@@ -310,7 +310,7 @@ RT_B RT_CALL ZzDisplayArgs(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
   for (nI = 0; nI < nArgC; nI++)
   {
-    if (!RtWriteStringsToConsole(2, lpArgV[nI], _R("\n"))) goto handle_error;
+    if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, lpArgV[nI], _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -328,7 +328,7 @@ RT_B RT_CALL ZzReadLine()
   RT_B bResult;
 
   if (!RtReadLineFromConsole(lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE)) goto handle_error;
-  if (!RtWriteStringsToConsole(3, _R("\""), lpBuffer, _R("\"\n"))) goto handle_error;
+  if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("\""), lpBuffer, _R("\"\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
