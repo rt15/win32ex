@@ -15,8 +15,6 @@
 
 #### TODO:
 
-Test RtConcatStrings (Including written).
-
 Avoir la possibilité de démarrer un processus sans l'attendre.
 Attention aux zombies !
 

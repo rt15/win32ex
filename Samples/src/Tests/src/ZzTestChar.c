@@ -414,6 +414,30 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzTestConcatStrings()
+{
+  RT_CHAR lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_UN unWritten;
+  RT_B bResult;
+
+  unWritten = 0;
+  if (!RtConcatStrings(&lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten, _R("foo"), _R("bar"), _R("team"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (unWritten != 10) goto handle_error;
+  if (RtCompareStrings(_R("foobarteam"), lpBuffer)) goto handle_error;
+
+  if (!RtConcatStrings(&lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten, _R("Hello, world!"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (unWritten != 23) goto handle_error;
+  if (RtCompareStrings(_R("foobarteamHello, world!"), lpBuffer)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzTestChar()
 {
   RT_B bResult;
@@ -426,6 +450,7 @@ RT_B RT_CALL ZzTestChar()
   if (!ZzTestRightTrimString()) goto handle_error;
   if (!ZzTestCountStringOccurrences()) goto handle_error;
   if (!ZzTestReplaceString()) goto handle_error;
+  if (!ZzTestConcatStrings()) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
