@@ -7,19 +7,19 @@
 #include "layer005/RtStaticHeap.h"
 #include "layer007/RtErrorMessage.h"
 
-RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpApplicationName, ...)
+RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[], RT_CHAR* lpApplicationName, ...)
 {
   va_list lpVaList;
   RT_B bResult;
 
   va_start(lpVaList, lpApplicationName);
-  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, RT_NULL, RT_NULL, RT_NULL, lpApplicationName);
+  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, lpEnvVars, RT_NULL, RT_NULL, RT_NULL, lpApplicationName);
   va_end(lpVaList);
 
   return bResult;
 }
 
-RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory,
+RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
                                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                                   RT_CHAR* lpApplicationName, ...)
 {
@@ -27,7 +27,7 @@ RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bC
   RT_B bResult;
 
   va_start(lpVaList, lpApplicationName);
-  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName);
+  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName);
   va_end(lpVaList);
 
   return bResult;
@@ -259,7 +259,7 @@ handle_error:
 /**
  * Called either by the main process or by a forked process if bChild is RT_TRUE.
  */
-RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
                                         RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                         RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
 {
@@ -332,7 +332,14 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     }
 
     /* Returns only if an error has occurred. The return value is -1, and errno is set to indicate the error.  */
-    execvp(lpApplicationName, lpPArgs);
+    if (lpEnvVars)
+    {
+      execvpe(lpApplicationName, lpPArgs, lpEnvVars);
+    }
+    else
+    {
+      execvp(lpApplicationName, lpPArgs);
+    }
     RtWriteLastErrorMessageVariadic(RT_NULL, _R("Failed to start \""), lpApplicationName, _R("\": "), (RT_CHAR*)RT_NULL);
 
 handle_child_error:
@@ -399,7 +406,7 @@ handle_error:
 /**
  * Fork a process that will fork again to avoid zombification.
  */
-RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory,
+RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
                                                    RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                                    RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
 {
@@ -436,7 +443,7 @@ RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHA
     }
 
     /* Fork actual process from the current forked process. */
-    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_child_error;
+    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_child_error;
 
     /* Write child PID into the pipe. */
     nChildPid = lpProcess->nPid;
@@ -543,7 +550,7 @@ handle_error:
 
 #endif
 
-RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChild, RT_CHAR* lpCurrentDirectory,
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
                              RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                              RT_CHAR* lpApplicationName)
 {
@@ -667,7 +674,7 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpThreadAttributes.                                  */
                      TRUE,                           /* Align inheritance with Linux.                                              */
                      0,                              /* dwCreationFlags.                                                           */
-                     RT_NULL,                        /* lpEnvironment.                                                             */
+                     lpEnvVars,                      /* lpEnvironment.                                                             */
                      lpCurrentDirectory,             /* If NULL, the new process will have the same current directory as this one. */
                      &rtStartupInfo,
                      (PROCESS_INFORMATION*)lpProcess
@@ -749,11 +756,11 @@ handle_error:
 
   if (bChild)
   {
-    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
   }
   else
   {
-    if (!RtCreateLinuxProcessUsingIntermediate(lpProcess, lpCurrentDirectory, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+    if (!RtCreateLinuxProcessUsingIntermediate(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
