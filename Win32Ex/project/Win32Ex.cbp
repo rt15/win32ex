@@ -131,6 +131,7 @@
 		<Unit filename="../include/layer005/RtStaticHeap.h" />
 		<Unit filename="../include/layer006/RtConsole.h" />
 		<Unit filename="../include/layer006/RtEncoding.h" />
+		<Unit filename="../include/layer006/RtEnvVars.h" />
 		<Unit filename="../include/layer006/RtFile.h" />
 		<Unit filename="../include/layer006/RtPageHeap.h" />
 		<Unit filename="../include/layer006/RtRuntimeHeap.h" />
@@ -215,6 +216,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/RtEncoding.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer006/RtEnvVars.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/RtFile.c">

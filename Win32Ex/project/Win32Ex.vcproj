@@ -281,6 +281,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\layer006\RtEnvVars.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\layer006\RtFile.c"
 					>
 				</File>
@@ -500,6 +504,10 @@
 				</File>
 				<File
 					RelativePath="..\include\layer006\RtEncoding.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer006\RtEnvVars.h"
 					>
 				</File>
 				<File

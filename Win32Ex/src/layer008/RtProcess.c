@@ -673,7 +673,7 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpProcessAttributes.                                 */
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpThreadAttributes.                                  */
                      TRUE,                           /* Align inheritance with Linux.                                              */
-                     0,                              /* dwCreationFlags.                                                           */
+                     CREATE_UNICODE_ENVIRONMENT,     /* dwCreationFlags.                                                           */
                      lpEnvVars,                      /* lpEnvironment.                                                             */
                      lpCurrentDirectory,             /* If NULL, the new process will have the same current directory as this one. */
                      &rtStartupInfo,

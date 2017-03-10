@@ -298,10 +298,11 @@ RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
   RtWriteStringOrErrorToConsole(_R("Test rtlib.\n\n")
                                 _R("Tests [-m|--manual|-h|--help|-r|--read-line]\n")
                                 _R("Tests [-a|--args [ARGS]]\n\n")
-                                _R("Tests [-d|--display-env-var ENV_VAR]\n\n")
+                                _R("Tests [-d|--display-env-var [ENV_VAR]]\n\n")
                                 _R("  --read-line       Read and write a line.\n")
                                 _R("  --manual          Perform manual tests.\n")
                                 _R("  --args            Display arguments.\n")
+                                _R(" -display-env-var   Display all or a single env var.\n")
                                 , bResult);
   return bResult;
 }
@@ -335,6 +336,43 @@ RT_B RT_CALL ZzReadLine()
 
   bResult = RT_SUCCESS;
 free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzDisplayEnvVars()
+{
+  RT_ENV_VARS zzEnvVars;
+  RT_CHAR** lpEnvVarsArray;
+  RT_B bEnvVarsCreated;
+  RT_B bResult;
+
+  bEnvVarsCreated = RT_FALSE;
+  
+  if (!RtCreateEnvVars(&zzEnvVars)) goto handle_error;
+  bEnvVarsCreated = RT_TRUE;
+
+  if (!RtGetEnvVarsArray(&zzEnvVars, &lpEnvVarsArray)) goto handle_error;
+
+  while (*lpEnvVarsArray)
+  {
+    if (!RtWriteStringToConsole(*lpEnvVarsArray)) goto handle_error;
+    if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
+    lpEnvVarsArray++;
+  }
+
+  if (!RtWriteStringToConsole(_R("\n"))) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bEnvVarsCreated)
+  {
+    bEnvVarsCreated = RT_FALSE;
+    if (!RtFreeEnvVars(&zzEnvVars) && bResult) goto handle_error;
+  }
   return bResult;
 
 handle_error:
@@ -384,6 +422,11 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
                           !RtCompareStrings(lpArgV[1], _R("/?"))))
   {
     bResult = ZzDisplayHelp(RT_SUCCESS);
+  }
+  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--display-env-var")) ||
+                          !RtCompareStrings(lpArgV[1], _R("-d"))))
+  {
+    bResult = ZzDisplayEnvVars();
   }
   else if (nArgC == 3 && (!RtCompareStrings(lpArgV[1], _R("--display-env-var")) ||
                           !RtCompareStrings(lpArgV[1], _R("-d"))))
