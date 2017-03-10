@@ -297,7 +297,8 @@ RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
 {
   RtWriteStringOrErrorToConsole(_R("Test rtlib.\n\n")
                                 _R("Tests [-m|--manual|-h|--help|-r|--read-line]\n")
-                                _R("Tests [-a|--args ARGS]\n\n")
+                                _R("Tests [-a|--args [ARGS]]\n\n")
+                                _R("Tests [-d|--display-env-var ENV_VAR]\n\n")
                                 _R("  --read-line       Read and write a line.\n")
                                 _R("  --manual          Perform manual tests.\n")
                                 _R("  --args            Display arguments.\n")
@@ -341,6 +342,25 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVar)
+{
+  RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
+  RT_UN unWritten;
+  RT_B bResult;
+
+  unWritten = 0;
+  if (!RtGetEnvironmentVariable(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, lpEnvVar, _R("="), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   RT_B bResult;
@@ -349,28 +369,26 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   {
     bResult = ZzTests();
   }
-  else if (nArgC == 2)
+  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--manual")) ||
+                          !RtCompareStrings(lpArgV[1], _R("-m"))))
   {
-    if (!RtCompareStrings(lpArgV[1], _R("--manual")) ||
-        !RtCompareStrings(lpArgV[1], _R("-m")))
-    {
-      bResult = ZzManualTests();
-    }
-    else if (!RtCompareStrings(lpArgV[1], _R("--read-line")) ||
-             !RtCompareStrings(lpArgV[1], _R("-r")))
-    {
-      bResult = ZzReadLine();
-    }
-    else if (!RtCompareStrings(lpArgV[1], _R("--help")) ||
-             !RtCompareStrings(lpArgV[1], _R("-h")) ||
-             !RtCompareStrings(lpArgV[1], _R("/?")))
-    {
-      bResult = ZzDisplayHelp(RT_SUCCESS);
-    }
-    else
-    {
-      bResult = ZzDisplayHelp(RT_FAILURE);
-    }
+    bResult = ZzManualTests();
+  }
+  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--read-line")) ||
+                          !RtCompareStrings(lpArgV[1], _R("-r"))))
+  {
+    bResult = ZzReadLine();
+  }
+  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--help")) ||
+                          !RtCompareStrings(lpArgV[1], _R("-h")) ||
+                          !RtCompareStrings(lpArgV[1], _R("/?"))))
+  {
+    bResult = ZzDisplayHelp(RT_SUCCESS);
+  }
+  else if (nArgC == 3 && (!RtCompareStrings(lpArgV[1], _R("--display-env-var")) ||
+                          !RtCompareStrings(lpArgV[1], _R("-d"))))
+  {
+    bResult = ZzDisplayEnvVar(lpArgV[2]);
   }
   else if (!RtCompareStrings(lpArgV[1], _R("--args")) ||
            !RtCompareStrings(lpArgV[1], _R("-a")))
@@ -381,6 +399,7 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   {
     bResult = ZzDisplayHelp(RT_FAILURE);
   }
+
   return bResult;
 }
 
