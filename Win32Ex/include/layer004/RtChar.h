@@ -86,6 +86,20 @@ RT_UN RT_API RtFastLowerString(RT_CHAR* lpString);
 RT_CHAR RT_API RtFastLowerChar(RT_CHAR nChar);
 
 /**
+ * Manage only characters from 'a' to 'z'.<br>
+ * Leave other characters unchanged.
+ *
+ * @return The size of the string.
+ */
+RT_UN RT_API RtFastUpperString(RT_CHAR* lpString);
+
+/**
+ * Manage only characters from 'a' to 'z'.<br>
+ * Leave other characters unchanged.
+ */
+RT_CHAR RT_API RtFastUpperChar(RT_CHAR nChar);
+
+/**
  * Use this function in place of <tt>RtLeftPadStringWithSize</tt> if you do not know the size of <tt>lpInput</tt>.
  */
 RT_B RT_API RtLeftPadString(RT_CHAR* lpInput, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);

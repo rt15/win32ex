@@ -2,7 +2,7 @@
 
 #include "layer001/RtWin32ExOsDefines.h"
 #include "layer002/RtErrorCode.h"
-#include "layer003/RtEnvironmentVariable.h"
+#include "layer003/RtEnvVar.h"
 #include "layer004/RtChar.h"
 
 #ifndef RT_DEFINE_WINDOWS
@@ -188,7 +188,7 @@ RT_B RT_API RtGetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpW
   }
 #else /* NOT RT_DEFINE_WINDOWS */
   unWritten = 0;
-  if (!RtGetEnvironmentVariable(_R("TMPDIR"), lpBuffer, unBufferSize, &unWritten))
+  if (!RtGetEnvVar(_R("TMPDIR"), lpBuffer, unBufferSize, &unWritten))
   {
     /* P_tmpdir macro appears to be "/tmp". */
     if (!RtCopyString(P_tmpdir, lpBuffer, unBufferSize, &unWritten)) goto handle_error;
@@ -237,7 +237,7 @@ RT_B RT_API RtGetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* l
 #else /* NOT RT_DEFINE_WINDOWS */
 
   unWritten = 0;
-  if (!RtGetEnvironmentVariable(_R("HOME"), lpBuffer, unBufferSize, &unWritten))
+  if (!RtGetEnvVar(_R("HOME"), lpBuffer, unBufferSize, &unWritten))
   {
     /* The getuid function is always successful. */
     nUid = getuid();

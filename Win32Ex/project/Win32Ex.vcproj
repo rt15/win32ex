@@ -193,7 +193,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\layer003\RtEnvironmentVariable.c"
+					RelativePath="..\src\layer003\RtEnvVar.c"
 					>
 				</File>
 				<File
@@ -419,7 +419,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer003\RtEnvironmentVariable.h"
+					RelativePath="..\include\layer003\RtEnvVar.h"
 					>
 				</File>
 				<File

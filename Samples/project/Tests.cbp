@@ -115,7 +115,10 @@
 		<Unit filename="../src/Tests/src/ZzTestEncoding.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestEnvironmentVariable.c">
+		<Unit filename="../src/Tests/src/ZzTestEnvVar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/ZzTestEnvVars.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/ZzTestEvent.c">

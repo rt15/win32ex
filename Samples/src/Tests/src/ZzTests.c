@@ -102,7 +102,8 @@ RT_B RT_CALL ZzTestInitialization();
 RT_B RT_CALL ZzTestEvent();
 RT_B RT_CALL ZzTestSocket();
 RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap);
-RT_B RT_CALL ZzTestEnvironmentVariable();
+RT_B RT_CALL ZzTestEnvVar();
+RT_B RT_CALL ZzTestEnvVars();
 RT_B RT_CALL ZzTestProcess(RT_HEAP** lpHeap);
 
 RT_B RT_CALL ZzManualTests();
@@ -157,7 +158,8 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestEvent()) goto tests_failed;
   if (!ZzTestSocket()) goto tests_failed;
   if (!ZzTestList(&zzRuntimeHeap.lpHeap)) goto tests_failed;
-  if (!ZzTestEnvironmentVariable()) goto tests_failed;
+  if (!ZzTestEnvVar()) goto tests_failed;
+  if (!ZzTestEnvVars()) goto tests_failed;
   if (!ZzTestProcess(&zzRuntimeHeap.lpHeap)) goto tests_failed;
 
   RtWriteStringToConsole(_R("Tests successful!!\n\n"));
@@ -351,7 +353,7 @@ RT_B RT_CALL ZzDisplayEnvVars()
   RT_B bResult;
 
   bEnvVarsCreated = RT_FALSE;
-  
+
   if (!RtCreateEnvVars(&zzEnvVars)) goto handle_error;
   bEnvVarsCreated = RT_TRUE;
 
@@ -387,7 +389,7 @@ RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVar)
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtGetEnvironmentVariable(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtGetEnvVar(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, lpEnvVar, _R("="), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;

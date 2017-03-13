@@ -1,6 +1,6 @@
 #include <RtWin32Ex.h>
 
-RT_B RT_CALL ZzDisplayEnvironmentVariable(RT_CHAR* lpName)
+RT_B RT_CALL ZzManualDisplayEnvVar(RT_CHAR* lpName)
 {
   RT_CHAR lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
@@ -9,7 +9,7 @@ RT_B RT_CALL ZzDisplayEnvironmentVariable(RT_CHAR* lpName)
   unWritten = 0;
   if (!RtCopyString(lpName,             &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtCopyString(_R(" env var = "),  &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtGetEnvironmentVariable(lpName, &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtGetEnvVar(lpName, &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtCopyString(_R("\n"),           &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
 
   if (!RtWriteStringToConsoleWithSize(lpBuffer, unWritten)) goto handle_error;
@@ -76,11 +76,10 @@ RT_B RT_CALL ZzMisc()
 
   /* Environement variables. */
 #ifdef RT_DEFINE_WINDOWS
-  if (!ZzDisplayEnvironmentVariable(_R("SystemRoot"))) goto handle_error;
+  if (!ZzManualDisplayEnvVar(_R("SystemRoot"))) goto handle_error;
 #else
-  if (!ZzDisplayEnvironmentVariable(_R("HOME"))) goto handle_error;
+  if (!ZzManualDisplayEnvVar(_R("HOME"))) goto handle_error;
 #endif
-
 
   /* Temporary directory. */
   unWritten = 0;

@@ -112,7 +112,7 @@
 		<Unit filename="../include/layer003/RtChrono.h" />
 		<Unit filename="../include/layer003/RtComparisonCallback.h" />
 		<Unit filename="../include/layer003/RtCriticalSection.h" />
-		<Unit filename="../include/layer003/RtEnvironmentVariable.h" />
+		<Unit filename="../include/layer003/RtEnvVar.h" />
 		<Unit filename="../include/layer003/RtEvent.h" />
 		<Unit filename="../include/layer003/RtMemory.h" />
 		<Unit filename="../include/layer003/RtSleep.h" />
@@ -161,7 +161,7 @@
 		<Unit filename="../src/layer003/RtCriticalSection.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer003/RtEnvironmentVariable.c">
+		<Unit filename="../src/layer003/RtEnvVar.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/RtEvent.c">

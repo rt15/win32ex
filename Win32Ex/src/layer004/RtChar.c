@@ -349,6 +349,39 @@ RT_CHAR RT_API RtFastLowerChar(RT_CHAR nChar)
   return nResult;
 }
 
+RT_UN RT_API RtFastUpperString(RT_CHAR* lpString)
+{
+  RT_CHAR nCurrentChar;
+  RT_UN unResult;
+
+  unResult = 0;
+  while (lpString[unResult])
+  {
+    nCurrentChar = lpString[unResult];
+    if (nCurrentChar >= _R('a') && nCurrentChar <= _R('z'))
+    {
+      lpString[unResult] = nCurrentChar - 32;
+    }
+    unResult++;
+  }
+  return unResult;
+}
+
+RT_CHAR RT_API RtFastUpperChar(RT_CHAR nChar)
+{
+  RT_CHAR nResult;
+
+  if (nChar >= _R('a') && nChar <= _R('z'))
+  {
+    nResult = nChar - 32;
+  }
+  else
+  {
+    nResult = nChar;
+  }
+  return nResult;
+}
+
 RT_B RT_CDECL_API RtConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, ...)
 {
   va_list lpVaList;

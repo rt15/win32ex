@@ -211,7 +211,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ZzTestEnvironmentVariable.c"
+				RelativePath="..\src\Tests\src\ZzTestEnvVar.c"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\src\ZzTestEnvVars.c"
 				>
 			</File>
 			<File

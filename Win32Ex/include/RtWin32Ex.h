@@ -18,6 +18,8 @@
 The Linux environment (From environ variable) is null terminated array of pointer to null terminated strings.
 The Windows environment is composed of concatenated null terminated strings. The last string is terminated by 2 nulls.
 
+Test an empty variable.
+
 Add a function to remove env var from env vars.
 (So that we can add more safelly)
 
@@ -333,7 +335,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer003/RtChrono.h"
 #include "layer003/RtComparisonCallback.h"
 #include "layer003/RtCriticalsection.h"
-#include "layer003/RtEnvironmentVariable.h"
+#include "layer003/RtEnvVar.h"
 #include "layer003/RtEvent.h"
 #include "layer003/RtMemory.h"
 #include "layer003/RtSleep.h"

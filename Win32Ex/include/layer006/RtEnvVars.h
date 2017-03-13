@@ -25,6 +25,14 @@
  * </p>
  *
  * <p>
+ * Environment variables are case sensitive under Linux but not under Windows.
+ * </p>
+ *
+ * <p>
+ * Maximum environment variable names size is <tt>RT_CHAR_HALF_BIG_STRING_SIZE</tt>.
+ * </p>
+ *
+ * <p>
  * While parsing the variables, beware that Windows defines some variables starting with equals like <tt>=ExitCode=00000000</tt>.<br>
  * These variables are not visible using <tt>set</tt> command line and might be there for DOS compatibility reasons.
  * </p>
@@ -53,6 +61,33 @@ RT_B RT_API RtSetEnvVarInEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, 
 RT_B RT_API RtGetEnvVarsBlock(RT_ENV_VARS* lpEnvVars, RT_CHAR** lpEnvVarsBlock);
 
 RT_B RT_API RtGetEnvVarsArray(RT_ENV_VARS* lpEnvVars, RT_CHAR*** lpEnvVarsArray);
+
+/**
+ * Find whether a variable exists in <tt>lpEnvVars</tt>.
+ */
+RT_B RT_API RtEnvVarsContains(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_B* lpContains);
+
+/**
+ * Retrieve value of <tt>lpEnvVarName</tt> in <tt>lpEnvVars</tt>.<br>
+ * Fails if the variable does not exist.
+ */
+RT_B RT_API RtGetEnvVarFromEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+
+/**
+ * Be sure that the variable doesn't exist yet.<br>
+ * You can use <tt>RtRemoveEnvVarFromEnvVars</tt> to ensure that.
+ *
+ * <p>
+ * The <tt>RT_ENV_VARS</tt> should be considered corrupted in case of failure.
+ * </p>
+ */
+RT_B RT_API RtAddEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
+
+/**
+ * Remove an environment variable of given <tt>RT_ENV_VARS</tt> if it exists.<br>
+ * Can be used to ensure that an environment variable doesn't exist before adding it.
+ */
+RT_B RT_API RtRemoveEnvVarFromEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName);
 
 RT_B RT_API RtFreeEnvVars(RT_ENV_VARS* lpEnvVars);
 
