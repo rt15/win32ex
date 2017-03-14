@@ -183,12 +183,18 @@ RT_B RT_API RtInitializeSockets();
  * <tt>RT_SOCKET_ADDRESS_FAMILY_IPV6<tt> and <tt>RT_SOCKET_TYPE_DGRAM</tt> mostly means UDP.
  * </p>
  *
+ * <p>
+ * Under Windows, an inheritable handle can be used by a process created with CreateProcess and bInheritHandles TRUE.<br>
+ * Under Linux, a non-inheritable file descriptor is closed when execl/execlp/execle/execv/execvp/execvpe is used.<br>
+ * It is not closed by a fork.
+ * </p>
+ *
  * @param unAddressFamily RT_SOCKET_ADDRESS_FAMILY_XXX value, mostly IP v4 or IP v6.
  * @param unType Transport layer type, mostly TCP or UDP.
- * @param bCloseOnExec Not used under Windows.
+ * @param bInheritable Whether the socket could be used in a child process. Beware of handles/file descriptors leaks.
  * @param unProtocol Often zero but can be a RT_SOCKET_PROTOCOL_XXX value.
  */
-RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bCloseOnExec);
+RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bInheritable);
 
 void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress);
 

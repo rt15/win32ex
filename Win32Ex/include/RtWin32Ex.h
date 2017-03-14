@@ -15,18 +15,12 @@
 
 #### TODO:
 
-O_CLOEXEC on sockets.
-
-Tests non-child process!?
-
 Redirect to null pipe/file!?
 
-Call waitpid of the intermediate to kill the zombie!
+Non blocking socket.
+Chat client server!?
 
 Manage signals/interrupts in read calls!?
-
-Avoir la possibilité de démarrer un processus sans l'attendre.
-Attention aux zombies !
 
 RtDisplayLastErrorMessage
 

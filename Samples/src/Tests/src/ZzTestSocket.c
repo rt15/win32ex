@@ -23,7 +23,7 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
 
   lpEvent = (RT_EVENT*)lpParameter;
 
-  if (!RtCreateSocket(&zzSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_TRUE)) goto handle_error;
+  if (!RtCreateSocket(&zzSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto handle_error;
   bSocketCreated = RT_TRUE;
 
   if (!RtBindSocket(&zzSocket, ZZ_PORT_NUMBER)) goto handle_error;
@@ -93,7 +93,7 @@ RT_B RT_CALL ZzTestSockets()
   /* Let some time for the server socket to accept connections. */
   RtSleep(10);
 
-  if (!RtCreateSocket(&zzSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_TRUE)) goto handle_error;
+  if (!RtCreateSocket(&zzSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto handle_error;
   bSocketCreated = RT_TRUE;
 
   RtCreateIpv4LoopbackAddress(&zzAddress);

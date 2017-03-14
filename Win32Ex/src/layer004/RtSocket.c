@@ -145,7 +145,7 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bCloseOnExec)
+RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bInheritable)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unFlags;
@@ -165,6 +165,13 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
     /* Mandatory for non-blocking sockets. */
     unFlags = WSA_FLAG_OVERLAPPED;
   }
+  
+  if (!bInheritable)
+  {
+    /* Flag required only to set handle non-inheritable.  */
+    unFlags |= WSA_FLAG_NO_HANDLE_INHERIT;
+  }
+
   /* WSA_FLAG_NO_HANDLE_INHERIT flag is in early versions of Windows only. */
   lpSocket->unSocket = (RT_UN)WSASocket((int)unAddressFamily, (int)unType, (int)unProtocol, RT_NULL, 0, unFlags);
   if (lpSocket->unSocket == INVALID_SOCKET) goto handle_error;
@@ -177,7 +184,7 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
   {
     unActualType |= SOCK_NONBLOCK;
   }
-  if (bCloseOnExec)
+  if (!bInheritable)
   {
     unActualType |= SOCK_CLOEXEC;
   }
