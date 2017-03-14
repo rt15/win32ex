@@ -255,13 +255,6 @@ void RT_API RtQuitMessageLoop(RT_UN32 unExitCode);
 RT_UN16 RT_API RtDefaultMessageLoop();
 
 /**
- * Returns the major version and optionally the minor version.
- *
- * @param lpMinor Can be null.
- */
-RT_UN32 RT_API RtGetOsVersion(RT_UN32* lpMinor);
-
-/**
  * Retrieve the lpUserData pointer given to RtCreateMainWindow or RtCreateDialogBox.
  *
  * <p>

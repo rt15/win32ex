@@ -3,11 +3,6 @@
 #include "layer000/RtWin32ExGuiOsDefines.h"
 #include "layer001/RtImage.h"
 
-RT_FAST_INITIALIZATION rt_guiOsVersionInitialization = RT_FAST_INITIALIZATION_STATIC_INIT;
-
-RT_UN32 rt_nGuiMajorOsVersion;
-RT_UN32 rt_nGuiMinorOsVersion;
-
 RT_B RT_API RtInitCommonControls(RT_UN32 nClasses)
 {
   INITCOMMONCONTROLSEX rtInitCommonControls;
@@ -141,7 +136,7 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
   RT_H hTemporaryToolBar;
   RT_UN32 unSystemImageList;
   RT_UN32 lpSystemImageListIndex[3];
-  RT_UN32 unOsVersion;
+  RT_UN32 unMajorOsVersion;
   RT_UN32 lpMaskBuffer[256];
   RT_UN32 lpColorBuffer[256];
   RT_UN unI;
@@ -152,7 +147,7 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
 
   hDc = RT_NULL;
 
-  unOsVersion = RtGetOsVersion(RT_NULL);
+
 
   lpGuiCommandMenuItemManager->lpCommandMenuItems = lpCommandMenuItems;
   lpGuiCommandMenuItemManager->unCommandMenuItemsCount = unCommandMenuItemsCount;
@@ -167,6 +162,8 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
     }
     lpCommandMenuItems[unI].hBitmap = RT_NULL;
   }
+
+  if (!RtGetOsVersion(&unMajorOsVersion, RT_NULL, RT_NULL)) goto handle_error;
 
   lpGuiCommandMenuItemManager->hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK, (int)unIconsCount, 8);
   if (!lpGuiCommandMenuItemManager->hToolBarImageList) goto handle_error;
@@ -254,7 +251,7 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
     }
 
     /* Under vista, we must use a PARGB bitmap for menus. */
-    if (unOsVersion >= 6)
+    if (unMajorOsVersion >= 6)
     {
       if (lpCommandMenuItems[unI].hIcon)
       {
@@ -351,69 +348,74 @@ RT_H RT_API RtCreateMenu(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[]
 {
   MENUITEMINFO menuItemInfo;
   RT_GUI_MENU_ITEM* lpMenuItem;
-  RT_UN32 unOsVersion;
+  RT_UN unMajorOsVersion;
   RT_UN unI;
   RT_H hResult;
 
-  unOsVersion = RtGetOsVersion(RT_NULL);
-
-  hResult = CreatePopupMenu();
-  if (hResult)
+  if (RtGetOsVersion(&unMajorOsVersion, RT_NULL, RT_NULL))
   {
-    /* Prepare MENUITEMINFO structure. */
-    RT_MEMORY_ZERO(&menuItemInfo, sizeof(MENUITEMINFO));
-    menuItemInfo.cbSize = sizeof(MENUITEMINFO);
-
-    for (unI = 0; unI < unMenuItemsCount; unI++)
+    hResult = CreatePopupMenu();
+    if (hResult)
     {
-      lpMenuItem = lpMenuItems[unI];
-      switch (lpMenuItem->unType)
-      {
-        case RT_GUI_MENU_ITEM_TYPE_COMMAND:
-          menuItemInfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_DATA | MIIM_STRING;
-          menuItemInfo.fType = MFT_STRING;
-          menuItemInfo.wID = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->unId;
-          menuItemInfo.dwTypeData = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->lpText;
-          menuItemInfo.cch = (UINT)RtGetStringSize(((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->lpText);
+      /* Prepare MENUITEMINFO structure. */
+      RT_MEMORY_ZERO(&menuItemInfo, sizeof(MENUITEMINFO));
+      menuItemInfo.cbSize = sizeof(MENUITEMINFO);
 
-          if (((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->unCommandType == RT_GUI_COMMAND_MENU_ITEM_TYPE_BUTTON)
-          {
-            if (((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->hIcon)
+      for (unI = 0; unI < unMenuItemsCount; unI++)
+      {
+        lpMenuItem = lpMenuItems[unI];
+        switch (lpMenuItem->unType)
+        {
+          case RT_GUI_MENU_ITEM_TYPE_COMMAND:
+            menuItemInfo.fMask = MIIM_FTYPE | MIIM_ID | MIIM_DATA | MIIM_STRING;
+            menuItemInfo.fType = MFT_STRING;
+            menuItemInfo.wID = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->unId;
+            menuItemInfo.dwTypeData = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->lpText;
+            menuItemInfo.cch = (UINT)RtGetStringSize(((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->lpText);
+
+            if (((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->unCommandType == RT_GUI_COMMAND_MENU_ITEM_TYPE_BUTTON)
             {
-              menuItemInfo.fMask |= MIIM_BITMAP;
-              if (unOsVersion >= 6)
+              if (((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->hIcon)
               {
-                /* Use PARGB bitmap under Vista (HBMMENU_CALLBACK is not compatible with fully styled menus). */
-                menuItemInfo.hbmpItem = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->hBitmap;
-              }
-              else
-              {
-                /* Use HBMMENU_CALLBACK under XP. */
-                menuItemInfo.hbmpItem = HBMMENU_CALLBACK;
+                menuItemInfo.fMask |= MIIM_BITMAP;
+                if (unMajorOsVersion >= 6)
+                {
+                  /* Use PARGB bitmap under Vista (HBMMENU_CALLBACK is not compatible with fully styled menus). */
+                  menuItemInfo.hbmpItem = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->hBitmap;
+                }
+                else
+                {
+                  /* Use HBMMENU_CALLBACK under XP. */
+                  menuItemInfo.hbmpItem = HBMMENU_CALLBACK;
+                }
               }
             }
-          }
 
+            break;
+          case RT_GUI_MENU_ITEM_TYPE_SUB_MENU:
+            menuItemInfo.fMask = MIIM_TYPE | MIIM_SUBMENU;
+            menuItemInfo.fType = MFT_STRING;
+            menuItemInfo.hSubMenu = ((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->hSubMenu;
+            menuItemInfo.dwTypeData = ((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->lpText;
+            menuItemInfo.cch = (UINT)RtGetStringSize(((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->lpText);
+            break;
+          case RT_GUI_MENU_ITEM_TYPE_SEPARATOR:
+            menuItemInfo.fMask = MIIM_TYPE;
+            menuItemInfo.fType = MFT_SEPARATOR;
+            break;
+        }
+        if (!InsertMenuItem(hResult, (UINT)unI, TRUE, &menuItemInfo))
+        {
+          DestroyMenu(hResult);
+          hResult = RT_NULL;
           break;
-        case RT_GUI_MENU_ITEM_TYPE_SUB_MENU:
-          menuItemInfo.fMask = MIIM_TYPE | MIIM_SUBMENU;
-          menuItemInfo.fType = MFT_STRING;
-          menuItemInfo.hSubMenu = ((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->hSubMenu;
-          menuItemInfo.dwTypeData = ((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->lpText;
-          menuItemInfo.cch = (UINT)RtGetStringSize(((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->lpText);
-          break;
-        case RT_GUI_MENU_ITEM_TYPE_SEPARATOR:
-          menuItemInfo.fMask = MIIM_TYPE;
-          menuItemInfo.fType = MFT_SEPARATOR;
-          break;
-      }
-      if (!InsertMenuItem(hResult, (UINT)unI, TRUE, &menuItemInfo))
-      {
-        DestroyMenu(hResult);
-        hResult = RT_NULL;
-        break;
+        }
       }
     }
+  }
+  else
+  {
+    hResult = RT_NULL;
   }
   return hResult;
 }
@@ -680,25 +682,6 @@ handle_error:
   }
 free_resources:
   return hResult;
-}
-
-RT_UN32 RT_API RtGetOsVersion(RT_UN32* lpMinor)
-{
-  OSVERSIONINFO osVersionInfo;
-
-  if (RtFastInitializationRequired(&rt_guiOsVersionInitialization))
-  {
-    osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    GetVersionEx(&osVersionInfo);
-    rt_nGuiMajorOsVersion = osVersionInfo.dwMajorVersion;
-    rt_nGuiMinorOsVersion = osVersionInfo.dwMinorVersion;
-    RtNotifyFastInitializationDone(&rt_guiOsVersionInitialization);
-  }
-  if (lpMinor)
-  {
-    *lpMinor = rt_nGuiMinorOsVersion;
-  }
-  return rt_nGuiMajorOsVersion;
 }
 
 RT_B RT_API RtGetWindowSize(RT_H hWindow, RT_GUI_RECT* lpRect)

@@ -326,12 +326,12 @@ Il y a des TODO un peu partout dans le code.
 #include "layer004/RtFastInitialization.h"
 #include "layer004/RtInitialization.h"
 #include "layer004/RtQuickSort.h"
-#include "layer004/RtSocket.h"
 
 #include "layer005/RtFileSystem.h"
 #include "layer005/RtHeap.h"
 #include "layer005/RtRandom.h"
 #include "layer005/RtStaticHeap.h"
+#include "layer005/RtSystemInfo.h"
 
 #include "layer006/RtConsole.h"
 #include "layer006/RtEncoding.h"
@@ -342,6 +342,7 @@ Il y a des TODO un peu partout dans le code.
 
 #include "layer007/RtErrorMessage.h"
 #include "layer007/RtFileUtils.h"
+#include "layer007/RtSocket.h"
 #include "layer007/RtTableMetadata.h"
 
 #include "layer008/RtArray.h"

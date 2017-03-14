@@ -1,8 +1,11 @@
-#include "layer004/RtSocket.h"
+#include "layer007/RtSocket.h"
 
 #include "layer001/RtWin32ExOsDefines.h"
 #include "layer002/RtErrorCode.h"
 #include "layer003/RtMemory.h"
+#include "layer005/RtSystemInfo.h"
+#include "layer006/RtFile.h"
+
 
 /**
  * @file
@@ -149,6 +152,8 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unFlags;
+  RT_B bFlagNoHandleInherit;
+  RT_FILE rtSocket;
 #else
   RT_UN unActualType;
 #endif
@@ -165,16 +170,36 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
     /* Mandatory for non-blocking sockets. */
     unFlags = WSA_FLAG_OVERLAPPED;
   }
-  
+
   if (!bInheritable)
   {
     /* Flag required only to set handle non-inheritable.  */
-    unFlags |= WSA_FLAG_NO_HANDLE_INHERIT;
+    /* Socket handles are inheritable by default. */
+
+    /* WSA_FLAG_NO_HANDLE_INHERIT is supported on Windows 7 with SP1, Windows Server 2008 R2 with SP1, and later. */
+    if (!RtIsOsVersionEqualOrGreaterTo(6, 1, 1, &bFlagNoHandleInherit)) goto handle_error;
+    if (bFlagNoHandleInherit)
+    {
+      unFlags |= 0x80; /* WSA_FLAG_NO_HANDLE_INHERIT */
+    }
   }
 
   /* WSA_FLAG_NO_HANDLE_INHERIT flag is in early versions of Windows only. */
   lpSocket->unSocket = (RT_UN)WSASocket((int)unAddressFamily, (int)unType, (int)unProtocol, RT_NULL, 0, unFlags);
   if (lpSocket->unSocket == INVALID_SOCKET) goto handle_error;
+
+  if (!bInheritable && !bFlagNoHandleInherit)
+  {
+    /* WSA_FLAG_NO_HANDLE_INHERIT is not supported. */
+    /* We manually set it to non-inheritable. */
+    /* There is a race condidition here, the handle could leak if CreateProcess is called in parallel. */
+    rtSocket.hFile = (RT_H)lpSocket->unSocket;
+    if (!RtSetFileInheritable(&rtSocket, RT_FALSE))
+    {
+      RtFreeSocket(lpSocket);
+      goto handle_error;
+    }
+  }
 
 #else /* NOT RT_DEFINE_WINDOWS */
 

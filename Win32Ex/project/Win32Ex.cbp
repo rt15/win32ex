@@ -124,7 +124,6 @@
 		<Unit filename="../include/layer004/RtFastInitialization.h" />
 		<Unit filename="../include/layer004/RtInitialization.h" />
 		<Unit filename="../include/layer004/RtQuickSort.h" />
-		<Unit filename="../include/layer004/RtSocket.h" />
 		<Unit filename="../include/layer005/RtFileSystem.h" />
 		<Unit filename="../include/layer005/RtHeap.h" />
 		<Unit filename="../include/layer005/RtRandom.h" />
@@ -137,6 +136,7 @@
 		<Unit filename="../include/layer006/RtRuntimeHeap.h" />
 		<Unit filename="../include/layer007/RtErrorMessage.h" />
 		<Unit filename="../include/layer007/RtFileUtils.h" />
+		<Unit filename="../include/layer007/RtSocket.h" />
 		<Unit filename="../include/layer007/RtTableMetadata.h" />
 		<Unit filename="../include/layer008/RtArray.h" />
 		<Unit filename="../include/layer008/RtProcess.h" />
@@ -197,9 +197,6 @@
 		<Unit filename="../src/layer004/RtQuickSort.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer004/RtSocket.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/layer005/RtFileSystem.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -236,7 +233,10 @@
 		<Unit filename="../src/layer007/RtFileUtils.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer007/rtwin32exinternal.c">
+		<Unit filename="../src/layer007/RtSocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer007/RtWin32ExInternal.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer008/RtArray.c">

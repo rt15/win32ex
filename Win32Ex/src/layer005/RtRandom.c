@@ -30,7 +30,7 @@ RT_FAST_INITIALIZATION rt_randomInitialization = RT_FAST_INITIALIZATION_STATIC_I
 RT_B rt_bRandomInitializationSuccessful;
 
 /* Error code of failed initialization. */
-DWORD rt_nRandomInitializationError;
+DWORD rt_unRandomInitializationError;
 
 RT_RANDOM_RTL_GEN_RANDOM rt_lpRtlGenRandom;
 #endif
@@ -51,7 +51,7 @@ RT_B RT_CALL RtInitializeRandom()
 free_resources:
   return bResult;
 handle_error:
-  rt_nRandomInitializationError = GetLastError();
+  rt_unRandomInitializationError = GetLastError();
   bResult = RT_FAILURE;
   goto free_resources;
 }
@@ -71,7 +71,7 @@ RT_B RT_API RtGetRandomBytes(void* lpArea, RT_UN32 unSize)
   if (!rt_bRandomInitializationSuccessful)
   {
     /* Set last error as when the initialization has failed. */
-    SetLastError(rt_nRandomInitializationError);
+    SetLastError(rt_unRandomInitializationError);
     goto handle_error;
   }
 #endif

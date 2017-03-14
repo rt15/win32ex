@@ -244,10 +244,6 @@
 					RelativePath="..\src\layer004\RtQuickSort.c"
 					>
 				</File>
-				<File
-					RelativePath="..\src\layer004\RtSocket.c"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="layer005"
@@ -266,6 +262,10 @@
 				</File>
 				<File
 					RelativePath="..\src\layer005\RtStaticHeap.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\layer005\RtSystemInfo.c"
 					>
 				</File>
 			</Filter>
@@ -309,7 +309,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\layer007\rtwin32exinternal.c"
+					RelativePath="..\src\layer007\RtSocket.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\layer007\RtWin32ExInternal.c"
 					>
 				</File>
 			</Filter>
@@ -470,10 +474,6 @@
 					RelativePath="..\include\layer004\RtQuickSort.h"
 					>
 				</File>
-				<File
-					RelativePath="..\include\layer004\RtSocket.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="layer005"
@@ -492,6 +492,10 @@
 				</File>
 				<File
 					RelativePath="..\include\layer005\RtStaticHeap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer005\RtSystemInfo.h"
 					>
 				</File>
 			</Filter>
@@ -532,6 +536,10 @@
 				</File>
 				<File
 					RelativePath="..\include\layer007\RtFileUtils.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer007\RtSocket.h"
 					>
 				</File>
 				<File

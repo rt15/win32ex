@@ -62,6 +62,9 @@ RT_B RT_CALL ZzMisc()
 {
   RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
+  RT_UN unMajorOsVersion;
+  RT_UN unMinorOsVersion;
+  RT_UN unPatchOsVersion;
   RT_B bResult;
 
   if (!RtWriteStringToConsole(_R("## Misc:\n\n"))) goto handle_error;
@@ -93,6 +96,18 @@ RT_B RT_CALL ZzMisc()
   unWritten = 0;
   if (!RtGetApplicationDataDirectory(_R("Tests"), lpMessage, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("App config dir = "), lpMessage, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
+
+  /* OS version. */
+  if (!RtGetOsVersion(&unMajorOsVersion, &unMinorOsVersion, &unPatchOsVersion)) goto handle_error;
+  unWritten = 0;
+  if (!RtCopyString(_R("OS version = "),            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtConvertUIntegerToString(unMajorOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyStringWithSize(_R("."), 1,             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtConvertUIntegerToString(unMinorOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyStringWithSize(_R("."), 1,             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtConvertUIntegerToString(unPatchOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtCopyStringWithSize(_R("\n"), 1,            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtWriteStringToConsoleWithSize(lpMessage, unWritten)) goto handle_error;
 
   if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
 
