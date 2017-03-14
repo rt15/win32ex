@@ -15,23 +15,6 @@
 
 #### TODO:
 
-The Linux environment (From environ variable) is null terminated array of pointer to null terminated strings.
-The Windows environment is composed of concatenated null terminated strings. The last string is terminated by 2 nulls.
-
-Test an empty variable.
-
-Add a function to remove env var from env vars.
-(So that we can add more safelly)
-
-Beware of lower/upper case env var names.
-
-Impact de setenv sur environ variable.
-Add a variable and check both old and new environment blocks.
-
-RtCreateProcess should take RT_ENV_VARS* as argument.
-
-Give environment variables to RtCreateProcess?
-
 O_CLOEXEC on sockets.
 
 Tests non-child process!?
