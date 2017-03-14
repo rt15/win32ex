@@ -439,6 +439,27 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_API RtMergeEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue)
+{
+  RT_B bContains;
+  RT_B bResult;
+
+  if (!RtEnvVarsContains(lpEnvVars, lpEnvVarName, &bContains)) goto handle_error;
+  if (bContains)
+  {
+    if (!RtRemoveEnvVarFromEnvVars(lpEnvVars, lpEnvVarName)) goto handle_error;
+  }
+  if (!RtAddEnvVarIntoEnvVars(lpEnvVars, lpEnvVarName, lpValue)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_API RtFreeEnvVars(RT_ENV_VARS* lpEnvVars)
 {
   RT_B bResult;

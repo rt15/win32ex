@@ -89,6 +89,12 @@ RT_B RT_API RtAddEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName
  */
 RT_B RT_API RtRemoveEnvVarFromEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName);
 
+/**
+ * If the variable already exists, replace the value.<br>
+ * If the variable does not exist, add the variable.
+ */
+RT_B RT_API RtMergeEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
+
 RT_B RT_API RtFreeEnvVars(RT_ENV_VARS* lpEnvVars);
 
 #endif /* RT_ENV_VARS_H */

@@ -269,6 +269,7 @@ I probably need to call LongPath.
 
 No length or count (Use size).
 No folder (Use directory. Or dir?).
+Remove/Delete/Drop...
 No Temporary, use Temp.
 No environment, use env.
 No variable, use var.

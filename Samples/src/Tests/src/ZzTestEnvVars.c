@@ -147,6 +147,18 @@ RT_B RT_CALL ZzTestEnvVars()
   if (!RtEnvVarsContains(&zzEnvVars3, _R("RT_VAR_NAME2"), &bContains)) goto handle_error;
   if (bContains) goto handle_error;
 
+  /* Add variable using merge. */
+  if (!RtMergeEnvVarIntoEnvVars(&zzEnvVars3, _R("RT_VAR_NAME3"), _R("value3"))) goto handle_error;
+  unWritten = 0;
+  if (!RtGetEnvVarFromEnvVars(&zzEnvVars3, _R("RT_VAR_NAME3"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (RtCompareStrings(lpValue, _R("value3"))) goto handle_error;
+
+  /* Replace variable using merge. */
+  if (!RtMergeEnvVarIntoEnvVars(&zzEnvVars3, _R("RT_VAR_NAME3"), _R("This is a variable value"))) goto handle_error;
+  unWritten = 0;
+  if (!RtGetEnvVarFromEnvVars(&zzEnvVars3, _R("RT_VAR_NAME3"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (RtCompareStrings(lpValue, _R("This is a variable value"))) goto handle_error;
+
   bResult = RT_SUCCESS;
 free_resources:
   if (bEnvVars3Created)

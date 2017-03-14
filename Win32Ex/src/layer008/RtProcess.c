@@ -7,7 +7,7 @@
 #include "layer005/RtStaticHeap.h"
 #include "layer007/RtErrorMessage.h"
 
-RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[], RT_CHAR* lpApplicationName, ...)
+RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR* lpApplicationName, ...)
 {
   va_list lpVaList;
   RT_B bResult;
@@ -19,7 +19,7 @@ RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* l
   return bResult;
 }
 
-RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
+RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                                   RT_CHAR* lpApplicationName, ...)
 {
@@ -259,7 +259,7 @@ handle_error:
 /**
  * Called either by the main process or by a forked process if bChild is RT_TRUE.
  */
-RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
+RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                         RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                         RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
 {
@@ -270,6 +270,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
   RT_B bWritePipeCreated;
   pid_t nPid;
   RT_UN unBytesRead;
+  RT_CHAR** lpEnvVarsArray;
   RT_B bResult;
 
   bReadPipeCreated = RT_FALSE;
@@ -334,7 +335,12 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     /* Returns only if an error has occurred. The return value is -1, and errno is set to indicate the error.  */
     if (lpEnvVars)
     {
-      execvpe(lpApplicationName, lpPArgs, lpEnvVars);
+      if (!RtGetEnvVarsArray(lpEnvVars, &lpEnvVarsArray))
+      {
+        RtWriteLastErrorMessage(_R("Failed to compute environment: "));
+        goto handle_child_error;
+      }
+      execvpe(lpApplicationName, lpPArgs, lpEnvVarsArray);
     }
     else
     {
@@ -406,7 +412,7 @@ handle_error:
 /**
  * Fork a process that will fork again to avoid zombification.
  */
-RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
+RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                                    RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                                                    RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
 {
@@ -550,7 +556,7 @@ handle_error:
 
 #endif
 
-RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_CHAR* lpEnvVars[],
+RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                              RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
                              RT_CHAR* lpApplicationName)
 {
@@ -576,6 +582,7 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
   void* lpHeapBuffer;
   RT_UN unHeapBufferSize;
   STARTUPINFO rtStartupInfo;
+  RT_CHAR* lpEnvVarsBlock;
 #else
   va_list lpVaList2;
   RT_CHAR* lpArg;
@@ -668,13 +675,22 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
 
   if (!RtArgVToCommandLine(lpVaList, lpApplicationName, lpCommandLineBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, &lpCommandLine)) goto handle_error;
 
+  if (lpEnvVars)
+  {
+    if (!RtGetEnvVarsBlock(lpEnvVars, &lpEnvVarsBlock)) goto handle_error;
+  }
+  else
+  {
+    lpEnvVarsBlock = RT_NULL;
+  }
+
   if (!CreateProcess(RT_NULL,                        /* lpApplicationName.                                                         */
                      lpCommandLine,
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpProcessAttributes.                                 */
                      RT_NULL,                        /* LPSECURITY_ATTRIBUTES lpThreadAttributes.                                  */
                      TRUE,                           /* Align inheritance with Linux.                                              */
                      CREATE_UNICODE_ENVIRONMENT,     /* dwCreationFlags.                                                           */
-                     lpEnvVars,                      /* lpEnvironment.                                                             */
+                     lpEnvVarsBlock,                 /* lpEnvironment.                                                             */
                      lpCurrentDirectory,             /* If NULL, the new process will have the same current directory as this one. */
                      &rtStartupInfo,
                      (PROCESS_INFORMATION*)lpProcess

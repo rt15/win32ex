@@ -222,6 +222,87 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzTestCreateProcessEnv()
+{
+  RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_FILE zzReadPipe;
+  RT_FILE zzWritePipe;
+  RT_B bReadPipeCreated;
+  RT_B bWritePipeCreated;
+  RT_ENV_VARS zzEnvVars;
+  RT_B bEnvVarsCreated;
+  RT_UN unWritten;
+  RT_PROCESS zzProcess;
+  RT_B bProcessCreated;
+  RT_UN32 unExitCode;
+  RT_CHAR8 lpPipeContent[256];
+  RT_UN unBytesRead;
+  RT_B bResult;
+
+  bReadPipeCreated = RT_FALSE;
+  bWritePipeCreated = RT_FALSE;
+  bEnvVarsCreated = RT_FALSE;
+  bProcessCreated = RT_FALSE;
+
+  unWritten = 0;
+  if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+
+  if (!RtCreatePipe(&zzReadPipe, &zzWritePipe)) goto handle_error;
+  bReadPipeCreated = RT_TRUE;
+  bWritePipeCreated = RT_TRUE;
+
+  if (!RtCreateEnvVars(&zzEnvVars)) goto handle_error;
+  bEnvVarsCreated = RT_TRUE;
+
+  if (!RtMergeEnvVarIntoEnvVars(&zzEnvVars, _R("RT_PROCESS_VAR"), _R("VAR_VALUE"))) goto handle_error;
+
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzEnvVars, RT_NULL, &zzWritePipe, RT_NULL, lpExecutablePath,
+                                                                                                                 _R("--display-env-var"),
+                                                                                                                 _R("RT_PROCESS_VAR"),
+                                                                                                                 (RT_CHAR*)RT_NULL)) goto handle_error;
+  bProcessCreated = RT_TRUE;
+
+  if (!RtJoinProcess(&zzProcess)) goto handle_error;
+  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (unExitCode) goto handle_error;
+
+  /* Close writing pipe on parent side. */
+  bWritePipeCreated = RT_FALSE;
+  if (!RtFreeFile(&zzWritePipe)) goto handle_error;
+
+  if (!RtReadFromFile(&zzReadPipe, lpPipeContent, 256 - 1, &unBytesRead)) goto handle_error;
+  lpPipeContent[unBytesRead] = 0;
+  if (RtCompareString8s(lpPipeContent, "RT_PROCESS_VAR=VAR_VALUE\n")) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bProcessCreated)
+  {
+    bProcessCreated = RT_FALSE;
+    if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
+  }
+  if (bEnvVarsCreated)
+  {
+    bEnvVarsCreated = RT_FALSE;
+    if (!RtFreeEnvVars(&zzEnvVars) && bResult) goto handle_error;
+  }
+  if (bWritePipeCreated)
+  {
+    bWritePipeCreated = RT_FALSE;
+    if (!RtFreeFile(&zzWritePipe) && bResult) goto handle_error;
+  }
+  if (bReadPipeCreated)
+  {
+    bReadPipeCreated = RT_FALSE;
+    if (!RtFreeFile(&zzReadPipe) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzTestFailingProcess()
 {
   RT_PROCESS zzProcess;
@@ -272,6 +353,7 @@ RT_B RT_CALL ZzTestProcess(RT_HEAP** lpHeap)
   if (!ZzTestRedirectStdInToPipe(lpHeap)) goto handle_error;
   if (!ZzTestRedirectStdOutToFile(lpHeap)) goto handle_error;
   if (!ZzTestRedirectStdErrToFile()) goto handle_error;
+  if (!ZzTestCreateProcessEnv()) goto handle_error;
   if (!ZzTestFailingProcess()) goto handle_error;
 
   bResult = RT_SUCCESS;
