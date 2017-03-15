@@ -10,6 +10,10 @@
  * Under Windows, lpPatch is the major SP version, 3 for SP3.
  * </p>
  *
+ * <p>
+ * Under Linux, it is the kernel version, not the distribution version.
+ * </p>
+ *
  * <pre>
  * Windows 10                 10.0
  * Windows Server 2016        10.0

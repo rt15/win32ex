@@ -29,6 +29,8 @@ RT_B RT_API RtConvertUIntegerToString(RT_UN unInput, RT_CHAR* lpBuffer, RT_UN un
 
 RT_B RT_API RtConvertStringToInteger(RT_CHAR* lpInput, RT_N* lpResult);
 
+RT_B RT_API RtConvertStringToUInteger(RT_CHAR* lpInput, RT_UN* lpResult);
+
 /**
  * Return 0 if the Strings are equals, a negative value if the first string is less than the second one, a positive value otherwise.<br>
  * Characters are compared as unsigned characters.

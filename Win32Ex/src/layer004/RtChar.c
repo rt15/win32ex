@@ -53,6 +53,12 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_API RtConvertStringToUInteger(RT_CHAR* lpInput, RT_UN* lpResult)
+{
+  /* TODO: Better implementation. */
+  return RtConvertStringToInteger(lpInput, (RT_N*)lpResult);
+}
+
 RT_UN RT_API RtGetStringSize(RT_CHAR* lpInput)
 {
   RT_CHAR* lpInInput;

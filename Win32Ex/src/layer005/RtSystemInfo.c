@@ -1,6 +1,7 @@
 #include "layer005/RtSystemInfo.h"
 
 #include "layer001/RtWin32ExOsDefines.h"
+#include "layer004/RtChar.h"
 #include "layer004/RtFastInitialization.h"
 
 RT_FAST_INITIALIZATION rt_guiOsVersionInitialization = RT_FAST_INITIALIZATION_STATIC_INIT;
@@ -23,7 +24,12 @@ RT_B RT_API RtGetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpPatch)
 #ifdef RT_DEFINE_WINDOWS
   OSVERSIONINFOEX rtOsVersionInfo;
 #else
-
+  struct utsname rtUtsName;
+  RT_CHAR lpVersion[RT_CHAR_THIRD_BIG_STRING_SIZE];
+  RT_CHAR* lpStart;
+  RT_CHAR* lpEnd;
+  RT_UN unWritten;
+  RT_B bPatchVersion;
 #endif
   RT_B bResult;
 
@@ -47,7 +53,62 @@ RT_B RT_API RtGetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpPatch)
     }
 
 #else
-    /* TODO: Implement on Linux. */
+    /* On error, -1 is returned, and errno is set appropriately.  */
+    if (uname(&rtUtsName) == -1) goto handle_initialization_error;
+
+    /* rtUtsName.release looks like "4.4.0-66-generic". */
+    /* But it might look like "2.6" too. */
+
+    if (!RtCopyString(rtUtsName.release, lpVersion, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_initialization_error;
+    lpStart = lpVersion;
+    lpEnd = lpVersion;
+
+    /* Find first dot. */
+    while (*lpEnd != _R('.')) lpEnd++;
+    /* Replace dot with null to call RtConvertStringToUInteger. */
+    *lpEnd = 0;
+
+    if (!RtConvertStringToUInteger(lpStart, &rt_unMajorOsVersion)) goto handle_initialization_error;
+
+    /* Goto next version number. */
+    lpStart = ++lpEnd;
+
+    while ((*lpEnd >= _R('0')) && (*lpEnd <= _R('9'))) lpEnd++;
+
+    /* Is there a patch version? */
+    bPatchVersion = (*lpEnd == _R('.'));
+
+    /* Replace dot with null to call RtConvertStringToUInteger. */
+    *lpEnd = 0;
+
+    if (!RtConvertStringToUInteger(lpStart, &rt_unMinorOsVersion)) goto handle_initialization_error;
+
+    if (bPatchVersion)
+    {
+      /* Goto next version number. */
+      lpStart = ++lpEnd;
+
+      while ((*lpEnd >= _R('0')) && (*lpEnd <= _R('9'))) lpEnd++;
+
+      /* Replace dot with null to call RtConvertStringToUInteger. */
+      *lpEnd = 0;
+
+      if (!RtConvertStringToUInteger(lpStart, &rt_unPatchOsVersion)) goto handle_initialization_error;
+    }
+    else
+    {
+      /* No patch version, use 0. */
+      rt_unPatchOsVersion = 0;
+    }
+
+    rt_bOsVersionInitializationSuccessful = RT_TRUE;
+    goto initialized;
+
+handle_initialization_error:
+    rt_nOsVersionInitializationError = errno;
+    rt_bOsVersionInitializationSuccessful = RT_FALSE;
+
+initialized:
 
 #endif
 
