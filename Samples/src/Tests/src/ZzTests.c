@@ -299,12 +299,13 @@ RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
 {
   RtWriteStringOrErrorToConsole(_R("Test rtlib.\n\n")
                                 _R("Tests [-m|--manual|-h|--help|-r|--read-line]\n")
-                                _R("Tests [-a|--args [ARGS]]\n\n")
-                                _R("Tests [-d|--display-env-var [ENV_VAR]]\n\n")
-                                _R("  --read-line       Read and write a line.\n")
-                                _R("  --manual          Perform manual tests.\n")
-                                _R("  --args            Display arguments.\n")
-                                _R(" -display-env-var   Display all or a single env var.\n")
+                                _R("Tests [-a|--args [ARGS]]\n")
+                                _R("Tests [-d|--display-env-var [ENV_VAR]]\n")
+                                _R("\n")
+                                _R("  --read-line        Read and write a line.\n")
+                                _R("  --manual           Perform manual tests.\n")
+                                _R("  --args             Display arguments.\n")
+                                _R("  --display-env-var  Display all or a single env var.\n")
                                 , bResult);
   return bResult;
 }
