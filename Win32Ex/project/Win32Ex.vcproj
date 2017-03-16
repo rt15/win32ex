@@ -249,6 +249,10 @@
 				Name="layer005"
 				>
 				<File
+					RelativePath="..\src\layer005\RtCommandLineArgs.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\layer005\RtFileSystem.c"
 					>
 				</File>
@@ -478,6 +482,10 @@
 			<Filter
 				Name="layer005"
 				>
+				<File
+					RelativePath="..\include\layer005\RtCommandLineArgs.h"
+					>
+				</File>
 				<File
 					RelativePath="..\include\layer005\RtFileSystem.h"
 					>

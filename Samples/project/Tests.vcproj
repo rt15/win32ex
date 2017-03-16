@@ -207,6 +207,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\Tests\src\ZzTestCommandLineArgs.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\Tests\src\ZzTestEncoding.c"
 				>
 			</File>

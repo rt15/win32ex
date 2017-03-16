@@ -563,3 +563,41 @@ RT_B RT_API RtRightTrimStringWithSize(RT_CHAR* lpString, RT_UN unStringSize, RT_
 
   return RT_TRUE;
 }
+
+RT_UN RT_API RtSearchStringInStrings(RT_CHAR* lpStrings[], RT_CHAR* lpSearched)
+{
+  RT_UN unResult;
+  RT_UN unI;
+
+  unResult = RT_TYPE_MAX_UN;
+
+  if (lpStrings)
+  {
+    unI = 0;
+    while (lpStrings[unI])
+    {
+      if (!RtCompareStrings(lpStrings[unI], lpSearched))
+      {
+        /* We found the string. */
+        unResult = unI;
+        break;
+      }
+      unI++;
+    }
+  }
+
+  return unResult;
+}
+
+RT_UN RT_API RtSearchChar(RT_CHAR* lpString, RT_CHAR nSearched)
+{
+  RT_UN unResult;
+
+  unResult = 0;
+  while (lpString[unResult] && lpString[unResult] != nSearched) unResult++;
+  if (!lpString[unResult])
+  {
+    unResult = RT_TYPE_MAX_UN;
+  }
+  return unResult;
+}

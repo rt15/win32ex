@@ -124,6 +124,7 @@
 		<Unit filename="../include/layer004/RtFastInitialization.h" />
 		<Unit filename="../include/layer004/RtInitialization.h" />
 		<Unit filename="../include/layer004/RtQuickSort.h" />
+		<Unit filename="../include/layer005/RtCommandLineArgs.h" />
 		<Unit filename="../include/layer005/RtFileSystem.h" />
 		<Unit filename="../include/layer005/RtHeap.h" />
 		<Unit filename="../include/layer005/RtRandom.h" />
@@ -196,6 +197,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/RtQuickSort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/RtCommandLineArgs.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/RtFileSystem.c">

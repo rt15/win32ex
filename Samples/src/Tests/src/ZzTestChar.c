@@ -438,6 +438,45 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzTestSearchStringInStrings()
+{
+  RT_CHAR* lpStrings[4];
+  RT_B bResult;
+
+  lpStrings[0] = _R("foo");
+  lpStrings[1] = _R("bar");
+  lpStrings[2] = _R("team");
+  lpStrings[3] = RT_NULL;
+
+  if (RtSearchStringInStrings(lpStrings, _R("TEAM")) != RT_TYPE_MAX_UN) goto handle_error;
+  if (RtSearchStringInStrings(lpStrings, _R("team")) != 2) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzTestSearchChar()
+{
+  RT_B bResult;
+
+  if (RtSearchChar(_R("foo"), _R('f')) != 0) goto handle_error;
+  if (RtSearchChar(_R("foo"), _R('o')) != 1) goto handle_error;
+  if (RtSearchChar(_R("foo"), _R('b')) != RT_TYPE_MAX_UN) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzTestChar()
 {
   RT_B bResult;
@@ -451,6 +490,8 @@ RT_B RT_CALL ZzTestChar()
   if (!ZzTestCountStringOccurrences()) goto handle_error;
   if (!ZzTestReplaceString()) goto handle_error;
   if (!ZzTestConcatStrings()) goto handle_error;
+  if (!ZzTestSearchStringInStrings()) goto handle_error;
+  if (!ZzTestSearchChar()) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

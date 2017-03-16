@@ -22,6 +22,8 @@
 #define RT_CHAR_HALF_BIG_STRING_SIZE 960
 /* String size that can be used three times in a function and avoid stack probe. */
 #define RT_CHAR_THIRD_BIG_STRING_SIZE 640
+/* String size that can be used four times in a function and avoid stack probe. */
+#define RT_CHAR_QUARTER_BIG_STRING_SIZE 480
 
 RT_B RT_API RtConvertIntegerToString(RT_N nInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
@@ -134,5 +136,24 @@ RT_B RT_API RtRightTrimString(RT_CHAR* lpString, RT_UN *lpWritten);
  * Remove trailing characters <= ' '.
  */
 RT_B RT_API RtRightTrimStringWithSize(RT_CHAR* lpString, RT_UN unStringSize, RT_UN *lpWritten);
+
+/**
+ * Search first string of <tt>lpStrings</tt> that is <tt>lpSearched</tt>.
+ *
+ * <p>
+ * Should not be used with large arrays.<br>
+ * Use sorted array and quicksort for large arrays.
+ * </p>
+ *
+ * @param lpStrings Null terminated array of null terminated strings. Can be RT_NULL.
+ * @return index of <tt>lpSearched</tt> in <tt>lpStrings</tt> or RT_TYPE_MAX_UN if not found.
+ */
+RT_UN RT_API RtSearchStringInStrings(RT_CHAR* lpStrings[], RT_CHAR* lpSearched);
+
+/**
+ *
+ * @return index of <tt>nSearched</tt> in <tt>lpString</tt> or RT_TYPE_MAX_UN if not found.
+ */
+RT_UN RT_API RtSearchChar(RT_CHAR* lpString, RT_CHAR nSearched);
 
 #endif /* RT_CHAR_H */

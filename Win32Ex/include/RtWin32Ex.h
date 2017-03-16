@@ -15,6 +15,22 @@
 
 #### TODO:
 
+Test wrong options.
+Test non-options everywhere.
+Test end of options separator.
+
+Add a manual parsing args option in Tests.
+-p ...
+Long arguments:
+none1, none2, none3...
+optional1, optional2, optional3...
+required1, required2, required3...
+Short arguments:
+abcdefg
+hijklmn
+opqrstu
+vwxyz
+
 Redirect to null pipe/file!?
 
 Non blocking socket.
@@ -249,6 +265,7 @@ No folder (Use directory. Or dir?).
 Remove/Delete/Drop...
 No Temporary, use Temp.
 No environment, use env.
+No argument, use arg.
 No variable, use var.
 No tabs.
 No trailing spaces.
@@ -327,6 +344,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer004/RtInitialization.h"
 #include "layer004/RtQuickSort.h"
 
+#include "layer005/RtCommandLineArgs.h"
 #include "layer005/RtFileSystem.h"
 #include "layer005/RtHeap.h"
 #include "layer005/RtRandom.h"
