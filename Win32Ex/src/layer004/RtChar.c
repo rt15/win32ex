@@ -88,6 +88,40 @@ RT_N RT_API RtCompareStrings(RT_CHAR* lpString1, RT_CHAR* lpString2)
   return nResult;
 }
 
+RT_N RT_API RtCompareNullStrings(RT_CHAR* lpString1, RT_CHAR* lpString2)
+{
+  RT_N nResult;
+
+  if (!lpString1)
+  {
+    if (!lpString2)
+    {
+      nResult = 0;
+    }
+    else
+    {
+      nResult = 1;
+    }
+  }
+  else
+  {
+    if (!lpString2)
+    {
+      nResult = -1;
+    }
+    else
+    {
+      while(!(nResult = *(RT_UCHAR*)lpString1 - *(RT_UCHAR*)lpString2) && *lpString2)
+      {
+        lpString1++;
+        lpString2++;
+      }
+    }
+  }
+
+  return nResult;
+}
+
 RT_UN RT_API RtSearchString(RT_CHAR* lpString, RT_CHAR* lpSearched)
 {
   RT_CHAR nChar;

@@ -39,6 +39,13 @@ RT_B RT_API RtConvertStringToUInteger(RT_CHAR* lpInput, RT_UN* lpResult);
  */
 RT_N RT_API RtCompareStrings(RT_CHAR* lpString1, RT_CHAR* lpString2);
 
+/**
+ * <p>
+ * Null last like Oracle default.
+ * </p>
+ */
+RT_N RT_API RtCompareNullStrings(RT_CHAR* lpString1, RT_CHAR* lpString2);
+
 RT_UN RT_API RtGetStringSize(RT_CHAR* lpInput);
 
 /**

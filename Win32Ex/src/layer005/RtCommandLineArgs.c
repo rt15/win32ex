@@ -40,6 +40,7 @@ RT_B RT_CALL RtAnalyzeCommandLineArg(RT_CHAR* lpArg, RT_UN* lpArgType,
         {
           /* '--' -> end of options. */
           *lpArgType = RT_COMMAND_LINE_ARG_TYPE_END_OF_OPTIONS;
+          *lpValue = RT_NULL;
         }
         else
         {
@@ -76,6 +77,7 @@ RT_B RT_CALL RtAnalyzeCommandLineArg(RT_CHAR* lpArg, RT_UN* lpArgType,
 
         *lpArgType = RT_COMMAND_LINE_ARG_TYPE_SHORT;
         if (!RtCopyString(&lpArg[1], lpShortOptionsBuffer, unShortOptionsBufferSize, lpShortOptionsWritten)) goto handle_error;
+        *lpValue = RT_NULL;
       }
     }
     else
