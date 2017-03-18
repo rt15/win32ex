@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 #define ZZ_TEST_EVENT_THREAD_STATUS_INIT      0
 #define ZZ_TEST_EVENT_THREAD_STATUS_SIGNAL_1  1

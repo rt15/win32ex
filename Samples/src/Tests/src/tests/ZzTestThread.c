@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 RT_UN32 RT_CALL ZzTestSimpleThreadCallback(void* lpParameter)
 {

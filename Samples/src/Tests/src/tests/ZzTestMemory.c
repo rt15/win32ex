@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 /**
  * <tt>lpArea1</tt> should be the same as <tt>lpArea2</tt>.

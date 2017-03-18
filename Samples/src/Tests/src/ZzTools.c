@@ -194,3 +194,45 @@ handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
 }
+
+RT_N RT_CALL ZzCompareStringsArrays(RT_CHAR** lpStrings1, RT_CHAR** lpStrings2)
+{
+  RT_CHAR** lpInStrings1;
+  RT_CHAR** lpInStrings2;
+  RT_N nResult;
+  
+  lpInStrings1 = lpStrings1;
+  lpInStrings2 = lpStrings2;
+  
+  nResult = 0;
+  while (*lpInStrings1 && *lpInStrings2)
+  {
+    nResult = RtCompareStrings(*lpInStrings1, *lpInStrings2);
+    if (nResult)
+    {
+      break;
+    }
+    (*lpInStrings1)++;
+    (*lpInStrings2)++;
+  }
+  if (!nResult)
+  {
+    if (!*lpInStrings1)
+    {
+      if (!*lpInStrings2)
+      {
+        nResult = 0;
+      }
+      else
+      {
+        nResult = 1;
+      }
+    }
+    else
+    {
+      /* *lpInStrings1 is not RT_NULL so *lpInStrings2 is. */
+      nResult = -1;
+    }
+  }
+  return nResult;
+}

@@ -177,7 +177,7 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
     /* Socket handles are inheritable by default. */
 
     /* WSA_FLAG_NO_HANDLE_INHERIT is supported on Windows 7 with SP1, Windows Server 2008 R2 with SP1, and later. */
-    if (!RtIsOsVersionEqualOrGreaterTo(6, 1, 1, &bFlagNoHandleInherit)) goto handle_error;
+    if (!RtIsOsVersionGreaterOrEqualTo(6, 1, 1, &bFlagNoHandleInherit)) goto handle_error;
     if (bFlagNoHandleInherit)
     {
       unFlags |= 0x80; /* WSA_FLAG_NO_HANDLE_INHERIT */

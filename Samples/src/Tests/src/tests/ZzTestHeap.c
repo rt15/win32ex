@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
 {

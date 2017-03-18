@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 typedef struct _ZZ_LIST_ITEM
 {

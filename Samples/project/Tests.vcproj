@@ -199,67 +199,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ZzTestAtomic.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestChar.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestCommandLineArgs.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestEncoding.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestEnvVar.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestEnvVars.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestEvent.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestFile.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestFileSystem.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestHeap.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestInitialization.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestList.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestMemory.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestProcess.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestProperties.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestRandom.c"
+				RelativePath="..\src\Tests\src\ZzTestParseArgs.c"
 				>
 			</File>
 			<File
@@ -267,27 +207,107 @@
 				>
 			</File>
 			<File
-				RelativePath="..\src\Tests\src\ZzTestSocket.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestThread.c"
-				>
-			</File>
-			<File
-				RelativePath="..\src\Tests\src\ZzTestTypes.c"
-				>
-			</File>
-			<File
 				RelativePath="..\src\Tests\src\ZzTools.c"
 				>
 			</File>
+			<Filter
+				Name="tests"
+				>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestAtomic.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestChar.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestCommandLineArgs.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestEncoding.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestEnvVar.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestEnvVars.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestEvent.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestFile.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestFileSystem.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestHeap.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestInitialization.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestList.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestMemory.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestProcess.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestProperties.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestRandom.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestSocket.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestThread.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestTypes.c"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\src\Tests\include\ZzManualTests.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\include\ZzTestParseArgs.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\Tests\include\ZzTests.h"
+				>
+			</File>
 			<File
 				RelativePath="..\src\Tests\include\ZzTools.h"
 				>

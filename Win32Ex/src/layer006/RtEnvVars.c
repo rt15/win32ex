@@ -4,14 +4,20 @@
 #include "layer003/RtMemory.h"
 #include "layer004/RtChar.h"
 #include "layer005/RtStaticHeap.h"
+#include "layer005/RtSystemInfo.h"
+
 
 RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
 {
-#ifdef RT_DEFINE_LINUX
-  RT_CHAR** lpEnvVarsArray;
-  RT_CHAR* lpEnvVarsBlock;
   RT_UN unBlockSize;
+#ifdef RT_DEFINE_WINDOWS
+  RT_CHAR* lpWindowsEnvVarsBlock;
+  RT_CHAR* lpLibraryEnvVarsBlock;
+  RT_B bGreaterOrEqual;
+#else
+  RT_CHAR** lpEnvVarsArray;
   RT_UN unWritten;
+  RT_CHAR* lpEnvVarsBlock;
 #endif
   RT_B bResult;
 
@@ -24,6 +30,39 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
   /* GetEnvironmentStrings returns null in case of error. */
   lpEnvVars->lpEnvVarsBlock = GetEnvironmentStrings();
   if (!lpEnvVars->lpEnvVarsBlock) goto handle_error;
+  
+  /* TODO: Check if Vista implement GetEnvironmentStrings like seven. */
+  if (!RtIsOsVersionGreaterOrEqualTo(6, 0, 0, &bGreaterOrEqual)) goto handle_error;
+  if (!bGreaterOrEqual)
+  {
+    /* GetEnvironmentStrings return direct pointer on the environment on old Windows versions. */
+    /* As a result the block is updated when a variable is added to the environment. */
+    /* To avoid that, we copy the block. */
+  
+    lpWindowsEnvVarsBlock = lpEnvVars->lpEnvVarsBlock;
+  
+    unBlockSize = 0;
+    while (RT_TRUE)
+    {
+      /* Find next null character. */
+      while (lpWindowsEnvVarsBlock[unBlockSize])
+      {
+        unBlockSize++;
+      }
+
+      /* Quit if next one is null too. */
+      unBlockSize++;
+      if (!lpWindowsEnvVarsBlock[unBlockSize]) break;
+    }
+    /* Count trailing zero. */
+    unBlockSize++;
+    
+    if (!RtAlloc((void**)&lpLibraryEnvVarsBlock, unBlockSize * sizeof(RT_CHAR))) goto handle_error;
+    lpEnvVars->bWindowsBlock = RT_FALSE;
+    lpEnvVars->lpEnvVarsBlock = lpLibraryEnvVarsBlock;
+    RtCopyMemory(lpWindowsEnvVarsBlock, lpLibraryEnvVarsBlock, unBlockSize * sizeof(RT_CHAR));
+    if (!FreeEnvironmentStrings(lpWindowsEnvVarsBlock)) goto handle_error;
+  }
 
 #else /* NOT RT_DEFINE_WINDOWS */
 

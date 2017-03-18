@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 #define ZZ_BIG_STRING_SIZE 7000
 #define ZZ_STRING_SIZE_COUNT 2

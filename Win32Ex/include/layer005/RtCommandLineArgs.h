@@ -66,7 +66,7 @@
 
 /**
  * @param unArgType RT_COMMAND_LINE_ARG_TYPE_SHORT or RT_COMMAND_LINE_ARG_TYPE_LONG.
- * @param bValid Whether the option has been recognized.
+ * @param bValid Whether the option has been recognized. Value cardinality is not taken in account.
  * @param nShortOption Short option letter if unArgType is RT_COMMAND_LINE_ARG_TYPE_SHORT.
  * @param lpLongOption Long option name if unArgType is RT_COMMAND_LINE_ARG_TYPE_LONG.
  * @param unValueCardinality One of RT_COMMAND_LINE_ARG_VALUE_XXXX.

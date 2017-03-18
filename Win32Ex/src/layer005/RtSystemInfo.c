@@ -146,7 +146,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtIsOsVersionEqualOrGreaterTo(RT_UN unMajor, RT_UN unMinor, RT_UN unPatch, RT_B* lpResult)
+RT_B RT_API RtIsOsVersionGreaterOrEqualTo(RT_UN unMajor, RT_UN unMinor, RT_UN unPatch, RT_B* lpResult)
 {
   RT_UN unCurrentMajor;
   RT_UN unCurrentMinor;

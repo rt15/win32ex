@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 RT_CHAR* zz_System_0 = _R("ea");
 RT_UCHAR8 zz_Ascii[3] = { 0x65, 0x61, 0x00 };

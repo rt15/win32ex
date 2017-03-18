@@ -229,7 +229,7 @@ RT_B RT_API RtParseCommandLineArgs(RT_N32* lpArgC, RT_CHAR* lpArgV[], RT_COMMAND
         unValueCardinality = RT_COMMAND_LINE_ARG_VALUE_NONE;
       }
 
-      if (!lpCommandLineArgsCallback(unArgType, RT_TRUE, 0, lpLongOptionBuffer, unValueCardinality, lpValue, lpContext)) goto handle_error;
+      if (!lpCommandLineArgsCallback(unArgType, bValid, 0, lpLongOptionBuffer, unValueCardinality, lpValue, lpContext)) goto handle_error;
     }
     else if (unArgType == RT_COMMAND_LINE_ARG_TYPE_NON_OPTION)
     {

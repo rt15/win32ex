@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzManualTests.h"
 
 RT_B RT_CALL ZzManualDisplayEnvVar(RT_CHAR* lpName)
 {
@@ -9,7 +9,7 @@ RT_B RT_CALL ZzManualDisplayEnvVar(RT_CHAR* lpName)
   unWritten = 0;
   if (!RtCopyString(lpName,             &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtCopyString(_R(" env var = "),  &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtGetEnvVar(lpName, &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtGetEnvVar(lpName,              &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtCopyString(_R("\n"),           &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
 
   if (!RtWriteStringToConsoleWithSize(lpBuffer, unWritten)) goto handle_error;

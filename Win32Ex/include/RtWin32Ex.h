@@ -15,21 +15,12 @@
 
 #### TODO:
 
-Test wrong options.
-Test non-options everywhere.
-Test end of options separator.
+GetEnvironmentStrings is directly pointing on process environment block at least under XP.
+As a consequence it can change if a variable is added to the environment.
+I must find since which version GetEnvironmentStrings return a copy.
 
-Add a manual parsing args option in Tests.
--p ...
-Long arguments:
-none1, none2, none3...
-optional1, optional2, optional3...
-required1, required2, required3...
-Short arguments:
-abcdefg
-hijklmn
-opqrstu
-vwxyz
+Remove CreateProcess variadic functions.
+Use null terminated array of null terminated strings.
 
 Redirect to null pipe/file!?
 

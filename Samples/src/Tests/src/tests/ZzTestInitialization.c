@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include "ZzTests.h"
 
 RT_INITIALIZATION zz_Initialization;
 RT_B zz_bInitialized;
