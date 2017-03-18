@@ -122,6 +122,7 @@ handle_error:
 
 RT_B RT_CALL ZzManuallyTestProcess()
 {
+  RT_CHAR* lpApplicationPathAndArgs[5];
   RT_PROCESS zzProcess;
   RT_UN32 unExitCode;
   RT_B bResult;
@@ -130,12 +131,20 @@ RT_B RT_CALL ZzManuallyTestProcess()
 
   if (!RtWriteStringToConsole(_R("=========================="))) goto handle_error;
 
+  lpApplicationPathAndArgs[0] = _R("ping");
+  lpApplicationPathAndArgs[1] = _R("localhost");
+
 #ifdef RT_DEFINE_WINDOWS
-  if (!RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, _R("ping"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  lpApplicationPathAndArgs[2] = _R("-n");
+  
 #else
-  if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
-  if (!RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, _R("ping"), _R("-c"), _R("4"), _R("localhost"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  lpApplicationPathAndArgs[2] = _R("-c");
 #endif
+
+  lpApplicationPathAndArgs[3] = _R("3");
+  lpApplicationPathAndArgs[4] = RT_NULL;
+
+  if (!RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
   if (!RtWriteStringToConsole(_R("==========================\n"))) goto handle_error;
   if (!RtWriteStringToConsole(_R("Joined!\n"))) goto handle_error;

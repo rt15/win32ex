@@ -7,30 +7,9 @@
 #include "layer005/RtStaticHeap.h"
 #include "layer007/RtErrorMessage.h"
 
-RT_B RT_CDECL_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR* lpApplicationName, ...)
+RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs)
 {
-  va_list lpVaList;
-  RT_B bResult;
-
-  va_start(lpVaList, lpApplicationName);
-  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, lpEnvVars, RT_NULL, RT_NULL, RT_NULL, lpApplicationName);
-  va_end(lpVaList);
-
-  return bResult;
-}
-
-RT_B RT_CDECL_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
-                                                  RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
-                                                  RT_CHAR* lpApplicationName, ...)
-{
-  va_list lpVaList;
-  RT_B bResult;
-
-  va_start(lpVaList, lpApplicationName);
-  bResult = RtVCreateProcess(lpProcess, lpVaList, bChild, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName);
-  va_end(lpVaList);
-
-  return bResult;
+  return RtCreateProcessWithRedirections(lpProcess, bChild, lpCurrentDirectory, lpEnvVars, RT_NULL, RT_NULL, RT_NULL, lpApplicationPathAndArgs);
 }
 
 /**
@@ -188,65 +167,64 @@ RT_UN RT_CALL RtComputeArgSizeInCommandLine(RT_CHAR* lpArg)
  * </ul>
  *
  */
-RT_B RT_CALL RtArgVToCommandLine(va_list lpVaList, RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpCommandLine)
+RT_B RT_CALL RtArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpCommandLine)
 {
-  va_list lpVaList2;
-  RT_UN unCommandLineSize;
-  RT_CHAR* lpArg;
+  RT_CHAR** lpInApplicationPathAndArgs;
   RT_UN unCommandLineBufferSize;
   RT_CHAR* lpLocalCommandLine;
   RT_UN unWritten;
+  RT_B bFirst;
   RT_B bResult;
 
-  RT_VA_COPY(lpVaList, lpVaList2);
-
   /* First, compute the required command line size. */
-  unCommandLineSize = RtComputeArgSizeInCommandLine(lpApplicationName);
-
-  while (RT_TRUE)
+  lpInApplicationPathAndArgs = lpApplicationPathAndArgs;
+  unCommandLineBufferSize = 0;
+  bFirst = RT_TRUE;
+  while (*lpInApplicationPathAndArgs)
   {
-    lpArg = va_arg(lpVaList, RT_CHAR*);
-    if (lpArg)
+    if (bFirst)
     {
-      unCommandLineSize += RtComputeArgSizeInCommandLine(lpArg);
-      unCommandLineSize++; /* Space separator between arguments. */
+      bFirst = RT_FALSE;
     }
     else
     {
-      break;
+      unCommandLineBufferSize++; /* Space separator between arguments. */
     }
+    unCommandLineBufferSize += RtComputeArgSizeInCommandLine(*lpInApplicationPathAndArgs);
+
+    lpInApplicationPathAndArgs++;
   }
 
   /* Add one for trailing zero. */
-  unCommandLineBufferSize = unCommandLineSize + 1;
+  unCommandLineBufferSize++;
 
-  if (!RtAllocIfNeeded(lpBuffer, unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpCommandLine, unCommandLineBufferSize)) goto handle_error;
+  if (!RtAllocIfNeeded(lpBuffer, unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpCommandLine, unCommandLineBufferSize * sizeof(RT_CHAR))) goto handle_error;
 
+  /* Simplify pointer access. */
   lpLocalCommandLine = *lpCommandLine;
 
+  lpInApplicationPathAndArgs = lpApplicationPathAndArgs;
   unWritten = 0;
-  if (!RtConvertArgToCommandLine(lpApplicationName, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
-
-  while (RT_TRUE)
+  bFirst = RT_TRUE;
+  while (*lpInApplicationPathAndArgs)
   {
-    lpArg = va_arg(lpVaList2, RT_CHAR*);
-    if (lpArg)
+    if (bFirst)
     {
-      /* Arguments separatory. */
-      if (!RtCopyStringWithSize(_R(" "), 1, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
-
-      /* Convert argument. */
-      if (!RtConvertArgToCommandLine(lpArg, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+      bFirst = RT_FALSE;
     }
     else
     {
-      break;
+      /* Arguments separator. */
+      if (!RtCopyStringWithSize(_R(" "), 1, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
     }
+    /* Convert argument. */
+    if (!RtConvertArgToCommandLine(*lpInApplicationPathAndArgs, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+
+    lpInApplicationPathAndArgs++;
   }
 
   bResult = RT_SUCCESS;
 free_resources:
-  va_end(lpVaList2);
   return bResult;
 
 handle_error:
@@ -261,7 +239,7 @@ handle_error:
  */
 RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                         RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
-                                        RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
+                                        RT_CHAR** lpApplicationPathAndArgs)
 {
   RT_N nErrno;
   RT_FILE rtReadPipe;
@@ -340,13 +318,13 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
         RtWriteLastErrorMessage(_R("Failed to compute environment: "));
         goto handle_child_error;
       }
-      execvpe(lpApplicationName, lpPArgs, lpEnvVarsArray);
+      execvpe(lpApplicationPathAndArgs[0], lpApplicationPathAndArgs, lpEnvVarsArray);
     }
     else
     {
-      execvp(lpApplicationName, lpPArgs);
+      execvp(lpApplicationPathAndArgs[0], lpApplicationPathAndArgs);
     }
-    RtWriteLastErrorMessageVariadic(RT_NULL, _R("Failed to start \""), lpApplicationName, _R("\": "), (RT_CHAR*)RT_NULL);
+    RtWriteLastErrorMessageVariadic(RT_NULL, _R("Failed to start \""), lpApplicationPathAndArgs[0], _R("\": "), (RT_CHAR*)RT_NULL);
 
 handle_child_error:
 
@@ -414,7 +392,7 @@ handle_error:
  */
 RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                                    RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
-                                                   RT_CHAR* lpApplicationName, RT_CHAR** lpPArgs)
+                                                   RT_CHAR** lpApplicationPathAndArgs)
 {
   RT_N nChildPid;
   RT_N nErrno;
@@ -449,7 +427,7 @@ RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHA
     }
 
     /* Fork actual process from the current forked process. */
-    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_child_error;
+    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_child_error;
 
     /* Write child PID into the pipe. */
     nChildPid = lpProcess->nPid;
@@ -556,9 +534,9 @@ handle_error:
 
 #endif
 
-RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
-                             RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
-                             RT_CHAR* lpApplicationName)
+RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
+                                            RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                            RT_CHAR** lpApplicationPathAndArgs)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_FILE rtStdInput;
@@ -583,15 +561,6 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
   RT_UN unHeapBufferSize;
   STARTUPINFO rtStartupInfo;
   RT_CHAR* lpEnvVarsBlock;
-#else
-  va_list lpVaList2;
-  RT_CHAR* lpArg;
-  RT_UN unArgsCount;
-  void* lpBuffer[240];                             /* 240 * 8 = 1920, to consume half of 4000 under 64 bits. */
-  void* lpHeapBuffer;
-  RT_CHAR** lpPArgs;
-  RT_UN unHeapBufferSize;
-  RT_UN unI;
 #endif
   RT_B bResult;
 
@@ -673,7 +642,7 @@ RT_B RT_API RtVCreateProcess(RT_PROCESS* lpProcess, va_list lpVaList, RT_B bChil
     }
   }
 
-  if (!RtArgVToCommandLine(lpVaList, lpApplicationName, lpCommandLineBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, &lpCommandLine)) goto handle_error;
+  if (!RtArgVToCommandLine(lpApplicationPathAndArgs, lpCommandLineBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, &lpCommandLine)) goto handle_error;
 
   if (lpEnvVars)
   {
@@ -725,68 +694,17 @@ handle_error:
 
 #else /* NOT RT_DEFINE_WINDOWS */
 
-  RT_VA_COPY(lpVaList, lpVaList2);
-  lpHeapBuffer = RT_NULL;
-  unHeapBufferSize = 0;
-
-  /* Count the size of the array of pointers to arguments. First is application name, last is null. */
-
-  /* lpApplicationName and trailing RT_NULL. */
-  unArgsCount = 2;
-
-  while (RT_TRUE)
-  {
-    lpArg = va_arg(lpVaList, RT_CHAR*);
-    if (lpArg)
-    {
-      unArgsCount++;
-    }
-    else
-    {
-      break;
-    }
-  }
-
-  /* Ensure to have an array of pointers of the right size. */
-  if (!RtAllocIfNeeded(lpBuffer, 240 * sizeof(RT_CHAR*), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpPArgs, unArgsCount * sizeof(RT_CHAR*))) goto handle_error;
-
-  /* First "arg" is application name. */
-  lpPArgs[0] = lpApplicationName;
-
-  unI = 1;
-  while (RT_TRUE)
-  {
-    lpArg = va_arg(lpVaList2, RT_CHAR*);
-    if (lpArg)
-    {
-      lpPArgs[unI] = lpArg;
-      unI++;
-    }
-    else
-    {
-      break;
-    }
-  }
-  /* We must have RT_NULL as last "arg". */
-  lpPArgs[unI] = RT_NULL;
-
   if (bChild)
   {
-    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_error;
   }
   else
   {
-    if (!RtCreateLinuxProcessUsingIntermediate(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationName, lpPArgs)) goto handle_error;
+    if (!RtCreateLinuxProcessUsingIntermediate(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
 free_resources:
-  if (lpHeapBuffer)
-  {
-    if (!RtFree(&lpHeapBuffer)) goto handle_error;
-  }
-  /* va_end must be the last resource. */
-  va_end(lpVaList2);
   return bResult;
 
 handle_error:

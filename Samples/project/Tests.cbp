@@ -102,71 +102,77 @@
 		<Linker>
 			<Add directory="../../win32ex/lib" />
 		</Linker>
+		<Unit filename="../src/Tests/include/ZzManualTests.h" />
+		<Unit filename="../src/Tests/include/ZzTestParseArgs.h" />
+		<Unit filename="../src/Tests/include/ZzTests.h" />
 		<Unit filename="../src/Tests/include/ZzTools.h" />
 		<Unit filename="../src/Tests/src/ZzManualTests.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestAtomic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestChar.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestCommandLineArgs.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestEncoding.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestEnvVar.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestEnvVars.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestEvent.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestFile.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestFileSystem.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestHeap.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestInitialization.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestList.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestMemory.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestProcess.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestProperties.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestRandom.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestSocket.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestThread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/Tests/src/ZzTestTypes.c">
+		<Unit filename="../src/Tests/src/ZzTestParseArgs.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/ZzTests.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/ZzTools.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestAtomic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestChar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestCommandLineArgs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestEncoding.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestEnvVar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestEnvVars.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestEvent.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestFileSystem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestHeap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestInitialization.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestMemory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestProcess.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestProperties.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestRandom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestSocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestThread.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestTypes.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

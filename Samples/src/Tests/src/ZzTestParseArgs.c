@@ -2,7 +2,7 @@
 
 RT_B RT_CALL ZzParseArgsCallback(RT_UN unArgType, RT_B bValid, RT_CHAR nShortOption, RT_CHAR* lpLongOption,
                                        RT_UN unValueCardinality, RT_CHAR* lpValue, void* lpContext)
-{  
+{
   RT_CHAR lpMsg[RT_CHAR_BIG_STRING_SIZE];
   RT_UN unWritten;
   RT_B bResult;
@@ -17,7 +17,7 @@ RT_B RT_CALL ZzParseArgsCallback(RT_UN unArgType, RT_B bValid, RT_CHAR nShortOpt
   else
   {
     /* RT_COMMAND_LINE_ARG_TYPE_LONG */
-    
+
     if (!RtCopyString(lpLongOption,   &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
     if (!RtCopyString(_R(", long"),  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   }
@@ -97,10 +97,10 @@ RT_B RT_CALL ZzTestParseArgs(RT_N32 nArgC, RT_CHAR* lpArgV[])
   lpLongOptionsWithArg[3] = _R("required4");
   lpLongOptionsWithArg[4] = _R("required5");
   lpLongOptionsWithArg[5] = RT_NULL;
- 
+
   if (!RtParseCommandLineArgs(&nArgC, lpArgV, &ZzParseArgsCallback, RT_NULL,
                               _R("abcdefg"), _R("hijklmn"), _R("opqrstu"),
-                              RT_NULL, lpLongOptionsWithOptionalArg, lpLongOptionsWithArg,
+                              lpLongOptionsWithoutArg, lpLongOptionsWithOptionalArg, lpLongOptionsWithArg,
                               &nNonOptionsIndex)) goto handle_error;
 
   RtWriteStringToConsole(_R("\nNon-options:\n"));

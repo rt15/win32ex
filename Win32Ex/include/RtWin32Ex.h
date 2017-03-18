@@ -26,6 +26,7 @@ Redirect to null pipe/file!?
 
 Non blocking socket.
 Chat client server!?
+Scalable socket server architecture!?
 
 Manage signals/interrupts in read calls!?
 
