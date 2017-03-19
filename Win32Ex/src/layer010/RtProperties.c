@@ -6,7 +6,7 @@
 #include "layer008/RtSmallFile.h"
 #include "layer009/RtSortableArray.h"
 
-RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries, RT_CHAR* lpData)
+RT_B RT_CALL RtGetPropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries, RT_CHAR* lpData)
 {
   RT_PROPERTY_ENTRY* lpPropertyEntry;
   RT_CHAR* lpKey;
@@ -63,7 +63,7 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
           /* Fill the new entry. */
           lpData[unCurrentIndex] = 0;
           lpValue = &lpData[unCurrentIndex];
-          lpPropertyEntry->unHash = RtComputeStringHash(lpKey);
+          lpPropertyEntry->unHash = RtGetStringHash(lpKey);
           lpPropertyEntry->lpKey = lpKey;
           lpPropertyEntry->lpValue = lpValue;
           unContext = 0;
@@ -100,7 +100,7 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
             goto the_end;
           }
           /* Fill the new entry. */
-          lpPropertyEntry->unHash = RtComputeStringHash(lpKey);
+          lpPropertyEntry->unHash = RtGetStringHash(lpKey);
           lpPropertyEntry->lpKey = lpKey;
           lpPropertyEntry->lpValue = lpValue;
           lpData[unCurrentIndex] = 0;
@@ -123,7 +123,7 @@ RT_B RT_CALL RtComputePropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries,
         goto the_end;
       }
       /* Fill the new entry. */
-      lpPropertyEntry->unHash = RtComputeStringHash(lpKey);
+      lpPropertyEntry->unHash = RtGetStringHash(lpKey);
       lpPropertyEntry->lpKey = lpKey;
       lpPropertyEntry->lpValue = lpValue;
       break;
@@ -145,7 +145,7 @@ RT_B RT_CALL RtCreatePropertiesFromString(RT_PROPERTIES* lpProperties, RT_CHAR* 
     goto the_end;
   }
 
-  if (RtComputePropertiesEntries(&lpPropertiesEntries, lpData))
+  if (RtGetPropertiesEntries(&lpPropertiesEntries, lpData))
   {
     /* Fill the structure. */
     lpProperties->lpPropertiesEntries = lpPropertiesEntries;
@@ -215,7 +215,7 @@ RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey,
 
   lpResult = lpDefaultValue;
 
-  unHash = RtComputeStringHash(lpKey);
+  unHash = RtGetStringHash(lpKey);
   lpPropertiesEntries = lpProperties->lpPropertiesEntries;
 
   unSize = RtGetArraySize(lpPropertiesEntries);

@@ -94,7 +94,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
     if (RtStringEndsWithWithSize(lpLowerCasePath, unWritten, _R(".sql"), 4))
     {
       unWritten = 0;
-      RtExtractFileName(lpPath, RtGetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
+      RtGetFileName(lpPath, RtGetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
       /* Write file name without extension. */
       RtWriteStringToConsoleWithSize(lpFileName, unWritten - 4);
 

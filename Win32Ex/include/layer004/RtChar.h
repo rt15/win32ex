@@ -132,7 +132,7 @@ RT_B RT_API RtStringEndsWith(RT_CHAR* lpString, RT_CHAR* lpSearched);
 
 RT_B RT_API RtStringEndsWithWithSize(RT_CHAR* lpString, RT_UN unStringSize, RT_CHAR* lpSearched, RT_UN unSearchedSize);
 
-RT_UN RT_API RtComputeStringHash(RT_CHAR* lpString);
+RT_UN RT_API RtGetStringHash(RT_CHAR* lpString);
 
 /**
  * Use RtRightTrimStringWithSize when you know the size of the string.
@@ -159,6 +159,7 @@ RT_UN RT_API RtSearchStringInStrings(RT_CHAR* lpStrings[], RT_CHAR* lpSearched);
 
 /**
  *
+ * @param lpString Can be RT_NULL.
  * @return index of <tt>nSearched</tt> in <tt>lpString</tt> or RT_TYPE_MAX_UN if not found.
  */
 RT_UN RT_API RtSearchChar(RT_CHAR* lpString, RT_CHAR nSearched);

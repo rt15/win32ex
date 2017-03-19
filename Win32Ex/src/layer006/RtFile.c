@@ -368,7 +368,7 @@ RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrit
   return bResult;
 }
 
-RT_UN RT_API RtComputeFileSize(RT_FILE* lpFile)
+RT_UN RT_API RtGetFileSize(RT_FILE* lpFile)
 {
   RT_UN unOldPos;
   RT_UN unResult;

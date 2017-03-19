@@ -180,7 +180,7 @@ end_of_tests:
   RtConvertIntegerToString(RtCheckPath(_R("fake"), RT_FILE_SYSTEM_TYPE_DIRECTORY | RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
   RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("both fake: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
-  RtConvertUIntegerToString(RtGetFileSize(_R("data/file.txt")), lpBuffer, 500, &unWritten);
+  RtConvertUIntegerToString(RtGetFileSystemFileSize(_R("data/file.txt")), lpBuffer, 500, &unWritten);
   RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtConvertIntegerToString(getPageSize(), lpBuffer, 500, &unWritten);
@@ -400,13 +400,13 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   {
     bResult = ZzManualTests();
   }
-  
+
   else if (!RtCompareStrings(lpArgV[1], _R("--parse-args")) ||
            !RtCompareStrings(lpArgV[1], _R("-p")))
   {
     bResult = ZzTestParseArgs(nArgC - 1, &lpArgV[1]);
   }
-  
+
   else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--read-line")) ||
                           !RtCompareStrings(lpArgV[1], _R("-r"))))
   {

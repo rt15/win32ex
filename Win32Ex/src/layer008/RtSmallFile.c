@@ -26,7 +26,7 @@ RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuff
   bFreeFile = RT_TRUE;
 
   /* Retrieve the size of the file. */
-  unResult = RtComputeFileSize(&rtFile);
+  unResult = RtGetFileSize(&rtFile);
   if (unResult == RT_TYPE_MAX_UN) goto handle_error;
 
   /* Allocate a space of size of file + 1 for trailing zero. */

@@ -560,7 +560,7 @@ RT_B RT_API RtStringEndsWithWithSize(RT_CHAR* lpString, RT_UN unStringSize, RT_C
   return bResult;
 }
 
-RT_UN RT_API RtComputeStringHash(RT_CHAR* lpString)
+RT_UN RT_API RtGetStringHash(RT_CHAR* lpString)
 {
   /* TODO: Make a better implementation. */
   return lpString[0];
@@ -627,9 +627,16 @@ RT_UN RT_API RtSearchChar(RT_CHAR* lpString, RT_CHAR nSearched)
 {
   RT_UN unResult;
 
-  unResult = 0;
-  while (lpString[unResult] && lpString[unResult] != nSearched) unResult++;
-  if (!lpString[unResult])
+  if (lpString)
+  {
+    unResult = 0;
+    while (lpString[unResult] && lpString[unResult] != nSearched) unResult++;
+    if (!lpString[unResult])
+    {
+      unResult = RT_TYPE_MAX_UN;
+    }
+  }
+  else
   {
     unResult = RT_TYPE_MAX_UN;
   }

@@ -4,7 +4,7 @@
 #include "ZzStrings.h"
 #include "ZzWindows.h"
 
-RT_GUI_RECT* RT_CALL ZzComputeVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
+RT_GUI_RECT* RT_CALL ZzGetVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
 {
   RT_GUI_RECT rtRect;
 
@@ -24,7 +24,7 @@ RT_GUI_RECT* RT_CALL ZzComputeVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_A
   return lpRect;
 }
 
-RT_GUI_RECT* RT_CALL ZzComputeListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
+RT_GUI_RECT* RT_CALL ZzGetListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
 {
   RT_GUI_RECT rtRect;
 
@@ -42,7 +42,7 @@ RT_GUI_RECT* RT_CALL ZzComputeListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEX
   return lpRect;
 }
 
-RT_GUI_RECT* RT_CALL ZzComputeLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
+RT_GUI_RECT* RT_CALL ZzGetLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext)
 {
   RT_GUI_RECT rtRect;
   RECT rtRect2;

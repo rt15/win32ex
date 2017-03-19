@@ -13,7 +13,7 @@ void* RT_API RtCreateList(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN u
   lpChunks = RT_NULL;
 
   /* Compute chunks count. */
-  unChunksCount = RtComputeChunksCount(unSize, unChunkSize);
+  unChunksCount = RtGetChunksCount(unSize, unChunkSize);
   if (unChunksCount == RT_TYPE_MAX_UN)
   {
     goto handle_error;
@@ -137,7 +137,7 @@ void* RT_API RtSetListSize(void** lpList, RT_UN unSize)
   unItemSize = lpListHeader->unItemSize;
 
   /* Compute new chunks count. */
-  unNewChunksCount = RtComputeChunksCount(unSize, unChunkSize);
+  unNewChunksCount = RtGetChunksCount(unSize, unChunkSize);
   if (unNewChunksCount == RT_TYPE_MAX_UN)
   {
     goto handle_error;

@@ -155,9 +155,9 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
       /* Resize status bar. */
       SendMessage(lpAppContext->hStatusBar, WM_SIZE, unWParam, nLParam);
 
-      RtMoveWindow(lpAppContext->hLeftTab, ZzComputeLeftTabPosition(&rtRect, lpAppContext));
-      RtMoveWindow(lpAppContext->hVerticalSplitter, ZzComputeVerticalSplitterPosition(&rtRect, lpAppContext));
-      RtMoveWindow(lpAppContext->hListBox, ZzComputeListBoxPosition(&rtRect, lpAppContext));
+      RtMoveWindow(lpAppContext->hLeftTab, ZzGetLeftTabPosition(&rtRect, lpAppContext));
+      RtMoveWindow(lpAppContext->hVerticalSplitter, ZzGetVerticalSplitterPosition(&rtRect, lpAppContext));
+      RtMoveWindow(lpAppContext->hListBox, ZzGetListBoxPosition(&rtRect, lpAppContext));
       break;
 
     case WM_LBUTTONDOWN:
@@ -166,7 +166,7 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
       hChild = ChildWindowFromPoint(lpAppContext->hMainWindow, rtCursorPosition);
       if (hChild == lpAppContext->hVerticalSplitter)
       {
-        ZzComputeVerticalSplitterPosition(&rtRect, lpAppContext);
+        ZzGetVerticalSplitterPosition(&rtRect, lpAppContext);
         lpAppContext->nSplitterCursorOffset = rtCursorPosition.x - rtRect.nX;
         SetCursor(lpAppContext->hWestEastCursor);
         lpAppContext->bUsingVerticalSplitter = RT_TRUE;
@@ -193,9 +193,9 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
       if (lpAppContext->bUsingVerticalSplitter && rtCursorPosition.x < RT_TYPE_MAX_N16)
       {
         lpAppContext->nVerticalSplitterX = rtCursorPosition.x - lpAppContext->nSplitterCursorOffset;
-        RtMoveWindow(lpAppContext->hLeftTab, ZzComputeLeftTabPosition(&rtRect, lpAppContext));
-        RtMoveWindow(lpAppContext->hVerticalSplitter, ZzComputeVerticalSplitterPosition(&rtRect, lpAppContext));
-        RtMoveWindow(lpAppContext->hListBox, ZzComputeListBoxPosition(&rtRect, lpAppContext));
+        RtMoveWindow(lpAppContext->hLeftTab, ZzGetLeftTabPosition(&rtRect, lpAppContext));
+        RtMoveWindow(lpAppContext->hVerticalSplitter, ZzGetVerticalSplitterPosition(&rtRect, lpAppContext));
+        RtMoveWindow(lpAppContext->hListBox, ZzGetListBoxPosition(&rtRect, lpAppContext));
       }
       else
       {
@@ -256,13 +256,13 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   rtAppContext.hStatusBar = RtCreateStatusBar(RT_TRUE, _R(""), rtAppContext.hMainWindow, ZZ_RESOURCES_STATUS_BAR_CTRL_ID, rtAppContext.hInstance);
   if (!rtAppContext.hStatusBar) goto handle_error;
 
-  rtAppContext.hLeftTab = ZzCreateLeftTab(ZzComputeLeftTabPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, rtAppContext.hInstance, rtAppContext.hFont);
+  rtAppContext.hLeftTab = ZzCreateLeftTab(ZzGetLeftTabPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, rtAppContext.hInstance, rtAppContext.hFont);
   if (!rtAppContext.hLeftTab) goto handle_error;
 
-  rtAppContext.hVerticalSplitter = RtCreateStaticWindow(ZzComputeVerticalSplitterPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, ZZ_RESOURCES_VERTICAL_SPLITTER_CTRL_ID, rtAppContext.hInstance);
+  rtAppContext.hVerticalSplitter = RtCreateStaticWindow(ZzGetVerticalSplitterPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, ZZ_RESOURCES_VERTICAL_SPLITTER_CTRL_ID, rtAppContext.hInstance);
   if (!rtAppContext.hVerticalSplitter) goto handle_error;
 
-  rtAppContext.hListBox = ZzCreateListBox(ZzComputeListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
+  rtAppContext.hListBox = ZzCreateListBox(ZzGetListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
   if (!rtAppContext.hListBox) goto handle_error;
 
   rtRect.nX = ZZ_GUI_BORDER;

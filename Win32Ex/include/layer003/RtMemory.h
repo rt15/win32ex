@@ -125,6 +125,6 @@ RT_UN32* RT_API RtSwapBytes32(RT_UN32* lpSource, RT_UN32* lpDestination, RT_UN u
  *
  * @return RT_TYPE_MAX_UN in case of error.
  */
-RT_UN RT_API RtComputeChunksCount(RT_UN unSize, RT_UN unChunkSize);
+RT_UN RT_API RtGetChunksCount(RT_UN unSize, RT_UN unChunkSize);
 
 #endif /* RT_MEMORY_H */

@@ -49,6 +49,16 @@ RT_PROCESS;
 RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs);
 
 /**
+ * Spawn a child process and wait for the end of it.
+ */
+RT_B RT_API RtSpawnProcessSync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs, RT_UN32* lpExitCode);
+
+/**
+ * Spawn a non-child process.
+ */
+RT_B RT_API RtSpawnProcessASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs);
+
+/**
  * Start a process with redirections.
  *
  * </p>

@@ -12,6 +12,59 @@ RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurre
   return RtCreateProcessWithRedirections(lpProcess, bChild, lpCurrentDirectory, lpEnvVars, RT_NULL, RT_NULL, RT_NULL, lpApplicationPathAndArgs);
 }
 
+RT_B RT_API RtSpawnProcessSync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs, RT_UN32* lpExitCode)
+{
+  RT_PROCESS rtProcess;
+  RT_B bProcessCreated;
+  RT_B bResult;
+
+  bProcessCreated = RT_FALSE;
+
+  if (!RtCreateProcess(&rtProcess, RT_TRUE, lpCurrentDirectory, lpEnvVars, lpApplicationPathAndArgs)) goto handle_error;
+  bProcessCreated = RT_TRUE;
+
+  if (!RtJoinProcess(&rtProcess)) goto handle_error;
+  if (!RtGetProcessExitCode(&rtProcess, lpExitCode)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bProcessCreated)
+  {
+    bProcessCreated = RT_FALSE;
+    if (!RtFreeProcess(&rtProcess) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtSpawnProcessASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs)
+{
+  RT_PROCESS rtProcess;
+  RT_B bProcessCreated;
+  RT_B bResult;
+
+  bProcessCreated = RT_FALSE;
+
+  if (!RtCreateProcess(&rtProcess, RT_FALSE, lpCurrentDirectory, lpEnvVars, lpApplicationPathAndArgs)) goto handle_error;
+  bProcessCreated = RT_TRUE;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bProcessCreated)
+  {
+    bProcessCreated = RT_FALSE;
+    if (!RtFreeProcess(&rtProcess) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 /**
  * Convert given argv so it can be used in command line.<br>
  * See <tt>RtArgVToCommandLine</tt>.
@@ -108,7 +161,7 @@ handle_error:
  * If double-quotes are needed, add 1 character per anti-slash (Not always required) and '"' (Always required).
  * </p>
  */
-RT_UN RT_CALL RtComputeArgSizeInCommandLine(RT_CHAR* lpArg)
+RT_UN RT_CALL RtGetArgSizeInCommandLine(RT_CHAR* lpArg)
 {
   RT_UN unAntiSlashes;
   RT_UN unDoubleQuotes;
@@ -190,7 +243,7 @@ RT_B RT_CALL RtArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lp
     {
       unCommandLineBufferSize++; /* Space separator between arguments. */
     }
-    unCommandLineBufferSize += RtComputeArgSizeInCommandLine(*lpInApplicationPathAndArgs);
+    unCommandLineBufferSize += RtGetArgSizeInCommandLine(*lpInApplicationPathAndArgs);
 
     lpInApplicationPathAndArgs++;
   }

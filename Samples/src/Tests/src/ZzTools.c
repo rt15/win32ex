@@ -175,11 +175,11 @@ RT_B RT_CALL ZzAdjustDirectory()
 
   unPathSize = unWritten;
   unWritten = 0;
-  if (!RtExtractParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtGetNewParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unPathSize = unWritten;
   unWritten = 0;
-  if (!RtExtractParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtGetNewParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   if (!RtBuildPath(lpPath, unWritten, _R("src"), RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
 
@@ -200,10 +200,10 @@ RT_N RT_CALL ZzCompareStringsArrays(RT_CHAR** lpStrings1, RT_CHAR** lpStrings2)
   RT_CHAR** lpInStrings1;
   RT_CHAR** lpInStrings2;
   RT_N nResult;
-  
+
   lpInStrings1 = lpStrings1;
   lpInStrings2 = lpStrings2;
-  
+
   nResult = 0;
   while (*lpInStrings1 && *lpInStrings2)
   {

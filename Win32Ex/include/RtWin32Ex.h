@@ -194,7 +194,7 @@ Relationships will be a tough part too.
 
 Manage index activation? Used for ranking?
 
-## Better implementation for RtComputeStringHash
+## Better implementation for RtGetStringHash
 
 ## A test on sizeof
 
@@ -247,6 +247,7 @@ I probably need to call LongPath.
 
 No length or count (Use size).
 No folder (Use directory. Or dir?).
+Extract/Compute -> Get.
 Remove/Delete/Drop...
 No Temporary, use Temp.
 No environment, use env.

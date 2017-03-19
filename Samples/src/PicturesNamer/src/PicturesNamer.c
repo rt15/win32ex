@@ -93,7 +93,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
         }
 
         /* Fill file info. */
-        RtExtractFileName(lpPath, unPathSize, lpFileInfo->lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
+        RtGetFileName(lpPath, unPathSize, lpFileInfo->lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
         RetrieveOriginalDate(lpPath, lpFileInfo->lpOriginalDate);
       }
     }

@@ -11,11 +11,11 @@
 #define ZZ_GUI_BUTTON_WIDTH 80
 #define ZZ_GUI_BUTTON_HEIGHT 20
 
-RT_GUI_RECT* RT_CALL ZzComputeVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext);
+RT_GUI_RECT* RT_CALL ZzGetVerticalSplitterPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext);
 
-RT_GUI_RECT* RT_CALL ZzComputeLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext);
+RT_GUI_RECT* RT_CALL ZzGetLeftTabPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext);
 
-RT_GUI_RECT* RT_CALL ZzComputeListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext);
+RT_GUI_RECT* RT_CALL ZzGetListBoxPosition(RT_GUI_RECT* lpRect, ZZ_APP_CONTEXT* lpAppContext);
 
 RT_H RT_CALL ZzCreateListBox(RT_GUI_RECT* lpPosition, RT_CHAR* lpName, RT_UN unControlId, RT_H hParentWindow, RT_H hInstance, RT_H hFont);
 

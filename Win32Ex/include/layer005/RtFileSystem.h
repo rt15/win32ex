@@ -42,12 +42,14 @@ typedef RT_B (RT_CALL *RT_FILE_SYSTEM_BROWSE_CALLBACK)(RT_CHAR* lpPath, RT_UN un
 
 RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, void* lpContext);
 
+RT_B RT_API RtGetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten);
+
 /**
  * <p>
  * <tt>lpBuffer</tt> can be equals to <tt>lpPath</tt>.
  * </p>
  */
-RT_B RT_API RtExtractParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtGetNewParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 /**
  * Find index of the last interesting separator.<br>
@@ -64,7 +66,7 @@ void RT_API RtRemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN 
  * @param lpPath Chemin dont on veut extraire le dernier élément
  * @param lpBuffer Tampon de récupération du dernier élément
  */
-RT_B RT_API RtExtractFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtGetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 /**
  * Move a file.
@@ -96,7 +98,7 @@ RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath);
 /**
  * @return RT_TYPE_MAX_UN in case of error.
  */
-RT_UN RT_API RtGetFileSize(RT_CHAR* lpPath);
+RT_UN RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath);
 
 /**
  * Return non-zero if the path is correct. Set last error in case of issue.
@@ -114,7 +116,7 @@ RT_B RT_API RtGetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpW
 
 /**
  * Append a separator to <tt>lpPath</tt> if there is not already one.<br>
- * Should always be used as "/" is a valide path that can be returned by <tt>RtExtractParentPath</tt>.<br>
+ * Should always be used as "/" is a valide path that can be returned by <tt>RtGetNewParentPath</tt>.<br>
  * So we cannot blindly add a separator to a path.
  */
 RT_B RT_API RtAppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten);
@@ -139,7 +141,7 @@ RT_B RT_API RtBuildNewPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHA
 /**
  * Some functions of Win32 api must be called with a "long path" to handles paths longer than MAX_PATH.
  */
-RT_B RT_API RtComputeLongPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtGetLongPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
 #endif
 

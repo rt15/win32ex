@@ -15,7 +15,7 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   RT_B bReadPipeCreated;
   RT_B bWritePipeCreated;
   RT_CHAR* lpApplicationPathAndArgs[3];
-  
+
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
   RT_UN32 unExitCode;
@@ -209,7 +209,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (!unExitCode) goto handle_error;
 
-  unFileSize = RtGetFileSize(lpTempFile);
+  unFileSize = RtGetFileSystemFileSize(lpTempFile);
   if (unFileSize == RT_TYPE_MAX_UN || unFileSize < 10) goto handle_error;
 
   bResult = RT_SUCCESS;
@@ -334,7 +334,7 @@ RT_B RT_CALL ZzTestFailingProcess()
   lpApplicationPathAndArgs[0] = _R("pong");
   lpApplicationPathAndArgs[1] = _R("localhost");
   lpApplicationPathAndArgs[2] = RT_NULL;
-  
+
   if (RtCreateProcess(&zzProcess, RT_TRUE,   RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   if (RtCreateProcess(&zzProcess, RT_FALSE,  RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
 

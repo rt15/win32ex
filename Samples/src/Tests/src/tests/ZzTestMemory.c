@@ -305,16 +305,16 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzTestComputeChunksCount()
+RT_B RT_CALL ZzTestGetChunksCount()
 {
   RT_B bResult;
 
-  if (RtComputeChunksCount(5, 5) != 1)              goto handle_error;
-  if (RtComputeChunksCount(6, 5) != 2)              goto handle_error;
-  if (RtComputeChunksCount(1, 1) != 1)              goto handle_error;
-  if (RtComputeChunksCount(5, 6) != 1)              goto handle_error;
-  if (RtComputeChunksCount(0, 1) != 0)              goto handle_error;
-  if (RtComputeChunksCount(1, 0) != RT_TYPE_MAX_UN) goto handle_error;
+  if (RtGetChunksCount(5, 5) != 1)              goto handle_error;
+  if (RtGetChunksCount(6, 5) != 2)              goto handle_error;
+  if (RtGetChunksCount(1, 1) != 1)              goto handle_error;
+  if (RtGetChunksCount(5, 6) != 1)              goto handle_error;
+  if (RtGetChunksCount(0, 1) != 0)              goto handle_error;
+  if (RtGetChunksCount(1, 0) != RT_TYPE_MAX_UN) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -333,7 +333,7 @@ RT_B RT_CALL ZzTestMemory()
   if (!ZzTestMoveMemory()) goto handle_error;
   if (!ZzTestSetMemory()) goto handle_error;
   if (!ZzTestSwapMemory()) goto handle_error;
-  if (!ZzTestComputeChunksCount()) goto handle_error;
+  if (!ZzTestGetChunksCount()) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

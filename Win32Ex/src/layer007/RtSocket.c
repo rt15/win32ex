@@ -443,7 +443,7 @@ RT_B RT_API RtListenFromSocketWithBackLog(RT_SOCKET* lpSocket, RT_N32 nBacklog)
 /**
  * Translate win32ex socket message flags into Linux flags.
  */
-RT_UN RT_CALL RtComputeSocketMessageFlags(RT_UN unFlags)
+RT_UN RT_CALL RtGetSocketMessageFlags(RT_UN unFlags)
 {
   RT_UN unResult;
 
@@ -466,7 +466,7 @@ RT_UN RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_UN unData
 #ifdef RT_DEFINE_WINDOWS
   unActualFlags = unFlags;
 #else
-  unActualFlags = RtComputeSocketMessageFlags(unFlags);
+  unActualFlags = RtGetSocketMessageFlags(unFlags);
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
@@ -497,7 +497,7 @@ RT_UN RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBu
 #ifdef RT_DEFINE_WINDOWS
   unActualFlags = unFlags;
 #else
-  unActualFlags = RtComputeSocketMessageFlags(unFlags);
+  unActualFlags = RtGetSocketMessageFlags(unFlags);
 #endif
 
 #ifdef RT_DEFINE_WINDOWS
