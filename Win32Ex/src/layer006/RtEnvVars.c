@@ -31,13 +31,13 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
   lpEnvVars->lpEnvVarsBlock = GetEnvironmentStrings();
   if (!lpEnvVars->lpEnvVarsBlock) goto handle_error;
   
-  /* TODO: Check if Vista implement GetEnvironmentStrings like seven. */
+  /* In Vista 6.0.6001.18631 kernel32.dll disassembly, GetEnvironmentStrings returns a copy of the environment variables block. */
   if (!RtIsOsVersionGreaterOrEqualTo(6, 0, 0, &bGreaterOrEqual)) goto handle_error;
   if (!bGreaterOrEqual)
   {
-    /* GetEnvironmentStrings return direct pointer on the environment on old Windows versions. */
+    /* GetEnvironmentStrings return direct pointer on the environment on old (At least XP) Windows versions. */
     /* As a result the block is updated when a variable is added to the environment. */
-    /* To avoid that, we copy the block. */
+    /* To avoid that, we copy the block if we are not under Vista. */
   
     lpWindowsEnvVarsBlock = lpEnvVars->lpEnvVarsBlock;
   

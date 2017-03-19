@@ -15,13 +15,6 @@
 
 #### TODO:
 
-GetEnvironmentStrings is directly pointing on process environment block at least under XP.
-As a consequence it can change if a variable is added to the environment.
-I must find since which version GetEnvironmentStrings return a copy.
-
-Remove CreateProcess variadic functions.
-Use null terminated array of null terminated strings.
-
 Redirect to null pipe/file!?
 
 Non blocking socket.
