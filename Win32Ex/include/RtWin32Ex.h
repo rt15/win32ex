@@ -340,6 +340,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer005/RtRandom.h"
 #include "layer005/RtStaticHeap.h"
 #include "layer005/RtSystemInfo.h"
+#include "layer005/RtUrl.h"
 
 #include "layer006/RtConsole.h"
 #include "layer006/RtEncoding.h"

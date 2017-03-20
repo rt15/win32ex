@@ -138,6 +138,7 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestThread()) goto tests_failed;
   if (!ZzTestInitialization()) goto tests_failed;
   if (!ZzTestEvent()) goto tests_failed;
+  if (!ZzTestUrl()) goto tests_failed;
   if (!ZzTestSocket()) goto tests_failed;
   if (!ZzTestList(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestEnvVar()) goto tests_failed;

@@ -16,6 +16,7 @@ RT_B RT_CALL ZzTestAtomic();
 RT_B RT_CALL ZzTestThread();
 RT_B RT_CALL ZzTestInitialization();
 RT_B RT_CALL ZzTestEvent();
+RT_B RT_CALL ZzTestUrl();
 RT_B RT_CALL ZzTestSocket();
 RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap);
 RT_B RT_CALL ZzTestEnvVar();

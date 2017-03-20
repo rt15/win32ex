@@ -130,6 +130,7 @@
 		<Unit filename="../include/layer005/RtRandom.h" />
 		<Unit filename="../include/layer005/RtStaticHeap.h" />
 		<Unit filename="../include/layer005/RtSystemInfo.h" />
+		<Unit filename="../include/layer005/RtUrl.h" />
 		<Unit filename="../include/layer006/RtConsole.h" />
 		<Unit filename="../include/layer006/RtEncoding.h" />
 		<Unit filename="../include/layer006/RtEnvVars.h" />
@@ -215,6 +216,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/RtSystemInfo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/RtUrl.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/RtConsole.c">

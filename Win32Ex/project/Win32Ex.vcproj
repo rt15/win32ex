@@ -272,6 +272,10 @@
 					RelativePath="..\src\layer005\RtSystemInfo.c"
 					>
 				</File>
+				<File
+					RelativePath="..\src\layer005\RtUrl.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="layer006"
@@ -504,6 +508,10 @@
 				</File>
 				<File
 					RelativePath="..\include\layer005\RtSystemInfo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer005\RtUrl.h"
 					>
 				</File>
 			</Filter>

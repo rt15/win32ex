@@ -289,6 +289,10 @@
 					RelativePath="..\src\Tests\src\tests\ZzTestTypes.c"
 					>
 				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestUrl.c"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
