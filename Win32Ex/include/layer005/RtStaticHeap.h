@@ -17,10 +17,10 @@ void* RT_API RtAlloc(void** lpArea, RT_UN unSize);
 /**
  *
  *
- * @param lpCurrentArea Left unchanged in case of failure.
- * @return *lpArea
+ * @param lpArea Left unchanged in case of failure.
+ * @return New area or RT_NULL in case of failure.
  */
-void* RT_API RtReAlloc(void** lpArea, void* lpCurrentArea, RT_UN unSize);
+void* RT_API RtReAlloc(void** lpArea, RT_UN unSize);
 
 RT_B RT_API RtFree(void** lpArea);
 

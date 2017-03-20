@@ -22,7 +22,7 @@ void* RT_API RtPageHeapCreate(RtPageHeap* lpThis);
 
 /* Static functions. */
 void* RT_API RtAllocPage(void** lpArea, RT_UN unSize);
-void* RT_API RtReAllocPage(void** lpArea, void* lpCurrentArea, RT_UN unSize);
+void* RT_API RtReAllocPage(void** lpArea, RT_UN unSize);
 RT_B RT_API RtFreePage(void** lpArea);
 
 #endif /* RT_PAGE_HEAP_H */

@@ -30,7 +30,7 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
   /* GetEnvironmentStrings returns null in case of error. */
   lpEnvVars->lpEnvVarsBlock = GetEnvironmentStrings();
   if (!lpEnvVars->lpEnvVarsBlock) goto handle_error;
-  
+
   /* In Vista 6.0.6001.18631 kernel32.dll disassembly, GetEnvironmentStrings returns a copy of the environment variables block. */
   if (!RtIsOsVersionGreaterOrEqualTo(6, 0, 0, &bGreaterOrEqual)) goto handle_error;
   if (!bGreaterOrEqual)
@@ -38,9 +38,9 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
     /* GetEnvironmentStrings return direct pointer on the environment on old (At least XP) Windows versions. */
     /* As a result the block is updated when a variable is added to the environment. */
     /* To avoid that, we copy the block if we are not under Vista. */
-  
+
     lpWindowsEnvVarsBlock = lpEnvVars->lpEnvVarsBlock;
-  
+
     unBlockSize = 0;
     while (RT_TRUE)
     {
@@ -56,7 +56,7 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
     }
     /* Count trailing zero. */
     unBlockSize++;
-    
+
     if (!RtAlloc((void**)&lpLibraryEnvVarsBlock, unBlockSize * sizeof(RT_CHAR))) goto handle_error;
     lpEnvVars->bWindowsBlock = RT_FALSE;
     lpEnvVars->lpEnvVarsBlock = lpLibraryEnvVarsBlock;
@@ -276,7 +276,7 @@ RT_B RT_CALL RtGetEnvVarPointer(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
         /* Variable not found. */
         *lpResult = RT_NULL;
         break;
-      } 
+      }
     }
   }
 
@@ -348,7 +348,7 @@ RT_B RT_API RtRemoveEnvVarFromEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarN
   if (!RtFree((void**)&lpEnvVars->lpEnvVarsArray)) goto handle_error;
 
   if (!RtGetEnvVarPointer(lpEnvVars, lpEnvVarName, &lpEnvVar)) goto handle_error;
-  
+
   /* Remove only if exists. */
   if (lpEnvVar)
   {
@@ -438,10 +438,12 @@ RT_B RT_API RtAddEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName
   }
   else
   {
-    if (!RtReAlloc((void**)&lpNewEnvVarsBlock, lpOldEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
+    lpNewEnvVarsBlock = lpOldEnvVarsBlock;
+    if (!RtReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
   }
 #else
-  if (!RtReAlloc((void**)&lpNewEnvVarsBlock, lpOldEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
+  lpNewEnvVarsBlock = lpOldEnvVarsBlock;
+  if (!RtReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
 #endif
 
   unWritten = unOldEnvVarsBlockSize - 1;
@@ -473,7 +475,10 @@ free_resources:
   return bResult;
 
 handle_error:
-  RtFree((void**)&lpNewEnvVarsBlock);
+  if (*lpNewEnvVarsBlock != *lpOldEnvVarsBlock)
+  {
+    RtFree((void**)&lpNewEnvVarsBlock);
+  }
   bResult = RT_FAILURE;
   goto free_resources;
 }

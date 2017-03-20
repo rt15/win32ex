@@ -31,6 +31,53 @@ RT_N RT_API RtCompareString8s(RT_CHAR8* lpString1, RT_CHAR8* lpString2)
   return nResult;
 }
 
+RT_B RT_API RtCopyString8(RT_CHAR8* lpSource, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+{
+  RT_UN unI;
+  RT_B bResult;
+
+  /* Manage negative or zero buffer sizes. */
+  if (unBufferSize <= 0)
+  {
+    RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
+    goto handle_error;
+  }
+
+  /* Manage all characters until zero trailing character. */
+  unI = 0;
+  while (lpSource[unI])
+  {
+    if (unI >= unBufferSize)
+    {
+      RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
+      lpBuffer[unBufferSize - 1] = 0;
+      *lpWritten += unBufferSize - 1;
+      goto handle_error;
+    }
+    lpBuffer[unI] = lpSource[unI];
+    unI++;
+  }
+
+  /* Manage zero trailing character. */
+  if (unI >= unBufferSize)
+  {
+    RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
+    lpBuffer[unBufferSize - 1] = 0;
+    *lpWritten += unBufferSize - 1;
+    goto handle_error;
+  }
+  lpBuffer[unI] = 0;
+
+  *lpWritten += unI;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_API RtCopyString8WithSize(RT_CHAR8* lpSource, RT_UN unSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_B bResult;

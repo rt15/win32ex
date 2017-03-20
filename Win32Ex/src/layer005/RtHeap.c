@@ -35,11 +35,7 @@ void* RT_API RtAllocIfNeededWithHeap(void* lpBuffer, RT_UN unBufferSize, void** 
     /* If a too small heap buffer exists, realloc. */
     if (*lpHeapBuffer)
     {
-      if ((*lpHeap)->lpReAlloc(lpHeap, lpArea, *lpHeapBuffer, unSize))
-      {
-        /* Reallocation was a success, use new area as heap buffer. */
-        *lpHeapBuffer = *lpArea;
-      }
+      *lpArea = (*lpHeap)->lpReAlloc(lpHeap, lpHeapBuffer, unSize);
     }
     else
     {

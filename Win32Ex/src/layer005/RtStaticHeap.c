@@ -47,16 +47,23 @@ free_resources:
   return *lpArea;
 }
 
-void* RT_API RtReAlloc(void** lpArea, void* lpCurrentArea, RT_UN unSize)
+void* RT_API RtReAlloc(void** lpArea, RT_UN unSize)
 {
+  void* lpResult;
+
 #ifdef RT_DEFINE_WINDOWS
-  /* HeapReAlloc return NULL and call SetLastError in case of failure. lpCurrentArea is left unchanged. */
-  *lpArea = HeapReAlloc(rt_hStaticHeapProcessHeap, 0, lpCurrentArea, unSize);
+  /* HeapReAlloc return NULL and call SetLastError in case of failure. Current area is left unchanged. */
+  lpResult = HeapReAlloc(rt_hStaticHeapProcessHeap, 0, *lpArea, unSize);
 #else
-  /* realloc set errno. lpCurrentArea is left unchanged. */
-  *lpArea = realloc(lpCurrentArea, unSize);
+  /* realloc set errno. Current area is left unchanged. */
+  lpResult = realloc(*lpArea, unSize);
 #endif
-  return *lpArea;
+  /* If re-alloc has been successful, *lpArea is no more allocated. */
+  if (lpResult)
+  {
+    *lpArea = lpResult;
+  }
+  return lpResult;
 }
 
 RT_B RT_API RtFree(void** lpArea)
@@ -98,11 +105,7 @@ void* RT_API RtAllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBu
     {
       if (*lpHeapBuffer)
       {
-        if (RtReAlloc(lpArea, *lpHeapBuffer, unSize))
-        {
-          /* Realloc was a success, use new lpArea as heap buffer. */
-          *lpHeapBuffer = *lpArea;
-        }
+        *lpArea = RtReAlloc(lpHeapBuffer, unSize);
       }
       else
       {
