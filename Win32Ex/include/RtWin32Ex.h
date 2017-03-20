@@ -15,11 +15,14 @@
 
 #### TODO:
 
+Password reading in console.
+
 Redirect to null pipe/file!?
 
 Non blocking socket.
 Chat client server!?
 Scalable socket server architecture!?
+Or micro-service.
 
 Manage signals/interrupts in read calls!?
 
@@ -247,6 +250,7 @@ I probably need to call LongPath.
 
 No length or count (Use size).
 No folder (Use directory. Or dir?).
+intialize/cleanup.
 Extract/Compute -> Get.
 Remove/Delete/Drop...
 No Temporary, use Temp.
