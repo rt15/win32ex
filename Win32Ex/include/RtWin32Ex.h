@@ -15,6 +15,8 @@
 
 #### TODO:
 
+RtEncode/RtDecode should return a boolean and have a RT_UN* lpWritten parameter.
+
 Password reading in console.
 
 Redirect to null pipe/file!?
