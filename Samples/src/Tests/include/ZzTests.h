@@ -10,6 +10,7 @@ RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap);
 RT_B RT_CALL ZzTestFile();
 RT_B RT_CALL ZzTestFileSystem();
 RT_B RT_CALL ZzTestChar();
+RT_B RT_CALL ZzTestBase64();
 RT_B RT_CALL ZzTestEncoding();
 RT_B RT_CALL ZzTestProperties(RT_HEAP** lpHeap);
 RT_B RT_CALL ZzTestAtomic();

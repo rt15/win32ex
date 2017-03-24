@@ -132,6 +132,7 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestFile()) goto tests_failed;
   if (!ZzTestFileSystem()) goto tests_failed;
   if (!ZzTestChar()) goto tests_failed;
+  if (!ZzTestBase64()) goto tests_failed;
   if (!ZzTestEncoding()) goto tests_failed;
   if (!ZzTestProperties(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestAtomic()) goto tests_failed;

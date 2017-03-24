@@ -336,6 +336,7 @@ Il y a des TODO un peu partout dans le code.
 #include "layer004/RtInitialization.h"
 #include "layer004/RtQuickSort.h"
 
+#include "layer005/RtBase64.h"
 #include "layer005/RtCommandLineArgs.h"
 #include "layer005/RtFileSystem.h"
 #include "layer005/RtHeap.h"

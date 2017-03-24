@@ -4,7 +4,7 @@
 #include "layer004/RtChar.h"
 #include "layer004/RtFastInitialization.h"
 
-RT_FAST_INITIALIZATION rt_guiOsVersionInitialization = RT_FAST_INITIALIZATION_STATIC_INIT;
+RT_FAST_INITIALIZATION rt_osVersionInitialization = RT_FAST_INITIALIZATION_STATIC_INIT;
 
 RT_B rt_bOsVersionInitializationSuccessful;
 
@@ -33,7 +33,7 @@ RT_B RT_API RtGetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpPatch)
 #endif
   RT_B bResult;
 
-  if (RtFastInitializationRequired(&rt_guiOsVersionInitialization))
+  if (RtFastInitializationRequired(&rt_osVersionInitialization))
   {
 
 #ifdef RT_DEFINE_WINDOWS
@@ -112,7 +112,7 @@ initialized:
 
 #endif
 
-    RtNotifyFastInitializationDone(&rt_guiOsVersionInitialization);
+    RtNotifyFastInitializationDone(&rt_osVersionInitialization);
   }
 
   if (rt_bOsVersionInitializationSuccessful)
