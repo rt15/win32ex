@@ -8,7 +8,7 @@
  * Characters management.
  *
  * <p>
- * Functions must never rely on an heap.<br>
+ * Functions must never rely on a heap.<br>
  * Introduce new char header if necessary.
  * </p>
  */
@@ -30,8 +30,10 @@ RT_B RT_API RtConvertIntegerToString(RT_N nInput, RT_CHAR* lpBuffer, RT_UN unBuf
 RT_B RT_API RtConvertUIntegerToString(RT_UN unInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
 RT_B RT_API RtConvertStringToInteger(RT_CHAR* lpInput, RT_N* lpResult);
+RT_B RT_API RtConvertStringToIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_N* lpResult);
 
 RT_B RT_API RtConvertStringToUInteger(RT_CHAR* lpInput, RT_UN* lpResult);
+RT_B RT_API RtConvertStringToUIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN* lpResult);
 
 /**
  * Return 0 if the Strings are equals, a negative value if the first string is less than the second one, a positive value otherwise.<br>

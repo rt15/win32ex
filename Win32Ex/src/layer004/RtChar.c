@@ -34,6 +34,7 @@ RT_B RT_API RtConvertStringToInteger(RT_CHAR* lpInput, RT_N* lpResult)
   {
     if ((lpInput[unI] < _R('0')) || (lpInput[unI] > _R('9')))
     {
+      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
       goto handle_error;
     }
     else
@@ -53,10 +54,46 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_API RtConvertStringToIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_N* lpResult)
+{
+  RT_UN unI;
+  RT_N nResult;
+  RT_B bResult;
+
+  nResult = 0;
+  for (unI = 0; unI < unInputSize; unI++)
+  {
+    if ((lpInput[unI] < _R('0')) || (lpInput[unI] > _R('9')))
+    {
+      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+      goto handle_error;
+    }
+    else
+    {
+      nResult = nResult * 10 + lpInput[unI] - _R('0');
+    }
+  }
+  *lpResult = nResult;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_API RtConvertStringToUInteger(RT_CHAR* lpInput, RT_UN* lpResult)
 {
   /* TODO: Better implementation. */
   return RtConvertStringToInteger(lpInput, (RT_N*)lpResult);
+}
+
+RT_B RT_API RtConvertStringToUIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN* lpResult)
+{
+  /* TODO: Better implementation. */
+  return RtConvertStringToIntegerWithSize(lpInput, unInputSize, (RT_N*)lpResult);
 }
 
 RT_UN RT_API RtGetStringSize(RT_CHAR* lpInput)

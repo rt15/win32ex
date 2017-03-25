@@ -2,6 +2,15 @@
 
 #include "layer002/RtErrorCode.h"
 
+/*
+remove '_R('.
+Replace: 
+  String by String8
+  Char by Char8
+  RT_CHAR by RT_CHAR8
+  RT_UCHAR by RT_UCHAR8
+*/
+
 RT_UN RT_API RtGetString8Size(RT_CHAR8* lpInput)
 {
   RT_CHAR8* lpInInput;
@@ -194,15 +203,46 @@ RT_B RT_API RtConvertString8ToInteger(RT_CHAR8* lpInput, RT_N* lpResult)
   unI = 0;
   while (lpInput[unI])
   {
-    if ((lpInput[unI] < _R('0')) || (lpInput[unI] > _R('9')))
+    if ((lpInput[unI] < '0') || (lpInput[unI] > '9'))
     {
+      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
       goto handle_error;
     }
     else
     {
-      nResult = nResult * 10 + lpInput[unI] - _R('0');
+      nResult = nResult * 10 + lpInput[unI] - '0';
     }
     unI++;
+  }
+  *lpResult = nResult;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtConvertString8ToIntegerWithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_N* lpResult)
+{
+  RT_UN unI;
+  RT_N nResult;
+  RT_B bResult;
+
+  nResult = 0;
+  for (unI = 0; unI < unInputSize; unI++)
+  {
+    if ((lpInput[unI] < '0') || (lpInput[unI] > '9'))
+    {
+      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+      goto handle_error;
+    }
+    else
+    {
+      nResult = nResult * 10 + lpInput[unI] - '0';
+    }
   }
   *lpResult = nResult;
 
@@ -219,4 +259,30 @@ RT_B RT_API RtConvertString8ToUInteger(RT_CHAR8* lpInput, RT_UN* lpResult)
 {
   /* TODO: Better implementation. */
   return RtConvertString8ToInteger(lpInput, (RT_N*)lpResult);
+}
+
+RT_B RT_API RtConvertString8ToUIntegerWithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN* lpResult)
+{
+  /* TODO: Better implementation. */
+  return RtConvertString8ToIntegerWithSize(lpInput, unInputSize, (RT_N*)lpResult);
+}
+
+RT_UN RT_API RtSearchChar8(RT_CHAR8* lpString, RT_CHAR8 nSearched)
+{
+  RT_UN unResult;
+
+  if (lpString)
+  {
+    unResult = 0;
+    while (lpString[unResult] && lpString[unResult] != nSearched) unResult++;
+    if (!lpString[unResult])
+    {
+      unResult = RT_TYPE_MAX_UN;
+    }
+  }
+  else
+  {
+    unResult = RT_TYPE_MAX_UN;
+  }
+  return unResult;
 }
