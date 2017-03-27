@@ -15,6 +15,10 @@
 
 #### TODO:
 
+Use const!?
+
+Use static functions?
+
 RtEncode/RtDecode should return a boolean and have a RT_UN* lpWritten parameter.
 
 Password reading in console.
