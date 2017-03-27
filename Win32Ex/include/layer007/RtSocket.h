@@ -148,9 +148,9 @@ RT_SOCKET_ADDRESS_IPV6;
 #define RT_SOCKET_MESSAGE_OUT_OF_BAND 1
 /* Peek at incoming message. When receiving data only. */
 #define RT_SOCKET_MESSAGE_PEEK 2
-/* Send without using routing tables. For sending data only. */
+/* Send without using routing tables. When sending data only. */
 #define RT_SOCKET_MESSAGE_DO_NOT_ROUTE 4
-/* Do not complete until packet is completely filled. */
+/* Do not complete until buffer is completely filled or remote socket is closed. When receiving data only. */
 #define RT_SOCKET_MESSAGE_WAIT_ALL 8
 
 /* RtShutdownSocket flags. */
@@ -227,10 +227,17 @@ RT_UN RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_UN unData
 
 /**
  *
- * @param unFlags Combination of RT_SOCKET_MESSAGE_XXXX flags.
+ * @param unFlags Combination of RT_SOCKET_MESSAGE_XXXX flags. RT_SOCKET_MESSAGE_WAIT_ALL is a classical one.
  * @return Number of bytes received, RT_TYPE_MAX_UN in case of issue.
  */
 RT_UN RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize, RT_UN unFlags);
+
+/**
+ * RtReceiveFromSocket can receive incomplete response and RT_SOCKET_MESSAGE_WAIT_ALL can be blocking if the remote host does not close the connection.<br>
+ * This function is a workaround for this.<br>
+ * It ensures that either the buffer is full either the connection is closed.
+ */
+RT_UN RT_API RtReceiveAllFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize);
 
 /**
  * @param unFlags One of RT_SOCKET_SHUTDOWN_XXXX, mostly RT_SOCKET_SHUTDOWN_BOTH.

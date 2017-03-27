@@ -34,7 +34,13 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
   if (!RtAcceptSocketConnection(&zzSocket, &zzAcceptedSocket, &zzSocketAddress)) goto handle_error;
   bAcceptedSocketCreated = RT_TRUE;
 
-  lpMsg = "Hello, world!";
+  lpMsg = "Hello";
+  if (RtSendThroughSocket(&zzAcceptedSocket, lpMsg, RtGetString8Size(lpMsg), 0) == RT_TYPE_MAX_UN) goto handle_error;
+
+  /* Uncomment next line to separate responses. */
+  /* RtSleep(1000); */
+
+  lpMsg = ", world!";
   if (RtSendThroughSocket(&zzAcceptedSocket, lpMsg, RtGetString8Size(lpMsg) + 1, 0) == RT_TYPE_MAX_UN) goto handle_error;
 
   if (!RtShutdownSocket(&zzAcceptedSocket, RT_SOCKET_SHUTDOWN_BOTH)) goto handle_error;
@@ -101,7 +107,7 @@ RT_B RT_CALL ZzTestSockets()
 
   if (!RtConnectSocketWithAddress(&zzSocket, (RT_SOCKET_ADDRESS*)&zzSocketAddress)) goto handle_error;
 
-  unReceived = RtReceiveFromSocket(&zzSocket, lpBuffer, RT_CHAR_BIG_STRING_SIZE, 0);
+  unReceived = RtReceiveAllFromSocket(&zzSocket, lpBuffer, RT_CHAR_BIG_STRING_SIZE);
   if (unReceived == RT_TYPE_MAX_UN) goto handle_error;
   if (unReceived != RtGetString8Size("Hello, world!") + 1) goto handle_error;
   if (RtCompareString8s(lpBuffer, "Hello, world!")) goto handle_error;

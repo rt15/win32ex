@@ -519,6 +519,41 @@ RT_UN RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBu
   return unResult;
 }
 
+RT_UN RT_API RtReceiveAllFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize)
+{
+  RT_UN unResult;
+  RT_UN unReceived;
+
+  unResult = 0;
+
+  while (RT_TRUE)
+  {
+    unReceived = RtReceiveFromSocket(lpSocket, &((RT_CHAR8*)lpBuffer)[unResult], unBufferSize - unResult, 0);
+    if (unReceived == RT_TYPE_MAX_UN) goto handle_error;
+
+    if (!unReceived)
+    {
+      /* Nothing more to read, return. */
+      break;
+    }
+
+    unResult += unReceived;
+
+    if (unResult == unBufferSize)
+    {
+      /* Buffer is full, return. */
+      break;
+    }
+  }
+
+free_resources:
+  return unResult;
+
+handle_error:
+  unResult = RT_TYPE_MAX_UN;
+  goto free_resources;
+}
+
 RT_B RT_API RtAcceptSocketConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedSocket, RT_SOCKET_ADDRESS* lpSocketAddress)
 {
 #ifdef RT_DEFINE_WINDOWS
