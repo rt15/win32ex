@@ -125,6 +125,20 @@ RT_N RT_API RtCompareStrings(RT_CHAR* lpString1, RT_CHAR* lpString2)
   return nResult;
 }
 
+RT_N RT_API RtCompareStringsWithSize(RT_CHAR* lpString1, RT_CHAR* lpString2, RT_UN unSize)
+{
+  RT_UN unI;
+  RT_N nResult;
+
+  for (unI = 0; unI < unSize; unI++)
+  {
+    nResult = ((RT_UCHAR)lpString1[unI]) - ((RT_UCHAR)lpString2[unI]);
+    if (nResult) break;
+  }
+
+  return nResult;
+}
+
 RT_N RT_API RtCompareNullStrings(RT_CHAR* lpString1, RT_CHAR* lpString2)
 {
   RT_N nResult;

@@ -41,6 +41,8 @@ RT_B RT_API RtConvertStringToUIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSiz
  */
 RT_N RT_API RtCompareStrings(RT_CHAR* lpString1, RT_CHAR* lpString2);
 
+RT_N RT_API RtCompareStringsWithSize(RT_CHAR* lpString1, RT_CHAR* lpString2, RT_UN unSize);
+
 /**
  * <p>
  * Null last like Oracle default.

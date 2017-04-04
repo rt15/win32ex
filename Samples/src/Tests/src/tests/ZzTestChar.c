@@ -69,6 +69,12 @@ RT_B RT_CALL ZzTestCompareStrings()
   if (RtCompareStrings(_R("a"), _R("ab")) >= 0) goto handle_error;
   if (RtCompareStrings(_R("ab"), _R("a")) <= 0) goto handle_error;
 
+  if (RtCompareStringsWithSize(_R("Fooa"), _R("Foob"), 1) != 0) goto handle_error;
+  if (RtCompareStringsWithSize(_R("Fooa"), _R("Foob"), 2) != 0) goto handle_error;
+  if (RtCompareStringsWithSize(_R("Fooa"), _R("Foob"), 3) != 0) goto handle_error;
+  if (RtCompareStringsWithSize(_R("Fooa"), _R("Foob"), 4) >= 0) goto handle_error;
+  if (RtCompareStringsWithSize(_R("Foob"), _R("Fooa"), 4) <= 0) goto handle_error;
+
   bResult = RT_SUCCESS;
 free_resources:
   return bResult;
