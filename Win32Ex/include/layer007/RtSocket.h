@@ -39,8 +39,8 @@ typedef struct _RT_ADDRESS_IPV4 {
 typedef struct _RT_ADDRESS_IPV6 {
   union {
     RT_UCHAR8 lp8[16];
-    RT_UN16	lp16[8];
-    RT_UN32	lp32[4];
+    RT_UN16 lp16[8];
+    RT_UN32 lp32[4];
   } rtUnion;
 } RT_ADDRESS_IPV6;
 
@@ -106,23 +106,23 @@ RT_SOCKET_ADDRESS_IPV6;
 
 /* Allows to precise protocol. */
 /* Used as optional <tt>unType</tt> parameter of <tt>RtCreateSocket</tt>. */
-/* Values are correct on both Windows and Linux. */
+/* Values are correct on both Windows and Linux (Except for RT_SOCKET_PROTOCOL_SOCKET). */
 /* Dummy protocol for TCP.             */
-#define RT_SOCKET_PROTOCOL_IP	0
+#define RT_SOCKET_PROTOCOL_IP 0
 /* Internet Control Message Protocol.  */
 #define RT_SOCKET_PROTOCOL_ICMP 1
 /* Internet Group Management Protocol. */
 #define RT_SOCKET_PROTOCOL_IGMP 2
 /* TCP Transmission Control Protocol.  */
-#define RT_SOCKET_PROTOCOL_TCP	6
+#define RT_SOCKET_PROTOCOL_TCP 6
 /* PUP protocol.                       */
-#define RT_SOCKET_PROTOCOL_PUP	12
+#define RT_SOCKET_PROTOCOL_PUP 12
 /* UDP, User Datagram Protocol.        */
-#define RT_SOCKET_PROTOCOL_UDP	17
+#define RT_SOCKET_PROTOCOL_UDP 17
 /* XNS IDP protocol.                   */
-#define RT_SOCKET_PROTOCOL_IDP	22
+#define RT_SOCKET_PROTOCOL_IDP 22
 /* Raw IP packets.                     */
-#define RT_SOCKET_PROTOCOL_RAW	255
+#define RT_SOCKET_PROTOCOL_RAW 255
 /* IPv6 Hop-by-Hop options.            */
 #define RT_SOCKET_PROTOCOL_HOPOPTS 0
 /* IPv6-in-IPv4 tunneling.             */
@@ -141,6 +141,13 @@ RT_SOCKET_ADDRESS_IPV6;
 #define RT_SOCKET_PROTOCOL_NONE 59
 /* IPv6 Destination options.           */
 #define RT_SOCKET_PROTOCOL_DSTOPTS 60
+/* Classical socket protocol level (SOL_SOCKET) used only for RtSetSocketBooleanOption/RtSetSocketOption. */
+#define RT_SOCKET_PROTOCOL_SOCKET 65535
+
+/* Boolean socket option used in RtSetSocketBooleanOption/RtSetSocketOption. */
+/* Values are correct on Windows only. */
+/* Allows the socket to be bound to an address that is already in use. Can be use to quickly reuse a port in TIME_WAIT state. */
+#define RT_SOCKET_OPTION_REUSEADDR 4
 
 /* Sending and receiving flags. */
 /* Values are correct on Windows only. */
@@ -195,6 +202,29 @@ RT_B RT_API RtInitializeSockets();
  * @param unProtocol Often zero but can be a RT_SOCKET_PROTOCOL_XXX value.
  */
 RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bInheritable);
+
+/**
+ * Set a socket boolean option.
+ *
+ * @param unProtocolLevel Level of the option of the protocol. A classical value is RT_SOCKET_PROTOCOL_SOCKET.
+ * @param unOption The option to set like RT_SOCKET_OPTION_REUSEADDR.
+ * @param bValue The value to set.
+ */
+RT_B RT_API RtSetSocketBooleanOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, RT_B bValue);
+
+/**
+ * Set a socket option.
+ *
+ * <p>
+ * For boolean values, <tt>RtSetSocketBooleanOption</tt> is a bit simpler to use.
+ * </p>
+ *
+ * @param unProtocolLevel Level of the option of the protocol. A classical value is RT_SOCKET_PROTOCOL_SOCKET.
+ * @param unOption The option to set like RT_SOCKET_OPTION_REUSEADDR.
+ * @param lpValue Pointer to the new option value.
+ * @param unValueSize Size of the value pointed by <tt>lpValue</tt>.
+ */
+RT_B RT_API RtSetSocketOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, void* lpValue, RT_UN unValueSize);
 
 void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress);
 

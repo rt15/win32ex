@@ -227,6 +227,64 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_API RtSetSocketBooleanOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, RT_B bValue)
+{
+  return RtSetSocketOption(lpSocket, unProtocolLevel, unOption, &bValue, sizeof(bValue));
+}
+
+RT_B RT_API RtSetSocketOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, void* lpValue, RT_UN unValueSize)
+{
+#ifndef RT_DEFINE_WINDOWS
+  int nActualProtocolLevel;
+  int nActualOption;
+#endif
+  RT_B bResult;
+
+#ifdef RT_DEFINE_WINDOWS
+  /* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+  if (setsockopt(lpSocket->unSocket, (int)unProtocolLevel, (int)unOption, lpValue, (int)unValueSize)) goto handle_error;
+#else
+  /* SOL_XXX values should be aligned with IPPROTO_XXX values. */
+  /* Unfortunately, under Linux, SOL_SOCKET is 1 (instead of 65535) while 1 should be SOL_ICMP. As a result SOL_ICMP is not available on Linux. */
+  if (unProtocolLevel == RT_SOCKET_PROTOCOL_SOCKET)
+  {
+    /* SOL_SOCKET is 1 under Linux. */
+    nActualProtocolLevel = 1;
+  }
+  else if (unProtocolLevel == RT_SOCKET_PROTOCOL_ICMP)
+  {
+    /* SOL_ICMP cannot be used under Linux. */
+    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    goto handle_error;
+  }
+  else
+  {
+    nActualProtocolLevel = (int)unProtocolLevel;
+  }
+
+  /* Convert from Windows socket option to Linux socket option. */
+  switch (unOption)
+  {
+    case RT_SOCKET_OPTION_REUSEADDR:
+      nActualOption = SO_REUSEADDR;
+      break;
+    default:
+      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+      goto handle_error;
+  }
+
+  /* On success, zero is returned. On error, -1 is returned, and errno is set appropriately. */
+  if (setsockopt(lpSocket->nSocket, nActualProtocolLevel, nActualOption, lpValue, (socklen_t)unValueSize)) goto handle_error;
+#endif
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
 void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress)
 {
   lpAddress->rtUnion.unAddress = htonl(INADDR_LOOPBACK);
@@ -278,7 +336,7 @@ RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPo
       lpAddress = &((SOCKADDR_IN6*)lpAddressInfo->ai_addr)->sin6_addr;
       break;
     default:
-      SetLastError(RT_ERROR_FUNCTION_FAILED);
+      RtSetLastError(RT_ERROR_FUNCTION_FAILED);
       goto handle_error;
   }
 #else

@@ -26,6 +26,8 @@ RT_UN32 RT_CALL ZzServerSocketThreadCallback(void* lpParameter)
   if (!RtCreateSocket(&zzSocket, RT_SOCKET_ADDRESS_FAMILY_IPV4, RT_SOCKET_TYPE_STREAM, RT_SOCKET_PROTOCOL_TCP, RT_TRUE, RT_FALSE)) goto handle_error;
   bSocketCreated = RT_TRUE;
 
+  if (!RtSetSocketBooleanOption(&zzSocket, RT_SOCKET_PROTOCOL_SOCKET, RT_SOCKET_OPTION_REUSEADDR, RT_TRUE)) goto handle_error;
+
   if (!RtBindSocket(&zzSocket, ZZ_PORT_NUMBER)) goto handle_error;
   if (!RtListenFromSocket(&zzSocket)) goto handle_error;
 
