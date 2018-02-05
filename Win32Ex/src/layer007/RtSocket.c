@@ -154,12 +154,14 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
   DWORD unFlags;
   RT_B bFlagNoHandleInherit;
   RT_FILE rtSocket;
+  u_long nArgp;
 #else
   RT_UN unActualType;
 #endif
   RT_B bResult;
 
   lpSocket->unAddressFamily = unAddressFamily;
+  lpSocket->bBlocking = bBlocking;
 #ifdef RT_DEFINE_WINDOWS
   if (bBlocking)
   {
@@ -195,6 +197,20 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
     /* There is a race condidition here, the handle could leak if CreateProcess is called in parallel. */
     rtSocket.hFile = (RT_H)lpSocket->unSocket;
     if (!RtSetFileInheritable(&rtSocket, RT_FALSE))
+    {
+      RtFreeSocket(lpSocket);
+      goto handle_error;
+    }
+  }
+
+  /* If non-blocking, then we need to configure the socket to non-blocking with ioctlsocket/FIONBIO. */
+  if (!bBlocking)
+  {
+    /* argp must be true to enable non-blocking mode with FIONBIO command. */
+    nArgp = RT_TRUE;
+
+    /* Returns SOCKET_ERROR (-1) and set WSAGetLastError in case of issue. */
+    if (ioctlsocket(lpSocket->unSocket, FIONBIO, &nArgp))
     {
       RtFreeSocket(lpSocket);
       goto handle_error;
@@ -405,15 +421,35 @@ RT_B RT_API RtConnectSocketWithAddress(RT_SOCKET* lpSocket, RT_SOCKET_ADDRESS* l
   }
 
 #ifdef RT_DEFINE_WINDOWS
+
+  /* If no error occurs, connect returns zero. Otherwise, it returns SOCKET_ERROR, and a specific error code can be retrieved by calling WSAGetLastError. */
   if (connect(lpSocket->unSocket, (struct sockaddr*)lpSocketAddress, nSocketAddressSize))
   {
-    /* TODO: Result is always non zero with non-blocking sockets under Windows. */
+    /* Notice that result is always non zero with non-blocking sockets under Windows. */
+    /* The normal error should be WSAEWOULDBLOCK. */
     goto handle_error;
   }
 #else
   if (connect(lpSocket->nSocket, (struct sockaddr*)lpSocketAddress, nSocketAddressSize))
   {
-    goto handle_error;
+    if (lpSocket->bBlocking)
+    {
+      goto handle_error;
+    }
+    else
+    {
+      /* If the socket is nonblocking and the connection cannot be completed immediately, then there is a normal error EINPROGRESS. */
+      if (errno == EINPROGRESS)
+      {
+        /* Replace the EINPROGRESS by an EWOULDBLOCK, to align with Windows. */
+        RtSetLastError(RT_ERROR_SOCKET_WOULD_BLOCK);
+      }
+      else
+      {
+        /* Real issue. */
+        goto handle_error;
+      }
+    }
   }
 #endif
 

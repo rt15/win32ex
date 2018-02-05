@@ -11,6 +11,7 @@ typedef struct _RT_SOCKET
   RT_N32 nSocket;
 #endif
   RT_UN unAddressFamily;
+  RT_B bBlocking;
 }
 RT_SOCKET;
 
@@ -232,7 +233,19 @@ void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, R
 
 RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPort);
 
+/**
+ * <p>
+ * In the case of a non-blocking socket, most of the time <tt>RT_FAILURE</tt> is returned.<br>
+ * You then have to use <tt>RtWouldBlockError</tt> to determine if the error is a failure or if the connection is in progress.<br>
+ * You can use <tt>RtWaitForNonBlockingSocketConnection</tt> to wait for the connection to be writable.
+ * </p>
+ */
 RT_B RT_API RtConnectSocketWithAddress(RT_SOCKET* lpSocket, RT_SOCKET_ADDRESS* lpSocketAddress);
+
+/**
+ * Can be used after <tt>RtConnectSocketWithAddress</tt> in the case of a non-blocking socket.
+ */
+RT_B RT_API RtWaitForNonBlockingSocketConnection(RT_SOCKET* lpSocket);
 
 RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort);
 

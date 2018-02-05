@@ -270,6 +270,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestNonBlockingSocket.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Tests\src\tests\ZzTestProcess.c"
 					>
 				</File>
