@@ -27,6 +27,10 @@
 #define RT_ERROR_FUNCTION_FAILED 5
 /* A numerical type cannot contain given value. */
 #define RT_ERROR_ARITHMETIC_OVERFLOW 6
+/* The function call would have blocked if the descriptor was a blocking one. See also RT_ERROR_SOCKET_WOULD_BLOCK. */
+#define RT_ERROR_WOULD_BLOCK 7
+/* The function call would have blocked if the socket was a blocking one. See also RT_ERROR_WOULD_BLOCK. */
+#define RT_ERROR_SOCKET_WOULD_BLOCK 8
 
 /**
  * Can be used to set the operating system last error code.
@@ -36,5 +40,30 @@
  * @param nError The Win32Ex error code (RT_ERROR_XXXXX). If not known, RT_ERROR_BAD_ARGUMENTS is used.
  */
 void RT_API RtSetLastError(RT_UN unError);
+
+/**
+ * Returns <tt>RT_TRUE</tt> if the last error is a "would block" error.
+ *
+ * <p>
+ * Can be used after an error on a call with a non-blocking descriptor.<br>
+ * When we call a function that would block if the given descriptor was blocking, a normal "would block" error is triggered.<br>
+ * This error should not be considered as a failure.
+ * </p>
+ *
+ * <p>
+ * On Linux, <tt>connect</tt> uses <tt>EINPROGRESS</tt>.<br>
+ * <tt>recv</tt> and <tt>write</tt> uses <tt>EAGAIN</tt> or <tt>EWOULDBLOCK</tt>.<br>
+ * The library normalizes everything to <tt>EWOULDBLOCK</tt>.<br>
+ * This function returns RT_TRUE only if errno is <tt>EWOULDBLOCK</tt>.
+ * </p>
+ *
+ * <p>
+ * On Windows, socket functions like <tt>connect</tt> uses <tt>WSAEWOULDBLOCK</tt>.<br>
+ * <tt>WriteFile</tt> uses <tt>ERROR_IO_PENDING</tt>.<br>
+ * The library keep either <tt>WSAEWOULDBLOCK</tt> or <tt>ERROR_IO_PENDING</tt> (Because the error messages are interesting).<br>
+ * This function returns RT_TRUE if <tt>GetLastError</tt> is <tt>WSAEWOULDBLOCK</tt> or <tt>ERROR_IO_PENDING</tt>.
+ * </p>
+ */
+RT_B RT_API RtWouldBlockError();
 
 #endif /* RT_ERROR_CODE_H */
