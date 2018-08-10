@@ -469,7 +469,7 @@ RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath)
   return bResult;
 }
 
-RT_UN RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath)
+RT_B RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -479,39 +479,31 @@ RT_UN RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath)
 #else
   struct stat fileInfo;
 #endif
-  RT_UN unResult;
+  RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten))
-  {
-    if (GetFileAttributesEx(lpLongPath, GetFileExInfoStandard, &fileInfo))
-    {
-      largeInteger.HighPart = fileInfo.nFileSizeHigh;
-      largeInteger.LowPart = fileInfo.nFileSizeLow;
-      unResult = (RT_UN)largeInteger.QuadPart;
-    }
-    else
-    {
-      unResult = RT_TYPE_MAX_UN;
-    }
-  }
-  else
-  {
-    unResult = RT_TYPE_MAX_UN;
-  }
+  if (!RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+
+  /* GetFileAttributesEx returns 0 and use SetLastError in case of error. */
+  if (!GetFileAttributesEx(lpLongPath, GetFileExInfoStandard, &fileInfo)) goto handle_error;
+
+  largeInteger.HighPart = fileInfo.nFileSizeHigh;
+  largeInteger.LowPart = fileInfo.nFileSizeLow;
+  *lpFileSize = largeInteger.QuadPart;
+
 #else /* RT_DEFINE_WINDOWS */
 
-  if (stat(lpPath, &fileInfo) == 0)
-  {
-    unResult = fileInfo.st_size;
-  }
-  else
-  {
-    unResult = RT_TYPE_MAX_UN;
-  }
+  /* stat returns zero in case of success, -1 in case of failure and set errno. */
+  if (stat(lpPath, &fileInfo)) goto handle_error;
+  *lpFileSize = fileInfo.st_size;
 #endif
 
-  return unResult;
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 /* TODO: WTF. */

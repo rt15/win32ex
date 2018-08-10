@@ -183,9 +183,6 @@ end_of_tests:
   RtConvertIntegerToString(RtCheckPath(_R("fake"), RT_FILE_SYSTEM_TYPE_DIRECTORY | RT_FILE_SYSTEM_TYPE_FILE), lpBuffer, 500, &unWritten);
   RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("both fake: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
-  RtConvertUIntegerToString(RtGetFileSystemFileSize(_R("data/file.txt")), lpBuffer, 500, &unWritten);
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
-
   RtConvertIntegerToString(getPageSize(), lpBuffer, 500, &unWritten);
   RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 

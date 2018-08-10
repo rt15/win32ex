@@ -248,6 +248,50 @@ handle_error:
   goto free_resources;
 }
 
+/**
+ * <tt>lpFilePath1</tt> should point on an existing non-empty file.<br>
+ * <tt>lpFilePath2</tt> should point on a non-existing file.
+ */
+RT_B RT_CALL ZzTestCreateEmptyFile(RT_CHAR* lpFilePath1, RT_CHAR* lpFilePath2)
+{
+  RT_UN64 unFileZize;
+  RT_B bResult;
+
+  if (!RtCheckPath(lpFilePath1, RT_FILE_SYSTEM_TYPE_FILE)) goto handle_error;
+  if (RtCheckPath(lpFilePath2, RT_FILE_SYSTEM_TYPE_FILE | RT_FILE_SYSTEM_TYPE_DIRECTORY)) goto handle_error;
+
+  /* Non existing, truncate. */
+  if (!RtCreateEmptyFile(lpFilePath2, RT_TRUE)) goto handle_error;
+  if (!RtGetFileSystemFileSize(lpFilePath2, &unFileZize)) goto handle_error;
+  if (unFileZize) goto handle_error;
+  if (!RtDeleteFile(lpFilePath2)) goto handle_error;
+
+  /* Non existing, new. */
+  if (!RtCreateEmptyFile(lpFilePath2, RT_FALSE)) goto handle_error;
+  if (!RtGetFileSystemFileSize(lpFilePath2, &unFileZize)) goto handle_error;
+  if (unFileZize) goto handle_error;
+  if (!RtDeleteFile(lpFilePath2)) goto handle_error;
+
+  /* Existing, new. */
+  if (RtCreateEmptyFile(lpFilePath1, RT_FALSE)) goto handle_error;
+  if (!RtGetFileSystemFileSize(lpFilePath1, &unFileZize)) goto handle_error;
+  if (!unFileZize) goto handle_error;
+
+  /* Existing, truncate. */
+  if (!RtCreateEmptyFile(lpFilePath1, RT_TRUE)) goto handle_error;
+  if (!RtGetFileSystemFileSize(lpFilePath1, &unFileZize)) goto handle_error;
+  if (unFileZize) goto handle_error;
+  if (!RtDeleteFile(lpFilePath1)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzTestMiscWithTemp(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryPathSize)
 {
   RT_CHAR lpFilePath1[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -264,6 +308,10 @@ RT_B RT_CALL ZzTestMiscWithTemp(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryP
   if (!RtRenameFile(lpFilePath1, _R("ttest2.txt"))) goto handle_error;
 
   if (!RtCopyFile(lpFilePath2, lpFilePath1)) goto handle_error;
+
+  if (!RtDeleteFile(lpFilePath2)) goto handle_error;
+
+  if (!ZzTestCreateEmptyFile(lpFilePath1, lpFilePath2)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

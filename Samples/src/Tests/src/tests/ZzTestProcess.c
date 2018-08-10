@@ -183,7 +183,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
   RT_UN32 unExitCode;
-  RT_UN unFileSize;
+  RT_UN64 unFileSize;
   RT_B bResult;
 
   bFileCreated = RT_FALSE;
@@ -209,8 +209,8 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (!unExitCode) goto handle_error;
 
-  unFileSize = RtGetFileSystemFileSize(lpTempFile);
-  if (unFileSize == RT_TYPE_MAX_UN || unFileSize < 10) goto handle_error;
+  if (!RtGetFileSystemFileSize(lpTempFile, &unFileSize)) goto handle_error;
+  if (unFileSize < 10) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

@@ -95,10 +95,7 @@ RT_B RT_API RtGetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *
 
 RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath);
 
-/**
- * @return RT_TYPE_MAX_UN in case of error.
- */
-RT_UN RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath);
+RT_B RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize);
 
 /**
  * Return non-zero if the path is correct. Set last error in case of issue.
