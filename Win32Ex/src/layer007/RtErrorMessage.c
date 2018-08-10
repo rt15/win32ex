@@ -60,7 +60,10 @@ RT_B RT_API RtWriteLastErrorMessage(RT_CHAR* lpPrefix)
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtCopyString(lpPrefix,             &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (lpPrefix)
+  {
+    if (!RtCopyString(lpPrefix, &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  }
   if (!RtGetLastErrorMessage(             &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtCopyStringWithSize(_R("\n"), 1,  &lpBuffer[unWritten], RT_CHAR_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
 
