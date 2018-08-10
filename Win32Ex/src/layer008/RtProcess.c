@@ -205,7 +205,7 @@ RT_UN RT_CALL RtGetArgSizeInCommandLine(RT_CHAR* lpArg)
  * Opposite of CommandLineToArgvW.
  *
  * <p>
- * If an argument contains ' ', tab or '"' then it must be surrounded with double-quotes (No need to surround arguments with anti-slashes only).<br>
+ * If an argument contains ' ' (space), '	' (tab) or '"' (double quote) then it must be surrounded with double-quotes (No need to surround arguments with anti-slashes only).<br>
  * If an argument needs double-quotes then:<br>
  * Prepend anti-slash before any double-quote.<br>
  * Prepend anti-slash for every anti-slashes just before a double-quote.<br>
@@ -219,6 +219,18 @@ RT_UN RT_CALL RtGetArgSizeInCommandLine(RT_CHAR* lpArg)
  *   <li>Use \      to insert a literal \</li>
  * </ul>
  *
+ * <p>
+ * On the other hand, re-implementing CommandLineToArgvW would be pretty hard.<br>
+ * See this <a href="https://blogs.msdn.microsoft.com/oldnewthing/20100917-00/?p=12833">blog post</a>.<br>
+ * Here are some empirical strange rules:
+ * </p>
+ *
+ * <ul>
+ * <li>In a non-quoted argument, double-quotes are ignored (foo"bar -> foobar)</li>
+ * <li>In a non-quoted argument, double-quotes can be escaped (foo\"bar -> foo"bar)</li>
+ * <li>In a non-quoted argument, several double-quotes are replaced by a single one (foo""""bar -> foo"bar)</li>
+ * </ul>
+ * 
  */
 RT_B RT_CALL RtArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpCommandLine)
 {
