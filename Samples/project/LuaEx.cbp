@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="LuaEx" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Win32Debug">
+				<Option output="../bin/LuaExd" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/Debug/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add library="win32exd" />
+				</Linker>
+			</Target>
+			<Target title="Win32Release">
+				<Option output="../bin/LuaEx" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/Release/" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="win32ex" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-pedantic" />
+			<Add option="-Wall" />
+			<Add option="-ansi" />
+			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long" />
+			<Add option="-DLUA_COMPAT_MODULE" />
+			<Add option="-DRT_DEFINE_USE_CRT" />
+			<Add directory="../../Win32Ex/include" />
+			<Add directory="../../Libs/lua-5.3.5/include" />
+			<Add directory="../src/LuaEx/include" />
+		</Compiler>
+		<Linker>
+			<Add library="lua53" />
+			<Add directory="../../Win32Ex/lib" />
+			<Add directory="../../Libs/lua-5.3.5/bin" />
+		</Linker>
+		<Unit filename="../src/LuaEx/include/ZzDllMain.h" />
+		<Unit filename="../src/LuaEx/include/ZzFileSystem.h" />
+		<Unit filename="../src/LuaEx/include/ZzLuaUtils.h" />
+		<Unit filename="../src/LuaEx/include/ZzReplaceInFile.h" />
+		<Unit filename="../src/LuaEx/src/ZzDllMain.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/LuaEx/src/ZzFileSystem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/LuaEx/src/ZzLuaUtils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/LuaEx/src/ZzReplaceInFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

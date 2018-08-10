@@ -11,5 +11,6 @@
 		<Project filename="ReplaceInFile.cbp" />
 		<Project filename="ClimbingContest.cbp" />
 		<Project filename="TestsWithCrt.cbp" />
+		<Project filename="LuaEx.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
