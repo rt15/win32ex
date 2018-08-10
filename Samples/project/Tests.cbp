@@ -160,6 +160,9 @@
 		<Unit filename="../src/Tests/src/tests/ZzTestMemory.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestNonBlockingSocket.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestProcess.c">
 			<Option compilerVar="CC" />
 		</Unit>
