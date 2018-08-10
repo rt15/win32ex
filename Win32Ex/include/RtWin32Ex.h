@@ -15,6 +15,10 @@
 
 #### TODO:
 
+Test RtDeleteDirectoryRecursively when I will have a function to move some sources in the temporary folder.
+
+Finish implementation of RtCreateDirectories.
+
 off_t should be 64 bits to manage big files.
 fileInfo.st_size is an off_t.
 
@@ -22,13 +26,9 @@ RtGetFileSize should return a boolean.
 
 RtSetFilePointer and other RtFile.h functions should use 64 bits integers.
 
-Introduce RtDeleteFileIfExists and fix RtDeleteFile accordingly (fails if the file does not exist).
-
 Introduce RtDeleteDirectory and RtDeleteDirectoryIfExists, with a recursively boolean.
 
 Introduce RtMoveDirectory/RtCopyDirectory.
-
-RtDeleteDirectory
 
 Use const!?
 

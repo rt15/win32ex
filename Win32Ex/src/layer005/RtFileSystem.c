@@ -101,24 +101,143 @@ RT_B RT_API RtCreateDirectory(RT_CHAR* lpPath)
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
-#else
-
 #endif
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten))
+  if (!RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+
+  /* If CreateDirectory fails, the return value is zero and SetLastError is called. */
+  if (!CreateDirectory(lpLongPath, NULL)) goto handle_error;
+#else
+ /* mkdir returns zero on success, or -1 if an error occurred (in which case, errno is set appropriately). */
+  if (mkdir(lpPath, RT_FILE_SYSTEM_RIGHTS)) goto handle_error;
+#endif
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtCreateDirectories(RT_CHAR* lpPath)
+{
+  RT_B bResult;
+
+  /* TODO: Implement for all levels!!! */
+
+  if (!RtCheckDirectory(lpPath))
   {
-    bResult = CreateDirectory(lpLongPath, NULL);
+    if (!RtCreateDirectory(lpPath)) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtDeleteDirectory(RT_CHAR* lpPath)
+{
+#ifdef RT_DEFINE_WINDOWS
+  RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_UN unWritten;
+#endif
+  RT_B bResult;
+
+#ifdef RT_DEFINE_WINDOWS
+
+  if (!RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+
+  /* RemoveDirectory returns 0 and call SetLastError in case of error. */
+  if (!RemoveDirectory(lpLongPath)) goto handle_error;
+#else /* NOT RT_DEFINE_WINDOWS */
+  /* On success, rmdir returns 0. On error, -1 is returned, and errno is set appropriately.  */
+  if (rmdir(lpPath)) goto handle_error;
+#endif
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtDeleteDirectoryIfExists(RT_CHAR* lpPath)
+{
+  RT_B bResult;
+
+  /* Attempt to delete the file then check the last error. */
+  if (!RtDeleteDirectory(lpPath))
+  {
+#ifdef RT_DEFINE_WINDOWS
+    if (GetLastError() != ERROR_FILE_NOT_FOUND) goto handle_error;
+#else
+    if (errno != ENOENT) goto handle_error;
+#endif
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL RtDeleteDirectoryRecursivelyCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
+{
+  RT_B bResult;
+
+  if (unType == RT_FILE_SYSTEM_TYPE_DIRECTORY)
+  {
+    if (!RtDeleteDirectory(lpPath)) goto handle_error;
   }
   else
   {
-    bResult = RT_FAILURE;
+    if (!RtDeleteFile(lpPath)) goto handle_error;
   }
-#else
-  bResult = !mkdir(lpPath, RT_FILE_SYSTEM_RIGHTS);
-#endif
+
+  bResult = RT_SUCCESS;
+free_resources:
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_API RtDeleteDirectoryRecursively(RT_CHAR* lpPath)
+{
+  RT_B bResult;
+
+
+  /* If the directory does not exist or is empty, then RtDeleteDirectoryIfExists should do the job. */
+  if (!RtDeleteDirectoryIfExists(lpPath))
+  {
+    /* The directory should exist and we failed to delete it, probably because it is not empty. */
+    if (!RtBrowsePath(lpPath, RtDeleteDirectoryRecursivelyCallback, RT_TRUE, RT_TRUE, RT_NULL)) goto handle_error;
+
+    /* Finally, delete the directory that should be now empty. */
+    if (!RtDeleteDirectory(lpPath)) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_B RT_API RtGetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
@@ -501,6 +620,7 @@ RT_B RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
   bResult = RT_SUCCESS;
 free_resources:
   return bResult;
+
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
@@ -580,7 +700,7 @@ free_resources:
 }
 #endif
 
-RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, void* lpContext)
+RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, RT_B bChildrenFirst, void* lpContext)
 {
 #ifdef RT_DEFINE_WINDOWS
   WIN32_FIND_DATA findFileData;       /* Information sur les fichiers trouvés */
@@ -626,11 +746,19 @@ RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallB
 
       if (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
       {
-        if (!lpCallBack(lpChild, RT_FILE_SYSTEM_TYPE_DIRECTORY, lpContext)) goto handle_error;
+        if (!bChildrenFirst)
+        {
+          if (!lpCallBack(lpChild, RT_FILE_SYSTEM_TYPE_DIRECTORY, lpContext)) goto handle_error;
+        }
 
         if (bRecursively)
         {
-          if (!RtBrowsePath(lpChild, lpCallBack, bRecursively, lpContext)) goto handle_error;
+          if (!RtBrowsePath(lpChild, lpCallBack, bRecursively, bChildrenFirst, lpContext)) goto handle_error;
+        }
+
+        if (bChildrenFirst)
+        {
+          if (!lpCallBack(lpChild, RT_FILE_SYSTEM_TYPE_DIRECTORY, lpContext)) goto handle_error;
         }
       }
       else
@@ -692,11 +820,19 @@ handle_error:
         strcat(lpChild, lpDirEntry->d_name);
         if (lpDirEntry->d_type == DT_DIR)
         {
-          if (!lpCallBack(lpChild, RT_FILE_SYSTEM_TYPE_DIRECTORY, lpContext)) goto handle_error;
+          if (!bChildrenFirst)
+          {
+            if (!lpCallBack(lpChild, RT_FILE_SYSTEM_TYPE_DIRECTORY, lpContext)) goto handle_error;
+          }
 
           if (bRecursively)
           {
-            if (!RtBrowsePath(lpChild, lpCallBack, bRecursively, lpContext)) goto handle_error;
+            if (!RtBrowsePath(lpChild, lpCallBack, bRecursively, bChildrenFirst, lpContext)) goto handle_error;
+          }
+
+          if (bChildrenFirst)
+          {
+            if (!lpCallBack(lpChild, RT_FILE_SYSTEM_TYPE_DIRECTORY, lpContext)) goto handle_error;
           }
         }
         else
@@ -820,6 +956,21 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
 
 #endif
   return bResult;
+}
+
+RT_B RT_API RtCheckFile(RT_CHAR* lpPath)
+{
+  return RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_FILE);
+}
+
+RT_B RT_API RtCheckDirectory(RT_CHAR* lpPath)
+{
+  return RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_DIRECTORY);
+}
+
+RT_B RT_API RtCheckFileOrDirectory(RT_CHAR* lpPath)
+{
+  return RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_FILE | RT_FILE_SYSTEM_TYPE_DIRECTORY);
 }
 
 RT_B RT_API RtGetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
@@ -972,44 +1123,53 @@ free_resources:
   return bResult;
 }
 
+RT_B RT_API RtDeleteFileIfExists(RT_CHAR* lpFilePath)
+{
+  RT_B bResult;
+
+  /* Attempt to delete the file then check the last error. */
+  if (!RtDeleteFile(lpFilePath))
+  {
+#ifdef RT_DEFINE_WINDOWS
+    if (GetLastError() != ERROR_FILE_NOT_FOUND) goto handle_error;
+#else
+    if (errno != ENOENT) goto handle_error;
+#endif
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_API RtDeleteFile(RT_CHAR* lpFilePath)
 {
-#ifndef RT_DEFINE_WINDOWS
-  struct stat stats;
+#ifdef RT_DEFINE_WINDOWS
+  RT_CHAR lpLongFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_UN unWritten;
 #endif
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!DeleteFile(lpFilePath))
-  {
-    if (GetLastError() != ERROR_FILE_NOT_FOUND)
-    {
-      goto handle_error;
-    }
-  }
+
+  if (!RtGetLongPath(lpFilePath, lpLongFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+
+  /* DeleteFile returns 0 and call SetLastError in case of error. */
+  if (!DeleteFile(lpLongFilePath)) goto handle_error;
 #else /* NOT RT_DEFINE_WINDOWS */
-
-  /* Check if the file exists. */
-  if (stat(lpFilePath, &stats))
-  {
-    if (errno == ENOENT)
-    {
-      /* Given file doesn't seem to exist, do nothing. */
-      goto file_does_not_exist;
-    }
-  }
-
-  /* The stat call might have failed but we still try to delete file. */
-  /* The remove function returns 0 in case of success. */
-  if (remove(lpFilePath)) goto handle_error;
-
-file_does_not_exist:
+  /* On success, unlink returns 0. On error, -1 is returned, and errno is set appropriately.  */
+  if (unlink(lpFilePath)) goto handle_error;
 #endif
 
   bResult = RT_SUCCESS;
-  goto free_resources;
-handle_error:
-  bResult = RT_FAILURE;
 free_resources:
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

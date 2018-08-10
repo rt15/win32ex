@@ -148,7 +148,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
     goto close_heap;
   }
 
-  if (!RtBrowsePath(lpPath, &BrowseProc, RT_FALSE, &lpFileInfos))
+  if (!RtBrowsePath(lpPath, &BrowseProc, RT_FALSE, RT_FALSE, &lpFileInfos))
   {
     unResult = 1;
     goto close_array;

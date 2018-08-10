@@ -55,7 +55,6 @@ handle_error:
   goto free_resources;
 }
 
-
 RT_B RT_CALL ZzTestDoRemoveTrailingSeparators(RT_CHAR* lpPath, RT_CHAR* lpExpected)
 {
   RT_CHAR lpBuffer[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -257,8 +256,8 @@ RT_B RT_CALL ZzTestCreateEmptyFile(RT_CHAR* lpFilePath1, RT_CHAR* lpFilePath2)
   RT_UN64 unFileZize;
   RT_B bResult;
 
-  if (!RtCheckPath(lpFilePath1, RT_FILE_SYSTEM_TYPE_FILE)) goto handle_error;
-  if (RtCheckPath(lpFilePath2, RT_FILE_SYSTEM_TYPE_FILE | RT_FILE_SYSTEM_TYPE_DIRECTORY)) goto handle_error;
+  if (!RtCheckFile(lpFilePath1)) goto handle_error;
+  if (RtCheckFileOrDirectory(lpFilePath2)) goto handle_error;
 
   /* Non existing, truncate. */
   if (!RtCreateEmptyFile(lpFilePath2, RT_TRUE)) goto handle_error;
@@ -292,6 +291,34 @@ handle_error:
   goto free_resources;
 }
 
+RT_B RT_CALL ZzTestDirectories(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryPathSize)
+{
+  RT_CHAR lpDirectoryPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_UN unWritten;
+  RT_B bResult;
+
+  if (!RtBuildNewPath(lpTempDirectory, unTempDirectoryPathSize, _R("empty_dir"), lpDirectoryPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+
+  if (!RtCreateDirectories(lpDirectoryPath)) goto handle_error;
+  if (!RtCreateDirectories(lpDirectoryPath)) goto handle_error;
+
+  if (RtDeleteFileIfExists(lpDirectoryPath)) goto handle_error;
+  if (RtDeleteFile(lpDirectoryPath)) goto handle_error;
+
+  if (!RtDeleteDirectory(lpDirectoryPath)) goto handle_error;
+  if (RtDeleteDirectory(lpDirectoryPath)) goto handle_error;
+  if (!RtDeleteDirectoryIfExists(lpDirectoryPath)) goto handle_error;
+  if (!RtCreateDirectory(lpDirectoryPath)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
 RT_B RT_CALL ZzTestMiscWithTemp(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryPathSize)
 {
   RT_CHAR lpFilePath1[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -302,9 +329,30 @@ RT_B RT_CALL ZzTestMiscWithTemp(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryP
   if (!RtBuildNewPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest1.txt"), lpFilePath1, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   if (!RtBuildNewPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest2.txt"), lpFilePath2, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
+  /* Truncate the file if it exists. */
   if (!ZzTestCreateFile(lpFilePath1)) goto handle_error;
 
-  if (!RtDeleteFile(lpFilePath2)) goto handle_error;
+  /* Ensure that ttest2.txt is not there. */
+  if (!RtDeleteFileIfExists(lpFilePath2)) goto handle_error;
+
+  /* RtDeleteFileIfExists should be ok even if the file does not exist. */
+  if (!RtDeleteFileIfExists(lpFilePath2)) goto handle_error;
+
+  if (RtDeleteDirectoryIfExists(lpFilePath1)) goto handle_error;
+  if (RtDeleteDirectory(lpFilePath1)) goto handle_error;
+
+  if (!RtCheckFile(lpFilePath1)) goto handle_error;
+  if (RtCheckFile(lpFilePath2)) goto handle_error;
+  if (RtCheckFile(lpTempDirectory)) goto handle_error;
+
+  if (RtCheckDirectory(lpFilePath1)) goto handle_error;
+  if (RtCheckDirectory(lpFilePath2)) goto handle_error;
+  if (!RtCheckDirectory(lpTempDirectory)) goto handle_error;
+
+  if (!RtCheckFileOrDirectory(lpFilePath1)) goto handle_error;
+  if (RtCheckFileOrDirectory(lpFilePath2)) goto handle_error;
+  if (!RtCheckFileOrDirectory(lpTempDirectory)) goto handle_error;
+
   if (!RtRenameFile(lpFilePath1, _R("ttest2.txt"))) goto handle_error;
 
   if (!RtCopyFile(lpFilePath2, lpFilePath1)) goto handle_error;
@@ -312,6 +360,8 @@ RT_B RT_CALL ZzTestMiscWithTemp(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryP
   if (!RtDeleteFile(lpFilePath2)) goto handle_error;
 
   if (!ZzTestCreateEmptyFile(lpFilePath1, lpFilePath2)) goto handle_error;
+
+  if (!ZzTestDirectories(lpTempDirectory, unTempDirectoryPathSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -332,7 +382,7 @@ RT_B RT_CALL ZzTestMisc()
   if (!RtGetTempDirectory(lpTempDirectory, RT_FILE_SYSTEM_MAX_FILE_PATH, &unTempDirectoryPathSize)) goto handle_error;
   if (!RtBuildPath(lpTempDirectory, unTempDirectoryPathSize, _R("ttest"), RT_FILE_SYSTEM_MAX_FILE_PATH, &unTempDirectoryPathSize)) goto handle_error;
 
-  if (!RtCheckPath(lpTempDirectory, RT_FILE_SYSTEM_TYPE_DIRECTORY))
+  if (!RtCheckDirectory(lpTempDirectory))
   {
     if (!RtCreateDirectory(lpTempDirectory)) goto handle_error;
   }

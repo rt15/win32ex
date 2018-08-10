@@ -171,7 +171,7 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
     RtCopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
     RtCopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
 
-    if (!RtBrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, &context))
+    if (!RtBrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, RT_FALSE, &context))
     {
       unResult = 1;
       goto close_heap;

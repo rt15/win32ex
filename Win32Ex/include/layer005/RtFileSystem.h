@@ -40,7 +40,10 @@
 
 typedef RT_B (RT_CALL *RT_FILE_SYSTEM_BROWSE_CALLBACK)(RT_CHAR* lpPath, RT_UN unType, void* lpContext);
 
-RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, void* lpContext);
+/**
+ * @param bChildrenFirst If RT_TRUE, the callback is called with children first.
+ */
+RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, RT_B bChildrenFirst, void* lpContext);
 
 RT_B RT_API RtGetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten);
 
@@ -82,14 +85,18 @@ RT_B RT_API RtRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFileName);
 RT_B RT_API RtCopyFile(RT_CHAR* lpSource, RT_CHAR* lpDestination);
 
 /**
- * Supprime un fichier
  *
- * Considère que le fichier est supprimé s'il n'existait pas
- *
- * @param lpFilePath Le fichier à supprimer
- * @return Zero en cas d'échec
+ * <p>
+ * The file must exist.
+ * </p>
  */
 RT_B RT_API RtDeleteFile(RT_CHAR* lpFilePath);
+
+/**
+ * Attempt to delete the file and check error code in case of error.<br>
+ * Ignore the error if the file has not been found.
+ */
+RT_B RT_API RtDeleteFileIfExists(RT_CHAR* lpFilePath);
 
 RT_B RT_API RtGetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
@@ -98,12 +105,74 @@ RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath);
 RT_B RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize);
 
 /**
- * Return non-zero if the path is correct. Set last error in case of issue.
+ * Return RT_SUCCESS if the path is correct. Set last error in case of issue.
+ *
+ * <p>
+ * Return RT_FAILURE if the path does not exist or if the function fails to check the path.
+ * </p>
+ *
  * @arg unType Type of path. RT_FILE_SYSTEM_TYPE_DIRECTORY, RT_FILE_SYSTEM_TYPE_FILE or both can be used.
  */
 RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType);
 
+/**
+ * Return RT_SUCCESS if the file is correct. Set last error in case of issue.<br>
+ * Return RT_FAILURE if it is a directory, if the file does not exist or if the function fails to check the file.
+ */
+RT_B RT_API RtCheckFile(RT_CHAR* lpPath);
+
+/**
+ * Return RT_SUCCESS if the directory is correct. Set last error in case of issue.<br>
+ * Return RT_FAILURE if it is a file, if the directory does not exist or if the function fails to check the directory.
+ */
+RT_B RT_API RtCheckDirectory(RT_CHAR* lpPath);
+
+/**
+ * Return RT_SUCCESS if path corresponds to a file or directory is correct. Set last error in case of issue.<br>
+ * Return RT_FAILURE if there is no file or directory does not exist or if the function fails to check the directory.
+ */
+RT_B RT_API RtCheckFileOrDirectory(RT_CHAR* lpPath);
+
+/**
+ *
+ *
+ * <p>
+ * The directory must not exist already.
+ * </p>
+ */
 RT_B RT_API RtCreateDirectory(RT_CHAR* lpPath);
+
+/**
+ * Create all necessary directories to create given <tt>lpPath</tt>.
+ */
+RT_B RT_API RtCreateDirectories(RT_CHAR* lpPath);
+
+/**
+ *
+ * <p>
+ * The directory must exist and be empty.
+ * </p>
+ */
+RT_B RT_API RtDeleteDirectory(RT_CHAR* lpPath);
+
+/**
+ * Attempt to delete the directory and check error code in case of error.<br>
+ * Ignore the error if the directory has not been found.
+ *
+ * <p>
+ * The directory must be empty.
+ * </p>
+ */
+RT_B RT_API RtDeleteDirectoryIfExists(RT_CHAR* lpPath);
+
+/**
+ * Delete given directory and its content, recursively.
+ *
+ * <p>
+ * The directory can exist or not.
+ * </p>
+ */
+RT_B RT_API RtDeleteDirectoryRecursively(RT_CHAR* lpPath);
 
 RT_B RT_API RtGetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
