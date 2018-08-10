@@ -83,6 +83,7 @@
   #define RT_STDCALL __stdcall
   #define RT_UNUSED(x) /*@unused@*/ x
 #endif
+#define RT_EXPORT __declspec(dllexport)
 
 /* Calling convention for private functions. */
 #define RT_CALL RT_STDCALL
