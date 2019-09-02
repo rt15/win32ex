@@ -17,18 +17,23 @@
 
 #ifdef RT_DEFINE_GCC
 
-#define RT_MEMORY_SWAP_BYTES16(VAR) __builtin_bswap16(VAR)
-#define RT_MEMORY_SWAP_BYTES32(VAR) __builtin_bswap32(VAR)
+  #define RT_MEMORY_SWAP_BYTES16(VAR) __builtin_bswap16(VAR)
+  #define RT_MEMORY_SWAP_BYTES32(VAR) __builtin_bswap32(VAR)
 
 #else /* NOT RT_DEFINE_GCC */
 
-#define RT_MEMORY_SWAP_BYTES16(VAR) _byteswap_ushort(VAR)
-#define RT_MEMORY_SWAP_BYTES32(VAR) _byteswap_ulong(VAR)
+  #define RT_MEMORY_SWAP_BYTES16(VAR) _byteswap_ushort(VAR)
+  #define RT_MEMORY_SWAP_BYTES32(VAR) _byteswap_ulong(VAR)
 
 #endif
 
 /* Find the offset of given member in given structure. */
-#define RT_MEMORY_OFFSET_OF(STRUCT, MEMBER) __builtin_offsetof(STRUCT, MEMBER)
+#ifdef RT_DEFINE_VC
+  /* __builtin_offsetof does not exist in VC 2005. It may exist in VC 2019. */
+  #define RT_MEMORY_OFFSET_OF(STRUCT, MEMBER) ((size_t)((char *)&((STRUCT *)0)->MEMBER - (char *)0))
+#else
+  #define RT_MEMORY_OFFSET_OF(STRUCT, MEMBER) __builtin_offsetof(STRUCT, MEMBER)
+#endif
 
 /* Find the address of the "container" of given member. */
 #define RT_MEMORY_CONTAINER_OF(POINTER, STRUCT, MEMBER) ((STRUCT*)((char*)(POINTER) - RT_MEMORY_OFFSET_OF(STRUCT, MEMBER)))

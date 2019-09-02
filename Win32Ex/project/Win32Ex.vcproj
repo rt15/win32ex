@@ -166,6 +166,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\src\RtWin32ExInternal.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\RtWin32ExMain.c"
 				>
 			</File>
@@ -173,47 +177,291 @@
 				Name="layer002"
 				>
 				<File
-					RelativePath="..\src\layer002\RtErrorCode.c"
+					RelativePath="..\src\layer002\RtBinarySearch.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtChrono.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtCriticalSection.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtError.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtEvent.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtIoDevice.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtQuickSort.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtSleep.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer002\RtVirtualMemory.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="layer003"
 				>
 				<File
-					RelativePath="..\src\layer003\RtChrono.c"
+					RelativePath="..\src\layer003\RtChar.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer003\RtComparisonCallback.c"
+					RelativePath="..\src\layer003\RtChar8.c"
 					>
-				</File>
-				<File
-					RelativePath="..\src\layer003\RtCriticalSection.c"
-					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\layer003\RtEnvVar.c"
 					>
 				</File>
 				<File
-					RelativePath="..\src\layer003\RtEvent.c"
+					RelativePath="..\src\layer003\RtFastInitialization.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer003\RtMemory.c"
+					RelativePath="..\src\layer003\RtHeap.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer003\RtSleep.c"
+					RelativePath="..\src\layer003\RtInitialization.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer003\RtPipe.c"
 					>
 				</File>
 				<File
 					RelativePath="..\src\layer003\RtThread.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\layer003\RtVirtualMemory.c"
 					>
 				</File>
 			</Filter>
@@ -221,156 +469,574 @@
 				Name="layer004"
 				>
 				<File
-					RelativePath="..\src\layer004\RtBinarySearch.c"
+					RelativePath="..\src\layer004\RtArray.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer004\RtChar.c"
+					RelativePath="..\src\layer004\RtBase64.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer004\RtChar8.c"
+					RelativePath="..\src\layer004\RtCommandLineArgs.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer004\RtFastInitialization.c"
+					RelativePath="..\src\layer004\RtEncoding.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer004\RtInitialization.c"
+					RelativePath="..\src\layer004\RtFileSystem.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer004\RtQuickSort.c"
+					RelativePath="..\src\layer004\RtPageHeap.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer004\RtRandom.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer004\RtStaticHeap.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer004\RtSystemInfo.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\src\layer004\RtUrl.c"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="layer005"
 				>
 				<File
-					RelativePath="..\src\layer005\RtBase64.c"
+					RelativePath="..\src\layer005\RtConsole.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtCommandLineArgs.c"
+					RelativePath="..\src\layer005\RtEnvVars.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtFileSystem.c"
+					RelativePath="..\src\layer005\RtFile.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtHeap.c"
+					RelativePath="..\src\layer005\RtLinkedList.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtRandom.c"
+					RelativePath="..\src\layer005\RtList.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtStaticHeap.c"
+					RelativePath="..\src\layer005\RtRuntimeHeap.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtSystemInfo.c"
+					RelativePath="..\src\layer005\RtSortableArray.c"
 					>
-				</File>
-				<File
-					RelativePath="..\src\layer005\RtUrl.c"
-					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="layer006"
 				>
 				<File
-					RelativePath="..\src\layer006\RtConsole.c"
+					RelativePath="..\src\layer006\RtErrorMessage.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer006\RtEncoding.c"
+					RelativePath="..\src\layer006\RtFileUtils.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer006\RtEnvVars.c"
+					RelativePath="..\src\layer006\RtSmallFile.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer006\RtFile.c"
+					RelativePath="..\src\layer006\RtSocket.c"
 					>
-				</File>
-				<File
-					RelativePath="..\src\layer006\RtPageHeap.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\layer006\RtRuntimeHeap.c"
-					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="layer007"
 				>
 				<File
-					RelativePath="..\src\layer007\RtErrorMessage.c"
+					RelativePath="..\src\layer007\RtProcess.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer007\RtFileUtils.c"
+					RelativePath="..\src\layer007\RtProperties.c"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer007\RtSocket.c"
+					RelativePath="..\src\layer007\RtTable.c"
 					>
-				</File>
-				<File
-					RelativePath="..\src\layer007\RtWin32ExInternal.c"
-					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
-				Name="layer008"
+				Name="layer001"
 				>
 				<File
-					RelativePath="..\src\layer008\RtArray.c"
+					RelativePath="..\src\layer001\RtComparison.c"
 					>
 				</File>
 				<File
-					RelativePath="..\src\layer008\RtProcess.c"
+					RelativePath="..\src\layer001\RtMemory.c"
 					>
-				</File>
-				<File
-					RelativePath="..\src\layer008\RtSmallFile.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\layer008\RtTable.c"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="layer009"
-				>
-				<File
-					RelativePath="..\src\layer009\RtLinkedList.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\layer009\RtList.c"
-					>
-				</File>
-				<File
-					RelativePath="..\src\layer009\RtSortableArray.c"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="layer010"
-				>
-				<File
-					RelativePath="..\src\layer010\RtProperties.c"
-					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>
@@ -403,7 +1069,27 @@
 				Name="layer001"
 				>
 				<File
-					RelativePath="..\include\layer001\RtWin32ExOsDefines.h"
+					RelativePath="..\include\layer001\RtAtomic.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer001\RtComparison.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer001\RtInputStream.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer001\RtMemory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer001\RtOutputStream.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer001\RtWin32ExOsHeaders.h"
 					>
 				</File>
 			</Filter>
@@ -411,7 +1097,39 @@
 				Name="layer002"
 				>
 				<File
-					RelativePath="..\include\layer002\RtErrorCode.h"
+					RelativePath="..\include\layer002\RtBinarySearch.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtChrono.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtCriticalSection.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtError.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtEvent.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtIoDevice.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtQuickSort.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtSleep.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer002\RtVirtualMemory.h"
 					>
 				</File>
 			</Filter>
@@ -419,19 +1137,11 @@
 				Name="layer003"
 				>
 				<File
-					RelativePath="..\include\layer003\RtAtomic.h"
+					RelativePath="..\include\layer003\RtChar.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer003\RtChrono.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer003\RtComparisonCallback.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer003\RtCriticalSection.h"
+					RelativePath="..\include\layer003\RtChar8.h"
 					>
 				</File>
 				<File
@@ -439,23 +1149,23 @@
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer003\RtEvent.h"
+					RelativePath="..\include\layer003\RtFastInitialization.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer003\RtMemory.h"
+					RelativePath="..\include\layer003\RtHeap.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer003\RtSleep.h"
+					RelativePath="..\include\layer003\RtInitialization.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer003\RtPipe.h"
 					>
 				</File>
 				<File
 					RelativePath="..\include\layer003\RtThread.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer003\RtVirtualMemory.h"
 					>
 				</File>
 			</Filter>
@@ -463,27 +1173,43 @@
 				Name="layer004"
 				>
 				<File
-					RelativePath="..\include\layer004\RtBinarySearch.h"
+					RelativePath="..\include\layer004\RtArray.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer004\RtChar.h"
+					RelativePath="..\include\layer004\RtBase64.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer004\RtChar8.h"
+					RelativePath="..\include\layer004\RtCommandLineArgs.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer004\RtFastInitialization.h"
+					RelativePath="..\include\layer004\RtEncoding.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer004\RtInitialization.h"
+					RelativePath="..\include\layer004\RtFileSystem.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer004\RtQuickSort.h"
+					RelativePath="..\include\layer004\RtPageHeap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer004\RtRandom.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer004\RtStaticHeap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer004\RtSystemInfo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer004\RtUrl.h"
 					>
 				</File>
 			</Filter>
@@ -491,35 +1217,31 @@
 				Name="layer005"
 				>
 				<File
-					RelativePath="..\include\layer005\RtBase64.h"
+					RelativePath="..\include\layer005\RtConsole.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtCommandLineArgs.h"
+					RelativePath="..\include\layer005\RtEnvVars.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtFileSystem.h"
+					RelativePath="..\include\layer005\RtFile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtHeap.h"
+					RelativePath="..\include\layer005\RtLinkedList.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtRandom.h"
+					RelativePath="..\include\layer005\RtList.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtStaticHeap.h"
+					RelativePath="..\include\layer005\RtRuntimeHeap.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtSystemInfo.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer005\RtUrl.h"
+					RelativePath="..\include\layer005\RtSortableArray.h"
 					>
 				</File>
 			</Filter>
@@ -527,27 +1249,23 @@
 				Name="layer006"
 				>
 				<File
-					RelativePath="..\include\layer006\RtConsole.h"
+					RelativePath="..\include\layer006\RtErrorMessage.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer006\RtEncoding.h"
+					RelativePath="..\include\layer006\RtFileUtils.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer006\RtEnvVars.h"
+					RelativePath="..\include\layer006\RtSmallFile.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer006\RtFile.h"
+					RelativePath="..\include\layer006\RtSocket.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer006\RtPageHeap.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer006\RtRuntimeHeap.h"
+					RelativePath="..\include\layer006\RtTableMetadata.h"
 					>
 				</File>
 			</Filter>
@@ -555,63 +1273,15 @@
 				Name="layer007"
 				>
 				<File
-					RelativePath="..\include\layer007\RtErrorMessage.h"
+					RelativePath="..\include\layer007\RtProcess.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer007\RtFileUtils.h"
+					RelativePath="..\include\layer007\RtProperties.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer007\RtSocket.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer007\RtTableMetadata.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="layer008"
-				>
-				<File
-					RelativePath="..\include\layer008\RtArray.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer008\RtProcess.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer008\RtSmallFile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer008\RtTable.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="layer009"
-				>
-				<File
-					RelativePath="..\include\layer009\RtLinkedList.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer009\RtList.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer009\RtSortableArray.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="layer010"
-				>
-				<File
-					RelativePath="..\include\layer010\RtProperties.h"
+					RelativePath="..\include\layer007\RtTable.h"
 					>
 				</File>
 			</Filter>

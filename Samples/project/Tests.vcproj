@@ -262,6 +262,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestIoDevice.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Tests\src\tests\ZzTestList.c"
 					>
 				</File>
