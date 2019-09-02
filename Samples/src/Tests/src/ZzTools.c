@@ -19,7 +19,7 @@ RT_B RT_CALL ZzVConcatLines(va_list lpVaList, RT_HEAP** lpHeap, void** lpBuffer)
     lpLine = va_arg(lpVaList, RT_CHAR*);
     if (lpLine)
     {
-      unReferenceSize += RtGetStringSize(lpLine);
+      unReferenceSize += RtChar_GetStringSize(lpLine);
       unReferenceSize++; /* End of line. */
     }
     else
@@ -40,8 +40,8 @@ RT_B RT_CALL ZzVConcatLines(va_list lpVaList, RT_HEAP** lpHeap, void** lpBuffer)
     lpLine = va_arg(lpVaList2, RT_CHAR*);
     if (lpLine)
     {
-      if (!RtCopyString(lpLine,               &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
-      if (!RtCopyStringWithSize(_R("\n"), 1,  &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtChar_CopyString(lpLine,               &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtChar_CopyStringWithSize(_R("\n"), 1,  &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
     }
     else
     {
@@ -88,10 +88,10 @@ RT_B RT_CALL ZzVCheckTextFile(va_list lpVaList, RT_CHAR* lpFilePath, RT_HEAP** l
   unFileSize = RtReadFromSmallFile(lpFilePath, &lpRawFileContent, lpHeap);
   if (unFileSize == -1) goto handle_error;
 
-  unContentSize = RtDecodeWithHeap(lpRawFileContent, unFileSize, RT_ENCODING_US_ASCII, &lpFileContent, lpHeap);
+  unContentSize = RtEncoding_DecodeWithHeap(lpRawFileContent, unFileSize, RT_ENCODING_US_ASCII, &lpFileContent, lpHeap);
   if (unContentSize == -1) goto handle_error;
 
-  if (RtGetStringSize(lpReference) != unContentSize) goto handle_error;
+  if (RtChar_GetStringSize(lpReference) != unContentSize) goto handle_error;
 
   if (RT_MEMORY_COMPARE(lpFileContent, lpReference, unContentSize)) goto handle_error;
 
@@ -115,19 +115,19 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CDECL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...)
+RT_B RT_CDECL ZzWriteLinesToDevice(RT_IO_DEVICE* lpIoDevice, RT_HEAP** lpHeap, ...)
 {
   va_list lpVaList;
   RT_B bResult;
 
   va_start(lpVaList, lpHeap);
-  bResult = ZzVWriteLinesToFile(lpVaList, lpFile, lpHeap);
+  bResult = ZzVWriteLinesToDevice(lpVaList, lpIoDevice, lpHeap);
   va_end(lpVaList);
 
   return bResult;
 }
 
-RT_B RT_CALL ZzVWriteLinesToFile(va_list lpVaList, RT_FILE* lpFile, RT_HEAP** lpHeap)
+RT_B RT_CALL ZzVWriteLinesToDevice(va_list lpVaList, RT_IO_DEVICE* lpIoDevice, RT_HEAP** lpHeap)
 {
   RT_CHAR* lpLines;
   RT_CHAR8* lpRawFileContent;
@@ -139,10 +139,10 @@ RT_B RT_CALL ZzVWriteLinesToFile(va_list lpVaList, RT_FILE* lpFile, RT_HEAP** lp
 
   if (!ZzVConcatLines(lpVaList, lpHeap, (void**)&lpLines)) goto handle_error;
 
-  unRawFileContentSize = RtEncodeWithHeap(lpLines, RT_TYPE_MAX_UN, RT_ENCODING_US_ASCII, &lpRawFileContent, lpHeap);
+  unRawFileContentSize = RtEncoding_EncodeWithHeap(lpLines, RT_TYPE_MAX_UN, RT_ENCODING_US_ASCII, &lpRawFileContent, lpHeap);
   if (unRawFileContentSize == -1) goto handle_error;
 
-  if (!RtWriteToFile(lpFile, lpRawFileContent, unRawFileContentSize)) goto handle_error;
+  if (!RtIoDevice_Write(RtIoDevice_GetOutputStream(lpIoDevice), lpRawFileContent, unRawFileContentSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -207,7 +207,7 @@ RT_N RT_CALL ZzCompareStringsArrays(RT_CHAR** lpStrings1, RT_CHAR** lpStrings2)
   nResult = 0;
   while (*lpInStrings1 && *lpInStrings2)
   {
-    nResult = RtCompareStrings(*lpInStrings1, *lpInStrings2);
+    nResult = RtChar_CompareStrings(*lpInStrings1, *lpInStrings2);
     if (nResult)
     {
       break;

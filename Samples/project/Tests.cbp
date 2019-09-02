@@ -154,6 +154,9 @@
 		<Unit filename="../src/Tests/src/tests/ZzTestInitialization.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestIoDevice.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestList.c">
 			<Option compilerVar="CC" />
 		</Unit>

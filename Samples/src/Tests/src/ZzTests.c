@@ -39,7 +39,7 @@ void RT_CALL ZzWriteToFile(RT_CHAR* lpPath, RT_CHAR* lpString, RT_UN unEncoding,
   RT_CHAR8* lpFileContent;
   RT_UN unFileContentSize;
 
-  unFileContentSize = RtEncodeWithHeap(lpString, RT_TYPE_MAX_UN, unEncoding, &lpFileContent, lpHeap);
+  unFileContentSize = RtEncoding_EncodeWithHeap(lpString, RT_TYPE_MAX_UN, unEncoding, &lpFileContent, lpHeap);
   if (unFileContentSize == RT_TYPE_MAX_UN)
   {
     RtWriteLastErrorMessage(_R("Encoding failed: "));
@@ -67,13 +67,13 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
   RT_UN unWritten;
 
   unFileSize = RtReadFromSmallFile(lpPath, &lpFileContent, lpHeap);
-  RtConvertIntegerToString(unFileSize, lpBuffer, 500, &unWritten);
+  RtChar_ConvertIntegerToString(unFileSize, lpBuffer, 500, &unWritten);
   RtWriteStringsOrErrorsToConsole(RT_TRUE, lpPath, _R(" file size: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   lpData = &lpFileContent[unBomSize];
   unDataSize = unFileSize - unBomSize;
 
-  if (RtDecodeWithHeap(lpData, unDataSize, unEncoding, &lpFileContentAsString, lpHeap) == RT_TYPE_MAX_UN)
+  if (RtEncoding_DecodeWithHeap(lpData, unDataSize, unEncoding, &lpFileContentAsString, lpHeap) == RT_TYPE_MAX_UN)
   {
     RtWriteLastErrorMessage(_R("Decoding failed: "));
   }
@@ -129,6 +129,7 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestMemory()) goto tests_failed;
   if (!ZzTestRandom()) goto tests_failed;
   if (!ZzTestHeap(&zzRuntimeHeap.lpHeap)) goto tests_failed;
+  if (!ZzTestIoDevice()) goto tests_failed;
   if (!ZzTestFile()) goto tests_failed;
   if (!ZzTestFileSystem()) goto tests_failed;
   if (!ZzTestChar()) goto tests_failed;
@@ -156,16 +157,16 @@ tests_failed:
   goto handle_error;
 end_of_tests:
 
-  RtConvertIntegerToString(getPageSize(), lpBuffer, 500, &unWritten);
+  RtChar_ConvertIntegerToString(RtVirtualMemory_GetPageSize(), lpBuffer, 500, &unWritten);
   RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
-  RtCopyString(_R("FooBarPad"), lpBuffer, 500, &unWritten);
+  RtChar_CopyString(_R("FooBarPad"), lpBuffer, 500, &unWritten);
 
-  RtLeftPadString(lpBuffer, _R('0'), 11, lpBuffer, 500, &unWritten);
+  RtChar_LeftPadString(lpBuffer, _R('0'), 11, lpBuffer, 500, &unWritten);
   RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   unWritten = 0;
-  RtConcatStrings(lpBuffer, 500, &unWritten, _R("foo"), _R("bar"), _R("team"), _R("\n"), (RT_CHAR*)RT_NULL);
+  RtChar_ConcatStrings(lpBuffer, 500, &unWritten, _R("foo"), _R("bar"), _R("team"), _R("\n"), (RT_CHAR*)RT_NULL);
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   DiplayFileContent(_R("data/file.txt"), 0, 0, &zzRuntimeHeap.lpHeap);
@@ -190,11 +191,11 @@ end_of_tests:
   {
     RtNewLinkedListItemIndex((void**)&lpLinkedList, &unIndex);
     unWritten = 0;
-    RtConvertIntegerToString(unIndex, &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-    RtCopyString(_R("\n"),     &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+    RtChar_ConvertIntegerToString(unIndex, &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+    RtChar_CopyString(_R("\n"),     &lpBuffer[unWritten], 200 - unWritten, &unWritten);
     RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
   }
-  RtFreeArray((void**)&lpLinkedList);
+  RtArray_Free((void**)&lpLinkedList);
 
   RtCreateSortableArray((void**)&lpArray, &zzRuntimeHeap.lpHeap, 200, sizeof(RT_UN32), &ZzCompare, RT_NULL);
   for (unI = 0; unI < 200; unI++)
@@ -206,26 +207,26 @@ end_of_tests:
   lpArray[34] = 7;
   lpArray[50] = 8;
 
-  RtSetArraySize((void**)&lpArray, 100);
+  RtArray_SetSize((void**)&lpArray, 100);
   RtSortSortableArray(lpArray);
 
   for (unI = 0; unI < 100; unI++)
   {
     unWritten = 0;
-    RtConvertIntegerToString(lpArray[unI], &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-    RtCopyString(_R("\n"), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+    RtChar_ConvertIntegerToString(lpArray[unI], &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+    RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
     RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
   }
 
   unToSearch = 1025;
   RtSearchSortableArrayItemIndex(lpArray, &unToSearch, &unIndex);
   unWritten = 0;
-  RtCopyString(_R("Item found at index: "), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-  RtConvertIntegerToString(unIndex,                &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-  RtCopyString(_R("\n"),                    &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+  RtChar_CopyString(_R("Item found at index: "), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+  RtChar_ConvertIntegerToString(unIndex,                &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+  RtChar_CopyString(_R("\n"),                    &lpBuffer[unWritten], 200 - unWritten, &unWritten);
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
-  RtFreeArray((void**)&lpArray);
+  RtArray_Free((void**)&lpArray);
 
   if (!zzRuntimeHeap.lpHeap->lpFree(&zzRuntimeHeap, &lpArea))
   {
@@ -316,7 +317,7 @@ RT_B RT_CALL ZzDisplayEnvVars()
   if (!RtCreateEnvVars(&zzEnvVars)) goto handle_error;
   bEnvVarsCreated = RT_TRUE;
 
-  if (!RtGetEnvVarsArray(&zzEnvVars, &lpEnvVarsArray)) goto handle_error;
+  if (!RtEnvVars_GetArray(&zzEnvVars, &lpEnvVarsArray)) goto handle_error;
 
   while (*lpEnvVarsArray)
   {
@@ -348,7 +349,7 @@ RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVar)
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtGetEnvVar(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtEnvVar_Get(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, lpEnvVar, _R("="), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;
@@ -368,41 +369,41 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   {
     bResult = ZzTests();
   }
-  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--manual")) ||
-                          !RtCompareStrings(lpArgV[1], _R("-m"))))
+  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--manual")) ||
+                          !RtChar_CompareStrings(lpArgV[1], _R("-m"))))
   {
     bResult = ZzManualTests();
   }
 
-  else if (!RtCompareStrings(lpArgV[1], _R("--parse-args")) ||
-           !RtCompareStrings(lpArgV[1], _R("-p")))
+  else if (!RtChar_CompareStrings(lpArgV[1], _R("--parse-args")) ||
+           !RtChar_CompareStrings(lpArgV[1], _R("-p")))
   {
     bResult = ZzTestParseArgs(nArgC - 1, &lpArgV[1]);
   }
 
-  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--read-line")) ||
-                          !RtCompareStrings(lpArgV[1], _R("-r"))))
+  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--read-line")) ||
+                          !RtChar_CompareStrings(lpArgV[1], _R("-r"))))
   {
     bResult = ZzReadLine();
   }
-  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--help")) ||
-                          !RtCompareStrings(lpArgV[1], _R("-h")) ||
-                          !RtCompareStrings(lpArgV[1], _R("/?"))))
+  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--help")) ||
+                          !RtChar_CompareStrings(lpArgV[1], _R("-h")) ||
+                          !RtChar_CompareStrings(lpArgV[1], _R("/?"))))
   {
     bResult = ZzDisplayHelp(RT_SUCCESS);
   }
-  else if (nArgC == 2 && (!RtCompareStrings(lpArgV[1], _R("--display-env-var")) ||
-                          !RtCompareStrings(lpArgV[1], _R("-d"))))
+  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--display-env-var")) ||
+                          !RtChar_CompareStrings(lpArgV[1], _R("-d"))))
   {
     bResult = ZzDisplayEnvVars();
   }
-  else if (nArgC == 3 && (!RtCompareStrings(lpArgV[1], _R("--display-env-var")) ||
-                          !RtCompareStrings(lpArgV[1], _R("-d"))))
+  else if (nArgC == 3 && (!RtChar_CompareStrings(lpArgV[1], _R("--display-env-var")) ||
+                          !RtChar_CompareStrings(lpArgV[1], _R("-d"))))
   {
     bResult = ZzDisplayEnvVar(lpArgV[2]);
   }
-  else if (!RtCompareStrings(lpArgV[1], _R("--args")) ||
-           !RtCompareStrings(lpArgV[1], _R("-a")))
+  else if (!RtChar_CompareStrings(lpArgV[1], _R("--args")) ||
+           !RtChar_CompareStrings(lpArgV[1], _R("-a")))
   {
     bResult = ZzDisplayArgs(nArgC, lpArgV);
   }

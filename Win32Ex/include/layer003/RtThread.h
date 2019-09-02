@@ -36,22 +36,22 @@ typedef struct _RT_THREAD
 RT_THREAD;
 
 
-RT_B RT_API RtCreateThread(RT_THREAD* lpThread, RT_THREAD_CALLBACK lpThreadCallback, void* lpParameter);
+RT_B RT_API RtThread_Create(RT_THREAD* lpThread, RT_THREAD_CALLBACK lpThreadCallback, void* lpParameter);
 
-RT_B RT_API RtJoinThread(RT_THREAD* lpThread);
+RT_B RT_API RtThread_Join(RT_THREAD* lpThread);
 
 /**
  * Join with a thread and check that exit code is non-zero.
  */
-RT_B RT_API RtJoinAndCheckThread(RT_THREAD* lpThread);
+RT_B RT_API RtThread_JoinAndCheck(RT_THREAD* lpThread);
 
 /**
  * <p>
- * Must be called before <tt>RtFreeThread</tt>.
+ * Must be called before <tt>RtThread_Free</tt>.
  * </p>
  */
-RT_B RT_API RtGetThreadExitCode(RT_THREAD* lpThread, RT_UN32* lpExitCode);
+RT_B RT_API RtThread_GetExitCode(RT_THREAD* lpThread, RT_UN32* lpExitCode);
 
-RT_B RT_API RtFreeThread(RT_THREAD* lpThread);
+RT_B RT_API RtThread_Free(RT_THREAD* lpThread);
 
 #endif /* RT_THREAD_H */

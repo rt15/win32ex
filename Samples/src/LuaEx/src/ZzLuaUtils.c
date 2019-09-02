@@ -8,7 +8,7 @@ RT_EXPORT void RT_STDCALL ZzPushLastErrorMessage(lua_State* lpLuaState)
 
   unWritten = 0;
   if (!RtGetLastErrorMessage(lpLastErrorMessage, RT_CHAR_QUARTER_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-  unWritten = RtEncodeWithBuffer(lpLastErrorMessage, unWritten, 0, lpLastErrorMessage8, RT_CHAR_QUARTER_BIG_STRING_SIZE);
+  unWritten = RtEncoding_EncodeWithBuffer(lpLastErrorMessage, unWritten, 0, lpLastErrorMessage8, RT_CHAR_QUARTER_BIG_STRING_SIZE);
   if (unWritten == RT_TYPE_MAX_UN) goto handle_error;
 
   lua_pushstring(lpLuaState, lpLastErrorMessage8);

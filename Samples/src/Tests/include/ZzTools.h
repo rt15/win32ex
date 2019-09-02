@@ -8,8 +8,8 @@ RT_B RT_CALL ZzAdjustDirectory();
 RT_B RT_CDECL ZzCheckTextFile(RT_CHAR* lpFilePath, RT_HEAP** lpHeap, ...);
 RT_B RT_CALL ZzVCheckTextFile(va_list lpValist, RT_CHAR* lpFilePath, RT_HEAP** lpHeap);
 
-RT_B RT_CDECL ZzWriteLinesToFile(RT_FILE* lpFile, RT_HEAP** lpHeap, ...);
-RT_B RT_CALL ZzVWriteLinesToFile(va_list lpValist, RT_FILE* lpFile, RT_HEAP** lpHeap);
+RT_B RT_CDECL ZzWriteLinesToDevice(RT_IO_DEVICE* lpIoDevice, RT_HEAP** lpHeap, ...);
+RT_B RT_CALL ZzVWriteLinesToDevice(va_list lpValist, RT_IO_DEVICE* lpIoDevice, RT_HEAP** lpHeap);
 
 RT_N RT_CALL ZzCompareStringsArrays(RT_CHAR** lpStrings1, RT_CHAR** lpStrings2);
 

@@ -160,7 +160,7 @@ void* RT_CDECL memmove(void* lpDestination, const void* lpSource, size_t unSize)
   }
   else
   {
-    /* No overwriting possible, same code as RtCopyMemory. */
+    /* No overwriting possible, same code as RtMemory_Copy. */
     if (unWordsCount)
     {
       lpWordSource = lpSource;

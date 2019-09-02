@@ -8,9 +8,9 @@ RT_B RT_CALL ZzCheckCommandLineArg(RT_UN unExpectedArgType, RT_B bExpectedValid,
   if (unArgType != unExpectedArgType) goto handle_error;
   if ((bValid && !bExpectedValid) || (!bValid && bExpectedValid)) goto handle_error;
   if (nShortOption != nExpectedShortOption) goto handle_error;
-  if (RtCompareNullStrings(lpLongOption, lpExpectedLongOption)) goto handle_error;
+  if (RtChar_CompareNullStrings(lpLongOption, lpExpectedLongOption)) goto handle_error;
   if (unValueCardinality != unExpectedValueCardinality) goto handle_error;
-  if (RtCompareNullStrings(lpValue, lpExpectedValue)) goto handle_error;
+  if (RtChar_CompareNullStrings(lpValue, lpExpectedValue)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -32,71 +32,71 @@ RT_B RT_CALL ZzCommandLineArgsCallback(RT_UN unArgType, RT_B bValid, RT_CHAR nSh
   switch (*lpArgumentIndex)
   {
     case 0:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('a'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('a'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 1:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('b'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('b'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 2:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('h'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_OPTIONAL, _R("HVAL"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('h'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_OPTIONAL, _R("HVAL"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 3:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('c'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('c'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 4:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('o'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("OVAL"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('o'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("OVAL"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 5:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('d'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('d'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 6:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('p'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("PVAL"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('p'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("PVAL"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 7:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("optional1"), RT_COMMAND_LINE_ARG_VALUE_OPTIONAL, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("optional1"), RT_COMMAND_LINE_ARG_VALUE_OPTIONAL, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 8:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("optional2"), RT_COMMAND_LINE_ARG_VALUE_OPTIONAL, _R("OPTIONAL2"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("optional2"), RT_COMMAND_LINE_ARG_VALUE_OPTIONAL, _R("OPTIONAL2"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 9:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_FALSE, 0, _R("unknown"), RT_COMMAND_LINE_ARG_VALUE_NONE, _R("UNKNOWN"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_FALSE, 0, _R("unknown"), RT_COMMAND_LINE_ARG_VALUE_NONE, _R("UNKNOWN"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 10:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_FALSE, _R('v'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_FALSE, _R('v'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 11:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("required1"), RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("REQUIRED1"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("required1"), RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("REQUIRED1"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 12:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("required2"), RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("REQUIRED2"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("required2"), RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("REQUIRED2"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 13:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("none1"), RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("none1"), RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 14:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("none2"), RT_COMMAND_LINE_ARG_VALUE_NONE, _R("BAD_VALUE"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("none2"), RT_COMMAND_LINE_ARG_VALUE_NONE, _R("BAD_VALUE"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 15:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('e'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL, 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_SHORT, RT_TRUE, _R('e'), RT_NULL, RT_COMMAND_LINE_ARG_VALUE_NONE, RT_NULL,
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     case 16:
-      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("required3"), RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("REQUIRED3"), 
+      if (!ZzCheckCommandLineArg(RT_COMMAND_LINE_ARG_TYPE_LONG, RT_TRUE, 0, _R("required3"), RT_COMMAND_LINE_ARG_VALUE_REQUIRED, _R("REQUIRED3"),
                                  unArgType, bValid, nShortOption, lpLongOption, unValueCardinality, lpValue)) goto handle_error;
       break;
     default:
@@ -165,9 +165,9 @@ RT_B RT_CALL ZzTestCommandLineArgs()
   lpLongOptionsWithArg[1] = _R("required2");
   lpLongOptionsWithArg[2] = _R("required3");
   lpLongOptionsWithArg[3] = RT_NULL;
- 
+
   unArgumentIndex = 0;
-  if (!RtParseCommandLineArgs(&nArgC, lpArgV, &ZzCommandLineArgsCallback, &unArgumentIndex,
+  if (!RtCommandLineArgs_Parse(&nArgC, lpArgV, &ZzCommandLineArgsCallback, &unArgumentIndex,
                               _R("abcdefg"), _R("hijklmn"), _R("opqrstu"),
                               lpLongOptionsWithoutArg, lpLongOptionsWithOptionalArg, lpLongOptionsWithArg,
                               &nNonOptionsIndex)) goto handle_error;
@@ -182,7 +182,7 @@ RT_B RT_CALL ZzTestCommandLineArgs()
   unJ = 0;
   for (nI = nNonOptionsIndex; nI < nArgC; nI++)
   {
-    if (RtCompareStrings(lpArgV[nI], lpNonOptions[unJ])) goto handle_error;
+    if (RtChar_CompareStrings(lpArgV[nI], lpNonOptions[unJ])) goto handle_error;
     unJ++;
   }
 

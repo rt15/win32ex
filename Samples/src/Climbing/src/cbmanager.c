@@ -17,13 +17,13 @@ void RT_CALL CbDisplayList(CB_MANAGER_CONTEXT* lpManagerContext, RT_B bWithIndex
   lpTable = &lpManagerContext->lpCompetition->lpTables[lpManagerContext->nClass];
 
   CbWriteSeparator();
-  nObjectsCount = RtGetArraySize(lpTable->lpTableData);
+  nObjectsCount = RtArray_GetSize(lpTable->lpTableData);
   for (nI = 0; nI < nObjectsCount; nI++)
   {
-    RtGetArrayItem(lpTable->lpTableData, lpTable->lpTableIndexes[0].lpIndexes[nI], (void**)&lpObject);
+    RtArray_GetItem(lpTable->lpTableData, lpTable->lpTableIndexes[0].lpIndexes[nI], (void**)&lpObject);
     if (bWithIndex)
     {
-      RtConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
+      RtChar_ConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
       RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R(": "), lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
     }
     else
@@ -74,12 +74,12 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
       lpManagerContext = (CB_MANAGER_CONTEXT*)lpContext;
       lpTable = &lpManagerContext->lpCompetition->lpTables[lpManagerContext->nClass];
       lpTableData = &lpTable->lpTableData;
-      if (!RtNewArrayItem(lpTableData, (void**)&lpObject))
+      if (!RtArray_NewItem(lpTableData, (void**)&lpObject))
       {
         unResult = 1;
         break;
       }
-      RtCopyStringWithSize(lpName, unRead, lpObject->lpName, CB_NAME_SIZE, &unWritten);
+      RtChar_CopyStringWithSize(lpName, unRead, lpObject->lpName, CB_NAME_SIZE, &unWritten);
       if (!RtIndexNewTableItem(lpTable))
       {
         unResult = 1;
@@ -105,7 +105,7 @@ RT_UN16 RT_CALL CbDeleteObject(void* lpContext)
 
   while (RT_TRUE)
   {
-    nObjectsCount = RtGetArraySize(lpTable->lpTableData);
+    nObjectsCount = RtArray_GetSize(lpTable->lpTableData);
 
     RtWriteStringToConsole(_R("\nEnter an index or nothing to quit\n"));
 
@@ -128,7 +128,7 @@ RT_UN16 RT_CALL CbDeleteObject(void* lpContext)
     }
 
     /* Parse index. */
-    if (RtConvertStringToInteger(lpIndex, &nIndex))
+    if (RtChar_ConvertStringToInteger(lpIndex, &nIndex))
     {
       if (!nIndex)
       {
@@ -167,7 +167,7 @@ RT_UN16 RT_CALL CbEditObject(void* lpContext)
 
   while (RT_TRUE)
   {
-    nObjectsCount = RtGetArraySize(lpTable->lpTableData);
+    nObjectsCount = RtArray_GetSize(lpTable->lpTableData);
 
     RtWriteStringToConsole(_R("\nEnter an index or nothing to quit\n"));
 
@@ -190,7 +190,7 @@ RT_UN16 RT_CALL CbEditObject(void* lpContext)
     }
 
     /* Parse index. */
-    if (RtConvertStringToInteger(lpIndex, &nIndex))
+    if (RtChar_ConvertStringToInteger(lpIndex, &nIndex))
     {
       if (!nIndex)
       {

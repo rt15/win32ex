@@ -33,20 +33,20 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   if (unFileSize == RT_TYPE_MAX_UN) goto handle_error;
 
   /* Decode input file content. */
-  nFileContentSize = RtDecodeWithHeap(lpFileContent8, unFileSize, 0, &lpFileContent, lpHeap);
+  nFileContentSize = RtEncoding_DecodeWithHeap(lpFileContent8, unFileSize, 0, &lpFileContent, lpHeap);
   if (nFileContentSize == -1) goto handle_error;
 
-  nOcurrencesCount = RtCountStringOccurrences(lpFileContent, lpSearched);
+  nOcurrencesCount = RtChar_CountStringOccurrences(lpFileContent, lpSearched);
   if (nOcurrencesCount > 0)
   {
-    nDelta = (RtGetStringSize(lpReplacement) - RtGetStringSize(lpSearched)) * nOcurrencesCount;
+    nDelta = (RtChar_GetStringSize(lpReplacement) - RtChar_GetStringSize(lpSearched)) * nOcurrencesCount;
     nNewFileContentSize = nFileContentSize + nDelta;
     if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpNewFileContent, (nNewFileContentSize + 1) * sizeof(RT_CHAR), _R("New file content as string."))) goto handle_error;
 
     unWritten = 0;
-    if (!RtReplaceString(lpFileContent, lpSearched, lpReplacement, lpNewFileContent, nNewFileContentSize + 1, &unWritten)) goto handle_error;
+    if (!RtChar_ReplaceString(lpFileContent, lpSearched, lpReplacement, lpNewFileContent, nNewFileContentSize + 1, &unWritten)) goto handle_error;
 
-    unNewFileSize = RtEncodeWithHeap(lpNewFileContent, unWritten, 0, &lpNewFileContent8, lpHeap);
+    unNewFileSize = RtEncoding_EncodeWithHeap(lpNewFileContent, unWritten, 0, &lpNewFileContent8, lpHeap);
     if (unNewFileSize == -1) goto handle_error;
 
     if (!RtWriteToSmallFile(lpNewFileContent8, unNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE)) goto handle_error;
@@ -125,30 +125,30 @@ RT_EXPORT RT_N32 RT_CDECL ZzReplaceInFile(lua_State* lpLuaState)
   lpSearched8 = (RT_CHAR8*)luaL_checkstring(lpLuaState, 1);
   if (!lpSearched8)
   {
-    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
     goto handle_error;
   }
-  unWritten = RtDecodeWithBuffer(lpSearched8, -1, 0, lpSearched, RT_CHAR_QUARTER_BIG_STRING_SIZE);
+  unWritten = RtEncoding_DecodeWithBuffer(lpSearched8, -1, 0, lpSearched, RT_CHAR_QUARTER_BIG_STRING_SIZE);
   if (unWritten == -1) goto handle_error;
 
   /* lpReplacement. */
   lpReplacement8 = (RT_CHAR8*)luaL_checkstring(lpLuaState, 2);
   if (!lpReplacement8)
   {
-    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
     goto handle_error;
   }
-  unWritten = RtDecodeWithBuffer(lpReplacement8, -1, 0, lpReplacement, RT_CHAR_QUARTER_BIG_STRING_SIZE);
+  unWritten = RtEncoding_DecodeWithBuffer(lpReplacement8, -1, 0, lpReplacement, RT_CHAR_QUARTER_BIG_STRING_SIZE);
   if (unWritten == -1) goto handle_error;
 
   /* lpFilePath. */
   lpFilePath8 = (RT_CHAR8*)luaL_checkstring(lpLuaState, 3);
   if (!lpFilePath8)
   {
-    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
     goto handle_error;
   }
-  unWritten = RtDecodeWithBuffer(lpFilePath8, -1, 0, lpFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH);
+  unWritten = RtEncoding_DecodeWithBuffer(lpFilePath8, -1, 0, lpFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH);
   if (unWritten == -1) goto handle_error;
 
   if (!ZzPerform(lpSearched, lpReplacement, lpFilePath)) goto handle_error;

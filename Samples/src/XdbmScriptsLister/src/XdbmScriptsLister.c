@@ -31,14 +31,14 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
   RT_N unJ;
   RT_B bResult;
 
-  nBegin = RtSearchString(lpFileContent, lpTagName);
+  nBegin = RtChar_SearchString(lpFileContent, lpTagName);
   if (nBegin == -1)
   {
     RtWriteStringToConsole(_R("Tag not found"));
     bResult = RT_FAILURE;
     goto the_end;
   }
-  nBegin += RtGetStringSize(lpTagName);
+  nBegin += RtChar_GetStringSize(lpTagName);
   while (lpFileContent[nBegin] != _R(':'))
   {
     nBegin++;
@@ -89,12 +89,12 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
   if (unType == RT_FILE_SYSTEM_TYPE_FILE)
   {
     unWritten = 0;
-    RtCopyString(lpPath, lpLowerCasePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
-    RtFastLowerString(lpLowerCasePath);
-    if (RtStringEndsWithWithSize(lpLowerCasePath, unWritten, _R(".sql"), 4))
+    RtChar_CopyString(lpPath, lpLowerCasePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
+    RtChar_FastLowerString(lpLowerCasePath);
+    if (RtChar_StringEndsWithWithSize(lpLowerCasePath, unWritten, _R(".sql"), 4))
     {
       unWritten = 0;
-      RtGetFileName(lpPath, RtGetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
+      RtGetFileName(lpPath, RtChar_GetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
       /* Write file name without extension. */
       RtWriteStringToConsoleWithSize(lpFileName, unWritten - 4);
 
@@ -107,7 +107,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
         bResult = RT_FAILURE;
       }
 
-      nFileContentSize = RtDecodeWithHeap(lpData, nDataSize, RT_ENCODING_UTF_8, &lpFileContent, lpHeap);
+      nFileContentSize = RtEncoding_DecodeWithHeap(lpData, nDataSize, RT_ENCODING_UTF_8, &lpFileContent, lpHeap);
       if (nFileContentSize == -1)
       {
         RtWriteLastErrorMessage(_R("Failed to decode file content: "));
@@ -167,9 +167,9 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
     lpSchema = xs_lpSchemas[nI];
 
     unWritten = 0;
-    RtCopyString(_R("database/"),                &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
-    RtCopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
-    RtCopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
+    RtChar_CopyString(_R("database/"),                &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
+    RtChar_CopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
+    RtChar_CopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
 
     if (!RtBrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, RT_FALSE, &context))
     {

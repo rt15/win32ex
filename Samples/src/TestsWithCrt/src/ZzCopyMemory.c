@@ -40,13 +40,13 @@ RT_B RT_CALL ZzTestCopyMemory()
   }
   if (!ZzStopChrono(_R("memcpy in function"), &rtChrono)) goto handle_error;
 
-  /* Test RtCopyMemory. */
+  /* Test RtMemory_Copy. */
   if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
-    RtCopyMemory(lpSource, lpDestination, ZZ_BUFFER_SIZE);
+    RtMemory_Copy(lpSource, lpDestination, ZZ_BUFFER_SIZE);
   }
-  if (!ZzStopChrono(_R("RtCopyMemory"), &rtChrono)) goto handle_error;
+  if (!ZzStopChrono(_R("RtMemory_Copy"), &rtChrono)) goto handle_error;
 
   /* Test RT_MEMORY_COPY. */
   if (!ZzStartChrono(&rtChrono)) goto handle_error;

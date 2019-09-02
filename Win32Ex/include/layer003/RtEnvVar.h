@@ -1,5 +1,5 @@
-#ifndef RT_ENVIRONMENT_VARIABLE_H
-#define RT_ENVIRONMENT_VARIABLE_H
+#ifndef RT_ENV_VAR_H
+#define RT_ENV_VAR_H
 
 #include "layer000/RtWin32ExTypes.h"
 
@@ -19,20 +19,20 @@
  * Fails if the variable does not exist.
  *
  * <p>
- * In case of error, lpBuffer start with a zero character and <tt>lpWritten</tt> is left untouched.
+ * In case of error, lpBuffer starts with a zero character and <tt>lpWritten</tt> is left untouched.
  * </p>
  */
-RT_B RT_API RtGetEnvVar(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
 
 /**
  *
  * @param lpValue Must not be RT_NULL.
  */
-RT_B RT_API RtSetEnvVar(RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
+RT_B RT_API RtEnvVar_Set(RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
 
 /**
  *
  */
-RT_B RT_API RtDeleteEnvVar(RT_CHAR* lpEnvVarName);
+RT_B RT_API RtEnvVar_Delete(RT_CHAR* lpEnvVarName);
 
-#endif /* RT_ENVIRONMENT_VARIABLE_H */
+#endif /* RT_ENV_VAR_H */

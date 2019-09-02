@@ -46,17 +46,17 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   }
 
   /* Decode input file content. */
-  nFileContentAsStringSize = RtDecodeWithHeap(lpFileContent, unFileSize, 0, &lpFileContentAsString, lpHeap);
+  nFileContentAsStringSize = RtEncoding_DecodeWithHeap(lpFileContent, unFileSize, 0, &lpFileContentAsString, lpHeap);
   if (nFileContentAsStringSize == -1)
   {
     RtWriteLastErrorMessage(_R("Failed to decode input file: "));
     goto handle_error;
   }
 
-  nOcurrencesCount = RtCountStringOccurrences(lpFileContentAsString, lpSearched);
+  nOcurrencesCount = RtChar_CountStringOccurrences(lpFileContentAsString, lpSearched);
   if (nOcurrencesCount > 0)
   {
-    nDelta = (RtGetStringSize(lpReplacement) - RtGetStringSize(lpSearched)) * nOcurrencesCount;
+    nDelta = (RtChar_GetStringSize(lpReplacement) - RtChar_GetStringSize(lpSearched)) * nOcurrencesCount;
     nNewFileContentAsStringSize = nFileContentAsStringSize + nDelta;
     if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpNewFileContentAsString, (nNewFileContentAsStringSize + 1) * sizeof(RT_CHAR), _R("New file content as string.")))
     {
@@ -64,13 +64,13 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
       goto handle_error;
     }
     unWritten = 0;
-    if (!RtReplaceString(lpFileContentAsString, lpSearched, lpReplacement, lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &unWritten))
+    if (!RtChar_ReplaceString(lpFileContentAsString, lpSearched, lpReplacement, lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &unWritten))
     {
       RtWriteLastErrorMessage(_R("Replacement failed: "));
       goto handle_error;
     }
 
-    unNewFileSize = RtEncodeWithHeap(lpNewFileContentAsString, unWritten, 0, &lpNewFileContent, lpHeap);
+    unNewFileSize = RtEncoding_EncodeWithHeap(lpNewFileContentAsString, unWritten, 0, &lpNewFileContent, lpHeap);
     if (unNewFileSize == -1)
     {
       RtWriteLastErrorMessage(_R("Failed to encode output file: "));
@@ -164,9 +164,9 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   }
   else if (nArgC == 2)
   {
-    if ((!RtCompareStrings(_R("/?"), lpArgV[1])) ||
-        (!RtCompareStrings(_R("-h"), lpArgV[1])) ||
-        (!RtCompareStrings(_R("--help"), lpArgV[1])))
+    if ((!RtChar_CompareStrings(_R("/?"), lpArgV[1])) ||
+        (!RtChar_CompareStrings(_R("-h"), lpArgV[1])) ||
+        (!RtChar_CompareStrings(_R("--help"), lpArgV[1])))
     {
       unResult = 0;
     }

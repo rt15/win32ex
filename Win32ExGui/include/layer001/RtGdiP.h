@@ -48,7 +48,7 @@ RT_B RT_API RtGdipCleanUp();
 RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode);
 
 /**
- * Call RtSetLastError/SetLastError with similar error code from GpStatus <tt>unStatus</tt> value.
+ * Call RtError_SetLast/SetLastError with similar error code from GpStatus <tt>unStatus</tt> value.
  *
  * <p>
  * Can be uses when there is a gdi+ error to align the behavior with win32 errors.

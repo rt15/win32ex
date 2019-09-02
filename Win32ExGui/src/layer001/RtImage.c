@@ -211,7 +211,7 @@ RT_H RT_API RtConvertIconToPargbBitmap(RT_H hIcon, RT_N32 nWidth, RT_N32 nHeight
       (colorBitmap.bmWidth != nWidth) ||
       (colorBitmap.bmHeight != nHeight))
   {
-    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
     goto handle_error;
   }
 

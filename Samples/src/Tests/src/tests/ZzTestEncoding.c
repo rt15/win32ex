@@ -33,20 +33,20 @@ RT_B RT_CALL ZzTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, RT_
   RT_CHAR lpCharBuffer[512];
   RT_B bResult;
 
-  if (RtGetTerminatingZeroSize(unEncoding) != unEncodedCharSize) goto handle_error;
-  if (RtGetDataSize((RT_CHAR8*)lpEncoded, unEncodedCharSize) != unEncodedLength) goto handle_error;
+  if (RtEncoding_GetTerminatingZeroSize(unEncoding) != unEncodedCharSize) goto handle_error;
+  if (RtEncoding_GetDataSize((RT_CHAR8*)lpEncoded, unEncodedCharSize) != unEncodedLength) goto handle_error;
 
   /* Encode. */
   if (!bDecodeOnly)
   {
-    if (RtEncodeWithBuffer(lpCharacters, RT_TYPE_MAX_UN, unEncoding, lpBuffer, 512) != unEncodedLength) goto handle_error;
+    if (RtEncoding_EncodeWithBuffer(lpCharacters, RT_TYPE_MAX_UN, unEncoding, lpBuffer, 512) != unEncodedLength) goto handle_error;
     if (RT_MEMORY_COMPARE(lpBuffer, lpEncoded, unEncodedLength + unEncodedCharSize)) goto handle_error;
   }
 
   /* Decode. */
-  unExpectedStringSize = RtGetStringSize(lpCharacters);
-  if (RtDecodeWithBuffer((RT_CHAR8*)lpEncoded, RT_TYPE_MAX_UN, unEncoding, lpCharBuffer, 512) != unExpectedStringSize) goto handle_error;
-  if (RtCompareStrings(lpCharBuffer, lpCharacters)) goto handle_error;
+  unExpectedStringSize = RtChar_GetStringSize(lpCharacters);
+  if (RtEncoding_DecodeWithBuffer((RT_CHAR8*)lpEncoded, RT_TYPE_MAX_UN, unEncoding, lpCharBuffer, 512) != unExpectedStringSize) goto handle_error;
+  if (RtChar_CompareStrings(lpCharBuffer, lpCharacters)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

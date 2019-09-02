@@ -7,6 +7,7 @@ RT_B RT_CALL ZzTestTypes();
 RT_B RT_CALL ZzTestMemory();
 RT_B RT_CALL ZzTestRandom();
 RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap);
+RT_B RT_CALL ZzTestIoDevice();
 RT_B RT_CALL ZzTestFile();
 RT_B RT_CALL ZzTestFileSystem();
 RT_B RT_CALL ZzTestChar();

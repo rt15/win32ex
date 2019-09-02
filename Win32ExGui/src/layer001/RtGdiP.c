@@ -12,7 +12,7 @@ RT_B RT_API RtGdipInitialize()
   GpStatus nStatus;
   RT_B bResult;
 
-  if (RtFastInitializationRequired(&rt_gdipInitialization))
+  if (RtFastInitialization_IsRequired(&rt_gdipInitialization))
   {
     gdipStartupInput.GdiplusVersion = 1;
     gdipStartupInput.DebugEventCallback  = RT_NULL;
@@ -29,7 +29,7 @@ RT_B RT_API RtGdipInitialize()
       bResult = RT_SUCCESS;
     }
 
-    RtNotifyFastInitializationDone(&rt_gdipInitialization);
+    RtFastInitialization_NotifyDone(&rt_gdipInitialization);
   }
   else
   {
@@ -40,7 +40,7 @@ RT_B RT_API RtGdipInitialize()
 
 RT_B RT_API RtGdipCleanUp()
 {
-  if (RtIsFastInitializationDone(&rt_gdipInitialization))
+  if (RtFastInitialization_IsDone(&rt_gdipInitialization))
   {
     /* Returns void. */
     GdiplusShutdown(rt_nGdipToken);
@@ -56,7 +56,7 @@ void RT_API RtGdipSetLastErrorFromGpStatus(RT_UN unStatus)
       SetLastError(ERROR_SUCCESS);
       break;
     case InvalidParameter:
-      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+      RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
       break;
     case OutOfMemory:
       SetLastError(ERROR_OUTOFMEMORY);
@@ -65,13 +65,13 @@ void RT_API RtGdipSetLastErrorFromGpStatus(RT_UN unStatus)
       SetLastError(ERROR_BUSY);
       break;
     case InsufficientBuffer:
-      RtSetLastError(RT_ERROR_INSUFFICIENT_BUFFER);
+      RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
       break;
     case FileNotFound:
       SetLastError(ERROR_FILE_NOT_FOUND);
       break;
     case ValueOverflow:
-      RtSetLastError(RT_ERROR_ARITHMETIC_OVERFLOW);
+      RtError_SetLast(RT_ERROR_ARITHMETIC_OVERFLOW);
       break;
     case AccessDenied:
       SetLastError(ERROR_ACCESS_DENIED);
@@ -90,7 +90,7 @@ void RT_API RtGdipSetLastErrorFromGpStatus(RT_UN unStatus)
     case NotTrueTypeFont:
     case UnsupportedGdiplusVersion:
     default:
-       RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+       RtError_SetLast(RT_ERROR_FUNCTION_FAILED);
   }
 }
 

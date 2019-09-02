@@ -19,7 +19,7 @@ RT_UN16 RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM* lp
     }
     for (nI = 0; nI < unItemCounts; nI++)
     {
-      RtConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
+      RtChar_ConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
       RtWriteStringsOrErrorsToConsole(RT_TRUE, lpMenuItems[nI].lpTitle, _R(": "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
     }
     RtWriteStringToConsole(_R("\nExit: 0\n"));

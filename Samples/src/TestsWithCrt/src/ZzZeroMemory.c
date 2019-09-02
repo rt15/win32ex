@@ -33,13 +33,13 @@ RT_B RT_CALL ZzTestZeroMemory()
   }
   if (!ZzStopChrono(_R("memset 0 in function"), &rtChrono)) goto handle_error;
 
-  /* Test RtZeroMemory. */
+  /* Test RtMemory_Zero. */
   if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
-    RtZeroMemory(lpBuffer, ZZ_BUFFER_SIZE);
+    RtMemory_Zero(lpBuffer, ZZ_BUFFER_SIZE);
   }
-  if (!ZzStopChrono(_R("RtZeroMemory"), &rtChrono)) goto handle_error;
+  if (!ZzStopChrono(_R("RtMemory_Zero"), &rtChrono)) goto handle_error;
 
   /* Test RT_MEMORY_ZERO. */
   if (!ZzStartChrono(&rtChrono)) goto handle_error;

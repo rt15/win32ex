@@ -7,8 +7,8 @@ RT_B RT_CALL ZzTestCompareSameMemory(void* lpArea1, void* lpArea2, RT_UN unSize)
 {
   RT_B bResult;
 
-  if (RtCompareMemory(lpArea1, lpArea2, unSize)) goto handle_error;
-  if (RtCompareMemory(lpArea2, lpArea1, unSize)) goto handle_error;
+  if (RtMemory_Compare(lpArea1, lpArea2, unSize)) goto handle_error;
+  if (RtMemory_Compare(lpArea2, lpArea1, unSize)) goto handle_error;
 
   if (RT_MEMORY_COMPARE(lpArea1, lpArea2, unSize)) goto handle_error;
   if (RT_MEMORY_COMPARE(lpArea2, lpArea1, unSize)) goto handle_error;
@@ -28,8 +28,8 @@ RT_B RT_CALL ZzTestCompareDifferentMemory(void* lpArea1, void* lpArea2, RT_UN un
 {
   RT_B bResult;
 
-  if (RtCompareMemory(lpArea1, lpArea2, unSize) <= 0) goto handle_error;
-  if (RtCompareMemory(lpArea2, lpArea1, unSize) >= 0) goto handle_error;
+  if (RtMemory_Compare(lpArea1, lpArea2, unSize) <= 0) goto handle_error;
+  if (RtMemory_Compare(lpArea2, lpArea1, unSize) >= 0) goto handle_error;
 
   if (RT_MEMORY_COMPARE(lpArea1, lpArea2, unSize) <= 0) goto handle_error;
   if (RT_MEMORY_COMPARE(lpArea2, lpArea1, unSize) >= 0) goto handle_error;
@@ -89,7 +89,7 @@ RT_B RT_CALL ZzDoTestCopyMemory(void* lpSource, RT_UN unSize)
   void* lpReturnedValue;
   RT_B bResult;
 
-  lpReturnedValue = RtCopyMemory(lpSource, lpBuffer1, unSize);
+  lpReturnedValue = RtMemory_Copy(lpSource, lpBuffer1, unSize);
   if (lpReturnedValue != lpBuffer1) goto handle_error;
   if (RT_MEMORY_COMPARE(lpSource, lpBuffer1, unSize)) goto handle_error;
 
@@ -97,7 +97,7 @@ RT_B RT_CALL ZzDoTestCopyMemory(void* lpSource, RT_UN unSize)
   if (lpReturnedValue != lpBuffer2) goto handle_error;
   if (RT_MEMORY_COMPARE(lpSource, lpBuffer2, unSize)) goto handle_error;
 
-  lpReturnedValue = RtMoveMemory(lpSource, lpBuffer3, unSize);
+  lpReturnedValue = RtMemory_Move(lpSource, lpBuffer3, unSize);
   if (lpReturnedValue != lpBuffer3) goto handle_error;
   if (RT_MEMORY_COMPARE(lpSource, lpBuffer3, unSize)) goto handle_error;
 
@@ -141,14 +141,14 @@ RT_B RT_CALL ZzDoTestMoveMemory(RT_CHAR8* lpInput, RT_UN unSourceSize, RT_UN unD
     /* Copy input into editable memory. */
     if (unSize > RT_CHAR_THIRD_BIG_STRING_SIZE)
     {
-      RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+      RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
       goto handle_error;
     }
     RT_MEMORY_COPY(lpInput, lpBuffer, unSize);
 
     if (unTest)
     {
-      lpResult = RtMoveMemory(lpBuffer, &lpBuffer[unDestinationIndex], unSourceSize);
+      lpResult = RtMemory_Move(lpBuffer, &lpBuffer[unDestinationIndex], unSourceSize);
     }
     else
     {
@@ -210,7 +210,7 @@ RT_B RT_CALL ZzDoTestSetMemory(RT_UN unSize)
   RT_B bResult;
 
   for (unI = 0; unI <= unSize; unI++) lpBuffer[unI] = 85;
-  lpResult = RtSetMemory(lpBuffer, 170, unSize);
+  lpResult = RtMemory_Set(lpBuffer, 170, unSize);
   if (lpResult != lpBuffer) goto handle_error;
   if (!ZzCheckSetMemory(lpBuffer, unSize, 170, 85)) goto handle_error;
 
@@ -220,7 +220,7 @@ RT_B RT_CALL ZzDoTestSetMemory(RT_UN unSize)
   if (!ZzCheckSetMemory(lpBuffer, unSize, 170, 85)) goto handle_error;
 
   for (unI = 0; unI <= unSize; unI++) lpBuffer[unI] = 85;
-  lpResult = RtZeroMemory(lpBuffer, unSize);
+  lpResult = RtMemory_Zero(lpBuffer, unSize);
   if (lpResult != lpBuffer) goto handle_error;
   if (!ZzCheckSetMemory(lpBuffer, unSize, 0, 85)) goto handle_error;
 
@@ -270,7 +270,7 @@ RT_B RT_CALL ZzDoTestSwapMemory(RT_UN unSize)
   lpArea1[unSize] = 1;
   lpArea2[unSize] = 2;
 
-  RtSwapMemory(lpArea1, lpArea2, unSize);
+  RtMemory_Swap(lpArea1, lpArea2, unSize);
   for (unI = 0; unI < unSize; unI++)
   {
     if (lpArea1[unI] != 'A' + unI) goto handle_error;
@@ -309,12 +309,12 @@ RT_B RT_CALL ZzTestGetChunksCount()
 {
   RT_B bResult;
 
-  if (RtGetChunksCount(5, 5) != 1)              goto handle_error;
-  if (RtGetChunksCount(6, 5) != 2)              goto handle_error;
-  if (RtGetChunksCount(1, 1) != 1)              goto handle_error;
-  if (RtGetChunksCount(5, 6) != 1)              goto handle_error;
-  if (RtGetChunksCount(0, 1) != 0)              goto handle_error;
-  if (RtGetChunksCount(1, 0) != RT_TYPE_MAX_UN) goto handle_error;
+  if (RtMemory_GetChunksCount(5, 5) != 1)              goto handle_error;
+  if (RtMemory_GetChunksCount(6, 5) != 2)              goto handle_error;
+  if (RtMemory_GetChunksCount(1, 1) != 1)              goto handle_error;
+  if (RtMemory_GetChunksCount(5, 6) != 1)              goto handle_error;
+  if (RtMemory_GetChunksCount(0, 1) != 0)              goto handle_error;
+  if (RtMemory_GetChunksCount(1, 0) != RT_TYPE_MAX_UN) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

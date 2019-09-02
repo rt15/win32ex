@@ -11,10 +11,10 @@ void RT_STDCALL ZzCheckPath(lua_State* lpLuaState, RT_UN unType)
   lpPath8 = (RT_CHAR8*)luaL_checkstring(lpLuaState, 1);
   if (!lpPath8)
   {
-    RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
     goto handle_error;
   }
-  unWritten = RtDecodeWithBuffer(lpPath8, -1, 0, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH);
+  unWritten = RtEncoding_DecodeWithBuffer(lpPath8, -1, 0, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH);
   if (unWritten == -1) goto handle_error;
 
   if (!RtCheckPath(lpPath, unType)) goto handle_error;

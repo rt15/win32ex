@@ -10,10 +10,12 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   RT_FILE zzFile;
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
-  RT_FILE zzReadPipe;
-  RT_FILE zzWritePipe;
-  RT_B bReadPipeCreated;
-  RT_B bWritePipeCreated;
+  RT_IO_DEVICE zzFileIoDevice;
+  RT_PIPE zzPipe;
+  RT_IO_DEVICE* lpInput;
+  RT_IO_DEVICE* lpOutput;
+  RT_B bInputCreated;
+  RT_B bOutputCreated;
   RT_CHAR* lpApplicationPathAndArgs[3];
 
   RT_PROCESS zzProcess;
@@ -21,8 +23,8 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   RT_UN32 unExitCode;
   RT_B bResult;
 
-  bReadPipeCreated = RT_FALSE;
-  bWritePipeCreated = RT_FALSE;
+  bInputCreated = RT_FALSE;
+  bOutputCreated = RT_FALSE;
   bProcessCreated = RT_FALSE;
 
   unWritten = 0;
@@ -33,18 +35,22 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
-  if (!RtCreatePipe(&zzReadPipe, &zzWritePipe)) goto handle_error;
-  bReadPipeCreated = RT_TRUE;
-  bWritePipeCreated = RT_TRUE;
+  if (!RtPipe_Create(&zzPipe)) goto handle_error;
+  lpInput = RtPipe_GetInput(&zzPipe);
+  lpOutput = RtPipe_GetOutput(&zzPipe);
+  bInputCreated = RT_TRUE;
+  bOutputCreated = RT_TRUE;
 
   lpApplicationPathAndArgs[0] = lpExecutablePath;
   lpApplicationPathAndArgs[1] = _R("--read-line");
   lpApplicationPathAndArgs[2] = RT_NULL;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, &zzReadPipe, &zzFile, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
+
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpInput, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
-  if (!ZzWriteLinesToFile(&zzWritePipe, lpHeap, _R("123"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!ZzWriteLinesToDevice(lpOutput, lpHeap, _R("123"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
   if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
@@ -59,15 +65,15 @@ free_resources:
     bProcessCreated = RT_FALSE;
     if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
   }
-  if (bWritePipeCreated)
+  if (bOutputCreated)
   {
-    bWritePipeCreated = RT_FALSE;
-    if (!RtFreeFile(&zzWritePipe) && bResult) goto handle_error;
+    bOutputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
   }
-  if (bReadPipeCreated)
+  if (bInputCreated)
   {
-    bReadPipeCreated = RT_FALSE;
-    if (!RtFreeFile(&zzReadPipe) && bResult) goto handle_error;
+    bInputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
   }
   if (bFileCreated)
   {
@@ -94,6 +100,7 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
   RT_FILE zzFile;
+  RT_IO_DEVICE zzFileIoDevice;
   RT_CHAR* lpApplicationPathAndArgs[13];
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
@@ -126,7 +133,9 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   lpApplicationPathAndArgs[11] = _R("b\\\"r");
   lpApplicationPathAndArgs[12] = RT_NULL;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFile, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
+
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
@@ -179,6 +188,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
   RT_FILE zzFile;
+  RT_IO_DEVICE zzFileIoDevice;
   RT_CHAR* lpApplicationPathAndArgs[3];
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
@@ -202,7 +212,8 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   lpApplicationPathAndArgs[1] = _R("--bad");
   lpApplicationPathAndArgs[2] = RT_NULL;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, RT_NULL, &zzFile, lpApplicationPathAndArgs)) goto handle_error;
+  RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
@@ -239,10 +250,11 @@ handle_error:
 RT_B RT_CALL ZzTestCreateProcessEnv()
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
-  RT_FILE zzReadPipe;
-  RT_FILE zzWritePipe;
-  RT_B bReadPipeCreated;
-  RT_B bWritePipeCreated;
+  RT_PIPE zzPipe;
+  RT_IO_DEVICE* lpInput;
+  RT_IO_DEVICE* lpOutput;
+  RT_B bInputCreated;
+  RT_B bOutputCreated;
   RT_ENV_VARS zzEnvVars;
   RT_B bEnvVarsCreated;
   RT_UN unWritten;
@@ -254,17 +266,19 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   RT_UN unBytesRead;
   RT_B bResult;
 
-  bReadPipeCreated = RT_FALSE;
-  bWritePipeCreated = RT_FALSE;
+  bInputCreated = RT_FALSE;
+  bOutputCreated = RT_FALSE;
   bEnvVarsCreated = RT_FALSE;
   bProcessCreated = RT_FALSE;
 
   unWritten = 0;
   if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
-  if (!RtCreatePipe(&zzReadPipe, &zzWritePipe)) goto handle_error;
-  bReadPipeCreated = RT_TRUE;
-  bWritePipeCreated = RT_TRUE;
+  if (!RtPipe_Create(&zzPipe)) goto handle_error;
+  lpInput = RtPipe_GetInput(&zzPipe);
+  lpOutput = RtPipe_GetOutput(&zzPipe);
+  bInputCreated = RT_TRUE;
+  bOutputCreated = RT_TRUE;
 
   if (!RtCreateEnvVars(&zzEnvVars)) goto handle_error;
   bEnvVarsCreated = RT_TRUE;
@@ -276,7 +290,7 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   lpApplicationPathAndArgs[2] = _R("RT_PROCESS_VAR");
   lpApplicationPathAndArgs[3] = RT_NULL;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzEnvVars, RT_NULL, &zzWritePipe, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzEnvVars, RT_NULL, lpOutput, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtJoinProcess(&zzProcess)) goto handle_error;
@@ -284,12 +298,12 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   if (unExitCode) goto handle_error;
 
   /* Close writing pipe on parent side. */
-  bWritePipeCreated = RT_FALSE;
-  if (!RtFreeFile(&zzWritePipe)) goto handle_error;
+  bOutputCreated = RT_FALSE;
+  if (!RtIoDevice_Free(lpOutput)) goto handle_error;
 
-  if (!RtReadFromFile(&zzReadPipe, lpPipeContent, 256 - 1, &unBytesRead)) goto handle_error;
+  if (!RtIoDevice_Read(RtIoDevice_GetInputStream(lpInput), lpPipeContent, 256 - 1, &unBytesRead)) goto handle_error;
   lpPipeContent[unBytesRead] = 0;
-  if (RtCompareString8s(lpPipeContent, "RT_PROCESS_VAR=VAR_VALUE\n")) goto handle_error;
+  if (RtChar8_CompareStrings(lpPipeContent, "RT_PROCESS_VAR=VAR_VALUE\n")) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -303,15 +317,15 @@ free_resources:
     bEnvVarsCreated = RT_FALSE;
     if (!RtFreeEnvVars(&zzEnvVars) && bResult) goto handle_error;
   }
-  if (bWritePipeCreated)
+  if (bOutputCreated)
   {
-    bWritePipeCreated = RT_FALSE;
-    if (!RtFreeFile(&zzWritePipe) && bResult) goto handle_error;
+    bOutputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
   }
-  if (bReadPipeCreated)
+  if (bInputCreated)
   {
-    bReadPipeCreated = RT_FALSE;
-    if (!RtFreeFile(&zzReadPipe) && bResult) goto handle_error;
+    bInputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
   }
   return bResult;
 

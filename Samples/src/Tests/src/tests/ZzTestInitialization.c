@@ -9,7 +9,7 @@ RT_B RT_CALL ZzTestCommonFunction()
   RT_B bResult;
 
   RtWriteStringToConsole(_R("Initialize?\n"));
-  if (RtInitializationRequired(&zz_Initialization))
+  if (RtInitialization_IsRequired(&zz_Initialization))
   {
     if (zz_bInitialized) goto handle_error;
     zz_bInitialized = RT_TRUE;
@@ -17,21 +17,21 @@ RT_B RT_CALL ZzTestCommonFunction()
     for (unI = 0; unI < 5; unI++)
     {
       RtWriteStringToConsole(_R("Initializing...\n"));
-      RtSleep(1);
+      RtSleep_Sleep(1);
     }
     RtWriteStringToConsole(_R("Initialized.\n"));
-    RtNotifyInitializationDone(&zz_Initialization);
+    RtInitialization_NotifyDone(&zz_Initialization);
   }
   else
   {
     if (!zz_bInitialized) goto handle_error;
     RtWriteStringToConsole(_R("Already initialized.\n"));
   }
-  
+
   bResult = RT_TRUE;
 free_resources:
   return bResult;
-  
+
 handle_error:
   bResult = RT_FALSE;
   goto free_resources;
@@ -51,19 +51,19 @@ RT_B RT_CALL ZzTestInitialization()
 
   bThreadCreated = RT_FALSE;
 
-  /* RtCreateInitialization cannot fail. */
-  RtCreateInitialization(&zz_Initialization);
+  /* RtInitialization_Create cannot fail. */
+  RtInitialization_Create(&zz_Initialization);
 
   zz_bInitialized = RT_FALSE;
- 
-  if (!RtCreateThread(&zzThread, &ZzTestInitializationThreadCallback, RT_NULL)) goto handle_error;
+
+  if (!RtThread_Create(&zzThread, &ZzTestInitializationThreadCallback, RT_NULL)) goto handle_error;
 
   if (!ZzTestCommonFunction()) goto handle_error;
 
-  if (!RtJoinThread(&zzThread)) goto handle_error;
+  if (!RtThread_Join(&zzThread)) goto handle_error;
   RtWriteStringToConsole(_R("Joined.\n"));
-  
-  if (!RtGetThreadExitCode(&zzThread, &unExitCode)) goto handle_error;
+
+  if (!RtThread_GetExitCode(&zzThread, &unExitCode)) goto handle_error;
 
   if (!zz_bInitialized) goto handle_error;
 
@@ -72,10 +72,10 @@ free_resources:
   if (bThreadCreated)
   {
     bThreadCreated = RT_FALSE;
-    if (!RtFreeThread(&zzThread) && bResult) goto handle_error;
+    if (!RtThread_Free(&zzThread) && bResult) goto handle_error;
   }
-  /* RtFreeInitialization cannot fail. */
-  RtFreeInitialization(&zz_Initialization);
+  /* RtInitialization_Free cannot fail. */
+  RtInitialization_Free(&zz_Initialization);
   return bResult;
 
 handle_error:

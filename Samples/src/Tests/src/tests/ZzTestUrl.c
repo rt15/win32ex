@@ -47,9 +47,9 @@ RT_B RT_CALL ZzPrintUrlInfo(RT_URL_INFO* lpUrlInfo)
   else
   {
     unWritten = 0;
-    if (!RtCopyString(_R("Port = "),                   &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-    if (!RtConvertUIntegerToString(lpUrlInfo->unPort,  &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-    if (!RtCopyString(_R("\n"),                        &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(_R("Port = "),                   &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+    if (!RtChar_ConvertUIntegerToString(lpUrlInfo->unPort,  &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(_R("\n"),                        &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
     if (!RtWriteStringToConsoleWithSize(lpMsg, unWritten)) goto handle_error;
   }
 
@@ -76,8 +76,8 @@ RT_B RT_CALL RtCheckUrlInfoItem(RT_CHAR* lpUrlInfoItem, RT_UN unUrlInfoItemSize,
     if (!lpItem) goto handle_error;
 
     unWritten = 0;
-    if (!RtCopyStringWithSize(lpUrlInfoItem, unUrlInfoItemSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-    if (RtCompareStrings(lpBuffer, lpItem)) goto handle_error;
+    if (!RtChar_CopyStringWithSize(lpUrlInfoItem, unUrlInfoItemSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+    if (RtChar_CompareStrings(lpBuffer, lpItem)) goto handle_error;
   }
   else
   {
@@ -125,7 +125,7 @@ RT_B RT_CALL ZzTestUrl()
   if (!RtParseUrl(_R("http://Jane:Doe@www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2#signet"), &zzUrlInfo)) goto handle_error;
   if (!ZzPrintUrlInfo(&zzUrlInfo)) goto handle_error;
   if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), _R("Jane"), _R("Doe"), _R("www.example.com"), 8888, _R("chemin/d/acc%C3%A8s.php"), _R("q=req&q2=req2"), _R("signet"))) goto handle_error;
- 
+
  if (!RtParseUrl(_R("http://www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2"), &zzUrlInfo)) goto handle_error;
  if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), RT_NULL, RT_NULL, _R("www.example.com"), 8888, _R("chemin/d/acc%C3%A8s.php"), _R("q=req&q2=req2"), RT_NULL)) goto handle_error;
 

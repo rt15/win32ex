@@ -1,14 +1,14 @@
 #include "layer003/RtThread.h"
 
-#include "layer001/RtWin32ExOsDefines.h"
-#include "layer002/RtErrorCode.h"
+#include "layer001/RtWin32ExOsHeaders.h"
+#include "layer002/RtError.h"
 
 #ifndef RT_DEFINE_WINDOWS
 
 /**
  * Wrapper callback for Linux that calls the real one.
  */
-void* RT_CDECL RtLinuxThreadCallback(void* lpVoidThread)
+void* RT_CDECL RtThread_LinuxCallback(void* lpVoidThread)
 {
   RT_THREAD* lpThread;
 
@@ -23,7 +23,7 @@ void* RT_CDECL RtLinuxThreadCallback(void* lpVoidThread)
 
 #endif
 
-RT_B RT_API RtCreateThread(RT_THREAD* lpThread, RT_THREAD_CALLBACK lpThreadCallback, void* lpParameter)
+RT_B RT_API RtThread_Create(RT_THREAD* lpThread, RT_THREAD_CALLBACK lpThreadCallback, void* lpParameter)
 {
   RT_B bResult;
 
@@ -41,12 +41,12 @@ RT_B RT_API RtCreateThread(RT_THREAD* lpThread, RT_THREAD_CALLBACK lpThreadCallb
   lpThread->bExitCodeSet = RT_FALSE;
 
   /* Start the thread. The pthread_create function return -1 in case of failure and set errno. */
-  bResult = !pthread_create((pthread_t*)&lpThread->nThread, RT_NULL, &RtLinuxThreadCallback, lpThread);
+  bResult = !pthread_create((pthread_t*)&lpThread->nThread, RT_NULL, &RtThread_LinuxCallback, lpThread);
 #endif
   return bResult;
 }
 
-RT_B RT_API RtJoinThread(RT_THREAD* lpThread)
+RT_B RT_API RtThread_Join(RT_THREAD* lpThread)
 {
 #ifndef RT_DEFINE_WINDOWS
   int nReturnedValue;
@@ -72,17 +72,17 @@ RT_B RT_API RtJoinThread(RT_THREAD* lpThread)
   return bResult;
 }
 
-RT_B RT_API RtJoinAndCheckThread(RT_THREAD* lpThread)
+RT_B RT_API RtThread_JoinAndCheck(RT_THREAD* lpThread)
 {
   RT_UN32 unThreadExitCode;
   RT_B bResult;
 
-  if (!RtJoinThread(lpThread)) goto handle_error;
-  if (!RtGetThreadExitCode(lpThread, &unThreadExitCode)) goto handle_error;
+  if (!RtThread_Join(lpThread)) goto handle_error;
+  if (!RtThread_GetExitCode(lpThread, &unThreadExitCode)) goto handle_error;
   if (!unThreadExitCode)
   {
     /* Unknown error in the joined thread which cannot set last error for this thread. */
-    RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+    RtError_SetLast(RT_ERROR_FUNCTION_FAILED);
     goto handle_error;
   }
 
@@ -95,7 +95,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtGetThreadExitCode(RT_THREAD* lpThread, RT_UN32* lpExitCode)
+RT_B RT_API RtThread_GetExitCode(RT_THREAD* lpThread, RT_UN32* lpExitCode)
 {
   RT_B bResult;
 
@@ -116,7 +116,7 @@ RT_B RT_API RtGetThreadExitCode(RT_THREAD* lpThread, RT_UN32* lpExitCode)
   return bResult;
 }
 
-RT_B RT_API RtFreeThread(RT_THREAD* lpThread)
+RT_B RT_API RtThread_Free(RT_THREAD* lpThread)
 {
   RT_B bResult;
 

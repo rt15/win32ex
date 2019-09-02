@@ -63,7 +63,7 @@ RT_B RT_CALL CbNameComparisonCallback(void* lpItem1, void* lpItem2, void* lpCont
   lpString1 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->unItemSize * *lpIndex1));
   lpString2 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->unItemSize * *lpIndex2));
 
-  *lpComparisonResult = RtCompareStrings(lpString1, lpString2);
+  *lpComparisonResult = RtChar_CompareStrings(lpString1, lpString2);
   return RT_TRUE;
 }
 

@@ -35,11 +35,11 @@ RT_B RT_CALL ZzCheckBuffer(RT_UCHAR8* lpBuffer)
     if (lpBuffer[unI] != 'a') goto handle_error;
   for (unI = ZZ_BUFFER_SIZE * 3 / 4; unI < ZZ_BUFFER_SIZE; unI++)
     if (lpBuffer[unI] != 'c') goto handle_error;
-    
+
   bResult = RT_SUCCESS;
 free_resources:
   return bResult;
-  
+
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
@@ -78,14 +78,14 @@ RT_B RT_CALL ZzTestMoveMemory()
   if (!ZzStopChrono(_R("memmove in function"), &rtChrono)) goto handle_error;
   if (!ZzCheckBuffer(lpSource)) goto handle_error;
 
-  /* Test RtMoveMemory. */
+  /* Test RtMemory_Move. */
   ZzInitBuffer(lpSource);
   if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
-    RtMoveMemory(lpSource, lpDestination, ZZ_BUFFER_SIZE / 2);
+    RtMemory_Move(lpSource, lpDestination, ZZ_BUFFER_SIZE / 2);
   }
-  if (!ZzStopChrono(_R("RtMoveMemory"), &rtChrono)) goto handle_error;
+  if (!ZzStopChrono(_R("RtMemory_Move"), &rtChrono)) goto handle_error;
   if (!ZzCheckBuffer(lpSource)) goto handle_error;
 
   /* Test RT_MEMORY_MOVE. */

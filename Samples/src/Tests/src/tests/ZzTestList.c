@@ -27,14 +27,14 @@ void RT_CALL ZzTestDisplayList(void* lpList)
     }
     else
     {
-      RtCopyString(_R(", "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+      RtChar_CopyString(_R(", "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
     }
 
     RtGetListItem(lpList, unI, (void**)&lpItem);
-    RtConvertIntegerToString(lpItem->unValue, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+    RtChar_ConvertIntegerToString(lpItem->unValue, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   }
 
-  RtCopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 }
 
@@ -58,19 +58,19 @@ RT_B RT_CALL ZzTestCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpecte
   unChunksCount = lpListHeader->rtArrayHeader.unSize;
 
   unWritten = 0;
-  RtCopyString(_R("List size = "), lpBuffer, 512, &unWritten);
-  RtConvertIntegerToString(unSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("List size = "), lpBuffer, 512, &unWritten);
+  RtChar_ConvertIntegerToString(unSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R(", itemSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtConvertIntegerToString(unItemSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R(", itemSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_ConvertIntegerToString(unItemSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R(", chunkSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtConvertIntegerToString(unChunkSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R(", chunkSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_ConvertIntegerToString(unChunkSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R(", chunksCount = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtConvertIntegerToString(unChunksCount, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R(", chunksCount = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_ConvertIntegerToString(unChunksCount, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
-  RtCopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   if (unExpectedSize != unSize) goto handle_error;
@@ -109,7 +109,7 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
   {
     RtGetListItem(lpList, unI, (void**)&lpItem);
     lpItem->unValue = unI;
-    RtCopyString(_R("This is item characters."), lpItem->lpValue, 32, &unWritten);
+    RtChar_CopyString(_R("This is item characters."), lpItem->lpValue, 32, &unWritten);
   }
 
   ZzTestDisplayList(lpList);

@@ -1,32 +1,32 @@
 #include "ZzTests.h"
 
-RT_B RT_CALL ZzTestInheritance(RT_FILE* lpFile)
+RT_B RT_CALL ZzTestInheritance(RT_IO_DEVICE* lpIoDevice)
 {
   RT_B bInheritable;
   RT_B bResult;
 
   /* All files must not be inheritable by default. */
-  if (!RtIsFileInheritable(lpFile, &bInheritable)) goto handle_error;
+  if (!RtIoDevice_IsInheritable(lpIoDevice, &bInheritable)) goto handle_error;
   if (bInheritable) goto handle_error;
 
   /* Switch to inheritable. */
-  if (!RtSetFileInheritable(lpFile, RT_TRUE)) goto handle_error;
-  if (!RtIsFileInheritable(lpFile, &bInheritable)) goto handle_error;
+  if (!RtIoDevice_SetInheritable(lpIoDevice, RT_TRUE)) goto handle_error;
+  if (!RtIoDevice_IsInheritable(lpIoDevice, &bInheritable)) goto handle_error;
   if (!bInheritable) goto handle_error;
 
   /* Try again. */
-  if (!RtSetFileInheritable(lpFile, RT_TRUE)) goto handle_error;
-  if (!RtIsFileInheritable(lpFile, &bInheritable)) goto handle_error;
+  if (!RtIoDevice_SetInheritable(lpIoDevice, RT_TRUE)) goto handle_error;
+  if (!RtIoDevice_IsInheritable(lpIoDevice, &bInheritable)) goto handle_error;
   if (!bInheritable) goto handle_error;
 
   /* Switch back to non-inheritable. */
-  if (!RtSetFileInheritable(lpFile, RT_FALSE)) goto handle_error;
-  if (!RtIsFileInheritable(lpFile, &bInheritable)) goto handle_error;
+  if (!RtIoDevice_SetInheritable(lpIoDevice, RT_FALSE)) goto handle_error;
+  if (!RtIoDevice_IsInheritable(lpIoDevice, &bInheritable)) goto handle_error;
   if (bInheritable) goto handle_error;
 
   /* Try again. */
-  if (!RtSetFileInheritable(lpFile, RT_FALSE)) goto handle_error;
-  if (!RtIsFileInheritable(lpFile, &bInheritable)) goto handle_error;
+  if (!RtIoDevice_SetInheritable(lpIoDevice, RT_FALSE)) goto handle_error;
+  if (!RtIoDevice_IsInheritable(lpIoDevice, &bInheritable)) goto handle_error;
   if (bInheritable) goto handle_error;
 
   bResult = RT_SUCCESS;
@@ -41,46 +41,49 @@ handle_error:
 RT_B RT_CALL ZzTestPipe()
 {
   RT_CHAR8 lpBuffer[8];
-  RT_FILE zzReadPipe;
-  RT_FILE zzWritePipe;
-  RT_B bReadPipeCreated;
-  RT_B bWritePipeCreated;
+  RT_PIPE zzPipe;
+  RT_IO_DEVICE* lpInput;
+  RT_IO_DEVICE* lpOutput;
+  RT_B bInputCreated;
+  RT_B bOutputCreated;
   RT_UN unBytesRead;
   RT_B bResult;
 
-  bReadPipeCreated = RT_FALSE;
-  bWritePipeCreated = RT_FALSE;
+  bInputCreated = RT_FALSE;
+  bOutputCreated = RT_FALSE;
 
-  if (!RtCreatePipe(&zzReadPipe, &zzWritePipe)) goto handle_error;
-  bReadPipeCreated = RT_TRUE;
-  bWritePipeCreated = RT_TRUE;
+  if (!RtPipe_Create(&zzPipe)) goto handle_error;
+  lpInput = RtPipe_GetInput(&zzPipe);
+  lpOutput = RtPipe_GetOutput(&zzPipe);
+  bInputCreated = RT_TRUE;
+  bOutputCreated = RT_TRUE;
 
-  if (!RtWriteToFile(&zzWritePipe, "foo", 3)) goto handle_error;
+  if (!RtIoDevice_Write(RtIoDevice_GetOutputStream(lpOutput), "foo", 3)) goto handle_error;
 
   /* Close the pipe so that RtReadFromFile will read 3 bytes then encounter EOF. */
-  bWritePipeCreated = RT_FALSE;
-  if (!RtFreeFile(&zzWritePipe)) goto handle_error;
+  bOutputCreated = RT_FALSE;
+  if (!RtIoDevice_Free(lpOutput)) goto handle_error;
 
   RT_MEMORY_ZERO(lpBuffer, 8);
-  if (!RtReadFromFile(&zzReadPipe, lpBuffer, 8, &unBytesRead)) goto handle_error;
+  if (!RtIoDevice_Read(RtIoDevice_GetInputStream(lpInput), lpBuffer, 8, &unBytesRead)) goto handle_error;
 
   if (unBytesRead != 3) goto handle_error;
 
   if (RT_MEMORY_COMPARE(lpBuffer, "foo\0\0\0\0\0", 8)) goto handle_error;
 
-  if (!ZzTestInheritance(&zzReadPipe)) goto handle_error;
+  if (!ZzTestInheritance(lpInput)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
-  if (bWritePipeCreated)
+  if (bOutputCreated)
   {
-    bWritePipeCreated = RT_FALSE;
-    if (!RtFreeFile(&zzWritePipe) && bResult) goto handle_error;
+    bOutputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
   }
-  if (bReadPipeCreated)
+  if (bInputCreated)
   {
-    bReadPipeCreated = RT_FALSE;
-    if (!RtFreeFile(&zzReadPipe) && bResult) goto handle_error;
+    bInputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
   }
   return bResult;
 

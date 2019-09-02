@@ -8,21 +8,21 @@ RT_B RT_CALL ZzTestDoGetLastSeparator(RT_CHAR* lpPath, RT_UN unExpected)
   RT_B bResult;
 
   unWritten = 0;
-  RtCopyString(_R("Testing RtGetLastSeparator with \""), lpBuffer, 512, &unWritten);
-  RtCopyString(lpPath, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtCopyString(_R("\" expecting "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtConvertUIntegerToString(unExpected, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtCopyString(_R(".\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("Testing RtGetLastSeparator with \""), lpBuffer, 512, &unWritten);
+  RtChar_CopyString(lpPath, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("\" expecting "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_ConvertUIntegerToString(unExpected, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R(".\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
-  unIndex = RtGetLastSeparator(lpPath, RtGetStringSize(lpPath));
+  unIndex = RtGetLastSeparator(lpPath, RtChar_GetStringSize(lpPath));
 
   if (unIndex != unExpected)
   {
     unWritten = 0;
-    RtCopyString(_R("Wrong result: "), lpBuffer, 512, &unWritten);
-    RtConvertUIntegerToString(unIndex, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-    RtCopyString(_R(".\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+    RtChar_CopyString(_R("Wrong result: "), lpBuffer, 512, &unWritten);
+    RtChar_ConvertUIntegerToString(unIndex, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+    RtChar_CopyString(_R(".\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
     RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
     goto handle_error;
   }
@@ -62,11 +62,11 @@ RT_B RT_CALL ZzTestDoRemoveTrailingSeparators(RT_CHAR* lpPath, RT_CHAR* lpExpect
   RT_B bResult;
 
   unWritten = 0;
-  RtCopyString(lpPath, lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
+  RtChar_CopyString(lpPath, lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
 
   RtRemoveTrailingSeparators(lpBuffer, unWritten, &unWritten);
-  if (RtCompareStrings(lpBuffer, lpExpected)) goto handle_error;
-  if (unWritten != RtGetStringSize(lpExpected)) goto handle_error;
+  if (RtChar_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
+  if (unWritten != RtChar_GetStringSize(lpExpected)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -111,18 +111,18 @@ RT_B RT_CALL ZzTestDoGetFileName(RT_CHAR* lpPath, RT_CHAR* lpExpected)
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtCopyString(_R("Testing RtGetFileName on \""),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(lpPath,                             &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(_R("\", expecting \""),             &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(lpExpected,                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(_R("\", found \""),                 &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtGetFileName(lpPath, RtGetStringSize(lpPath),   &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(_R("\"\n"),                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("Testing RtGetFileName on \""),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpPath,                             &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\", expecting \""),             &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpExpected,                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\", found \""),                 &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtGetFileName(lpPath, RtChar_GetStringSize(lpPath),   &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\"\n"),                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   unWritten = 0;
-  if (!RtGetFileName(lpPath, RtGetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (RtCompareStrings(lpBuffer, lpExpected)) goto handle_error;
+  if (!RtGetFileName(lpPath, RtChar_GetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (RtChar_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -168,18 +168,18 @@ RT_B RT_CALL ZzTestDoGetNewParentPath(RT_CHAR* lpPath, RT_CHAR* lpExpected)
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtCopyString(_R("Testing RtGetNewParentPath on \""),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(lpPath,                                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(_R("\", expecting \""),                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(lpExpected,                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(_R("\", found \""),                      &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtGetNewParentPath(lpPath, RtGetStringSize(lpPath),   &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtCopyString(_R("\"\n"),                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("Testing RtGetNewParentPath on \""),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpPath,                                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\", expecting \""),                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpExpected,                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\", found \""),                      &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtGetNewParentPath(lpPath, RtChar_GetStringSize(lpPath),   &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\"\n"),                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
 
   unWritten = 0;
-  if (!RtGetNewParentPath(lpPath, RtGetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (RtCompareStrings(lpBuffer, lpExpected)) goto handle_error;
+  if (!RtGetNewParentPath(lpPath, RtChar_GetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (RtChar_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

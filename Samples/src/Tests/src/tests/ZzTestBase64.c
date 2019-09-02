@@ -8,16 +8,16 @@ RT_B RT_CALL ZzDoTestBase64WithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_CHA
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtEncodeToBase64WithSize(lpInput, unInputSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-  if (unWritten != RtGetString8Size(lpBase64)) goto handle_error;
+  if (!RtBase64_EncodeWithSize(lpInput, unInputSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (unWritten != RtChar8_GetStringSize(lpBase64)) goto handle_error;
 
-  if (RtCompareString8s(lpBuffer, lpBase64)) goto handle_error;
+  if (RtChar8_CompareStrings(lpBuffer, lpBase64)) goto handle_error;
 
   unWritten = 0;
-  if (!RtDecodeFromBase64(lpBase64, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtBase64_Decode(lpBase64, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (unWritten != unInputSize) goto handle_error;
 
-  if (RtCompareString8s(lpBuffer, lpInput)) goto handle_error;
+  if (RtChar8_CompareStrings(lpBuffer, lpInput)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -30,7 +30,7 @@ handle_error:
 
 RT_B RT_CALL ZzDoTestBase64(RT_CHAR8* lpInput, RT_CHAR8* lpBase64)
 {
-  return ZzDoTestBase64WithSize(lpInput, RtGetString8Size(lpInput), lpBase64);
+  return ZzDoTestBase64WithSize(lpInput, RtChar8_GetStringSize(lpInput), lpBase64);
 }
 
 RT_B RT_CALL ZzTestBase64()

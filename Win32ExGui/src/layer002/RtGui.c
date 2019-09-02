@@ -18,7 +18,7 @@ free_resources:
 
 handle_error:
   /* InitCommonControlsEx might not call SetLastError. */
-  RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+  RtError_SetLast(RT_ERROR_FUNCTION_FAILED);
   bResult = RT_FAILURE;
   goto free_resources;
 }
@@ -207,7 +207,7 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
       }
       if (unSystemImageList == RT_TYPE_MAX_UN)
       {
-        RtSetLastError(RT_ERROR_BAD_ARGUMENTS);
+        RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
         goto handle_error;
       }
       /* If the system list is not already loaded in the  image list. */
@@ -371,7 +371,7 @@ RT_H RT_API RtCreateMenu(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[]
             menuItemInfo.fType = MFT_STRING;
             menuItemInfo.wID = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->unId;
             menuItemInfo.dwTypeData = ((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->lpText;
-            menuItemInfo.cch = (UINT)RtGetStringSize(((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->lpText);
+            menuItemInfo.cch = (UINT)RtChar_GetStringSize(((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->lpText);
 
             if (((RT_GUI_COMMAND_MENU_ITEM*)lpMenuItem)->unCommandType == RT_GUI_COMMAND_MENU_ITEM_TYPE_BUTTON)
             {
@@ -397,7 +397,7 @@ RT_H RT_API RtCreateMenu(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[]
             menuItemInfo.fType = MFT_STRING;
             menuItemInfo.hSubMenu = ((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->hSubMenu;
             menuItemInfo.dwTypeData = ((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->lpText;
-            menuItemInfo.cch = (UINT)RtGetStringSize(((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->lpText);
+            menuItemInfo.cch = (UINT)RtChar_GetStringSize(((RT_GUI_SUB_MENU_MENU_ITEM*)lpMenuItem)->lpText);
             break;
           case RT_GUI_MENU_ITEM_TYPE_SEPARATOR:
             menuItemInfo.fMask = MIIM_TYPE;
@@ -442,7 +442,7 @@ RT_H RT_API RtCreateMenuBar(RT_UN unMenusCount, RT_CHAR* lpTexts[], RT_H* hMenus
       /* Fill MENUITEMINFO as sub menu with text. */
       menuItemInfo.hSubMenu = hMenus[unI];
       menuItemInfo.dwTypeData = lpText;
-      menuItemInfo.cch = (UINT)RtGetStringSize(lpText);
+      menuItemInfo.cch = (UINT)RtChar_GetStringSize(lpText);
 
       if (!InsertMenuItem(hResult, (UINT)unI, TRUE, &menuItemInfo))
       {

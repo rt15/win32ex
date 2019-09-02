@@ -27,7 +27,7 @@ RT_B RT_CALL ZzTestGetRandomIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperB
     if (!RtGetRandomIntegerWithBoundaries(nLowerBound, nUpperBound, &nInteger)) goto handle_error;
     if (nInteger < nLowerBound || nInteger > nUpperBound)
     {
-      RtSetLastError(RT_ERROR_FUNCTION_FAILED);
+      RtError_SetLast(RT_ERROR_FUNCTION_FAILED);
       goto handle_error;
     }
   }

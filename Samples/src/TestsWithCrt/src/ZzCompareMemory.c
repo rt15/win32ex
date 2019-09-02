@@ -42,13 +42,13 @@ RT_B RT_CALL ZzTestCompareMemory()
   }
   if (!ZzStopChrono(_R("memcmp in function"), &rtChrono)) goto handle_error;
 
-  /* Test RtCompareMemory. */
+  /* Test RtMemory_Compare. */
   if (!ZzStartChrono(&rtChrono)) goto handle_error;
   for (unI = 0; unI < ZZ_TESTS_COUNT; unI++)
   {
-    if (RtCompareMemory(lpArea1, lpArea2, ZZ_BUFFER_SIZE) <= 0) goto handle_error;
+    if (RtMemory_Compare(lpArea1, lpArea2, ZZ_BUFFER_SIZE) <= 0) goto handle_error;
   }
-  if (!ZzStopChrono(_R("RtCompareMemory"), &rtChrono)) goto handle_error;
+  if (!ZzStopChrono(_R("RtMemory_Compare"), &rtChrono)) goto handle_error;
 
   /* Test RT_MEMORY_COMPARE. */
   if (!ZzStartChrono(&rtChrono)) goto handle_error;
