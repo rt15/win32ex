@@ -26,7 +26,7 @@ void RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
   unWritten = 0;
   RtChar_CopyString(_R("New item "), lpBuffer, ZZ_RESOURCES_NAME_SIZE, &unWritten);
 
-  RtGetRandomUIntegerWithBoundaries(1, 20, &unResourceIndex);
+  RtRandom_GetUIntegerWithBoundaries(1, 20, &unResourceIndex);
   RtChar_ConvertUIntegerToString(unResourceIndex, &lpBuffer[unWritten], ZZ_RESOURCES_NAME_SIZE - unWritten, &unWritten);
 }
 
@@ -43,10 +43,10 @@ void RT_CALL ZzRefreshList(ZZ_APP_CONTEXT* lpAppContext)
   SendMessage(lpAppContext->hListBox, LB_RESETCONTENT, 0, 0);
 
   /* Fill the list. */
-  unListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
+  unListSize = RtList_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
   for (unI = 0; unI < unListSize; unI++)
   {
-    RtGetListItem(lpAppContext->lpLists[lpAppContext->unCurrentEntity], unI, (void**)&lpItem);
+    RtList_GetItem(lpAppContext->lpLists[lpAppContext->unCurrentEntity], unI, (void**)&lpItem);
     SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)lpItem);
   }
 
@@ -104,12 +104,12 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
           switch (LOWORD(unWParam))
           {
             case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
-              RtNewListItem(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], (void**)&lpItem);
+              RtList_NewItem(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], (void**)&lpItem);
               ZzGenerateResourceName(lpItem);
               ZzRefreshList(lpAppContext);
 
               /* Select created entity. */
-              unListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
+              unListSize = RtList_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
               SendMessage(lpAppContext->hListBox, LB_SETCURSEL, unListSize - 1, 0);
               ZzItemSelected(lpAppContext);
               break;
@@ -117,10 +117,10 @@ RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N 
               nSelectedItem = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
               if (nSelectedItem != LB_ERR)
               {
-                RtDeleteListItemIndex(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], nSelectedItem);
+                RtList_DeleteItemIndex(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], nSelectedItem);
                 ZzRefreshList(lpAppContext);
 
-                unListSize = RtGetListSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
+                unListSize = RtList_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
 
                 /* Select last item if it has been removed. */
                 if ((RT_UN32)nSelectedItem >= unListSize) nSelectedItem = unListSize - 1;

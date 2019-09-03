@@ -11,20 +11,20 @@ RT_B RT_CALL ZzTestGetRandomIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperB
     /* Check that lower bound is hit. */
     while (RT_TRUE)
     {
-      if (!RtGetRandomIntegerWithBoundaries(nLowerBound, nUpperBound, &nInteger)) goto handle_error;
+      if (!RtRandom_GetIntegerWithBoundaries(nLowerBound, nUpperBound, &nInteger)) goto handle_error;
       if (nInteger == nLowerBound) break;
     }
     /* Check that upper bound is hit. */
     while (RT_TRUE)
     {
-      if (!RtGetRandomIntegerWithBoundaries(nLowerBound, nUpperBound, &nInteger)) goto handle_error;
+      if (!RtRandom_GetIntegerWithBoundaries(nLowerBound, nUpperBound, &nInteger)) goto handle_error;
       if (nInteger == nUpperBound) break;
     }
   }
 
   for (unI = 0; unI < 2000; unI++)
   {
-    if (!RtGetRandomIntegerWithBoundaries(nLowerBound, nUpperBound, &nInteger)) goto handle_error;
+    if (!RtRandom_GetIntegerWithBoundaries(nLowerBound, nUpperBound, &nInteger)) goto handle_error;
     if (nInteger < nLowerBound || nInteger > nUpperBound)
     {
       RtError_SetLast(RT_ERROR_FUNCTION_FAILED);

@@ -85,7 +85,7 @@ RT_B RT_CALL ZzVCheckTextFile(va_list lpVaList, RT_CHAR* lpFilePath, RT_HEAP** l
 
   if (!ZzVConcatLines(lpVaList, lpHeap, (void**)&lpReference)) goto handle_error;
 
-  unFileSize = RtReadFromSmallFile(lpFilePath, &lpRawFileContent, lpHeap);
+  unFileSize = RtSmallFile_Read(lpFilePath, &lpRawFileContent, lpHeap);
   if (unFileSize == -1) goto handle_error;
 
   unContentSize = RtEncoding_DecodeWithHeap(lpRawFileContent, unFileSize, RT_ENCODING_US_ASCII, &lpFileContent, lpHeap);

@@ -82,18 +82,18 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   RT_N nI, unJ;
   RT_UN32 unResult;
 
-  if (!RtRuntimeHeapCreate(&runtimeHeap))
+  if (!RtRuntimeHeap_Create(&runtimeHeap))
   {
-    RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    RtErrorMessage_WriteLast(_R("Runtime heap creation failed: "));
     unResult = 1;
     goto the_end;
   }
 
   for (nI = 0; nI < CB_TABLES_COUNT; nI++)
   {
-    if (!RtCreateTable(&competition.lpTables[nI], &cb_lpTablesMetadata[nI], &runtimeHeap.lpHeap))
+    if (!RtTable_Create(&competition.lpTables[nI], &cb_lpTablesMetadata[nI], &runtimeHeap.lpHeap))
     {
-      RtWriteLastErrorMessage(_R("Tables creation failed: "));
+      RtErrorMessage_WriteLast(_R("Tables creation failed: "));
       unResult = 1;
       goto cleanup_tables;
     }
@@ -105,16 +105,16 @@ cleanup_tables:
   /* Cleaning up. */
   for (unJ = 0; unJ < nI; unJ++)
   {
-    if (!RtFreeTable(&competition.lpTables[unJ]))
+    if (!RtTable_Free(&competition.lpTables[unJ]))
     {
-      RtWriteLastErrorMessage(_R("Failed to free tables: "));
+      RtErrorMessage_WriteLast(_R("Failed to free tables: "));
       unResult = 1;
     }
   }
 
   if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
   {
-    RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
+    RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
     unResult = 1;
   }
 the_end:

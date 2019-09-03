@@ -4,6 +4,6 @@
 
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
-  RtWriteStringToConsole(_R("Hello, world!\n"));
+  RtConsole_WriteString(_R("Hello, world!\n"));
   return 0;
 }

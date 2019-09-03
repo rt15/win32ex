@@ -163,7 +163,7 @@ RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* 
     lpCommandMenuItems[unI].hBitmap = RT_NULL;
   }
 
-  if (!RtGetOsVersion(&unMajorOsVersion, RT_NULL, RT_NULL)) goto handle_error;
+  if (!RtSystemInfo_GetOsVersion(&unMajorOsVersion, RT_NULL, RT_NULL)) goto handle_error;
 
   lpGuiCommandMenuItemManager->hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK, (int)unIconsCount, 8);
   if (!lpGuiCommandMenuItemManager->hToolBarImageList) goto handle_error;
@@ -352,7 +352,7 @@ RT_H RT_API RtCreateMenu(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[]
   RT_UN unI;
   RT_H hResult;
 
-  if (RtGetOsVersion(&unMajorOsVersion, RT_NULL, RT_NULL))
+  if (RtSystemInfo_GetOsVersion(&unMajorOsVersion, RT_NULL, RT_NULL))
   {
     hResult = CreatePopupMenu();
     if (hResult)

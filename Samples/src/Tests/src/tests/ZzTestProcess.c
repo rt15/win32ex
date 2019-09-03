@@ -31,7 +31,7 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
-  if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFile_CreateTemp(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -51,13 +51,13 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
 #endif
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpInput, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpInput, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!ZzWriteLinesToDevice(lpOutput, lpHeap, _R("123"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
-  if (!RtJoinProcess(&zzProcess)) goto handle_error;
-  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (!RtProcess_Join(&zzProcess)) goto handle_error;
+  if (!RtProcess_GetExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (unExitCode) goto handle_error;
 
   if (!ZzCheckTextFile(lpTempFile, lpHeap, _R("\"123\""), (RT_CHAR*)RT_NULL)) goto handle_error;
@@ -67,7 +67,7 @@ free_resources:
   if (bProcessCreated)
   {
     bProcessCreated = RT_FALSE;
-    if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
+    if (!RtProcess_Free(&zzProcess) && bResult) goto handle_error;
   }
   if (bOutputCreated)
   {
@@ -82,7 +82,7 @@ free_resources:
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFreeFile(&zzFile) && bResult) goto handle_error;
+    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
   }
   if (bDeleteTempFile)
   {
@@ -119,7 +119,7 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
-  if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFile_CreateTemp(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -143,11 +143,11 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
 #endif
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
-  if (!RtJoinProcess(&zzProcess)) goto handle_error;
-  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (!RtProcess_Join(&zzProcess)) goto handle_error;
+  if (!RtProcess_GetExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (unExitCode) goto handle_error;
 
   if (!ZzCheckTextFile(lpTempFile, lpHeap, lpExecutablePath,
@@ -169,12 +169,12 @@ free_resources:
   if (bProcessCreated)
   {
     bProcessCreated = RT_FALSE;
-    if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
+    if (!RtProcess_Free(&zzProcess) && bResult) goto handle_error;
   }
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFreeFile(&zzFile) && bResult) goto handle_error;
+    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
   }
   if (bDeleteTempFile)
   {
@@ -212,7 +212,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
-  if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFile_CreateTemp(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -225,11 +225,11 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
 #else
   RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
 #endif
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
-  if (!RtJoinProcess(&zzProcess)) goto handle_error;
-  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (!RtProcess_Join(&zzProcess)) goto handle_error;
+  if (!RtProcess_GetExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (!unExitCode) goto handle_error;
 
   if (!RtFileSystem_GetFileSize(lpTempFile, &unFileSize)) goto handle_error;
@@ -240,12 +240,12 @@ free_resources:
   if (bProcessCreated)
   {
     bProcessCreated = RT_FALSE;
-    if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
+    if (!RtProcess_Free(&zzProcess) && bResult) goto handle_error;
   }
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFreeFile(&zzFile) && bResult) goto handle_error;
+    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
   }
   if (bDeleteTempFile)
   {
@@ -292,21 +292,21 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   bInputCreated = RT_TRUE;
   bOutputCreated = RT_TRUE;
 
-  if (!RtCreateEnvVars(&zzEnvVars)) goto handle_error;
+  if (!RtEnvVars_Create(&zzEnvVars)) goto handle_error;
   bEnvVarsCreated = RT_TRUE;
 
-  if (!RtMergeEnvVarIntoEnvVars(&zzEnvVars, _R("RT_PROCESS_VAR"), _R("VAR_VALUE"))) goto handle_error;
+  if (!RtEnvVars_MergeEnvVar(&zzEnvVars, _R("RT_PROCESS_VAR"), _R("VAR_VALUE"))) goto handle_error;
 
   lpApplicationPathAndArgs[0] = lpExecutablePath;
   lpApplicationPathAndArgs[1] = _R("--display-env-var");
   lpApplicationPathAndArgs[2] = _R("RT_PROCESS_VAR");
   lpApplicationPathAndArgs[3] = RT_NULL;
 
-  if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzEnvVars, RT_NULL, lpOutput, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzEnvVars, RT_NULL, lpOutput, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
-  if (!RtJoinProcess(&zzProcess)) goto handle_error;
-  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (!RtProcess_Join(&zzProcess)) goto handle_error;
+  if (!RtProcess_GetExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (unExitCode) goto handle_error;
 
   /* Close writing pipe on parent side. */
@@ -322,12 +322,12 @@ free_resources:
   if (bProcessCreated)
   {
     bProcessCreated = RT_FALSE;
-    if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
+    if (!RtProcess_Free(&zzProcess) && bResult) goto handle_error;
   }
   if (bEnvVarsCreated)
   {
     bEnvVarsCreated = RT_FALSE;
-    if (!RtFreeEnvVars(&zzEnvVars) && bResult) goto handle_error;
+    if (!RtEnvVars_Free(&zzEnvVars) && bResult) goto handle_error;
   }
   if (bOutputCreated)
   {
@@ -361,25 +361,25 @@ RT_B RT_CALL ZzTestFailingProcess()
   lpApplicationPathAndArgs[1] = _R("localhost");
   lpApplicationPathAndArgs[2] = RT_NULL;
 
-  if (RtCreateProcess(&zzProcess, RT_TRUE,   RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
-  if (RtCreateProcess(&zzProcess, RT_FALSE,  RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (RtProcess_Create(&zzProcess, RT_TRUE,   RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (RtProcess_Create(&zzProcess, RT_FALSE,  RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
 
   /* Test wrong folder name. */
   lpApplicationPathAndArgs[0] = _R("ping");
-  if (RtCreateProcess(&zzProcess, RT_TRUE,   _R("Wrong, wrong directory"), RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
-  if (RtCreateProcess(&zzProcess, RT_FALSE,  _R("Wrong, wrong directory"), RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (RtProcess_Create(&zzProcess, RT_TRUE,   _R("Wrong, wrong directory"), RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (RtProcess_Create(&zzProcess, RT_FALSE,  _R("Wrong, wrong directory"), RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
 
   /* Test bad argument. */
-  if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
+  if (!RtConsole_WriteString(_R("====================================================\n"))) goto handle_error;
 
   lpApplicationPathAndArgs[1] = _R("-pong");
-  if (!RtCreateProcess(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_Create(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
-  if (!RtJoinProcess(&zzProcess)) goto handle_error;
-  if (!RtWriteStringToConsole(_R("====================================================\n"))) goto handle_error;
-  if (!RtWriteStringToConsole(_R("Joined!\n"))) goto handle_error;
-  if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
+  if (!RtProcess_Join(&zzProcess)) goto handle_error;
+  if (!RtConsole_WriteString(_R("====================================================\n"))) goto handle_error;
+  if (!RtConsole_WriteString(_R("Joined!\n"))) goto handle_error;
+  if (!RtProcess_GetExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (!unExitCode) goto handle_error;
 
   bResult = RT_SUCCESS;
@@ -387,7 +387,7 @@ free_resources:
   if (bProcessCreated)
   {
     bProcessCreated = RT_FALSE;
-    if (!RtFreeProcess(&zzProcess) && bResult) goto handle_error;
+    if (!RtProcess_Free(&zzProcess) && bResult) goto handle_error;
   }
   return bResult;
 

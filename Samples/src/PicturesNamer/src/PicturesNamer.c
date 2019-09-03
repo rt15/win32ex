@@ -19,7 +19,7 @@ FILE_INFO;
 
 RT_UN16 DisplayHelp(RT_UN32 unResult)
 {
-  RtWriteStringToConsole(_R("Rename jpg files by date.\nUsage:\nPicturesNamer directory\n"));
+  RtConsole_WriteString(_R("Rename jpg files by date.\nUsage:\nPicturesNamer directory\n"));
   return unResult;
 }
 
@@ -38,7 +38,7 @@ RT_N RetrieveOriginalDate(RT_CHAR* lpFile, RT_CHAR* lpBuffer)
 
   if (RtEncoding_EncodeWithBuffer(lpFile, -1, 0, lpPathBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH) == -1)
   {
-    RtWriteLastErrorMessage(_R("Failed to convert to multibytes: "));
+    RtErrorMessage_WriteLast(_R("Failed to convert to multibytes: "));
     goto the_end;
   }
 
@@ -87,7 +87,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
       {
         if (!RtArray_NewItem((void**)lpContext, (void**)&lpFileInfo))
         {
-          RtWriteLastErrorMessage(_R("New item failed: "));
+          RtErrorMessage_WriteLast(_R("New item failed: "));
           bResult = RT_FAILURE;
           goto the_end;
         }
@@ -132,19 +132,19 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 
   if (!RtFileSystem_CheckPath(lpPath, RT_FILE_SYSTEM_TYPE_DIRECTORY))
   {
-    RtWriteLastErrorMessageVariadic(RT_NULL, lpPath, _R(" is not a directory: "), (RT_CHAR*)RT_NULL);
+    RtErrorMessage_WriteLastVariadic(RT_NULL, lpPath, _R(" is not a directory: "), (RT_CHAR*)RT_NULL);
     goto the_end;
   }
 
-  if (!RtRuntimeHeapCreate(&runtimeHeap))
+  if (!RtRuntimeHeap_Create(&runtimeHeap))
   {
-    RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    RtErrorMessage_WriteLast(_R("Runtime heap creation failed: "));
     goto the_end;
   }
 
-  if (!RtCreateSortableArray((void**)&lpFileInfos, &runtimeHeap.lpHeap, 0, sizeof(FILE_INFO), &CompareFileInfos, RT_NULL))
+  if (!RtSortableArray_Create((void**)&lpFileInfos, &runtimeHeap.lpHeap, 0, sizeof(FILE_INFO), &CompareFileInfos, RT_NULL))
   {
-    RtWriteLastErrorMessage(_R("Array creation failed: "));
+    RtErrorMessage_WriteLast(_R("Array creation failed: "));
     goto close_heap;
   }
 
@@ -160,9 +160,9 @@ RT_UN16 Perform(RT_CHAR* lpPath)
   RtChar_CopyString(_R("Files count: "), lpMessage, RT_FILE_SYSTEM_MAX_FILE_PATH + 200, &unWritten);
   RtChar_ConvertIntegerToString(unArraySize, &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unWritten);
   RtChar_CopyStringWithSize(_R("\n"), 1, &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unWritten);
-  RtWriteStringToConsoleWithSize(lpMessage, unWritten);
+  RtConsole_WriteStringWithSize(lpMessage, unWritten);
 
-  RtSortSortableArray(lpFileInfos);
+  RtSortableArray_Sort(lpFileInfos);
 
   for (nI = 0; nI < unArraySize; nI++)
   {
@@ -180,7 +180,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
     RtChar_CopyString(_R(" => "),                      &lpMessage[unWritten], 200 - unWritten, &unWritten);
     RtChar_CopyString(lpNewFileName,                   &lpMessage[unWritten], 200 - unWritten, &unWritten);
     RtChar_CopyString(_R("\n"),                        &lpMessage[unWritten], 200 - unWritten, &unWritten);
-    RtWriteStringToConsoleWithSize(lpMessage, unWritten);
+    RtConsole_WriteStringWithSize(lpMessage, unWritten);
 
     /* Compute old file path. */
     unWritten = 0;
@@ -196,7 +196,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 
     if (!RtFileSystem_MoveFile(lpOldFilePath, lpNewFilePath))
     {
-      RtWriteLastErrorMessage(_R("Failed to rename file: "));
+      RtErrorMessage_WriteLast(_R("Failed to rename file: "));
       goto close_array;
     }
   }
@@ -205,13 +205,13 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 close_array:
   if (!RtArray_Free((void**)&lpFileInfos))
   {
-    RtWriteLastErrorMessage(_R("Failed to close array: "));
+    RtErrorMessage_WriteLast(_R("Failed to close array: "));
     unResult = 1;
   }
 close_heap:
   if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
   {
-    RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
+    RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
     unResult = 1;
   }
 

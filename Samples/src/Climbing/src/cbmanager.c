@@ -24,11 +24,11 @@ void RT_CALL CbDisplayList(CB_MANAGER_CONTEXT* lpManagerContext, RT_B bWithIndex
     if (bWithIndex)
     {
       RtChar_ConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
-      RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R(": "), lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
+      RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R(": "), lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
     }
     else
     {
-      RtWriteStringsOrErrorsToConsole(RT_TRUE, lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
+      RtConsole_WriteStringsOrErrors(RT_TRUE, lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
     }
   }
   CbWriteSeparator();
@@ -47,8 +47,8 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
 
   while (RT_TRUE)
   {
-    RtWriteStringToConsole(_R("\nEnter a name or nothing to quit:\n"));
-    unRead = RtReadLineFromConsole(lpName, 256);
+    RtConsole_WriteString(_R("\nEnter a name or nothing to quit:\n"));
+    unRead = RtConsole_ReadLine(lpName, 256);
 
     /* Error. */
     if (unRead == RT_TYPE_MAX_UN)
@@ -67,7 +67,7 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
     /* Too long name. */
     if (unRead >= CB_NAME_SIZE)
     {
-      RtWriteStringToConsole(_R("Too long name.\n"));
+      RtConsole_WriteString(_R("Too long name.\n"));
     }
     else
     {
@@ -80,7 +80,7 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
         break;
       }
       RtChar_CopyStringWithSize(lpName, unRead, lpObject->lpName, CB_NAME_SIZE, &unWritten);
-      if (!RtIndexNewTableItem(lpTable))
+      if (!RtTable_IndexNewItem(lpTable))
       {
         unResult = 1;
         break;
@@ -107,11 +107,11 @@ RT_UN16 RT_CALL CbDeleteObject(void* lpContext)
   {
     nObjectsCount = RtArray_GetSize(lpTable->lpTableData);
 
-    RtWriteStringToConsole(_R("\nEnter an index or nothing to quit\n"));
+    RtConsole_WriteString(_R("\nEnter an index or nothing to quit\n"));
 
     CbDisplayList(lpManagerContext, RT_TRUE);
 
-    unRead = RtReadLineFromConsole(lpIndex, 256);
+    unRead = RtConsole_ReadLine(lpIndex, 256);
 
     /* Error. */
     if (unRead == RT_TYPE_MAX_UN)
@@ -140,7 +140,7 @@ RT_UN16 RT_CALL CbDeleteObject(void* lpContext)
         /* Retrieve data index from table index. */
         nIndex = lpTable->lpTableIndexes[0].lpIndexes[nIndex - 1];
 
-        if (!RtDeleteTableItem(lpTable, nIndex))
+        if (!RtTable_DeleteItem(lpTable, nIndex))
         {
           unResult = 1;
           break;
@@ -169,11 +169,11 @@ RT_UN16 RT_CALL CbEditObject(void* lpContext)
   {
     nObjectsCount = RtArray_GetSize(lpTable->lpTableData);
 
-    RtWriteStringToConsole(_R("\nEnter an index or nothing to quit\n"));
+    RtConsole_WriteString(_R("\nEnter an index or nothing to quit\n"));
 
     CbDisplayList(lpManagerContext, RT_TRUE);
 
-    unRead = RtReadLineFromConsole(lpIndex, 256);
+    unRead = RtConsole_ReadLine(lpIndex, 256);
 
     /* Error. */
     if (unRead == RT_TYPE_MAX_UN)
@@ -202,7 +202,7 @@ RT_UN16 RT_CALL CbEditObject(void* lpContext)
         /* Retrieve data index from table index. */
         nIndex = lpTable->lpTableIndexes[0].lpIndexes[nIndex - 1];
 
-        if (!RtDeleteTableItem(lpTable, nIndex))
+        if (!RtTable_DeleteItem(lpTable, nIndex))
         {
           unResult = 1;
           break;

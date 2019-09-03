@@ -20,11 +20,11 @@ RT_UN16 RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM* lp
     for (nI = 0; nI < unItemCounts; nI++)
     {
       RtChar_ConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
-      RtWriteStringsOrErrorsToConsole(RT_TRUE, lpMenuItems[nI].lpTitle, _R(": "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
+      RtConsole_WriteStringsOrErrors(RT_TRUE, lpMenuItems[nI].lpTitle, _R(": "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
     }
-    RtWriteStringToConsole(_R("\nExit: 0\n"));
+    RtConsole_WriteString(_R("\nExit: 0\n"));
 
-    nRead = RtReadCharFromConsole();
+    nRead = RtConsole_ReadChar();
     if (nRead == _R('0'))
     {
       unResult = 0;

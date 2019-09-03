@@ -29,7 +29,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   if (!RtFileSystem_CheckPath(lpFilePath, RT_FILE_SYSTEM_TYPE_FILE)) goto handle_error;
 
   /* Read input file content. */
-  unFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent8, lpHeap);
+  unFileSize = RtSmallFile_Read(lpFilePath, &lpFileContent8, lpHeap);
   if (unFileSize == RT_TYPE_MAX_UN) goto handle_error;
 
   /* Decode input file content. */
@@ -49,7 +49,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
     unNewFileSize = RtEncoding_EncodeWithHeap(lpNewFileContent, unWritten, 0, &lpNewFileContent8, lpHeap);
     if (unNewFileSize == -1) goto handle_error;
 
-    if (!RtWriteToSmallFile(lpNewFileContent8, unNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE)) goto handle_error;
+    if (!RtSmallFile_Write(lpNewFileContent8, unNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -85,7 +85,7 @@ RT_B ZzPerform(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpFilePath)
 
   bCloseRuntimeHeap = RT_FALSE;
 
-  if (!RtRuntimeHeapCreate(&runtimeHeap)) goto handle_error;
+  if (!RtRuntimeHeap_Create(&runtimeHeap)) goto handle_error;
   bCloseRuntimeHeap = RT_TRUE;
 
   bResult = ZzPerformWithHeap(lpSearched, lpReplacement, lpFilePath, &runtimeHeap.lpHeap);

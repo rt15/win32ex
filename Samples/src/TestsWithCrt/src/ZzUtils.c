@@ -20,7 +20,7 @@ RT_B RT_CALL ZzStopChrono(RT_CHAR* lpIdentifier, RT_CHRONO* lpChrono)
   if (!RtChar_CopyString(_R(": "),                &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_ConvertUIntegerToString(unDuration, &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(_R(" ms\n"),             &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtWriteStringToConsoleWithSize(lpBuffer, unWritten)) goto handle_error;
+  if (!RtConsole_WriteStringWithSize(lpBuffer, unWritten)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

@@ -34,7 +34,7 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
   nBegin = RtChar_SearchString(lpFileContent, lpTagName);
   if (nBegin == -1)
   {
-    RtWriteStringToConsole(_R("Tag not found"));
+    RtConsole_WriteString(_R("Tag not found"));
     bResult = RT_FAILURE;
     goto the_end;
   }
@@ -62,7 +62,7 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
   }
   lpValue[unJ] = 0;
 
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("\t"), lpValue, (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringsOrErrors(RT_TRUE, _R("\t"), lpValue, (RT_CHAR*)RT_NULL);
 
   bResult = RT_SUCCESS;
 
@@ -96,21 +96,21 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
       unWritten = 0;
       RtFileSystem_GetFileName(lpPath, RtChar_GetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
       /* Write file name without extension. */
-      RtWriteStringToConsoleWithSize(lpFileName, unWritten - 4);
+      RtConsole_WriteStringWithSize(lpFileName, unWritten - 4);
 
       lpXsContext = (XS_CONTEXT*)lpContext;
       lpHeap = lpXsContext->lpHeap;
-      nDataSize = RtReadFromSmallFile(lpPath, &lpData, lpHeap);
+      nDataSize = RtSmallFile_Read(lpPath, &lpData, lpHeap);
       if (nDataSize == -1)
       {
-        RtWriteLastErrorMessage(_R("Failed to read file: "));
+        RtErrorMessage_WriteLast(_R("Failed to read file: "));
         bResult = RT_FAILURE;
       }
 
       nFileContentSize = RtEncoding_DecodeWithHeap(lpData, nDataSize, RT_ENCODING_UTF_8, &lpFileContent, lpHeap);
       if (nFileContentSize == -1)
       {
-        RtWriteLastErrorMessage(_R("Failed to decode file content: "));
+        RtErrorMessage_WriteLast(_R("Failed to decode file content: "));
         bResult = RT_FAILURE;
       }
       else
@@ -126,18 +126,18 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
 
         if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
         {
-          RtWriteLastErrorMessage(_R("Failed to free decoded file content: "));
+          RtErrorMessage_WriteLast(_R("Failed to free decoded file content: "));
           bResult = RT_FAILURE;
         }
       }
 
       if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpData))
       {
-        RtWriteLastErrorMessage(_R("Failed to free file content: "));
+        RtErrorMessage_WriteLast(_R("Failed to free file content: "));
         bResult = RT_FAILURE;
       }
 
-      RtWriteStringToConsoleWithSize(_R("\n"), 1);
+      RtConsole_WriteStringWithSize(_R("\n"), 1);
     }
   }
 
@@ -154,9 +154,9 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   RT_N nI;
   RT_UN32 unResult;
 
-  if (!RtRuntimeHeapCreate(&runtimeHeap))
+  if (!RtRuntimeHeap_Create(&runtimeHeap))
   {
-    unResult = RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    unResult = RtErrorMessage_WriteLast(_R("Runtime heap creation failed: "));
     goto the_end;
   }
 
@@ -176,14 +176,14 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
       unResult = 1;
       goto close_heap;
     }
-    RtWriteStringToConsoleWithSize(_R("\n"), 1);
+    RtConsole_WriteStringWithSize(_R("\n"), 1);
   }
 
   unResult = 0;
 close_heap:
   if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
   {
-    unResult = RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
+    unResult = RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
   }
 the_end:
   return unResult;

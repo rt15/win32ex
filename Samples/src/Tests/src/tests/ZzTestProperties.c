@@ -4,12 +4,12 @@ RT_B RT_CALL ZzTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
 {
   RT_CHAR* lpValue;
 
-  lpValue = RtGetStringProperty(lpProperties, lpKey, RT_NULL);
+  lpValue = RtProperties_GetString(lpProperties, lpKey, RT_NULL);
   if (lpValue == RT_NULL)
   {
     lpValue = _R("NULL");
   }
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpKey, _R(" = \""), lpValue, _R("\"\n"), (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringsOrErrors(RT_TRUE, lpKey, _R(" = \""), lpValue, _R("\"\n"), (RT_CHAR*)RT_NULL);
 
   return RT_SUCCESS;
 }
@@ -18,7 +18,7 @@ RT_B RT_CALL ZzTestIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, 
 {
   RT_N nValue;
 
-  nValue = RtGetIntegerProperty(lpProperties, lpKey, nDefaultValue);
+  nValue = RtProperties_GetInteger(lpProperties, lpKey, nDefaultValue);
 
   return (nValue == nExpected);
 }
@@ -28,7 +28,7 @@ RT_B RT_CALL ZzTestBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, 
   RT_B bValue;
   RT_B bResult;
 
-  bValue = RtGetBooleanProperty(lpProperties, lpKey, bDefaultValue);
+  bValue = RtProperties_GetBoolean(lpProperties, lpKey, bDefaultValue);
   bResult = ((bValue && bExpected) || ((!bValue) && (!bExpected)));
 
   return bResult;
@@ -42,7 +42,7 @@ RT_B RT_CALL ZzTestProperties(RT_HEAP** lpHeap)
 
   bPropertiesCreated = RT_FALSE;
 
-  if (!RtCreateProperties(&zzProperties, _R("data/properties.txt"), RT_ENCODING_ISO_8859_1, lpHeap)) goto handle_error;
+  if (!RtProperties_Create(&zzProperties, _R("data/properties.txt"), RT_ENCODING_ISO_8859_1, lpHeap)) goto handle_error;
   bPropertiesCreated = RT_TRUE;
 
   if (!ZzTestProperty(&zzProperties, _R("my_key"))) goto handle_error;
@@ -66,7 +66,7 @@ free_resources:
   if (bPropertiesCreated)
   {
     bPropertiesCreated = RT_FALSE;
-    if (!RtFreeProperties(&zzProperties) && bResult) goto handle_error;
+    if (!RtProperties_Free(&zzProperties) && bResult) goto handle_error;
   }
   return bResult;
 

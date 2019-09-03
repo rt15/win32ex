@@ -58,21 +58,21 @@ RT_B RT_CALL ZzTestEnvVars()
 
   bEnvVars1Created = RT_FALSE;
 
-  if (!RtCreateEnvVars(&zzEnvVars1)) goto handle_error;
+  if (!RtEnvVars_Create(&zzEnvVars1)) goto handle_error;
   bEnvVars1Created = RT_TRUE;
   if (!ZzCheckEnvVars(&zzEnvVars1)) goto handle_error;
 
-  if (!RtEnvVarsContains(&zzEnvVars1, _R("PATH"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars1, _R("PATH"), &bContains)) goto handle_error;
   if (!bContains) goto handle_error;
 
-  if (!RtEnvVarsContains(&zzEnvVars1, _R("pATH"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars1, _R("pATH"), &bContains)) goto handle_error;
 #ifdef RT_DEFINE_WINDOWS
   if (!bContains) goto handle_error;
 #else
   if (bContains) goto handle_error;
 #endif
 
-  if (!RtEnvVarsContains(&zzEnvVars1, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars1, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
   if (bContains) goto handle_error;
 
   /* Add a variable to process environment. */
@@ -84,16 +84,16 @@ RT_B RT_CALL ZzTestEnvVars()
   if (RtChar_CompareStrings(lpValue, _R("VALUE"))) goto handle_error;
 
   /* Check that is not added to zzEnvVars1. */
-  if (!RtEnvVarsContains(&zzEnvVars1, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars1, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
   if (bContains) goto handle_error;
 
   /* Create zzEnvVars2 with the variable. */
-  if (!RtCreateEnvVars(&zzEnvVars2)) goto handle_error;
+  if (!RtEnvVars_Create(&zzEnvVars2)) goto handle_error;
   bEnvVars2Created = RT_TRUE;
   if (!ZzCheckEnvVars(&zzEnvVars2)) goto handle_error;
 
   /* Check that the new variable is in zzEnvVars2. */
-  if (!RtEnvVarsContains(&zzEnvVars2, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars2, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
   if (!bContains) goto handle_error;
   unWritten = 0;
   if (!RtEnvVars_GetEnvVar(&zzEnvVars2, _R("RT_VAR_NAME"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
@@ -107,54 +107,54 @@ RT_B RT_CALL ZzTestEnvVars()
   if (RtEnvVar_Get(_R("RT_VAR_NAME"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
 
   /* Check that the variable is still in zzEnvVars2. */
-  if (!RtEnvVarsContains(&zzEnvVars2, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars2, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
   if (!bContains) goto handle_error;
 
   /* Create zzEnvVars3 with the variable. */
-  if (!RtCreateEnvVars(&zzEnvVars3)) goto handle_error;
+  if (!RtEnvVars_Create(&zzEnvVars3)) goto handle_error;
   bEnvVars3Created = RT_TRUE;
   if (!ZzCheckEnvVars(&zzEnvVars3)) goto handle_error;
 
   /* Check that the variable is not in zzEnvVars3. */
-  if (!RtEnvVarsContains(&zzEnvVars3, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars3, _R("RT_VAR_NAME"), &bContains)) goto handle_error;
   if (bContains) goto handle_error;
 
   /* Add RT_VAR_NAME1 to zzEnvVars3. */
-  if (!RtAddEnvVarIntoEnvVars(&zzEnvVars3, _R("RT_VAR_NAME1"), _R("value1"))) goto handle_error;
+  if (!RtEnvVars_AddEnvVar(&zzEnvVars3, _R("RT_VAR_NAME1"), _R("value1"))) goto handle_error;
   if (!ZzCheckEnvVars(&zzEnvVars3)) goto handle_error;
   unWritten = 0;
   if (!RtEnvVars_GetEnvVar(&zzEnvVars3, _R("RT_VAR_NAME1"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (RtChar_CompareStrings(lpValue, _R("value1"))) goto handle_error;
 
   /* Add RT_VAR_NAME2 to zzEnvVars3. */
-  if (!RtAddEnvVarIntoEnvVars(&zzEnvVars3, _R("RT_VAR_NAME2"), _R(""))) goto handle_error;
+  if (!RtEnvVars_AddEnvVar(&zzEnvVars3, _R("RT_VAR_NAME2"), _R(""))) goto handle_error;
   if (!ZzCheckEnvVars(&zzEnvVars3)) goto handle_error;
   unWritten = 0;
   if (!RtEnvVars_GetEnvVar(&zzEnvVars3, _R("RT_VAR_NAME2"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (RtChar_CompareStrings(lpValue, _R(""))) goto handle_error;
 
   /* Remove PATH from zzEnvVars3. */
-  if (!RtRemoveEnvVarFromEnvVars(&zzEnvVars3, _R("PATH"))) goto handle_error;
+  if (!RtEnvVars_RemoveEnvVar(&zzEnvVars3, _R("PATH"))) goto handle_error;
   if (!ZzCheckEnvVars(&zzEnvVars3)) goto handle_error;
-  if (!RtEnvVarsContains(&zzEnvVars3, _R("PATH"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars3, _R("PATH"), &bContains)) goto handle_error;
   if (bContains) goto handle_error;
-  if (!RtEnvVarsContains(&zzEnvVars3, _R("RT_VAR_NAME2"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars3, _R("RT_VAR_NAME2"), &bContains)) goto handle_error;
   if (!bContains) goto handle_error;
 
   /* Remove RT_VAR_NAME2 from zzEnvVars3. */
-  if (!RtRemoveEnvVarFromEnvVars(&zzEnvVars3, _R("RT_VAR_NAME2"))) goto handle_error;
+  if (!RtEnvVars_RemoveEnvVar(&zzEnvVars3, _R("RT_VAR_NAME2"))) goto handle_error;
   if (!ZzCheckEnvVars(&zzEnvVars3)) goto handle_error;
-  if (!RtEnvVarsContains(&zzEnvVars3, _R("RT_VAR_NAME2"), &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(&zzEnvVars3, _R("RT_VAR_NAME2"), &bContains)) goto handle_error;
   if (bContains) goto handle_error;
 
   /* Add variable using merge. */
-  if (!RtMergeEnvVarIntoEnvVars(&zzEnvVars3, _R("RT_VAR_NAME3"), _R("value3"))) goto handle_error;
+  if (!RtEnvVars_MergeEnvVar(&zzEnvVars3, _R("RT_VAR_NAME3"), _R("value3"))) goto handle_error;
   unWritten = 0;
   if (!RtEnvVars_GetEnvVar(&zzEnvVars3, _R("RT_VAR_NAME3"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (RtChar_CompareStrings(lpValue, _R("value3"))) goto handle_error;
 
   /* Replace variable using merge. */
-  if (!RtMergeEnvVarIntoEnvVars(&zzEnvVars3, _R("RT_VAR_NAME3"), _R("This is a variable value"))) goto handle_error;
+  if (!RtEnvVars_MergeEnvVar(&zzEnvVars3, _R("RT_VAR_NAME3"), _R("This is a variable value"))) goto handle_error;
   unWritten = 0;
   if (!RtEnvVars_GetEnvVar(&zzEnvVars3, _R("RT_VAR_NAME3"), lpValue, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (RtChar_CompareStrings(lpValue, _R("This is a variable value"))) goto handle_error;
@@ -164,17 +164,17 @@ free_resources:
   if (bEnvVars3Created)
   {
     bEnvVars3Created = RT_FALSE;
-    if (!RtFreeEnvVars(&zzEnvVars3) && bResult) goto handle_error;
+    if (!RtEnvVars_Free(&zzEnvVars3) && bResult) goto handle_error;
   }
   if (bEnvVars2Created)
   {
     bEnvVars2Created = RT_FALSE;
-    if (!RtFreeEnvVars(&zzEnvVars2) && bResult) goto handle_error;
+    if (!RtEnvVars_Free(&zzEnvVars2) && bResult) goto handle_error;
   }
   if (bEnvVars1Created)
   {
     bEnvVars1Created = RT_FALSE;
-    if (!RtFreeEnvVars(&zzEnvVars1) && bResult) goto handle_error;
+    if (!RtEnvVars_Free(&zzEnvVars1) && bResult) goto handle_error;
   }
   return bResult;
 

@@ -4,16 +4,16 @@ RT_B RT_CALL ZzPrintUrlInfoItem(RT_CHAR* lpFieldName, RT_CHAR* lpFieldValue, RT_
 {
   RT_B bResult;
 
-  if (!RtWriteStringToConsole(lpFieldName)) goto handle_error;
+  if (!RtConsole_WriteString(lpFieldName)) goto handle_error;
   if (lpFieldValue)
   {
-    if (!RtWriteStringToConsoleWithSize(lpFieldValue, unFieldSize)) goto handle_error;
+    if (!RtConsole_WriteStringWithSize(lpFieldValue, unFieldSize)) goto handle_error;
   }
   else
   {
-    if (!RtWriteStringToConsoleWithSize(_R("null"), 3)) goto handle_error;
+    if (!RtConsole_WriteStringWithSize(_R("null"), 3)) goto handle_error;
   }
-  if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
+  if (!RtConsole_WriteStringWithSize(_R("\n"), 1)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -42,7 +42,7 @@ RT_B RT_CALL ZzPrintUrlInfo(RT_URL_INFO* lpUrlInfo)
 
   if (lpUrlInfo->unPort == RT_TYPE_MAX_UN)
   {
-    if (!RtWriteStringToConsole(_R("Port = null\n"))) goto handle_error;
+    if (!RtConsole_WriteString(_R("Port = null\n"))) goto handle_error;
   }
   else
   {
@@ -50,7 +50,7 @@ RT_B RT_CALL ZzPrintUrlInfo(RT_URL_INFO* lpUrlInfo)
     if (!RtChar_CopyString(_R("Port = "),                   &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
     if (!RtChar_ConvertUIntegerToString(lpUrlInfo->unPort,  &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
     if (!RtChar_CopyString(_R("\n"),                        &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-    if (!RtWriteStringToConsoleWithSize(lpMsg, unWritten)) goto handle_error;
+    if (!RtConsole_WriteStringWithSize(lpMsg, unWritten)) goto handle_error;
   }
 
   if (!ZzPrintUrlInfoItem(_R("Query = "), lpUrlInfo->lpQuery, lpUrlInfo->unQuerySize)) goto handle_error;
@@ -122,23 +122,23 @@ RT_B RT_CALL ZzTestUrl()
   RT_URL_INFO zzUrlInfo;
   RT_B bResult;
 
-  if (!RtParseUrl(_R("http://Jane:Doe@www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2#signet"), &zzUrlInfo)) goto handle_error;
+  if (!RtUrl_Parse(_R("http://Jane:Doe@www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2#signet"), &zzUrlInfo)) goto handle_error;
   if (!ZzPrintUrlInfo(&zzUrlInfo)) goto handle_error;
   if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), _R("Jane"), _R("Doe"), _R("www.example.com"), 8888, _R("chemin/d/acc%C3%A8s.php"), _R("q=req&q2=req2"), _R("signet"))) goto handle_error;
 
- if (!RtParseUrl(_R("http://www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2"), &zzUrlInfo)) goto handle_error;
+ if (!RtUrl_Parse(_R("http://www.example.com:8888/chemin/d/acc%C3%A8s.php?q=req&q2=req2"), &zzUrlInfo)) goto handle_error;
  if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), RT_NULL, RT_NULL, _R("www.example.com"), 8888, _R("chemin/d/acc%C3%A8s.php"), _R("q=req&q2=req2"), RT_NULL)) goto handle_error;
 
- if (!RtParseUrl(_R("http://www.example.com/chemin/d/acc%C3%A8s.php?q=req&q2=req2"), &zzUrlInfo)) goto handle_error;
+ if (!RtUrl_Parse(_R("http://www.example.com/chemin/d/acc%C3%A8s.php?q=req&q2=req2"), &zzUrlInfo)) goto handle_error;
  if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), RT_NULL, RT_NULL, _R("www.example.com"), RT_TYPE_MAX_UN, _R("chemin/d/acc%C3%A8s.php"), _R("q=req&q2=req2"), RT_NULL)) goto handle_error;
 
- if (!RtParseUrl(_R("http://[2607:f0d0:1002:0051:0000:0000:0000:0004]/chemin/d/acc%C3%A8s.php"), &zzUrlInfo)) goto handle_error;
+ if (!RtUrl_Parse(_R("http://[2607:f0d0:1002:0051:0000:0000:0000:0004]/chemin/d/acc%C3%A8s.php"), &zzUrlInfo)) goto handle_error;
  if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), RT_NULL, RT_NULL, _R("[2607:f0d0:1002:0051:0000:0000:0000:0004]"), RT_TYPE_MAX_UN, _R("chemin/d/acc%C3%A8s.php"), RT_NULL, RT_NULL)) goto handle_error;
 
- if (!RtParseUrl(_R("http://www.example.com"), &zzUrlInfo)) goto handle_error;
+ if (!RtUrl_Parse(_R("http://www.example.com"), &zzUrlInfo)) goto handle_error;
  if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), RT_NULL, RT_NULL, _R("www.example.com"), RT_TYPE_MAX_UN, RT_NULL, RT_NULL, RT_NULL)) goto handle_error;
 
- if (!RtParseUrl(_R("http://www.example.com:8080"), &zzUrlInfo)) goto handle_error;
+ if (!RtUrl_Parse(_R("http://www.example.com:8080"), &zzUrlInfo)) goto handle_error;
  if (!RtCheckUrlInfo(&zzUrlInfo, _R("http"), RT_NULL, RT_NULL, _R("www.example.com"), 8080, RT_NULL, RT_NULL, RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;

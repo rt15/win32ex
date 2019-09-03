@@ -57,7 +57,7 @@ RT_B RT_CALL ZzParseArgsCallback(RT_UN unArgType, RT_B bValid, RT_CHAR nShortOpt
   }
 
   if (!RtChar_CopyStringWithSize(_R("\n"), 1, &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-  if (!RtWriteStringToConsoleWithSize(lpMsg, unWritten)) goto handle_error;
+  if (!RtConsole_WriteStringWithSize(lpMsg, unWritten)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -103,11 +103,11 @@ RT_B RT_CALL ZzTestParseArgs(RT_N32 nArgC, RT_CHAR* lpArgV[])
                               lpLongOptionsWithoutArg, lpLongOptionsWithOptionalArg, lpLongOptionsWithArg,
                               &nNonOptionsIndex)) goto handle_error;
 
-  RtWriteStringToConsole(_R("\nNon-options:\n"));
+  RtConsole_WriteString(_R("\nNon-options:\n"));
 
   for (nI = nNonOptionsIndex; nI < nArgC; nI++)
   {
-    if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, lpArgV[nI], _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
+    if (!RtConsole_WriteStringsOrErrors(RT_TRUE, lpArgV[nI], _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -115,7 +115,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  RtWriteStringToConsole(_R("Parsing has failed.\n"));
+  RtConsole_WriteString(_R("Parsing has failed.\n"));
   bResult = RT_FAILURE;
   goto free_resources;
 }

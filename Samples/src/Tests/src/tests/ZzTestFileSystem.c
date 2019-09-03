@@ -13,7 +13,7 @@ RT_B RT_CALL ZzTestDoGetLastSeparator(RT_CHAR* lpPath, RT_UN unExpected)
   RtChar_CopyString(_R("\" expecting "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   RtChar_ConvertUIntegerToString(unExpected, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   RtChar_CopyString(_R(".\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   unIndex = RtFileSystem_GetLastSeparator(lpPath, RtChar_GetStringSize(lpPath));
 
@@ -23,7 +23,7 @@ RT_B RT_CALL ZzTestDoGetLastSeparator(RT_CHAR* lpPath, RT_UN unExpected)
     RtChar_CopyString(_R("Wrong result: "), lpBuffer, 512, &unWritten);
     RtChar_ConvertUIntegerToString(unIndex, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
     RtChar_CopyString(_R(".\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-    RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+    RtConsole_WriteStringWithSize(lpBuffer, unWritten);
     goto handle_error;
   }
 
@@ -118,7 +118,7 @@ RT_B RT_CALL ZzTestDoGetFileName(RT_CHAR* lpPath, RT_CHAR* lpExpected)
   if (!RtChar_CopyString(_R("\", found \""),                 &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   if (!RtFileSystem_GetFileName(lpPath, RtChar_GetStringSize(lpPath),   &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(_R("\"\n"),                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   unWritten = 0;
   if (!RtFileSystem_GetFileName(lpPath, RtChar_GetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
@@ -175,7 +175,7 @@ RT_B RT_CALL ZzTestDoGetNewParentPath(RT_CHAR* lpPath, RT_CHAR* lpExpected)
   if (!RtChar_CopyString(_R("\", found \""),                      &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   if (!RtFileSystem_GetNewParentPath(lpPath, RtChar_GetStringSize(lpPath),   &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(_R("\"\n"),                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   unWritten = 0;
   if (!RtFileSystem_GetNewParentPath(lpPath, RtChar_GetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
@@ -229,16 +229,16 @@ RT_B RT_CALL ZzTestCreateFile(RT_CHAR* lpFilePath)
   RT_B bResult;
 
   bFileCreated = RT_FALSE;
-  if (!RtCreateFile(&zzFile, lpFilePath, RT_FILE_MODE_TRUNCATE)) goto handle_error;
+  if (!RtFile_Create(&zzFile, lpFilePath, RT_FILE_MODE_TRUNCATE)) goto handle_error;
   bFileCreated = RT_TRUE;
-  if (!RtWriteToFile(&zzFile, "Hello, world!", 13)) goto handle_error;
+  if (!RtFile_Write(&zzFile, "Hello, world!", 13)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFreeFile(&zzFile) && bResult) goto handle_error;
+    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -260,24 +260,24 @@ RT_B RT_CALL ZzTestCreateEmptyFile(RT_CHAR* lpFilePath1, RT_CHAR* lpFilePath2)
   if (RtFileSystem_CheckFileOrDirectory(lpFilePath2)) goto handle_error;
 
   /* Non existing, truncate. */
-  if (!RtCreateEmptyFile(lpFilePath2, RT_TRUE)) goto handle_error;
+  if (!RtFileUtils_CreateEmpty(lpFilePath2, RT_TRUE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath2, &unFileZize)) goto handle_error;
   if (unFileZize) goto handle_error;
   if (!RtFileSystem_DeleteFile(lpFilePath2)) goto handle_error;
 
   /* Non existing, new. */
-  if (!RtCreateEmptyFile(lpFilePath2, RT_FALSE)) goto handle_error;
+  if (!RtFileUtils_CreateEmpty(lpFilePath2, RT_FALSE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath2, &unFileZize)) goto handle_error;
   if (unFileZize) goto handle_error;
   if (!RtFileSystem_DeleteFile(lpFilePath2)) goto handle_error;
 
   /* Existing, new. */
-  if (RtCreateEmptyFile(lpFilePath1, RT_FALSE)) goto handle_error;
+  if (RtFileUtils_CreateEmpty(lpFilePath1, RT_FALSE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath1, &unFileZize)) goto handle_error;
   if (!unFileZize) goto handle_error;
 
   /* Existing, truncate. */
-  if (!RtCreateEmptyFile(lpFilePath1, RT_TRUE)) goto handle_error;
+  if (!RtFileUtils_CreateEmpty(lpFilePath1, RT_TRUE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath1, &unFileZize)) goto handle_error;
   if (unFileZize) goto handle_error;
   if (!RtFileSystem_DeleteFile(lpFilePath1)) goto handle_error;

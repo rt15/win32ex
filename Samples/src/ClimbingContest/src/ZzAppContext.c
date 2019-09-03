@@ -14,12 +14,12 @@ RT_B RT_CALL ZzCreateAppContext(ZZ_APP_CONTEXT* lpAppContext)
     lpAppContext->lpLists[unI] = RT_NULL;
   }
 
-  if (!RtRuntimeHeapCreate(&lpAppContext->rtRuntimeHeap)) goto handle_error;
+  if (!RtRuntimeHeap_Create(&lpAppContext->rtRuntimeHeap)) goto handle_error;
   lpAppContext->bHeapCreated = RT_TRUE;
 
   for (unI = 0; unI < ZZ_RESOURCES_ENTITIES_COUNT; unI++)
   {
-    if (!RtCreateList(&lpAppContext->lpLists[unI], &lpAppContext->rtRuntimeHeap.lpHeap, 0, ZZ_RESOURCES_NAME_SIZE, 3000 / ZZ_RESOURCES_NAME_SIZE)) goto handle_error;
+    if (!RtList_Create(&lpAppContext->lpLists[unI], &lpAppContext->rtRuntimeHeap.lpHeap, 0, ZZ_RESOURCES_NAME_SIZE, 3000 / ZZ_RESOURCES_NAME_SIZE)) goto handle_error;
   }
 
   lpAppContext->hInstance = RtGetInstance();
@@ -61,7 +61,7 @@ free_resources:
   {
     if (lpAppContext->lpLists[unI])
     {
-      if (!RtFreeList(&lpAppContext->lpLists[unI]) && bResult) goto handle_error;
+      if (!RtList_Free(&lpAppContext->lpLists[unI]) && bResult) goto handle_error;
     }
   }
   if (lpAppContext->bHeapCreated)

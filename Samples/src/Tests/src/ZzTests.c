@@ -42,17 +42,17 @@ void RT_CALL ZzWriteToFile(RT_CHAR* lpPath, RT_CHAR* lpString, RT_UN unEncoding,
   unFileContentSize = RtEncoding_EncodeWithHeap(lpString, RT_TYPE_MAX_UN, unEncoding, &lpFileContent, lpHeap);
   if (unFileContentSize == RT_TYPE_MAX_UN)
   {
-    RtWriteLastErrorMessage(_R("Encoding failed: "));
+    RtErrorMessage_WriteLast(_R("Encoding failed: "));
   }
 
-  if (!RtWriteToSmallFile(lpFileContent, unFileContentSize, lpPath, RT_SMALL_FILE_MODE_TRUNCATE))
+  if (!RtSmallFile_Write(lpFileContent, unFileContentSize, lpPath, RT_SMALL_FILE_MODE_TRUNCATE))
   {
-    RtWriteLastErrorMessage(_R("Data writing failed: "));
+    RtErrorMessage_WriteLast(_R("Data writing failed: "));
   }
 
   if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
   {
-    RtWriteLastErrorMessage(_R("Failed free file content: "));
+    RtErrorMessage_WriteLast(_R("Failed free file content: "));
   }
 }
 
@@ -66,27 +66,27 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
   RT_CHAR lpBuffer[500];
   RT_UN unWritten;
 
-  unFileSize = RtReadFromSmallFile(lpPath, &lpFileContent, lpHeap);
+  unFileSize = RtSmallFile_Read(lpPath, &lpFileContent, lpHeap);
   RtChar_ConvertIntegerToString(unFileSize, lpBuffer, 500, &unWritten);
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpPath, _R(" file size: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringsOrErrors(RT_TRUE, lpPath, _R(" file size: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   lpData = &lpFileContent[unBomSize];
   unDataSize = unFileSize - unBomSize;
 
   if (RtEncoding_DecodeWithHeap(lpData, unDataSize, unEncoding, &lpFileContentAsString, lpHeap) == RT_TYPE_MAX_UN)
   {
-    RtWriteLastErrorMessage(_R("Decoding failed: "));
+    RtErrorMessage_WriteLast(_R("Decoding failed: "));
   }
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("OOOO"), lpFileContentAsString, _R("OOOO\n"), (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringsOrErrors(RT_TRUE, _R("OOOO"), lpFileContentAsString, _R("OOOO\n"), (RT_CHAR*)RT_NULL);
 
   if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContentAsString))
   {
-    RtWriteLastErrorMessage(_R("Failed free string file content: "));
+    RtErrorMessage_WriteLast(_R("Failed free string file content: "));
   }
 
   if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
   {
-    RtWriteLastErrorMessage(_R("Failed free file content: "));
+    RtErrorMessage_WriteLast(_R("Failed free file content: "));
   }
 }
 
@@ -112,16 +112,16 @@ RT_B RT_CALL ZzTests()
 
   bHeapCreated = RT_FALSE;
 
-  if (!RtRuntimeHeapCreate(&zzRuntimeHeap))
+  if (!RtRuntimeHeap_Create(&zzRuntimeHeap))
   {
-    RtWriteLastErrorMessage(_R("Runtime heap creation failed: "));
+    RtErrorMessage_WriteLast(_R("Runtime heap creation failed: "));
     goto handle_error;
   }
   bHeapCreated = RT_TRUE;
 
   if (!ZzAdjustDirectory())
   {
-    RtWriteLastErrorMessage(_R("Directory adjustement failed: "));
+    RtErrorMessage_WriteLast(_R("Directory adjustement failed: "));
     goto handle_error;
   }
 
@@ -149,25 +149,25 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestCommandLineArgs()) goto tests_failed;
   if (!ZzTestProcess(&zzRuntimeHeap.lpHeap)) goto tests_failed;
 
-  RtWriteStringToConsole(_R("Tests successful!!\n\n"));
+  RtConsole_WriteString(_R("Tests successful!!\n\n"));
   goto end_of_tests;
 
 tests_failed:
-  RtWriteStringToConsole(_R("Tests failed!!\n\n"));
+  RtConsole_WriteString(_R("Tests failed!!\n\n"));
   goto handle_error;
 end_of_tests:
 
   RtChar_ConvertIntegerToString(RtVirtualMemory_GetPageSize(), lpBuffer, 500, &unWritten);
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtChar_CopyString(_R("FooBarPad"), lpBuffer, 500, &unWritten);
 
   RtChar_LeftPadString(lpBuffer, _R('0'), 11, lpBuffer, 500, &unWritten);
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   unWritten = 0;
   RtChar_ConcatStrings(lpBuffer, 500, &unWritten, _R("foo"), _R("bar"), _R("team"), _R("\n"), (RT_CHAR*)RT_NULL);
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   DiplayFileContent(_R("data/file.txt"), 0, 0, &zzRuntimeHeap.lpHeap);
   DiplayFileContent(_R("data/latin1.txt"), RT_ENCODING_ISO_8859_15, 0, &zzRuntimeHeap.lpHeap);
@@ -175,29 +175,29 @@ end_of_tests:
 
   lpTestingString = _R("OOOOéOOOO");
 
-  RtWriteStringsOrErrorsToConsole(RT_TRUE, lpTestingString, _R("\n"), (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringsOrErrors(RT_TRUE, lpTestingString, _R("\n"), (RT_CHAR*)RT_NULL);
 
   ZzWriteToFile(_R("data/latin1_test.txt"), lpTestingString, RT_ENCODING_ISO_8859_15, &zzRuntimeHeap.lpHeap);
   ZzWriteToFile(_R("data/utf8_test.txt"), lpTestingString, RT_ENCODING_UTF_8, &zzRuntimeHeap.lpHeap);
 
   if (!zzRuntimeHeap.lpHeap->lpAlloc(&zzRuntimeHeap, &lpArea, 256, _R("Some bytes")))
   {
-    RtWriteLastErrorMessage(_R("Failed to allocate some bytes: "));
+    RtErrorMessage_WriteLast(_R("Failed to allocate some bytes: "));
     goto handle_error;
   }
 
-  RtCreateLinkedList((void**)&lpLinkedList, &zzRuntimeHeap.lpHeap, 20, sizeof(MY_ITEM));
+  RtLinkedList_Create((void**)&lpLinkedList, &zzRuntimeHeap.lpHeap, 20, sizeof(MY_ITEM));
   for (unI = 0; unI < 5; unI++)
   {
-    RtNewLinkedListItemIndex((void**)&lpLinkedList, &unIndex);
+    RtLinkedList_NewItemIndex((void**)&lpLinkedList, &unIndex);
     unWritten = 0;
     RtChar_ConvertIntegerToString(unIndex, &lpBuffer[unWritten], 200 - unWritten, &unWritten);
     RtChar_CopyString(_R("\n"),     &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-    RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+    RtConsole_WriteStringWithSize(lpBuffer, unWritten);
   }
   RtArray_Free((void**)&lpLinkedList);
 
-  RtCreateSortableArray((void**)&lpArray, &zzRuntimeHeap.lpHeap, 200, sizeof(RT_UN32), &ZzCompare, RT_NULL);
+  RtSortableArray_Create((void**)&lpArray, &zzRuntimeHeap.lpHeap, 200, sizeof(RT_UN32), &ZzCompare, RT_NULL);
   for (unI = 0; unI < 200; unI++)
   {
     lpArray[unI] = unI + 1000;
@@ -208,29 +208,29 @@ end_of_tests:
   lpArray[50] = 8;
 
   RtArray_SetSize((void**)&lpArray, 100);
-  RtSortSortableArray(lpArray);
+  RtSortableArray_Sort(lpArray);
 
   for (unI = 0; unI < 100; unI++)
   {
     unWritten = 0;
     RtChar_ConvertIntegerToString(lpArray[unI], &lpBuffer[unWritten], 200 - unWritten, &unWritten);
     RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-    RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+    RtConsole_WriteStringWithSize(lpBuffer, unWritten);
   }
 
   unToSearch = 1025;
-  RtSearchSortableArrayItemIndex(lpArray, &unToSearch, &unIndex);
+  RtSortableArray_SearchItemIndex(lpArray, &unToSearch, &unIndex);
   unWritten = 0;
   RtChar_CopyString(_R("Item found at index: "), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
   RtChar_ConvertIntegerToString(unIndex,                &lpBuffer[unWritten], 200 - unWritten, &unWritten);
   RtChar_CopyString(_R("\n"),                    &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   RtArray_Free((void**)&lpArray);
 
   if (!zzRuntimeHeap.lpHeap->lpFree(&zzRuntimeHeap, &lpArea))
   {
-    RtWriteLastErrorMessage(_R("Failed to free some bytes: "));
+    RtErrorMessage_WriteLast(_R("Failed to free some bytes: "));
     goto handle_error;
   }
 
@@ -241,7 +241,7 @@ free_resources:
     bHeapCreated = RT_FALSE;
     if (!zzRuntimeHeap.lpHeap->lpClose(&zzRuntimeHeap) && bResult)
     {
-      RtWriteLastErrorMessage(_R("Failed to close runtime heap: "));
+      RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
       goto handle_error;
     }
   }
@@ -254,7 +254,7 @@ handle_error:
 
 RT_B RT_CALL ZzDisplayHelp(RT_B bResult)
 {
-  RtWriteStringOrErrorToConsole(_R("Test rtlib.\n\n")
+  RtConsole_WriteStringOrError(_R("Test rtlib.\n\n")
                                 _R("Tests [-m|--manual|-h|--help|-r|--read-line]\n")
                                 _R("Tests [-a|--args [ARGS]]\n")
                                 _R("Tests [-p|--parse-args [ARGS]]\n")
@@ -276,7 +276,7 @@ RT_B RT_CALL ZzDisplayArgs(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
   for (nI = 0; nI < nArgC; nI++)
   {
-    if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, lpArgV[nI], _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
+    if (!RtConsole_WriteStringsOrErrors(RT_TRUE, lpArgV[nI], _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -293,8 +293,8 @@ RT_B RT_CALL ZzReadLine()
   RT_CHAR lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_B bResult;
 
-  if (!RtReadLineFromConsole(lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE)) goto handle_error;
-  if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("\""), lpBuffer, _R("\"\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtConsole_ReadLine(lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE)) goto handle_error;
+  if (!RtConsole_WriteStringsOrErrors(RT_TRUE, _R("\""), lpBuffer, _R("\"\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -314,26 +314,26 @@ RT_B RT_CALL ZzDisplayEnvVars()
 
   bEnvVarsCreated = RT_FALSE;
 
-  if (!RtCreateEnvVars(&zzEnvVars)) goto handle_error;
+  if (!RtEnvVars_Create(&zzEnvVars)) goto handle_error;
   bEnvVarsCreated = RT_TRUE;
 
   if (!RtEnvVars_GetArray(&zzEnvVars, &lpEnvVarsArray)) goto handle_error;
 
   while (*lpEnvVarsArray)
   {
-    if (!RtWriteStringToConsole(*lpEnvVarsArray)) goto handle_error;
-    if (!RtWriteStringToConsoleWithSize(_R("\n"), 1)) goto handle_error;
+    if (!RtConsole_WriteString(*lpEnvVarsArray)) goto handle_error;
+    if (!RtConsole_WriteStringWithSize(_R("\n"), 1)) goto handle_error;
     lpEnvVarsArray++;
   }
 
-  if (!RtWriteStringToConsole(_R("\n"))) goto handle_error;
+  if (!RtConsole_WriteString(_R("\n"))) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bEnvVarsCreated)
   {
     bEnvVarsCreated = RT_FALSE;
-    if (!RtFreeEnvVars(&zzEnvVars) && bResult) goto handle_error;
+    if (!RtEnvVars_Free(&zzEnvVars) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -350,7 +350,7 @@ RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVar)
 
   unWritten = 0;
   if (!RtEnvVar_Get(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-  if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, lpEnvVar, _R("="), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtConsole_WriteStringsOrErrors(RT_TRUE, lpEnvVar, _R("="), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

@@ -60,7 +60,7 @@ RT_B RT_CALL ZzTestPipe()
 
   if (!RtIoDevice_Write(RtIoDevice_GetOutputStream(lpOutput), "foo", 3)) goto handle_error;
 
-  /* Close the pipe so that RtReadFromFile will read 3 bytes then encounter EOF. */
+  /* Close the pipe so that RtFile_Read will read 3 bytes then encounter EOF. */
   bOutputCreated = RT_FALSE;
   if (!RtIoDevice_Free(lpOutput)) goto handle_error;
 

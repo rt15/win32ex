@@ -40,7 +40,7 @@ RT_B RT_CALL ZzTestType(RT_CHAR* lpTypeName, RT_UN unSize, RT_B bSigned, RT_UN u
   RtChar_CopyString(_R(" size = "),                                    &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
   RtChar_ConvertIntegerToString(unSize,                                &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
   RtChar_CopyString(bSigned ? _R(", signed.\n") : _R(", unsigned.\n"), &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   if (unSize != unExpectedSize) goto handle_error;
   if ((bExpectedSignedness && !bSigned) || (!bExpectedSignedness && bSigned)) goto handle_error;

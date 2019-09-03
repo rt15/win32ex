@@ -17,7 +17,7 @@ void RT_CALL ZzTestDisplayList(void* lpList)
   RT_UN unI;
 
   bFirst = RT_TRUE;
-  unSize = RtGetListSize(lpList);
+  unSize = RtList_GetSize(lpList);
   unWritten = 0;
   for (unI = 0; unI < unSize; unI++)
   {
@@ -30,12 +30,12 @@ void RT_CALL ZzTestDisplayList(void* lpList)
       RtChar_CopyString(_R(", "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
     }
 
-    RtGetListItem(lpList, unI, (void**)&lpItem);
+    RtList_GetItem(lpList, unI, (void**)&lpItem);
     RtChar_ConvertIntegerToString(lpItem->unValue, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
   }
 
   RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 }
 
 RT_B RT_CALL ZzTestCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpectedItemSize, RT_UN unExpectedChunkSize, RT_UN unExpectedChunksCount)
@@ -71,7 +71,7 @@ RT_B RT_CALL ZzTestCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpecte
   RtChar_ConvertIntegerToString(unChunksCount, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
 
   RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtWriteStringToConsoleWithSize(lpBuffer, unWritten);
+  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   if (unExpectedSize != unSize) goto handle_error;
   if (unExpectedItemSize != unItemSize) goto handle_error;
@@ -101,13 +101,13 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
 
   unItemSize = sizeof(RT_UN32) + 32 * sizeof(RT_CHAR);
 
-  if (!RtCreateList(&lpList, lpHeap, 23, sizeof(ZZ_LIST_ITEM), 10)) goto handle_error;
+  if (!RtList_Create(&lpList, lpHeap, 23, sizeof(ZZ_LIST_ITEM), 10)) goto handle_error;
 
   if (!ZzTestCheckList(lpList, 23, unItemSize, 10, 3)) goto handle_error;
 
   for (unI = 0; unI < 23; unI++)
   {
-    RtGetListItem(lpList, unI, (void**)&lpItem);
+    RtList_GetItem(lpList, unI, (void**)&lpItem);
     lpItem->unValue = unI;
     RtChar_CopyString(_R("This is item characters."), lpItem->lpValue, 32, &unWritten);
   }
@@ -115,43 +115,43 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
   ZzTestDisplayList(lpList);
 
   /* Reduce the size of the list. */
-  if (!RtSetListSize(&lpList, 17)) goto handle_error;
+  if (!RtList_SetSize(&lpList, 17)) goto handle_error;
 
 
   if (!ZzTestCheckList(lpList, 17, unItemSize, 10, 2)) goto handle_error;
   ZzTestDisplayList(lpList);
 
   /* Increase the size of the list. */
-  if (!RtSetListSize(&lpList, 31)) goto handle_error;
+  if (!RtList_SetSize(&lpList, 31)) goto handle_error;
 
   if (!ZzTestCheckList(lpList, 31, unItemSize, 10, 4)) goto handle_error;
 
   for (unI = 0; unI < 31; unI++)
   {
-    RtGetListItem(lpList, unI, (void**)&lpItem);
+    RtList_GetItem(lpList, unI, (void**)&lpItem);
     lpItem->unValue = unI;
   }
 
   ZzTestDisplayList(lpList);
 
-  if (!RtDeleteListItemIndex(&lpList, 12)) goto handle_error;
+  if (!RtList_DeleteItemIndex(&lpList, 12)) goto handle_error;
 
   ZzTestDisplayList(lpList);
 
-  if (!RtNewListItem(&lpList, (void**)&lpItem)) goto handle_error;
+  if (!RtList_NewItem(&lpList, (void**)&lpItem)) goto handle_error;
   lpItem->unValue = 42;
 
   ZzTestDisplayList(lpList);
 
-  if (RtNewListItemIndex(&lpList, &unItemIndex) == RT_TYPE_MAX_UN) goto handle_error;
+  if (RtList_NewItemIndex(&lpList, &unItemIndex) == RT_TYPE_MAX_UN) goto handle_error;
 
-  if (!RtGetListItem(lpList, unItemIndex, (void**)&lpItem)) goto handle_error;
+  if (!RtList_GetItem(lpList, unItemIndex, (void**)&lpItem)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (lpList)
   {
-    if (!RtFreeList(&lpList) && bResult) goto handle_error;
+    if (!RtList_Free(&lpList) && bResult) goto handle_error;
   }
   return bResult;
 
