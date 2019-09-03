@@ -7,6 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Win32Debug">
+				<Option platforms="Windows;" />
 				<Option output="../bin/LuaExd" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/Debug/" />
 				<Option type="3" />
@@ -22,6 +23,7 @@
 				</Linker>
 			</Target>
 			<Target title="Win32Release">
+				<Option platforms="Windows;" />
 				<Option output="../bin/LuaEx" prefix_auto="1" extension_auto="1" />
 				<Option object_output="../obj/Release/" />
 				<Option type="3" />

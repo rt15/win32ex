@@ -94,7 +94,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
     if (RtChar_StringEndsWithWithSize(lpLowerCasePath, unWritten, _R(".sql"), 4))
     {
       unWritten = 0;
-      RtGetFileName(lpPath, RtChar_GetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
+      RtFileSystem_GetFileName(lpPath, RtChar_GetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
       /* Write file name without extension. */
       RtWriteStringToConsoleWithSize(lpFileName, unWritten - 4);
 
@@ -171,7 +171,7 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
     RtChar_CopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
     RtChar_CopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
 
-    if (!RtBrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, RT_FALSE, &context))
+    if (!RtFileSystem_BrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, RT_FALSE, &context))
     {
       unResult = 1;
       goto close_heap;

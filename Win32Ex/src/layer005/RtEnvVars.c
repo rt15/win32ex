@@ -69,7 +69,7 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
   lpEnvVars->lpEnvVarsBlock = RT_NULL;
 
   /* environ point on a null terminated array of pointers to null terminated variables. */
-  lpEnvVarsArray = environ;
+  lpEnvVarsArray = __environ;
 
   unBlockSize = 0;
   while (*lpEnvVarsArray)
@@ -84,7 +84,7 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
   if (!RtAlloc((void**)&lpEnvVars->lpEnvVarsBlock, unBlockSize * sizeof(RT_CHAR))) goto handle_error;
 
   /* Notice that environ might have been modified by another thread. Environment is not thread safe under Linux. */
-  lpEnvVarsArray = environ;
+  lpEnvVarsArray = __environ;
   lpEnvVarsBlock = lpEnvVars->lpEnvVarsBlock;
 
   unWritten = 0;

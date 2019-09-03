@@ -72,14 +72,6 @@ RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuff
 RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 /**
- *
- * <p>
- * The created file is not inheritable.
- * </p>
- */
-RT_B RT_API RtCreatePipe(RT_FILE* lpReadFile, RT_FILE* lpWriteFile);
-
-/**
  * Read from a file.
  *
  * @param unBytesToRead Count of bytes to read.

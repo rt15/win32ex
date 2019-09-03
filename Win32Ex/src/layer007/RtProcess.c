@@ -5,6 +5,7 @@
 #include "layer002/RtError.h"
 #include "layer002/RtIoDevice.h"
 #include "layer003/RtChar.h"
+#include "layer003/RtPipe.h"
 #include "layer004/RtStaticHeap.h"
 #include "layer006/RtErrorMessage.h"
 
@@ -304,26 +305,29 @@ handle_error:
  * Called either by the main process or by a forked process if bChild is RT_TRUE.
  */
 RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
-                                        RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                        RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
                                         RT_CHAR** lpApplicationPathAndArgs)
 {
   RT_N nErrno;
-  RT_FILE rtReadPipe;
-  RT_FILE rtWritePipe;
-  RT_B bReadPipeCreated;
-  RT_B bWritePipeCreated;
+  RT_PIPE rtPipe;
+  RT_IO_DEVICE* lpInput;
+  RT_IO_DEVICE* lpOutput;
+  RT_B bInputCreated;
+  RT_B bOutputCreated;
   pid_t nPid;
   RT_UN unBytesRead;
   RT_CHAR** lpEnvVarsArray;
   RT_B bResult;
 
-  bReadPipeCreated = RT_FALSE;
-  bWritePipeCreated = RT_FALSE;
+  bInputCreated = RT_FALSE;
+  bOutputCreated = RT_FALSE;
 
   /* Not inheritable, only used by the forked process before execvp/execvpe. */
-  if (!RtCreatePipe(&rtReadPipe, &rtWritePipe)) goto handle_error;
-  bReadPipeCreated = RT_TRUE;
-  bWritePipeCreated = RT_TRUE;
+  if (!RtPipe_Create(&rtPipe)) goto handle_error;
+  lpInput = RtPipe_GetInput(&rtPipe);
+  lpOutput = RtPipe_GetOutput(&rtPipe);
+  bInputCreated = RT_TRUE;
+  bOutputCreated = RT_TRUE;
 
   nPid = fork();
   if (nPid == 0)
@@ -331,7 +335,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     /* We are in the child process. */
 
     /* Close the read pipe, used by the parent/intermediate. */
-    if (!RtFreeFile(&rtReadPipe))
+    if (!RtIoDevice_Free(lpInput))
     {
       RtWriteLastErrorMessage(_R("Failed to close reading pipe: "));
       goto handle_child_error;
@@ -342,7 +346,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     /* dup2 returns -1 in case of error and set errno. */
     if (lpStdInput)
     {
-      if (dup2(lpStdInput->nFile, 0) == -1)
+      if (dup2(lpStdInput->nFileDescriptor, 0) == -1)
       {
         RtWriteLastErrorMessage(_R("Failed to duplicate stdin redirection: "));
         goto handle_child_error;
@@ -350,7 +354,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     }
     if (lpStdOutput)
     {
-      if (dup2(lpStdOutput->nFile, 1) == -1)
+      if (dup2(lpStdOutput->nFileDescriptor, 1) == -1)
       {
         RtWriteLastErrorMessage(_R("Failed to duplicate stdout redirection: "));
         goto handle_child_error;
@@ -358,7 +362,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     }
     if (lpStdError)
     {
-      if (dup2(lpStdError->nFile, 2) == -1)
+      if (dup2(lpStdError->nFileDescriptor, 2) == -1)
       {
         RtWriteLastErrorMessage(_R("Failed to duplicate stderr redirection: "));
         goto handle_child_error;
@@ -396,13 +400,13 @@ handle_child_error:
 
     /* We will write errno in the pipe to be read by the parent. */
     nErrno = errno;
-    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
+    if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
     {
       RtWriteLastErrorMessage(_R("Failed to write to parent pipe: "));
     }
 
     /* We do not need the writing pipe anymore so we close it. */
-    if (!RtFreeFile(&rtWritePipe))
+    if (!RtIoDevice_Free(lpOutput))
     {
       RtWriteLastErrorMessage(_R("Failed to close writing pipe: "));
     }
@@ -416,11 +420,11 @@ handle_child_error:
     lpProcess->nPid = nPid;
 
     /* We close writing pipe to avoid a dead lock. It will be used only by the child. */
-    bWritePipeCreated = RT_FALSE;
-    if (!RtFreeFile(&rtWritePipe)) goto handle_error;
+    bOutputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpOutput)) goto handle_error;
 
     /* Synchronously read errno or zero bytes (success!) from created child. */
-    if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
+    if (!RtIoDevice_Read(&lpInput->rtInputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
     if (unBytesRead)
     {
       /* Copy errno read from child pipe into parent/intermediate errno. */
@@ -436,15 +440,15 @@ handle_child_error:
 
   bResult = RT_SUCCESS;
 free_resources:
-  if (bWritePipeCreated)
+  if (bOutputCreated)
   {
-    bWritePipeCreated = RT_FALSE;
-    if (!RtFreeFile(&rtWritePipe) && bResult) goto handle_error;
+    bOutputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
   }
-  if (bReadPipeCreated)
+  if (bInputCreated)
   {
-    bReadPipeCreated = RT_FALSE;
-    if (!RtFreeFile(&rtReadPipe) && bResult) goto handle_error;
+    bInputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -457,28 +461,31 @@ handle_error:
  * Fork a process that will fork again to avoid zombification.
  */
 RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
-                                                   RT_FILE* lpStdInput, RT_FILE* lpStdOutput, RT_FILE* lpStdError,
+                                                   RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
                                                    RT_CHAR** lpApplicationPathAndArgs)
 {
   RT_N nChildPid;
   RT_N nErrno;
-  RT_FILE rtReadPipe;
-  RT_FILE rtWritePipe;
-  RT_B bReadPipeCreated;
-  RT_B bWritePipeCreated;
+  RT_PIPE rtPipe;
+  RT_IO_DEVICE* lpInput;
+  RT_IO_DEVICE* lpOutput;
+  RT_B bInputCreated;
+  RT_B bOutputCreated;
   pid_t nPid;
   RT_UN unBytesRead;
   RT_PROCESS rtIntermediateProcess;
   RT_UN32 unExitCode;
   RT_B bResult;
 
-  bReadPipeCreated = RT_FALSE;
-  bWritePipeCreated = RT_FALSE;
+  bInputCreated = RT_FALSE;
+  bOutputCreated = RT_FALSE;
 
   /* Not inheritable, only used by the forked process. */
-  if (!RtCreatePipe(&rtReadPipe, &rtWritePipe)) goto handle_error;
-  bReadPipeCreated = RT_TRUE;
-  bWritePipeCreated = RT_TRUE;
+  if (!RtPipe_Create(&rtPipe)) goto handle_error;
+  lpInput = RtPipe_GetInput(&rtPipe);
+  lpOutput = RtPipe_GetOutput(&rtPipe);
+  bInputCreated = RT_TRUE;
+  bOutputCreated = RT_TRUE;
 
   nPid = fork();
   if (nPid == 0)
@@ -486,7 +493,7 @@ RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHA
     /* We are in the intermediate process. */
 
     /* Close the read pipe, used by the parent. */
-    if (!RtFreeFile(&rtReadPipe))
+    if (!RtIoDevice_Free(lpInput))
     {
       RtWriteLastErrorMessage(_R("Failed to close intermediate reading pipe: "));
       goto handle_child_error;
@@ -497,7 +504,7 @@ RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHA
 
     /* Write child PID into the pipe. */
     nChildPid = lpProcess->nPid;
-    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&nChildPid, sizeof(nChildPid)))
+    if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nChildPid, sizeof(nChildPid)))
     {
       RtWriteLastErrorMessage(_R("Failed to write the child PID into the pipe: "));
       goto handle_child_error;
@@ -510,13 +517,13 @@ handle_child_error:
 
     /* We will write errno in the pipe to be read by the parent. */
     nErrno = errno;
-    if (!RtWriteToFile(&rtWritePipe, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
+    if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
     {
       RtWriteLastErrorMessage(_R("Failed to write to parent pipe: "));
     }
 
     /* We do not need the writing pipe anymore so we close it. */
-    if (!RtFreeFile(&rtWritePipe))
+    if (!RtIoDevice_Free(lpOutput))
     {
       RtWriteLastErrorMessage(_R("Failed to close writing pipe: "));
     }
@@ -532,8 +539,8 @@ handle_child_error:
     rtIntermediateProcess.nPid = nPid;
 
     /* We close writing pipe to avoid a dead lock. It will be used only by the intermediate. */
-    bWritePipeCreated = RT_FALSE;
-    if (!RtFreeFile(&rtWritePipe)) goto handle_error;
+    bOutputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpOutput)) goto handle_error;
 
     /* Retrieve intermediate exit code. */
     if (!RtJoinProcess(&rtIntermediateProcess)) goto handle_error;
@@ -542,7 +549,7 @@ handle_child_error:
     if (unExitCode)
     {
       /* Synchronously read errno or zero bytes (should not happen) from created intermediate. */
-      if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
+      if (!RtIoDevice_Read(&lpInput->rtInputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
       if (unBytesRead)
       {
         /* Copy errno read from child pipe into parent errno. */
@@ -559,7 +566,7 @@ handle_child_error:
     else
     {
       /* Synchronously read pid or zero bytes (should not happen) from created intermediate. */
-      if (!RtReadFromFile(&rtReadPipe, (RT_CHAR8*)&nChildPid, sizeof(nChildPid), &unBytesRead)) goto handle_error;
+      if (!RtIoDevice_Read(&lpInput->rtInputStream, (RT_CHAR8*)&nChildPid, sizeof(nChildPid), &unBytesRead)) goto handle_error;
       if (unBytesRead)
       {
         /* Great, we have read the child pid from the intermediate pipe. */
@@ -581,15 +588,15 @@ handle_child_error:
 
   bResult = RT_SUCCESS;
 free_resources:
-  if (bWritePipeCreated)
+  if (bOutputCreated)
   {
-    bWritePipeCreated = RT_FALSE;
-    if (!RtFreeFile(&rtWritePipe) && bResult) goto handle_error;
+    bOutputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
   }
-  if (bReadPipeCreated)
+  if (bInputCreated)
   {
-    bReadPipeCreated = RT_FALSE;
-    if (!RtFreeFile(&rtReadPipe) && bResult) goto handle_error;
+    bInputCreated = RT_FALSE;
+    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
   }
   return bResult;
 

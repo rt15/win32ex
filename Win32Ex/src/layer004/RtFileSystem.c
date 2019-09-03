@@ -12,7 +12,7 @@
 
 #endif
 
-RT_B RT_API RtCopyFile(RT_CHAR* lpSourceFilePath, RT_CHAR* lpDestinationFilePath)
+RT_B RT_API RtFileSystem_CopyFile(RT_CHAR* lpSourceFilePath, RT_CHAR* lpDestinationFilePath)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongSourceFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -29,8 +29,8 @@ RT_B RT_API RtCopyFile(RT_CHAR* lpSourceFilePath, RT_CHAR* lpDestinationFilePath
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!RtGetLongPath(lpSourceFilePath, lpLongSourceFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
-  if (!RtGetLongPath(lpDestinationFilePath, lpLongDestinationFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpSourceFilePath, lpLongSourceFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpDestinationFilePath, lpLongDestinationFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   bResult = CopyFile(lpLongSourceFilePath, lpLongDestinationFilePath, TRUE);
 
@@ -96,7 +96,7 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtCreateDirectory(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_CreateDirectory(RT_CHAR* lpPath)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -105,7 +105,7 @@ RT_B RT_API RtCreateDirectory(RT_CHAR* lpPath)
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   /* If CreateDirectory fails, the return value is zero and SetLastError is called. */
   if (!CreateDirectory(lpLongPath, NULL)) goto handle_error;
@@ -123,15 +123,15 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtCreateDirectories(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_CreateDirectories(RT_CHAR* lpPath)
 {
   RT_B bResult;
 
   /* TODO: Implement for all levels!!! */
 
-  if (!RtCheckDirectory(lpPath))
+  if (!RtFileSystem_CheckDirectory(lpPath))
   {
-    if (!RtCreateDirectory(lpPath)) goto handle_error;
+    if (!RtFileSystem_CreateDirectory(lpPath)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -143,7 +143,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtDeleteDirectory(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_DeleteDirectory(RT_CHAR* lpPath)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -153,7 +153,7 @@ RT_B RT_API RtDeleteDirectory(RT_CHAR* lpPath)
 
 #ifdef RT_DEFINE_WINDOWS
 
-  if (!RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   /* RemoveDirectory returns 0 and call SetLastError in case of error. */
   if (!RemoveDirectory(lpLongPath)) goto handle_error;
@@ -171,12 +171,12 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtDeleteDirectoryIfExists(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_DeleteDirectoryIfExists(RT_CHAR* lpPath)
 {
   RT_B bResult;
 
   /* Attempt to delete the file then check the last error. */
-  if (!RtDeleteDirectory(lpPath))
+  if (!RtFileSystem_DeleteDirectory(lpPath))
   {
 #ifdef RT_DEFINE_WINDOWS
     if (GetLastError() != ERROR_FILE_NOT_FOUND) goto handle_error;
@@ -194,17 +194,17 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL RtDeleteDirectoryRecursivelyCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
+RT_B RT_CALL RtFileSystem_DeleteDirectoryRecursivelyCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
 {
   RT_B bResult;
 
   if (unType == RT_FILE_SYSTEM_TYPE_DIRECTORY)
   {
-    if (!RtDeleteDirectory(lpPath)) goto handle_error;
+    if (!RtFileSystem_DeleteDirectory(lpPath)) goto handle_error;
   }
   else
   {
-    if (!RtDeleteFile(lpPath)) goto handle_error;
+    if (!RtFileSystem_DeleteFile(lpPath)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -216,19 +216,19 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtDeleteDirectoryRecursively(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_DeleteDirectoryRecursively(RT_CHAR* lpPath)
 {
   RT_B bResult;
 
 
-  /* If the directory does not exist or is empty, then RtDeleteDirectoryIfExists should do the job. */
-  if (!RtDeleteDirectoryIfExists(lpPath))
+  /* If the directory does not exist or is empty, then RtFileSystem_DeleteDirectoryIfExists should do the job. */
+  if (!RtFileSystem_DeleteDirectoryIfExists(lpPath))
   {
     /* The directory should exist and we failed to delete it, probably because it is not empty. */
-    if (!RtBrowsePath(lpPath, RtDeleteDirectoryRecursivelyCallback, RT_TRUE, RT_TRUE, RT_NULL)) goto handle_error;
+    if (!RtFileSystem_BrowsePath(lpPath, RtFileSystem_DeleteDirectoryRecursivelyCallback, RT_TRUE, RT_TRUE, RT_NULL)) goto handle_error;
 
     /* Finally, delete the directory that should be now empty. */
-    if (!RtDeleteDirectory(lpPath)) goto handle_error;
+    if (!RtFileSystem_DeleteDirectory(lpPath)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -240,7 +240,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtGetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtFileSystem_GetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_UN unWritten;
   RT_B bResult;
@@ -288,7 +288,7 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtGetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtFileSystem_GetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
 #ifdef RT_DEFINE_WINDOWS
 
@@ -327,7 +327,7 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtGetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
 #ifdef RT_DEFINE_WINDOWS
   HRESULT hResult;
@@ -432,7 +432,7 @@ free_resources:
   return bResult;
 }
 
-RT_UN RT_API RtGetLastSeparator(RT_CHAR* lpPath, RT_UN unPathSize)
+RT_UN RT_API RtFileSystem_GetLastSeparator(RT_CHAR* lpPath, RT_UN unPathSize)
 {
   RT_UN unI;
 
@@ -452,7 +452,7 @@ RT_UN RT_API RtGetLastSeparator(RT_CHAR* lpPath, RT_UN unPathSize)
   return unI;
 }
 
-void RT_API RtRemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN *lpWritten)
+void RT_API RtFileSystem_RemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN *lpWritten)
 {
   RT_UN unI;
 
@@ -479,13 +479,13 @@ void RT_API RtRemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN 
   *lpWritten = *lpWritten - (unPathSize - (unI + 1));
 }
 
-RT_B RT_API RtGetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten)
 {
   RT_UN unWritten;
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtGetNewParentPath(lpPath, unPathSize, lpPath, unBufferSize, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetNewParentPath(lpPath, unPathSize, lpPath, unBufferSize, &unWritten)) goto handle_error;
 
   /* Set *lpWritten as we update a buffer. */
   *lpWritten = unWritten;
@@ -499,12 +499,12 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtGetNewParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFileSystem_GetNewParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
 {
   RT_UN unLastSeparator;
   RT_B bResult;
 
-  unLastSeparator = RtGetLastSeparator(lpPath, unPathSize);
+  unLastSeparator = RtFileSystem_GetLastSeparator(lpPath, unPathSize);
 
   if ((unLastSeparator == RT_TYPE_MAX_UN) || (unLastSeparator == 0))
   {
@@ -515,7 +515,7 @@ RT_B RT_API RtGetNewParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuf
     {
       if ((unPathSize > 0) && (lpPath[0] == _R('/')))
       {
-        /* Separator only, RtGetLastSeparator returns RT_TYPE_MAX_UN because it is a trailing separator. */
+        /* Separator only, RtFileSystem_GetLastSeparator returns RT_TYPE_MAX_UN because it is a trailing separator. */
         bResult = RtChar_CopyString(_R("/"), lpBuffer, unBufferSize, lpWritten);
       }
       else
@@ -534,7 +534,7 @@ RT_B RT_API RtGetNewParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuf
   else
   {
     if (!RtChar_CopyStringWithSize(lpPath, unLastSeparator, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
-    RtRemoveTrailingSeparators(lpBuffer, unLastSeparator, lpWritten);
+    RtFileSystem_RemoveTrailingSeparators(lpBuffer, unLastSeparator, lpWritten);
     bResult = RT_SUCCESS;
   }
 
@@ -545,7 +545,7 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtGetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFileSystem_GetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
 {
   RT_UN unWritten;
   RT_B bResult;
@@ -574,12 +574,12 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_SetCurrentDirectory(RT_CHAR* lpPath)
 {
   RT_B bResult;
 #ifdef RT_DEFINE_WINDOWS
   /* Returns zero if failed, set last error. */
-  /* TODO: Needs RtGetLongPath? */
+  /* TODO: Needs RtFileSystem_GetLongPath? */
   bResult = SetCurrentDirectory(lpPath);
 #else
   /* Returns zero in case of success, set errno. */
@@ -588,7 +588,7 @@ RT_B RT_API RtSetCurrentDirectory(RT_CHAR* lpPath)
   return bResult;
 }
 
-RT_B RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
+RT_B RT_API RtFileSystem_GetFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -601,7 +601,7 @@ RT_B RT_API RtGetFileSystemFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   /* GetFileAttributesEx returns 0 and use SetLastError in case of error. */
   if (!GetFileAttributesEx(lpLongPath, GetFileExInfoStandard, &fileInfo)) goto handle_error;
@@ -646,7 +646,7 @@ RT_B RT_API FileSys_FullPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferS
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtGetCurrentDirectory(                                   &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetCurrentDirectory(                                   &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyStringWithSize(RT_FILE_SYSTEM_SEPARATOR_STRING, 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(lpPath,                                     &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
@@ -660,7 +660,7 @@ free_resources:
 }
 
 #ifdef RT_DEFINE_WINDOWS
-RT_B RT_API RtGetLongPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtFileSystem_GetLongPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_UN unWritten;
   RT_UN unI;
@@ -700,7 +700,7 @@ free_resources:
 }
 #endif
 
-RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, RT_B bChildrenFirst, void* lpContext)
+RT_B RT_API RtFileSystem_BrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, RT_B bChildrenFirst, void* lpContext)
 {
 #ifdef RT_DEFINE_WINDOWS
   WIN32_FIND_DATA findFileData;       /* Information sur les fichiers trouvés */
@@ -717,7 +717,7 @@ RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallB
 
   hFind = INVALID_HANDLE_VALUE;
 
-  if (!RtGetLongPath(lpPath, lpChild, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpPath, lpChild, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   /* TODO: Buffer overflow!? */
   lstrcat(lpChild, _R("\\*"));
 
@@ -753,7 +753,7 @@ RT_B RT_API RtBrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallB
 
         if (bRecursively)
         {
-          if (!RtBrowsePath(lpChild, lpCallBack, bRecursively, bChildrenFirst, lpContext)) goto handle_error;
+          if (!RtFileSystem_BrowsePath(lpChild, lpCallBack, bRecursively, bChildrenFirst, lpContext)) goto handle_error;
         }
 
         if (bChildrenFirst)
@@ -827,7 +827,7 @@ handle_error:
 
           if (bRecursively)
           {
-            if (!RtBrowsePath(lpChild, lpCallBack, bRecursively, bChildrenFirst, lpContext)) goto handle_error;
+            if (!RtFileSystem_BrowsePath(lpChild, lpCallBack, bRecursively, bChildrenFirst, lpContext)) goto handle_error;
           }
 
           if (bChildrenFirst)
@@ -863,7 +863,7 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
+RT_B RT_API RtFileSystem_CheckPath(RT_CHAR* lpPath, RT_UN unType)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -876,7 +876,7 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
 
 #ifdef RT_DEFINE_WINDOWS
 
-  if (!RtGetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten))
+  if (!RtFileSystem_GetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten))
   {
     bResult = RT_FAILURE;
   }
@@ -958,22 +958,22 @@ RT_B RT_API RtCheckPath(RT_CHAR* lpPath, RT_UN unType)
   return bResult;
 }
 
-RT_B RT_API RtCheckFile(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_CheckFile(RT_CHAR* lpPath)
 {
-  return RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_FILE);
+  return RtFileSystem_CheckPath(lpPath, RT_FILE_SYSTEM_TYPE_FILE);
 }
 
-RT_B RT_API RtCheckDirectory(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_CheckDirectory(RT_CHAR* lpPath)
 {
-  return RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_DIRECTORY);
+  return RtFileSystem_CheckPath(lpPath, RT_FILE_SYSTEM_TYPE_DIRECTORY);
 }
 
-RT_B RT_API RtCheckFileOrDirectory(RT_CHAR* lpPath)
+RT_B RT_API RtFileSystem_CheckFileOrDirectory(RT_CHAR* lpPath)
 {
-  return RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_FILE | RT_FILE_SYSTEM_TYPE_DIRECTORY);
+  return RtFileSystem_CheckPath(lpPath, RT_FILE_SYSTEM_TYPE_FILE | RT_FILE_SYSTEM_TYPE_DIRECTORY);
 }
 
-RT_B RT_API RtGetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFileSystem_GetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
 {
   RT_UN unLastSeparator;
   RT_UN unWritten;
@@ -981,9 +981,9 @@ RT_B RT_API RtGetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, 
 
   unWritten = 0;
 
-  unLastSeparator = RtGetLastSeparator(lpPath, unPathSize);
+  unLastSeparator = RtFileSystem_GetLastSeparator(lpPath, unPathSize);
   if (!RtChar_CopyString(&lpPath[unLastSeparator + 1], lpBuffer, unBufferSize, &unWritten)) goto handle_error;
-  RtRemoveTrailingSeparators(lpBuffer, unWritten, &unWritten);
+  RtFileSystem_RemoveTrailingSeparators(lpBuffer, unWritten, &unWritten);
 
   bResult = RT_SUCCESS;
   goto free_resources;
@@ -995,7 +995,7 @@ free_resources:
 }
 
 
-RT_B RT_CALL RtMoveOrRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePath, RT_B bRename)
+RT_B RT_CALL RtFileSystem_MoveOrRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePath, RT_B bRename)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongCurrentFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -1007,8 +1007,8 @@ RT_B RT_CALL RtMoveOrRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePa
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!RtGetLongPath(lpCurrentFilePath, lpLongCurrentFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
-  if (!RtGetLongPath(lpNewFilePath, lpLongNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpCurrentFilePath, lpLongCurrentFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpNewFilePath, lpLongNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   if (!MoveFileEx(lpCurrentFilePath, lpNewFilePath, MOVEFILE_COPY_ALLOWED | MOVEFILE_WRITE_THROUGH)) goto handle_error;
 #else /* NOT RT_DEFINE_WINDOWS */
 
@@ -1021,8 +1021,8 @@ RT_B RT_CALL RtMoveOrRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePa
       goto handle_error;
     }
     /* The rename call has failed, try another approach to move: copy then delete. */
-    if (!RtCopyFile(lpCurrentFilePath, lpNewFilePath)) goto handle_error;
-    if (!RtDeleteFile(lpCurrentFilePath)) goto handle_error;
+    if (!RtFileSystem_CopyFile(lpCurrentFilePath, lpNewFilePath)) goto handle_error;
+    if (!RtFileSystem_DeleteFile(lpCurrentFilePath)) goto handle_error;
   }
 #endif
 
@@ -1034,12 +1034,12 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtMoveFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePath)
+RT_B RT_API RtFileSystem_MoveFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePath)
 {
-  return RtMoveOrRenameFile(lpCurrentFilePath, lpNewFilePath, RT_FALSE);
+  return RtFileSystem_MoveOrRenameFile(lpCurrentFilePath, lpNewFilePath, RT_FALSE);
 }
 
-RT_B RT_API RtAppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFileSystem_AppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten)
 {
   RT_CHAR nLastChar;
   RT_B bResult;
@@ -1058,13 +1058,13 @@ RT_B RT_API RtAppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferS
   return bResult;
 }
 
-RT_B RT_API RtBuildPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtFileSystem_BuildPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_UN unWritten;
   RT_B bResult;
 
   unWritten = unParentPathSize;
-  if (!RtAppendSeparator(lpParentPath, unParentPathSize, unBufferSize, &unWritten)) goto handle_error;
+  if (!RtFileSystem_AppendSeparator(lpParentPath, unParentPathSize, unBufferSize, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(lpChildName, &lpParentPath[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
   *lpWritten += unWritten - unParentPathSize;
@@ -1080,14 +1080,14 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtBuildNewPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtFileSystem_BuildNewPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_UN unWritten;
   RT_B bResult;
 
   unWritten = 0;
   if (!RtChar_CopyStringWithSize(lpParentPath, unParentPathSize, lpBuffer, unBufferSize, &unWritten)) goto handle_error;
-  if (!RtAppendSeparator(lpBuffer, unParentPathSize, unBufferSize, &unWritten)) goto handle_error;
+  if (!RtFileSystem_AppendSeparator(lpBuffer, unParentPathSize, unBufferSize, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(lpChildName, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
   lpWritten += unWritten;
@@ -1103,17 +1103,17 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFileName)
+RT_B RT_API RtFileSystem_RenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFileName)
 {
   RT_CHAR lpNewFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtGetNewParentPath(lpCurrentFilePath, RtChar_GetStringSize(lpCurrentFilePath), lpNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
-  if (!RtAppendSeparator(lpNewFilePath, unWritten, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetNewParentPath(lpCurrentFilePath, RtChar_GetStringSize(lpCurrentFilePath), lpNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_AppendSeparator(lpNewFilePath, unWritten, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(lpNewFileName, &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtMoveOrRenameFile(lpCurrentFilePath, lpNewFilePath, RT_TRUE)) goto handle_error;
+  if (!RtFileSystem_MoveOrRenameFile(lpCurrentFilePath, lpNewFilePath, RT_TRUE)) goto handle_error;
 
   bResult = RT_SUCCESS;
   goto free_resources;
@@ -1123,12 +1123,12 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtDeleteFileIfExists(RT_CHAR* lpFilePath)
+RT_B RT_API RtFileSystem_DeleteFileIfExists(RT_CHAR* lpFilePath)
 {
   RT_B bResult;
 
   /* Attempt to delete the file then check the last error. */
-  if (!RtDeleteFile(lpFilePath))
+  if (!RtFileSystem_DeleteFile(lpFilePath))
   {
 #ifdef RT_DEFINE_WINDOWS
     if (GetLastError() != ERROR_FILE_NOT_FOUND) goto handle_error;
@@ -1146,7 +1146,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtDeleteFile(RT_CHAR* lpFilePath)
+RT_B RT_API RtFileSystem_DeleteFile(RT_CHAR* lpFilePath)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -1156,7 +1156,7 @@ RT_B RT_API RtDeleteFile(RT_CHAR* lpFilePath)
 
 #ifdef RT_DEFINE_WINDOWS
 
-  if (!RtGetLongPath(lpFilePath, lpLongFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpFilePath, lpLongFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   /* DeleteFile returns 0 and call SetLastError in case of error. */
   if (!DeleteFile(lpLongFilePath)) goto handle_error;

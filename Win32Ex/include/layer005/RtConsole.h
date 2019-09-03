@@ -36,7 +36,7 @@ void RT_API RtPauseConsole();
  * Wait for the user to press a key.
  *
  * <p>
- * Beware that if the user press a key like 'Ã©' and the console is in UTF-8, then two characters are actually entered: 0xC3 and 0xA9.<br>
+ * Beware that if the user press a key like 'é' and the console is in UTF-8, then two characters are actually entered: 0xC3 and 0xA9.<br>
  * The RtReadCharFromConsole will only return 0xC3 (195) and the other character will be discared.<br>
  * As a result this function is interresting to pause the execution and to retrieve ASCII characters only.
  * </p>

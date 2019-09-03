@@ -28,7 +28,7 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   bProcessCreated = RT_FALSE;
 
   unWritten = 0;
-  if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
   if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
@@ -45,7 +45,11 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   lpApplicationPathAndArgs[1] = _R("--read-line");
   lpApplicationPathAndArgs[2] = RT_NULL;
 
+#ifdef RT_DEFINE_WINDOWS
   RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
+#else
+  RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
+#endif
 
   if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpInput, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
@@ -83,7 +87,7 @@ free_resources:
   if (bDeleteTempFile)
   {
     bDeleteTempFile = RT_FALSE;
-    if (!RtDeleteFile(lpTempFile) && bResult) goto handle_error;
+    if (!RtFileSystem_DeleteFile(lpTempFile) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -112,7 +116,7 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   bDeleteTempFile = RT_FALSE;
 
   unWritten = 0;
-  if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
   if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
@@ -133,7 +137,11 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   lpApplicationPathAndArgs[11] = _R("b\\\"r");
   lpApplicationPathAndArgs[12] = RT_NULL;
 
+#ifdef RT_DEFINE_WINDOWS
   RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
+#else
+  RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
+#endif
 
   if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
@@ -171,7 +179,7 @@ free_resources:
   if (bDeleteTempFile)
   {
     bDeleteTempFile = RT_FALSE;
-    if (!RtDeleteFile(lpTempFile) && bResult) goto handle_error;
+    if (!RtFileSystem_DeleteFile(lpTempFile) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -201,7 +209,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   bDeleteTempFile = RT_FALSE;
 
   unWritten = 0;
-  if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
   if (!RtCreateTempFile(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
@@ -212,7 +220,11 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   lpApplicationPathAndArgs[1] = _R("--bad");
   lpApplicationPathAndArgs[2] = RT_NULL;
 
+#ifdef RT_DEFINE_WINDOWS
   RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
+#else
+  RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
+#endif
   if (!RtCreateProcessWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
@@ -220,7 +232,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   if (!RtGetProcessExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (!unExitCode) goto handle_error;
 
-  if (!RtGetFileSystemFileSize(lpTempFile, &unFileSize)) goto handle_error;
+  if (!RtFileSystem_GetFileSize(lpTempFile, &unFileSize)) goto handle_error;
   if (unFileSize < 10) goto handle_error;
 
   bResult = RT_SUCCESS;
@@ -238,7 +250,7 @@ free_resources:
   if (bDeleteTempFile)
   {
     bDeleteTempFile = RT_FALSE;
-    if (!RtDeleteFile(lpTempFile) && bResult) goto handle_error;
+    if (!RtFileSystem_DeleteFile(lpTempFile) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -272,7 +284,7 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   bProcessCreated = RT_FALSE;
 
   unWritten = 0;
-  if (!RtGetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   if (!RtPipe_Create(&zzPipe)) goto handle_error;
   lpInput = RtPipe_GetInput(&zzPipe);

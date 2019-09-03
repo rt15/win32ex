@@ -23,8 +23,8 @@ RT_B RT_API RtIoDevice_CreateFromStdInput(RT_IO_DEVICE* lpIoDevice)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_H hHandle;
-#endif
   RT_B bResult;
+#endif
 
 #ifdef RT_DEFINE_WINDOWS
   hHandle = GetStdHandle(STD_INPUT_HANDLE);
@@ -32,9 +32,6 @@ RT_B RT_API RtIoDevice_CreateFromStdInput(RT_IO_DEVICE* lpIoDevice)
   if (hHandle == INVALID_HANDLE_VALUE) goto handle_error;
 
   RtIoDevice_CreateFromHandle(lpIoDevice, hHandle);
-#else
-  RtIoDevice_CreateFromFileDescriptor(lpIoDevice, 0);
-#endif
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -43,14 +40,18 @@ free_resources:
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
+#else
+  RtIoDevice_CreateFromFileDescriptor(lpIoDevice, 0);
+  return RT_SUCCESS;
+#endif
 }
 
 RT_B RT_API RtIoDevice_CreateFromStdOutput(RT_IO_DEVICE* lpIoDevice)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_H hHandle;
-#endif
   RT_B bResult;
+#endif
 
 #ifdef RT_DEFINE_WINDOWS
   hHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -58,9 +59,6 @@ RT_B RT_API RtIoDevice_CreateFromStdOutput(RT_IO_DEVICE* lpIoDevice)
   if (hHandle == INVALID_HANDLE_VALUE) goto handle_error;
 
   RtIoDevice_CreateFromHandle(lpIoDevice, hHandle);
-#else
-  RtIoDevice_CreateFromFileDescriptor(lpIoDevice, 1);
-#endif
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -69,14 +67,18 @@ free_resources:
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
+#else
+  RtIoDevice_CreateFromFileDescriptor(lpIoDevice, 1);
+  return RT_SUCCESS;
+#endif
 }
 
 RT_B RT_API RtIoDevice_CreateFromStdError(RT_IO_DEVICE* lpIoDevice)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_H hHandle;
-#endif
   RT_B bResult;
+#endif
 
 #ifdef RT_DEFINE_WINDOWS
   hHandle = GetStdHandle(STD_ERROR_HANDLE);
@@ -84,9 +86,6 @@ RT_B RT_API RtIoDevice_CreateFromStdError(RT_IO_DEVICE* lpIoDevice)
   if (hHandle == INVALID_HANDLE_VALUE) goto handle_error;
 
   RtIoDevice_CreateFromHandle(lpIoDevice, hHandle);
-#else
-  RtIoDevice_CreateFromFileDescriptor(lpIoDevice, 2);
-#endif
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -95,6 +94,10 @@ free_resources:
 handle_error:
   bResult = RT_FAILURE;
   goto free_resources;
+#else
+  RtIoDevice_CreateFromFileDescriptor(lpIoDevice, 2);
+  return RT_SUCCESS;
+#endif
 }
 
 RT_INPUT_STREAM* RT_API RtIoDevice_GetInputStream(RT_IO_DEVICE* lpIoDevice)
@@ -226,7 +229,7 @@ RT_B RT_API RtIoDevice_SetInheritable(RT_IO_DEVICE* lpIoDevice, RT_B bInheritabl
   if (!RtIoDevice_IsInheritable(lpIoDevice, &bCurrentValue)) goto handle_error;
 
 #ifdef RT_DEFINE_LINUX
-  nFlags = fcntl(lpIoDevice->nFileDecriptor, F_GETFD, 0);
+  nFlags = fcntl(lpIoDevice->nFileDescriptor, F_GETFD, 0);
   if (nFlags == -1) goto handle_error;
 #endif
 

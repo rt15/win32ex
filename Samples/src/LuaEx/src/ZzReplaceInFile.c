@@ -26,7 +26,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   lpNewFileContent8 = RT_NULL;
 
   /* Check file path. */
-  if (!RtCheckPath(lpFilePath, RT_FILE_SYSTEM_TYPE_FILE)) goto handle_error;
+  if (!RtFileSystem_CheckPath(lpFilePath, RT_FILE_SYSTEM_TYPE_FILE)) goto handle_error;
 
   /* Read input file content. */
   unFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent8, lpHeap);

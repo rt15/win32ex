@@ -93,7 +93,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
         }
 
         /* Fill file info. */
-        RtGetFileName(lpPath, unPathSize, lpFileInfo->lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
+        RtFileSystem_GetFileName(lpPath, unPathSize, lpFileInfo->lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
         RetrieveOriginalDate(lpPath, lpFileInfo->lpOriginalDate);
       }
     }
@@ -130,7 +130,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 
   unResult = 1;
 
-  if (!RtCheckPath(lpPath, RT_FILE_SYSTEM_TYPE_DIRECTORY))
+  if (!RtFileSystem_CheckPath(lpPath, RT_FILE_SYSTEM_TYPE_DIRECTORY))
   {
     RtWriteLastErrorMessageVariadic(RT_NULL, lpPath, _R(" is not a directory: "), (RT_CHAR*)RT_NULL);
     goto the_end;
@@ -148,7 +148,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
     goto close_heap;
   }
 
-  if (!RtBrowsePath(lpPath, &BrowseProc, RT_FALSE, RT_FALSE, &lpFileInfos))
+  if (!RtFileSystem_BrowsePath(lpPath, &BrowseProc, RT_FALSE, RT_FALSE, &lpFileInfos))
   {
     unResult = 1;
     goto close_array;
@@ -194,7 +194,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
     RtChar_CopyString(RT_FILE_SYSTEM_SEPARATOR_STRING, &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
     RtChar_CopyString(lpNewFileName,                   &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
 
-    if (!RtMoveFile(lpOldFilePath, lpNewFilePath))
+    if (!RtFileSystem_MoveFile(lpOldFilePath, lpNewFilePath))
     {
       RtWriteLastErrorMessage(_R("Failed to rename file: "));
       goto close_array;

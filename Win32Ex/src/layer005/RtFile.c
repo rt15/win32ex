@@ -94,7 +94,7 @@ RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuff
 
   /* Little trick: use the buffer to store the temp directory. */
   unWritten = 0;
-  if (!RtGetTempDirectory(lpBuffer, unBufferSize, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetTempDirectory(lpBuffer, unBufferSize, &unWritten)) goto handle_error;
 
   if (!RtCreateTempFileWithParentPath(lpFile, lpPrefix, lpBuffer, unWritten, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
 
@@ -123,7 +123,7 @@ RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, R
   *lpWritten += RtChar_GetStringSize(lpBuffer);
 #else
   unWritten = unParentPathSize;
-  if (!RtBuildPath(lpParentPath, unParentPathSize, lpPrefix, unBufferSize, &unWritten)) goto handle_error;
+  if (!RtFileSystem_BuildPath(lpParentPath, unParentPathSize, lpPrefix, unBufferSize, &unWritten)) goto handle_error;
 
   /* The 6 last characters of mkstemp template must be "XXXXXX" and they will be replaced by mkstemp. */
   if (!RtChar_CopyStringWithSize(_R("XXXXXX"), 6, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;

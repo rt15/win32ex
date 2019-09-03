@@ -31,7 +31,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   lpNewFileContent = RT_NULL;
 
   /* Check file path. */
-  if (!RtCheckPath(lpFilePath, RT_FILE_SYSTEM_TYPE_FILE))
+  if (!RtFileSystem_CheckPath(lpFilePath, RT_FILE_SYSTEM_TYPE_FILE))
   {
     RtWriteLastErrorMessage(_R("Issue with input file: "));
     goto handle_error;

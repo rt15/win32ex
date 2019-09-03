@@ -72,7 +72,7 @@ RT_B RT_CALL ZzMisc()
   /* Executable path. */
   unWritten = 0;
   if (!RtChar_CopyString(_R("Executable path = "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtGetExecutableFilePath(                &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(                &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(_R("\n"),                  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
 
   if (!RtWriteStringToConsoleWithSize(lpMessage, unWritten)) goto handle_error;
@@ -87,14 +87,14 @@ RT_B RT_CALL ZzMisc()
   /* Temporary directory. */
   unWritten = 0;
   if (!RtChar_CopyString(_R("Temp directory = "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtGetTempDirectory(                    &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetTempDirectory(                    &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(_R("\n"),                 &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
 
   if (!RtWriteStringToConsoleWithSize(lpMessage, unWritten)) goto handle_error;
 
   /* Application configuration directory. */
   unWritten = 0;
-  if (!RtGetApplicationDataDirectory(_R("Tests"), lpMessage, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetApplicationDataDirectory(_R("Tests"), lpMessage, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
   if (!RtWriteStringsOrErrorsToConsole(RT_TRUE, _R("App config dir = "), lpMessage, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* OS version. */

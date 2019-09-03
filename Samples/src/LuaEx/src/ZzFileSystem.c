@@ -17,7 +17,7 @@ void RT_STDCALL ZzCheckPath(lua_State* lpLuaState, RT_UN unType)
   unWritten = RtEncoding_DecodeWithBuffer(lpPath8, -1, 0, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH);
   if (unWritten == -1) goto handle_error;
 
-  if (!RtCheckPath(lpPath, unType)) goto handle_error;
+  if (!RtFileSystem_CheckPath(lpPath, unType)) goto handle_error;
 
   lua_pushboolean(lpLuaState, 1);
 free_resources:
