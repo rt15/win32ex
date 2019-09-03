@@ -28,36 +28,36 @@ RT_LIST_HEADER;
  * @param unItemSize Size of an item.
  * @param unChunkSize Maximum items count in a chunk.
  */
-void* RT_API RtCreateList(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_UN unChunkSize);
+void* RT_API RtList_Create(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_UN unChunkSize);
 
 /**
  * @return Total items count in the list.
  */
-RT_UN RT_API RtGetListSize(void* lpList);
+RT_UN RT_API RtList_GetSize(void* lpList);
 
-void* RT_API RtGetListItem(void* lpList, RT_UN unItemIndex, void** lpItem);
+void* RT_API RtList_GetItem(void* lpList, RT_UN unItemIndex, void** lpItem);
 
-void* RT_API RtSetListSize(void** lpList, RT_UN unSize);
+void* RT_API RtList_SetSize(void** lpList, RT_UN unSize);
 
 /**
  * This function moves the last item if it is not the item to delete.
  * As a result, indexes on the list items might become invalid.
  */
-void* RT_API RtDeleteListItemIndex(void** lpList, RT_UN unItemIndex);
+void* RT_API RtList_DeleteItemIndex(void** lpList, RT_UN unItemIndex);
 
-void* RT_API RtNewListItem(void** lpList, void** lpItem);
+void* RT_API RtList_NewItem(void** lpList, void** lpItem);
 
 /**
  *
  * @return RT_TYPE_MAX_UN in case of failure.
  */
-RT_UN RT_API RtNewListItemIndex(void** lpList, RT_UN* lpItemIndex);
+RT_UN RT_API RtList_NewItemIndex(void** lpList, RT_UN* lpItemIndex);
 
 /**
  * <p>
  * Set the list to RT_NULL.
  * </p>
  */
-RT_B RT_API RtFreeList(void** lpList);
+RT_B RT_API RtList_Free(void** lpList);
 
 #endif /* RT_LIST_H */

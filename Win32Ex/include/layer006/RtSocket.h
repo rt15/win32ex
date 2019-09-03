@@ -84,7 +84,7 @@ typedef struct _RT_SOCKET_ADDRESS_IPV6 {
 RT_SOCKET_ADDRESS_IPV6;
 
 /* Socket address family (AF_APPLETALK and AF_IPX are the only supported by Windows and Linux). */
-/* Used as <tt>unAddressFamily</tt> parameter of <tt>RtCreateSocket</tt>. */
+/* Used as <tt>unAddressFamily</tt> parameter of <tt>RtSocket_Create</tt>. */
 /* Values are correct on both Windows and Linux using macros. */
 /* IP v4. */
 #define RT_SOCKET_ADDRESS_FAMILY_IPV4 2
@@ -96,7 +96,7 @@ RT_SOCKET_ADDRESS_IPV6;
 #endif
 
 /* Transport protocol layer type, mostly tcp/udp. */
-/* Used as <tt>unType</tt> parameter of <tt>RtCreateSocket</tt>. */
+/* Used as <tt>unType</tt> parameter of <tt>RtSocket_Create</tt>. */
 /* Values are correct on both Windows and Linux. */
 /* Mostly TCP. */
 #define RT_SOCKET_TYPE_STREAM 1
@@ -107,7 +107,7 @@ RT_SOCKET_ADDRESS_IPV6;
 #define RT_SOCKET_TYPE_SEQPACKET 5
 
 /* Allows to precise protocol. */
-/* Used as optional <tt>unType</tt> parameter of <tt>RtCreateSocket</tt>. */
+/* Used as optional <tt>unType</tt> parameter of <tt>RtSocket_Create</tt>. */
 /* Values are correct on both Windows and Linux (Except for RT_SOCKET_PROTOCOL_SOCKET). */
 /* Dummy protocol for TCP.             */
 #define RT_SOCKET_PROTOCOL_IP 0
@@ -143,10 +143,10 @@ RT_SOCKET_ADDRESS_IPV6;
 #define RT_SOCKET_PROTOCOL_NONE 59
 /* IPv6 Destination options.           */
 #define RT_SOCKET_PROTOCOL_DSTOPTS 60
-/* Classical socket protocol level (SOL_SOCKET) used only for RtSetSocketBooleanOption/RtSetSocketOption. */
+/* Classical socket protocol level (SOL_SOCKET) used only for RtSocket_SetBooleanOption/RtSocket_SetOption. */
 #define RT_SOCKET_PROTOCOL_SOCKET 65535
 
-/* Boolean socket option used in RtSetSocketBooleanOption/RtSetSocketOption. */
+/* Boolean socket option used in RtSocket_SetBooleanOption/RtSocket_SetOption. */
 /* Values are correct on Windows only. */
 /* Allows the socket to be bound to an address that is already in use. Can be use to quickly reuse a port in TIME_WAIT state. */
 #define RT_SOCKET_OPTION_REUSEADDR 4
@@ -162,7 +162,7 @@ RT_SOCKET_ADDRESS_IPV6;
 /* Do not complete until buffer is completely filled or remote socket is closed. When receiving data only. */
 #define RT_SOCKET_MESSAGE_WAIT_ALL 8
 
-/* RtShutdownSocket flags. */
+/* RtSocket_Shutdown flags. */
 /* Values are correct on both Windows and Linux. */
 /* Shutdown receive operations. */
 #define RT_SOCKET_SHUTDOWN_RECEIVE 0
@@ -176,12 +176,12 @@ RT_SOCKET_ADDRESS_IPV6;
  * Call WSAStartup under Windows and does nothing under unix.
  *
  * <p>
- * Call RtCleanUpSockets after a successful call to RtInitializeSockets when you finished using socket functions.
+ * Call RtSocket_CleanUp after a successful call to RtSocket_Initialize when you finished using socket functions.
  * </p>
  *
  * @return RT_FALSE and set last error in case of issue.
  */
-RT_B RT_API RtInitializeSockets();
+RT_B RT_API RtSocket_Initialize();
 
 /**
  * Create a socket.
@@ -203,7 +203,7 @@ RT_B RT_API RtInitializeSockets();
  * @param bInheritable Whether the socket could be used in a child process. Beware of handles/file descriptors leaks.
  * @param unProtocol Often zero but can be a RT_SOCKET_PROTOCOL_XXX value.
  */
-RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bInheritable);
+RT_B RT_API RtSocket_Create(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unType, RT_UN unProtocol, RT_B bBlocking, RT_B bInheritable);
 
 /**
  * Set a socket boolean option.
@@ -212,13 +212,13 @@ RT_B RT_API RtCreateSocket(RT_SOCKET* lpSocket, RT_UN unAddressFamily, RT_UN unT
  * @param unOption The option to set like RT_SOCKET_OPTION_REUSEADDR.
  * @param bValue The value to set.
  */
-RT_B RT_API RtSetSocketBooleanOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, RT_B bValue);
+RT_B RT_API RtSocket_SetBooleanOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, RT_B bValue);
 
 /**
  * Set a socket option.
  *
  * <p>
- * For boolean values, <tt>RtSetSocketBooleanOption</tt> is a bit simpler to use.
+ * For boolean values, <tt>RtSocket_SetBooleanOption</tt> is a bit simpler to use.
  * </p>
  *
  * @param unProtocolLevel Level of the option of the protocol. A classical value is RT_SOCKET_PROTOCOL_SOCKET.
@@ -226,76 +226,76 @@ RT_B RT_API RtSetSocketBooleanOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel,
  * @param lpValue Pointer to the new option value.
  * @param unValueSize Size of the value pointed by <tt>lpValue</tt>.
  */
-RT_B RT_API RtSetSocketOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, void* lpValue, RT_UN unValueSize);
+RT_B RT_API RtSocket_SetOption(RT_SOCKET* lpSocket, RT_UN unProtocolLevel, RT_UN unOption, void* lpValue, RT_UN unValueSize);
 
-void RT_API RtCreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress);
+void RT_API RtSocket_CreateIpv4LoopbackAddress(RT_ADDRESS_IPV4* lpAddress);
 
-void RT_API RtCreateIpv4SocketAddress(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN unPort);
+void RT_API RtSocket_CreateIpv4Address(RT_SOCKET_ADDRESS_IPV4* lpSocketAddress, RT_ADDRESS_IPV4* lpAddress, RT_UN unPort);
 
-RT_B RT_API RtConnectSocket(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPort);
+RT_B RT_API RtSocket_Connect(RT_SOCKET* lpSocket, RT_CHAR* lpHostName, RT_UN unPort);
 
 /**
  * <p>
  * In the case of a non-blocking socket, most of the time <tt>RT_FAILURE</tt> is returned.<br>
  * You then have to use <tt>RtError_WouldBlock</tt> to determine if the error is a failure or if the connection is in progress.<br>
- * You can use <tt>RtWaitForNonBlockingSocketConnection</tt> to wait for the connection to be writable.
+ * You can use <tt>RtSocket_WaitForNonBlockingConnection</tt> to wait for the connection to be writable.
  * </p>
  */
-RT_B RT_API RtConnectSocketWithAddress(RT_SOCKET* lpSocket, RT_SOCKET_ADDRESS* lpSocketAddress);
+RT_B RT_API RtSocket_ConnectWithAddress(RT_SOCKET* lpSocket, RT_SOCKET_ADDRESS* lpSocketAddress);
 
 /**
- * Can be used after <tt>RtConnectSocketWithAddress</tt> in the case of a non-blocking socket.
+ * Can be used after <tt>RtSocket_ConnectWithAddress</tt> in the case of a non-blocking socket.
  */
-RT_B RT_API RtWaitForNonBlockingSocketConnection(RT_SOCKET* lpSocket);
+RT_B RT_API RtSocket_WaitForNonBlockingConnection(RT_SOCKET* lpSocket);
 
-RT_B RT_API RtBindSocket(RT_SOCKET* lpSocket, RT_UN unPort);
+RT_B RT_API RtSocket_Bind(RT_SOCKET* lpSocket, RT_UN unPort);
 
-RT_B RT_API RtListenFromSocket(RT_SOCKET* lpSocket);
+RT_B RT_API RtSocket_Listen(RT_SOCKET* lpSocket);
 
 /**
  * @param nBacklog Defined as int on both Windows and Linux.
  */
-RT_B RT_API RtListenFromSocketWithBackLog(RT_SOCKET* lpSocket, RT_N32 nBacklog);
+RT_B RT_API RtSocket_ListenWithBackLog(RT_SOCKET* lpSocket, RT_N32 nBacklog);
 
 /**
  * @param lpSocketAddress If not null, will be returned with the address of the connecting entity.
  */
-RT_B RT_API RtAcceptSocketConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedSocket, RT_SOCKET_ADDRESS* lpSocketAddress);
+RT_B RT_API RtSocket_AcceptConnection(RT_SOCKET* lpSocket, RT_SOCKET* lpAcceptedSocket, RT_SOCKET_ADDRESS* lpSocketAddress);
 
 /**
  *
  * @param nFlags Combination of RT_SOCKET_MESSAGE_XXXX flags.
  * @return Number of bytes sent, RT_TYPE_MAX_UN in case of issue.
  */
-RT_UN RT_API RtSendThroughSocket(RT_SOCKET* lpSocket, void* lpData, RT_UN unDataSize, RT_UN unFlags);
+RT_UN RT_API RtSocket_Send(RT_SOCKET* lpSocket, void* lpData, RT_UN unDataSize, RT_UN unFlags);
 
 /**
  *
  * @param unFlags Combination of RT_SOCKET_MESSAGE_XXXX flags. RT_SOCKET_MESSAGE_WAIT_ALL is a classical one.
  * @return Number of bytes received, RT_TYPE_MAX_UN in case of issue.
  */
-RT_UN RT_API RtReceiveFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize, RT_UN unFlags);
+RT_UN RT_API RtSocket_Receive(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize, RT_UN unFlags);
 
 /**
- * RtReceiveFromSocket can receive incomplete response and RT_SOCKET_MESSAGE_WAIT_ALL can be blocking if the remote host does not close the connection.<br>
+ * RtSocket_Receive can receive incomplete response and RT_SOCKET_MESSAGE_WAIT_ALL can be blocking if the remote host does not close the connection.<br>
  * This function is a workaround for this.<br>
  * It ensures that either the buffer is full either the connection is closed.
  */
-RT_UN RT_API RtReceiveAllFromSocket(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize);
+RT_UN RT_API RtSocket_ReceiveAll(RT_SOCKET* lpSocket, void* lpBuffer, RT_UN unBufferSize);
 
 /**
  * @param unFlags One of RT_SOCKET_SHUTDOWN_XXXX, mostly RT_SOCKET_SHUTDOWN_BOTH.
  */
-RT_B RT_API RtShutdownSocket(RT_SOCKET* lpSocket, RT_UN unFlag);
+RT_B RT_API RtSocket_Shutdown(RT_SOCKET* lpSocket, RT_UN unFlag);
 
-RT_B RT_API RtFreeSocket(RT_SOCKET* lpSocket);
+RT_B RT_API RtSocket_Free(RT_SOCKET* lpSocket);
 
 /**
- * Must be called after a successful call to RtInitializeSockets and after all socket functions calls.
+ * Must be called after a successful call to RtSocket_Initialize and after all socket functions calls.
  * Call WSACleanup under Windows and does nothing under unix.
  *
  * @return RT_FALSE and set last error in case of issue.
  */
-RT_B RT_API RtCleanUpSockets();
+RT_B RT_API RtSocket_CleanUp();
 
 #endif /* RT_SOCKET_H */

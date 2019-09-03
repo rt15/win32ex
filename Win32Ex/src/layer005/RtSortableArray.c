@@ -4,7 +4,7 @@
 #include "layer002/RtBinarySearch.h"
 #include "layer002/RtQuickSort.h"
 
-void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext)
+void* RT_API RtSortableArray_Create(void** lpSortableArray, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_COMPARISON_CALLBACK lpComparisonCallback, void* lpContext)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
 
@@ -19,7 +19,7 @@ void* RT_API RtCreateSortableArray(void** lpSortableArray, RT_HEAP** lpHeap, RT_
   return *lpSortableArray;
 }
 
-RT_UN RT_API RtAddItemToSortableArray(void** lpSortableArray, void* lpNewItem)
+RT_UN RT_API RtSortableArray_AddItem(void** lpSortableArray, void* lpNewItem)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
   RT_UN unSize;
@@ -77,7 +77,7 @@ the_end:
   return unResult;
 }
 
-void* RT_API RtDeleteSortableArrayItemIndex(void** lpSortableArray, RT_UN unItemIndex)
+void* RT_API RtSortableArray_DeleteItemIndex(void** lpSortableArray, RT_UN unItemIndex)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
   RT_UN unSize;
@@ -106,7 +106,7 @@ void* RT_API RtDeleteSortableArrayItemIndex(void** lpSortableArray, RT_UN unItem
   return *lpSortableArray;
 }
 
-RT_B RT_API RtSortSortableArray(void* lpSortableArray)
+RT_B RT_API RtSortableArray_Sort(void* lpSortableArray)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
   RT_B bResult;
@@ -130,7 +130,7 @@ RT_B RT_API RtSortSortableArray(void* lpSortableArray)
   return bResult;
 }
 
-RT_B RT_API RtUnsortSortableArray(void* lpSortableArray)
+RT_B RT_API RtSortableArray_Unsort(void* lpSortableArray)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
 
@@ -142,7 +142,7 @@ RT_B RT_API RtUnsortSortableArray(void* lpSortableArray)
   return RT_TRUE;
 }
 
-RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, RT_UN* lpItemIndex)
+RT_B RT_API RtSortableArray_SearchItemIndex(void* lpSortableArray, void* lpItem, RT_UN* lpItemIndex)
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
   RT_B bResult;
@@ -152,7 +152,7 @@ RT_B RT_API RtSearchSortableArrayItemIndex(void* lpSortableArray, void* lpItem, 
 
   if (!lpHeader->bSorted)
   {
-    if (!RtSortSortableArray(lpSortableArray)) goto handle_error;
+    if (!RtSortableArray_Sort(lpSortableArray)) goto handle_error;
   }
 
   if (!RtBinarySearch_SearchIndex(lpSortableArray, lpItem, lpHeader->rtArrayHeader.unSize, lpHeader->rtArrayHeader.unItemSize, lpHeader->lpComparisonCallback, lpHeader->lpContext, lpItemIndex)) goto handle_error;

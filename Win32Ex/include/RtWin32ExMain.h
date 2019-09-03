@@ -48,21 +48,21 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[]);
 /**
  * Should not be use outside this file.
  */
-void RT_API RtMainExitProcess(RT_UN32 unResult);
+void RT_API RtMain_ExitProcess(RT_UN32 unResult);
 
 /**
  * Should not be use outside this file.
  */
-void RT_API RtMainLocalFree(RT_CHAR** lpArgV);
+void RT_API RtMain_LocalFree(RT_CHAR** lpArgV);
 
 /**
  * Should not be use outside this file.
  */
-RT_CHAR** RT_API RtMainCommandLineToArgvW(RT_N32* lpArgC);
+RT_CHAR** RT_API RtMain_CommandLineToArgvW(RT_N32* lpArgC);
 
 #else /* NOT RT_DEFINE_WINDOWS */
 
-void RT_API RtSetLocale();
+void RT_API RtMain_SetLocale();
 
 #endif
 
@@ -82,13 +82,13 @@ int RT_CDECL mainCRTStartup()
   RT_N32 nArgC;
   RT_UN32 unResult;
 
-  lpArgV = RtMainCommandLineToArgvW(&nArgC);
+  lpArgV = RtMain_CommandLineToArgvW(&nArgC);
   unResult = RtMain(nArgC, lpArgV);
-  RtMainLocalFree(lpArgV);
+  RtMain_LocalFree(lpArgV);
 
 #ifndef RT_DEFINE_USE_CRT
   /* It is safer to call ExitProcess instead of simply returning from the entry point (There might be other threads). */
-  RtMainExitProcess(unResult);
+  RtMain_ExitProcess(unResult);
 #endif
   /* Let CRT clean up. */
   return unResult;
@@ -97,7 +97,7 @@ int RT_CDECL mainCRTStartup()
 int RT_CDECL main(int argc, char* argv[])
 {
   /* Default locale is "C". This call will align locale with system locale. */
-  RtSetLocale();
+  RtMain_SetLocale();
   return RtMain(argc, argv);
 }
 #endif

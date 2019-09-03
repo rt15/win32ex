@@ -38,11 +38,11 @@ RT_LINKED_LIST_HEADER;
 /**
  * @param unSize The initial capacity of the linked list.
  */
-void* RT_API RtCreateLinkedList(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize);
+void* RT_API RtLinkedList_Create(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize);
 
 /**
  * @return The index of the newly created item, RT_TYPE_MAX_UN in case of error.
  */
-RT_UN RT_API RtNewLinkedListItemIndex(void** lpLinkedList, RT_UN* lpItemIndex);
+RT_UN RT_API RtLinkedList_NewItemIndex(void** lpLinkedList, RT_UN* lpItemIndex);
 
 #endif /* RT_LINKED_LIST_H */

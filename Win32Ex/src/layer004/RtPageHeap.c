@@ -11,7 +11,7 @@ RT_B RT_API RtPageHeapClose(void* lpThis);
 
 RT_HEAP rtPageHeap = {&RtPageHeapAlloc, &RtPageHeapReAlloc, &RtPageHeapFree, &RtPageHeapClose};
 
-void* RT_API RtPageHeapCreate(RtPageHeap* lpThis)
+void* RT_API RtPageHeap_Create(RtPageHeap* lpThis)
 {
   /* Nothing to do. */
   return lpThis;
@@ -19,20 +19,20 @@ void* RT_API RtPageHeapCreate(RtPageHeap* lpThis)
 
 void* RT_API RtPageHeapAlloc(void* lpThis, void** lpArea, RT_UN unSize, RT_CHAR* lpName)
 {
-  return RtAllocPage(lpArea, unSize);
+  return RtPageHeap_Alloc(lpArea, unSize);
 }
 
 void* RT_API RtPageHeapReAlloc(void* lpThis, void** lpArea, RT_UN unSize)
 {
-  return RtReAllocPage(lpArea, unSize);
+  return RtPageHeap_ReAlloc(lpArea, unSize);
 }
 
 RT_B RT_API RtPageHeapFree(void* lpThis, void** lpArea)
 {
-  return RtFreePage(lpArea);
+  return RtPageHeap_Free(lpArea);
 }
 
-void* RT_API RtAllocPage(void** lpArea, RT_UN unSize)
+void* RT_API RtPageHeap_Alloc(void** lpArea, RT_UN unSize)
 {
   RT_UN* lpAreaInfo;
 
@@ -49,7 +49,7 @@ void* RT_API RtAllocPage(void** lpArea, RT_UN unSize)
 /**
  * TODO: Use RtVirtualMemory_GetPageSize to alloc/free and copy only if the page count is changing.
  */
-void* RT_API RtReAllocPage(void** lpArea, RT_UN unSize)
+void* RT_API RtPageHeap_ReAlloc(void** lpArea, RT_UN unSize)
 {
   RT_UN* lpAreaInfo;
   RT_UN unContentSize;
@@ -61,7 +61,7 @@ void* RT_API RtReAllocPage(void** lpArea, RT_UN unSize)
   unContentSize = lpAreaInfo[0];
 
   /* Allocate a new area and copy. */
-  if (RtAllocPage(&lpResult, unSize))
+  if (RtPageHeap_Alloc(&lpResult, unSize))
   {
     /* Copy the smallest between new size and initial size. */
     if (unSize < unContentSize)
@@ -71,7 +71,7 @@ void* RT_API RtReAllocPage(void** lpArea, RT_UN unSize)
     RT_MEMORY_COPY(*lpArea, lpResult, unContentSize);
 
     /* Free current area only in case of success to let callee cleanup content if needed. */
-    RtFreePage(lpArea);
+    RtPageHeap_Free(lpArea);
 
     *lpArea = lpResult;
   }
@@ -79,7 +79,7 @@ void* RT_API RtReAllocPage(void** lpArea, RT_UN unSize)
   return lpResult;
 }
 
-RT_B RT_API RtFreePage(void** lpArea)
+RT_B RT_API RtPageHeap_Free(void** lpArea)
 {
   RT_UN* lpAreaInfo;
   RT_B bResult;

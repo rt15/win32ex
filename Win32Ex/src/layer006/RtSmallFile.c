@@ -3,17 +3,17 @@
 #include "layer002/RtError.h"
 #include "layer005/RtFile.h"
 
-RT_UN RT_API RtReadFromSmallFile(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtSmallFile_Read(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
 {
   void* lpHeapBuffer;
   RT_UN unHeapBufferSize;
 
   lpHeapBuffer = RT_NULL;
   unHeapBufferSize = 0;
-  return RtReadFromSmallFileWithBuffer(lpFilePath, RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, lpOutput, lpHeap);
+  return RtSmallFile_ReadWithBuffer(lpFilePath, RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, lpOutput, lpHeap);
 }
 
-RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
+RT_UN RT_API RtSmallFile_ReadWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
 {
   RT_FILE rtFile;
   RT_B bFreeFile;
@@ -22,18 +22,18 @@ RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuff
 
   bFreeFile = RT_FALSE;
 
-  if (!RtCreateFile(&rtFile, lpFilePath, RT_FILE_MODE_READ)) goto handle_error;
+  if (!RtFile_Create(&rtFile, lpFilePath, RT_FILE_MODE_READ)) goto handle_error;
   bFreeFile = RT_TRUE;
 
   /* Retrieve the size of the file. */
-  unResult = RtGetFileSize(&rtFile);
+  unResult = RtFile_GetSize(&rtFile);
   if (unResult == RT_TYPE_MAX_UN) goto handle_error;
 
   /* Allocate a space of size of file + 1 for trailing zero. */
   if (!RtHeap_AllocIfNeeded(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unResult + 1, _R("File buffer"), lpHeap)) goto handle_error;
 
   /* Write file content into buffer. */
-  if (!RtReadFromFile(&rtFile, *lpOutput, unResult, &unBytesRead)) goto handle_error;
+  if (!RtFile_Read(&rtFile, *lpOutput, unResult, &unBytesRead)) goto handle_error;
 
   /* We know the size of the file so we should be able to read it completely. */
   if (unResult != unBytesRead)
@@ -53,13 +53,13 @@ free_resources:
   if (bFreeFile)
   {
     bFreeFile = RT_FALSE;
-    if (!RtFreeFile(&rtFile) && unResult != RT_TYPE_MAX_UN) goto handle_error;
+    if (!RtFile_Free(&rtFile) && unResult != RT_TYPE_MAX_UN) goto handle_error;
     bFreeFile = RT_FALSE;
   }
   return unResult;
 }
 
-RT_B RT_API RtWriteToSmallFile(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpFilePath, RT_UN unMode)
+RT_B RT_API RtSmallFile_Write(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpFilePath, RT_UN unMode)
 {
   RT_FILE rtFile;
   RT_B bFileOpen;
@@ -84,21 +84,21 @@ RT_B RT_API RtWriteToSmallFile(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpF
       goto handle_error;
   }
 
-  if (!RtCreateFile(&rtFile, lpFilePath, unFileMode)) goto handle_error;
+  if (!RtFile_Create(&rtFile, lpFilePath, unFileMode)) goto handle_error;
   bFileOpen = RT_TRUE;
 
   if (unFileMode == RT_SMALL_FILE_MODE_APPEND)
   {
-    if (!RtSetFilePointer(&rtFile, 0, RT_FILE_POS_END)) goto handle_error;
+    if (!RtFile_SetPointer(&rtFile, 0, RT_FILE_POS_END)) goto handle_error;
   }
-  if (!RtWriteToFile(&rtFile, lpInput, unDataSize)) goto handle_error;
+  if (!RtFile_Write(&rtFile, lpInput, unDataSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bFileOpen)
   {
     bFileOpen = RT_FALSE;
-    if (!RtFreeFile(&rtFile) && bResult) goto handle_error;
+    if (!RtFile_Free(&rtFile) && bResult) goto handle_error;
   }
   return bResult;
 

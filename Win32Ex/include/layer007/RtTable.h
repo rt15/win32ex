@@ -20,23 +20,23 @@ typedef struct _RT_TABLE
 }
 RT_TABLE;
 
-RT_B RT_API RtCreateTable(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata, RT_HEAP** lpHeap);
+RT_B RT_API RtTable_Create(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata, RT_HEAP** lpHeap);
 
 
-void* RT_API RtAcquireTableItem(RT_TABLE* lpTable, void** lpItems);
+void* RT_API RtTable_AcquireItem(RT_TABLE* lpTable, void** lpItems);
 
 /**
  * When an item has been added in the data array, it often must be then indexed.
  */
-RT_B RT_API RtIndexNewTableItem(RT_TABLE* lpTable);
+RT_B RT_API RtTable_IndexNewItem(RT_TABLE* lpTable);
 
-void RT_API RtIndexUpdatedTableItem(RT_TABLE* lpTable, RT_UN unItemIndex, RT_UN unIndex);
+void RT_API RtTable_IndexUpdatedItem(RT_TABLE* lpTable, RT_UN unItemIndex, RT_UN unIndex);
 
 /**
  * Delete an item from the data table and remove indexes entries.
  */
-RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN unItemIndex);
+RT_B RT_API RtTable_DeleteItem(RT_TABLE* lpTable, RT_UN unItemIndex);
 
-RT_B RT_API RtFreeTable(RT_TABLE* lpTable);
+RT_B RT_API RtTable_Free(RT_TABLE* lpTable);
 
 #endif /* RT_TABLE_H */

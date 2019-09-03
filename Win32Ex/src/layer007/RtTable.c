@@ -4,7 +4,7 @@
 #include "layer004/RtArray.h"
 #include "layer005/RtSortableArray.h"
 
-RT_B RT_API RtCreateTable(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata, RT_HEAP** lpHeap)
+RT_B RT_API RtTable_Create(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata, RT_HEAP** lpHeap)
 {
   RT_UN unTableIndexesCount;
   RT_UN unI;
@@ -38,7 +38,7 @@ RT_B RT_API RtCreateTable(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata,
     /* Create table indexes. */
     for (unI = 0; unI < unTableIndexesCount; unI++)
     {
-      if (!RtCreateSortableArray((void**)&lpTable->lpTableIndexes[unI].lpIndexes, lpHeap, 0, sizeof(RT_UN), lpTableMetadata->lpComparisonCallbacks[unI], lpTable))
+      if (!RtSortableArray_Create((void**)&lpTable->lpTableIndexes[unI].lpIndexes, lpHeap, 0, sizeof(RT_UN), lpTableMetadata->lpComparisonCallbacks[unI], lpTable))
       {
         goto cleanup_table_indexes;
       }
@@ -60,7 +60,7 @@ the_end:
   return bResult;
 }
 
-RT_B RT_API RtIndexNewTableItem(RT_TABLE* lpTable)
+RT_B RT_API RtTable_IndexNewItem(RT_TABLE* lpTable)
 {
   RT_UN unTableIndexesCount;
   RT_TABLE_INDEX* lpTableIndex;
@@ -90,7 +90,7 @@ RT_B RT_API RtIndexNewTableItem(RT_TABLE* lpTable)
     if (lpTableIndex->bEnabled)
     {
       /* Add the new item index to the table index and retrieve insertion point. */
-      unInsertionIndex = RtAddItemToSortableArray((void**)&lpTableIndex->lpIndexes, &unNewItemIndex);
+      unInsertionIndex = RtSortableArray_AddItem((void**)&lpTableIndex->lpIndexes, &unNewItemIndex);
       if (unInsertionIndex == RT_TYPE_MAX_UN)
       {
         bResult = RT_FAILURE;
@@ -117,7 +117,7 @@ the_end:
   return bResult;
 }
 
-RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN unItemIndex)
+RT_B RT_API RtTable_DeleteItem(RT_TABLE* lpTable, RT_UN unItemIndex)
 {
   RT_UN unSize;
   RT_UN unItemSize;
@@ -143,7 +143,7 @@ RT_B RT_API RtDeleteTableItem(RT_TABLE* lpTable, RT_UN unItemIndex)
       lpIndexReference = (RT_UN*)(((RT_UCHAR8*)lpTable->lpTableData) + unItemIndex * unItemSize + unItemUserDataSize + unI * sizeof (RT_UN));
       unIndexInTableIndex = *lpIndexReference;
 
-      if (!RtDeleteSortableArrayItemIndex((void**)&lpTableIndex->lpIndexes, unIndexInTableIndex))
+      if (!RtSortableArray_DeleteItemIndex((void**)&lpTableIndex->lpIndexes, unIndexInTableIndex))
       {
         bResult = RT_FAILURE;
         goto the_end;
@@ -179,7 +179,7 @@ the_end:
   return bResult;
 }
 
-RT_B RT_API RtFreeTable(RT_TABLE* lpTable)
+RT_B RT_API RtTable_Free(RT_TABLE* lpTable)
 {
   RT_UN unTableIndexesCount;
   RT_UN unI;

@@ -6,7 +6,7 @@
 #include "layer005/RtSortableArray.h"
 #include "layer006/RtSmallFile.h"
 
-RT_B RT_CALL RtGetPropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries, RT_CHAR* lpData)
+RT_B RT_CALL RtProperties_GetEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries, RT_CHAR* lpData)
 {
   RT_PROPERTY_ENTRY* lpPropertyEntry;
   RT_CHAR* lpKey;
@@ -129,23 +129,23 @@ RT_B RT_CALL RtGetPropertiesEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries, RT_
       break;
   }
 
-  bResult = RtSortSortableArray(*lpPropertiesEntries);
+  bResult = RtSortableArray_Sort(*lpPropertiesEntries);
 the_end:
   return bResult;
 }
 
-RT_B RT_CALL RtCreatePropertiesFromString(RT_PROPERTIES* lpProperties, RT_CHAR* lpData, RT_HEAP** lpHeap)
+RT_B RT_CALL RtProperties_CreateFromString(RT_PROPERTIES* lpProperties, RT_CHAR* lpData, RT_HEAP** lpHeap)
 {
   RT_PROPERTY_ENTRY* lpPropertiesEntries;
   RT_B bResult;
 
-  if (!RtCreateSortableArray((void**)&lpPropertiesEntries, lpHeap, 0, sizeof(RT_PROPERTY_ENTRY), &RtComparison_DefaultCallback, RT_NULL))
+  if (!RtSortableArray_Create((void**)&lpPropertiesEntries, lpHeap, 0, sizeof(RT_PROPERTY_ENTRY), &RtComparison_DefaultCallback, RT_NULL))
   {
     bResult = RT_FAILURE;
     goto the_end;
   }
 
-  if (RtGetPropertiesEntries(&lpPropertiesEntries, lpData))
+  if (RtProperties_GetEntries(&lpPropertiesEntries, lpData))
   {
     /* Fill the structure. */
     lpProperties->lpPropertiesEntries = lpPropertiesEntries;
@@ -163,7 +163,7 @@ the_end:
   return bResult;
 }
 
-RT_B RT_CALL RtCreatePropertiesFromBuffer(RT_PROPERTIES* lpProperties, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN unEncoding, RT_HEAP** lpHeap)
+RT_B RT_CALL RtProperties_CreateFromBuffer(RT_PROPERTIES* lpProperties, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN unEncoding, RT_HEAP** lpHeap)
 {
   RT_CHAR* lpData;
   RT_B bResult;
@@ -175,7 +175,7 @@ RT_B RT_CALL RtCreatePropertiesFromBuffer(RT_PROPERTIES* lpProperties, RT_CHAR8*
     goto the_end;
   }
 
-  bResult = RtCreatePropertiesFromString(lpProperties, lpData, lpHeap);
+  bResult = RtProperties_CreateFromString(lpProperties, lpData, lpHeap);
   if (!bResult)
   {
     (*lpHeap)->lpFree(lpHeap, (void**)&lpData);
@@ -184,7 +184,7 @@ the_end:
   return bResult;
 }
 
-RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_UN unEncoding, RT_HEAP** lpHeap)
+RT_B RT_API RtProperties_Create(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_UN unEncoding, RT_HEAP** lpHeap)
 {
   RT_CHAR8* lpFileContent;
   RT_UN unFileSize;
@@ -192,20 +192,20 @@ RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath,
 
   bResult = RT_FAILURE;
 
-  unFileSize = RtReadFromSmallFile(lpFilePath, &lpFileContent, lpHeap);
+  unFileSize = RtSmallFile_Read(lpFilePath, &lpFileContent, lpHeap);
   if (unFileSize == RT_TYPE_MAX_UN)
   {
     goto the_end;
   }
 
-  bResult = RtCreatePropertiesFromBuffer(lpProperties, lpFileContent, unFileSize, unEncoding, lpHeap);
+  bResult = RtProperties_CreateFromBuffer(lpProperties, lpFileContent, unFileSize, unEncoding, lpHeap);
 
   bResult = bResult && (*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent);
 the_end:
   return bResult;
 }
 
-RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue)
+RT_CHAR* RT_API RtProperties_GetString(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue)
 {
   RT_UN unHash;
   RT_PROPERTY_ENTRY* lpPropertiesEntries;
@@ -221,7 +221,7 @@ RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey,
   unSize = RtArray_GetSize(lpPropertiesEntries);
 
   /* No need to check result as the comparison function cannot trigger error. */
-  RtSearchSortableArrayItemIndex(lpPropertiesEntries, &unHash, &unIndex);
+  RtSortableArray_SearchItemIndex(lpPropertiesEntries, &unHash, &unIndex);
   if (unIndex != RT_TYPE_MAX_UN)
   {
     /* Find the first item with the given hash. */
@@ -245,12 +245,12 @@ RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey,
   return lpResult;
 }
 
-RT_N RT_API RtGetIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue)
+RT_N RT_API RtProperties_GetInteger(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue)
 {
   RT_CHAR* lpStringProperty;
   RT_N nResult;
 
-  lpStringProperty = RtGetStringProperty(lpProperties, lpKey, RT_NULL);
+  lpStringProperty = RtProperties_GetString(lpProperties, lpKey, RT_NULL);
   if (!lpStringProperty) goto handle_error;
   if (!RtChar_ConvertStringToInteger(lpStringProperty, &nResult)) goto handle_error;
 
@@ -261,14 +261,14 @@ free_resources:
   return nResult;
 }
 
-RT_B RT_API RtGetBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue)
+RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue)
 {
   RT_CHAR* lpStringProperty;
   RT_CHAR lpLowerCaseValue[8];
   RT_UN unWritten;
   RT_B bResult;
 
-  lpStringProperty = RtGetStringProperty(lpProperties, lpKey, RT_NULL);
+  lpStringProperty = RtProperties_GetString(lpProperties, lpKey, RT_NULL);
   if (!lpStringProperty) goto handle_error;
   if (RtChar_GetStringSize(lpStringProperty) > 4)
   {
@@ -291,7 +291,7 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtFreeProperties(RT_PROPERTIES* lpProperties)
+RT_B RT_API RtProperties_Free(RT_PROPERTIES* lpProperties)
 {
   RT_HEAP** lpHeap;
   RT_CHAR* lpData;

@@ -36,6 +36,6 @@ RT_URL_INFO;
 /**
  * Parse given <tt>lpUrl</tt> to fill <tt>lpUrlInfo</tt>.
  */
-RT_B RT_API RtParseUrl(RT_CHAR* lpUrl, RT_URL_INFO* lpUrlInfo);
+RT_B RT_API RtUrl_Parse(RT_CHAR* lpUrl, RT_URL_INFO* lpUrlInfo);
 
 #endif /* RT_URL_H */

@@ -23,7 +23,7 @@
  *
  * @return The file size (so without trailing RT_NULL character) or RT_TYPE_MAX_UN in case of failure.
  */
-RT_UN RT_API RtReadFromSmallFile(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
+RT_UN RT_API RtSmallFile_Read(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
 
 /**
  * Allow to use a given buffer if enough.
@@ -34,7 +34,7 @@ RT_UN RT_API RtReadFromSmallFile(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HE
  *
  * @return The file size or RT_TYPE_MAX_UN in case of failure.
  */
-RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
+RT_UN RT_API RtSmallFile_ReadWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR8** lpOutput, RT_HEAP** lpHeap);
 
 /* Open an existing or create a new file and append data into it. */
 #define RT_SMALL_FILE_MODE_APPEND 0
@@ -43,6 +43,6 @@ RT_UN RT_API RtReadFromSmallFileWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuff
 /* Create a new file. If the file already exists, the function fails. */
 #define RT_SMALL_FILE_MODE_NEW 2
 
-RT_B RT_API RtWriteToSmallFile(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpFilePath, RT_UN unMode);
+RT_B RT_API RtSmallFile_Write(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpFilePath, RT_UN unMode);
 
 #endif /* RT_SMALL_FILE_H */

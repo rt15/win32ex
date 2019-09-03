@@ -11,14 +11,14 @@
  * @param lpString Texte à écrire dans la console
  * @return Zero en cas de problème
  */
-RT_B RT_API RtWriteStringToConsole(RT_CHAR* lpString)
+RT_B RT_API RtConsole_WriteString(RT_CHAR* lpString)
 {
-  return RtWriteStringToConsoleWithSize(lpString, RtChar_GetStringSize(lpString));
+  return RtConsole_WriteStringWithSize(lpString, RtChar_GetStringSize(lpString));
 }
 
-RT_B RT_API RtWriteStringOrErrorToConsole(RT_CHAR* lpString, RT_B bString)
+RT_B RT_API RtConsole_WriteStringOrError(RT_CHAR* lpString, RT_B bString)
 {
-  return RtWriteStringOrErrorToConsoleWithSize(lpString, RtChar_GetStringSize(lpString), bString);
+  return RtConsole_WriteStringOrErrorWithSize(lpString, RtChar_GetStringSize(lpString), bString);
 }
 
 /**
@@ -28,7 +28,7 @@ RT_B RT_API RtWriteStringOrErrorToConsole(RT_CHAR* lpString, RT_B bString)
  * @param unSize Nombre de caractères à afficher
  * @return Zero en cas de problème
  */
-RT_B RT_API RtWriteStringOrErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bString)
+RT_B RT_API RtConsole_WriteStringOrErrorWithSize(RT_CHAR* lpString, RT_UN unSize, RT_B bString)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unWritten;       /* Réception du nombre de caractère écris                   */
@@ -46,7 +46,7 @@ RT_B RT_API RtWriteStringOrErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSiz
   lpHeapBuffer = RT_NULL;
   unHeapBufferSize = 0;
 
-  if (!RtAllocIfNeeded(lpBuffer, RT_CHAR_BIG_STRING_SIZE * sizeof(RT_CHAR8), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpOemText, unSize)) goto handle_error;
+  if (!RtStaticHeap_AllocIfNeeded(lpBuffer, RT_CHAR_BIG_STRING_SIZE * sizeof(RT_CHAR8), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpOemText, unSize)) goto handle_error;
 
   /* Translate àùéè characters... Never fails if arguments are different. */
   CharToOemBuff(lpString, lpOemText, (DWORD)unSize);
@@ -68,7 +68,7 @@ RT_B RT_API RtWriteStringOrErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSiz
 free_resources:
   if (lpHeapBuffer)
   {
-    if (!RtFree(&lpHeapBuffer)) goto handle_error;
+    if (!RtStaticHeap_Free(&lpHeapBuffer)) goto handle_error;
   }
   return bResult;
 
@@ -88,34 +88,34 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtWriteStringToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
+RT_B RT_API RtConsole_WriteStringWithSize(RT_CHAR* lpString, RT_UN unSize)
 {
-  return RtWriteStringOrErrorToConsoleWithSize(lpString, unSize, RT_TRUE);
+  return RtConsole_WriteStringOrErrorWithSize(lpString, unSize, RT_TRUE);
 }
 
-RT_B RT_API RtWriteErrorToConsole(RT_CHAR* lpString)
+RT_B RT_API RtConsole_WriteError(RT_CHAR* lpString)
 {
-  return RtWriteErrorToConsoleWithSize(lpString, RtChar_GetStringSize(lpString));
+  return RtConsole_WriteErrorWithSize(lpString, RtChar_GetStringSize(lpString));
 }
 
-RT_B RT_API RtWriteErrorToConsoleWithSize(RT_CHAR* lpString, RT_UN unSize)
+RT_B RT_API RtConsole_WriteErrorWithSize(RT_CHAR* lpString, RT_UN unSize)
 {
-  return RtWriteStringOrErrorToConsoleWithSize(lpString, unSize, RT_FALSE);
+  return RtConsole_WriteStringOrErrorWithSize(lpString, unSize, RT_FALSE);
 }
 
-RT_B RT_CDECL_API RtWriteStringsOrErrorsToConsole(RT_B bString, ...)
+RT_B RT_CDECL_API RtConsole_WriteStringsOrErrors(RT_B bString, ...)
 {
   va_list lpVaList;
   RT_B bResult;
 
   va_start(lpVaList, bString);
-  bResult = RtVWriteStringsOrErrorsToConsole(lpVaList, bString);
+  bResult = RtConsole_VWriteStringsOrErrors(lpVaList, bString);
   va_end(lpVaList);
 
   return bResult;
 }
 
-RT_B RT_API RtVWriteStringsOrErrorsToConsole(va_list lpVaList, RT_B bString)
+RT_B RT_API RtConsole_VWriteStringsOrErrors(va_list lpVaList, RT_B bString)
 {
   va_list lpVaList2;
   va_list lpVaList3;
@@ -149,7 +149,7 @@ RT_B RT_API RtVWriteStringsOrErrorsToConsole(va_list lpVaList, RT_B bString)
     /* If there is one String, directly call RtWriteToConsole. */
     lpString = va_arg(lpVaList2, RT_CHAR*);
 
-    bResult = RtWriteStringToConsole(lpString);
+    bResult = RtConsole_WriteString(lpString);
   }
   else
   {
@@ -163,15 +163,15 @@ RT_B RT_API RtVWriteStringsOrErrorsToConsole(va_list lpVaList, RT_B bString)
 
     lpHeapBuffer = RT_NULL;
     unHeapBufferSize = 0;
-    if (RtAllocIfNeeded(lpBuffer, 512 * sizeof(RT_CHAR), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpStrings, (unStringsLenght + 1) * sizeof(RT_CHAR)))
+    if (RtStaticHeap_AllocIfNeeded(lpBuffer, 512 * sizeof(RT_CHAR), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpStrings, (unStringsLenght + 1) * sizeof(RT_CHAR)))
     {
       unWritten = 0;
       RtChar_VConcatStrings(lpVaList3, lpStrings, unStringsLenght + 1, &unWritten);
 
-      bResult = RtWriteStringToConsoleWithSize(lpStrings, unWritten);
+      bResult = RtConsole_WriteStringWithSize(lpStrings, unWritten);
       if (lpHeapBuffer)
       {
-        bResult = (RtFree(&lpHeapBuffer) && bResult);
+        bResult = (RtStaticHeap_Free(&lpHeapBuffer) && bResult);
       }
     }
     else
@@ -188,9 +188,9 @@ RT_B RT_API RtVWriteStringsOrErrorsToConsole(va_list lpVaList, RT_B bString)
 /**
  * Attend que l'utilisateur presse une touche avant de continuer
  */
-void RT_API RtPauseConsole()
+void RT_API RtConsole_Pause()
 {
-  RtReadCharFromConsole();
+  RtConsole_ReadChar();
 }
 
 #ifdef RT_DEFINE_WINDOWS
@@ -199,7 +199,7 @@ void RT_API RtPauseConsole()
  * ReadConsole cannot work if stdin has been redirected to a pipe.<br>
  * So ReadFile is used instead.
  */
-RT_UN RT_CALL RtReadLineFromFile(RT_CHAR* lpCalleeBuffer, RT_UN unBufferSize, RT_H hInput)
+RT_UN RT_CALL RtConsole_ReadLineFromFile(RT_CHAR* lpCalleeBuffer, RT_UN unBufferSize, RT_H hInput)
 {
   RT_CHAR8 lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
   void* lpHeapBuffer;
@@ -213,7 +213,7 @@ RT_UN RT_CALL RtReadLineFromFile(RT_CHAR* lpCalleeBuffer, RT_UN unBufferSize, RT
 
   /* Allocate a buffer to receive chars from ReadFile. */
   unHeapBufferSize = 0;
-  if (!RtAllocIfNeeded(lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, (void**)&lpReadChars, unBufferSize)) goto handle_error;
+  if (!RtStaticHeap_AllocIfNeeded(lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, (void**)&lpReadChars, unBufferSize)) goto handle_error;
 
   RT_MEMORY_ZERO(lpReadChars, unBufferSize);
 
@@ -239,7 +239,7 @@ RT_UN RT_CALL RtReadLineFromFile(RT_CHAR* lpCalleeBuffer, RT_UN unBufferSize, RT
 free_resources:
   if (lpHeapBuffer)
   {
-    if ((!RtFree(&lpHeapBuffer)) && (unResult != -1)) goto handle_error;
+    if ((!RtStaticHeap_Free(&lpHeapBuffer)) && (unResult != -1)) goto handle_error;
   }
   return unResult;
 
@@ -250,7 +250,7 @@ handle_error:
 
 #endif
 
-RT_UN RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_UN unBufferSize)
+RT_UN RT_API RtConsole_ReadLine(RT_CHAR* lpBuffer, RT_UN unBufferSize)
 {
 #ifdef RT_DEFINE_WINDOWS
   HANDLE hInput;    /* Handle de l'entrée standard                            */
@@ -300,7 +300,7 @@ RT_UN RT_API RtReadLineFromConsole(RT_CHAR* lpBuffer, RT_UN unBufferSize)
   else
   {
     /* GetConsoleMode has failed, we assume that the handle is a pipe handle. */
-    unResult = RtReadLineFromFile(lpBuffer, unBufferSize, hInput);
+    unResult = RtConsole_ReadLineFromFile(lpBuffer, unBufferSize, hInput);
   }
 #else
   /* The getline function cannot be used as first parameter must be a pointer on memory allocated with malloc. */
@@ -333,7 +333,7 @@ loop:
   return unResult;
 }
 
-RT_CHAR RT_API RtReadCharFromConsole()
+RT_CHAR RT_API RtConsole_ReadChar()
 {
 #ifdef RT_DEFINE_WINDOWS
   HANDLE hInput;    /* Handle de l'entrée standard                            */

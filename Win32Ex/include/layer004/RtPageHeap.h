@@ -18,11 +18,11 @@ typedef struct _RtPageHeap
 }
 RtPageHeap;
 
-void* RT_API RtPageHeapCreate(RtPageHeap* lpThis);
+void* RT_API RtPageHeap_Create(RtPageHeap* lpThis);
 
 /* Static functions. */
-void* RT_API RtAllocPage(void** lpArea, RT_UN unSize);
-void* RT_API RtReAllocPage(void** lpArea, RT_UN unSize);
-RT_B RT_API RtFreePage(void** lpArea);
+void* RT_API RtPageHeap_Alloc(void** lpArea, RT_UN unSize);
+void* RT_API RtPageHeap_ReAlloc(void** lpArea, RT_UN unSize);
+RT_B RT_API RtPageHeap_Free(void** lpArea);
 
 #endif /* RT_PAGE_HEAP_H */

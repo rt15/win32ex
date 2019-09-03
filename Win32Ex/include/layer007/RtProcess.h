@@ -11,7 +11,7 @@
  * Processes functions.
  *
  * <p>
- * After a successful call to RtCreateProcess, RtJoinProcess and RtFreeProcess are mandatory.
+ * After a successful call to RtProcess_Create, RtProcess_Join and RtProcess_Free are mandatory.
  * </p>
  */
 
@@ -34,7 +34,7 @@ RT_PROCESS;
  * Start a process.
  *
  * <p>
- * If successful, ensure to call RtFreeProcess (And optionally RtJoinProcess to avoid zombies if bChild is RT_TRUE).
+ * If successful, ensure to call RtProcess_Free (And optionally RtProcess_Join to avoid zombies if bChild is RT_TRUE).
  * </p>
  *
  * <p>
@@ -43,21 +43,21 @@ RT_PROCESS;
  * Under Windows, any handle with HANDLE_FLAG_INHERIT/bInheritHandle of SECURITY_ATTRIBUTES will "leak".
  * </p>
  *
- * @param bChild Set to RT_TRUE if and only if you will call RtJoinProcess. No effect under Windows.
+ * @param bChild Set to RT_TRUE if and only if you will call RtProcess_Join. No effect under Windows.
  * @param lpCurrentDirectory Current directory of the started process. Same as current process if RT_NULL.
  * @param ... Process arguments (RT_CHAR*). Must end with RT_NULL.
  */
-RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs);
+RT_B RT_API RtProcess_Create(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs);
 
 /**
  * Spawn a child process and wait for the end of it.
  */
-RT_B RT_API RtSpawnProcessSync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs, RT_UN32* lpExitCode);
+RT_B RT_API RtProcess_SpawnSync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs, RT_UN32* lpExitCode);
 
 /**
  * Spawn a non-child process.
  */
-RT_B RT_API RtSpawnProcessASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs);
+RT_B RT_API RtProcess_SpawnASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs);
 
 /**
  * Start a process with redirections.
@@ -74,7 +74,7 @@ RT_B RT_API RtSpawnProcessASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvV
  * @param lpStdOutput Can be RT_NULL.
  * @param lpStdError Can be RT_NULL.
  */
-RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
+RT_B RT_API RtProcess_CreateWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                             RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
                                             RT_CHAR** lpApplicationPathAndArgs);
 
@@ -82,7 +82,7 @@ RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, 
  * Can be used only if bChild was RT_TRUE while creating the process.<br>
  * Called to read the exit code to kill a zombified process.
  */
-RT_B RT_API RtJoinProcess(RT_PROCESS* lpProcess);
+RT_B RT_API RtProcess_Join(RT_PROCESS* lpProcess);
 
 /**
  * <p>
@@ -90,8 +90,8 @@ RT_B RT_API RtJoinProcess(RT_PROCESS* lpProcess);
  * Under Windows, exit code is a DWORD (32 unsigned bits) although command line interpreter treats them as signed.<br>
  * </p>
  */
-RT_B RT_API RtGetProcessExitCode(RT_PROCESS* lpProcess, RT_UN32* lpExitCode);
+RT_B RT_API RtProcess_GetExitCode(RT_PROCESS* lpProcess, RT_UN32* lpExitCode);
 
-RT_B RT_API RtFreeProcess(RT_PROCESS* lpProcess);
+RT_B RT_API RtProcess_Free(RT_PROCESS* lpProcess);
 
 #endif /* RT_PROCESS_H */

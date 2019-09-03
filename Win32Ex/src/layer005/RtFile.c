@@ -12,7 +12,7 @@
 
 #endif
 
-RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
+RT_B RT_API RtFile_Create(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unFlags;   /* Flags d'ouverture du fichier                              */
@@ -87,7 +87,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFile_CreateTemp(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
 {
   RT_UN unWritten;
   RT_B bResult;
@@ -96,7 +96,7 @@ RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuff
   unWritten = 0;
   if (!RtFileSystem_GetTempDirectory(lpBuffer, unBufferSize, &unWritten)) goto handle_error;
 
-  if (!RtCreateTempFileWithParentPath(lpFile, lpPrefix, lpBuffer, unWritten, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
+  if (!RtFile_CreateTempWithParentPath(lpFile, lpPrefix, lpBuffer, unWritten, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -107,7 +107,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFile_CreateTempWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
 {
 #ifdef RT_DEFINE_LINUX
   RT_UN unWritten;
@@ -118,7 +118,7 @@ RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, R
   /* GetTempFileName create an empty file. */
   if (!GetTempFileName(lpParentPath, lpPrefix, 0, lpBuffer)) goto handle_error;
 
-  if (!RtCreateFile(lpFile, lpBuffer, RT_FILE_MODE_TRUNCATE)) goto handle_error;
+  if (!RtFile_Create(lpFile, lpBuffer, RT_FILE_MODE_TRUNCATE)) goto handle_error;
 
   *lpWritten += RtChar_GetStringSize(lpBuffer);
 #else
@@ -144,7 +144,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead)
+RT_B RT_API RtFile_Read(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unBytesRead;
@@ -175,7 +175,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite)
+RT_B RT_API RtFile_Write(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unBytesWritten;
@@ -200,22 +200,22 @@ RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrit
   return bResult;
 }
 
-RT_UN RT_API RtGetFileSize(RT_FILE* lpFile)
+RT_UN RT_API RtFile_GetSize(RT_FILE* lpFile)
 {
   RT_UN unOldPos;
   RT_UN unResult;
 
   /* Backup the current position */
-  unOldPos = RtGetFilePointer(lpFile);
+  unOldPos = RtFile_GetPointer(lpFile);
 
   /* Go to end of file. */
-  if (!RtSetFilePointer(lpFile, 0, RT_FILE_POS_END)) goto handle_error;
+  if (!RtFile_SetPointer(lpFile, 0, RT_FILE_POS_END)) goto handle_error;
 
   /* Get the new position which is the file size. */
-  unResult = RtGetFilePointer(lpFile);
+  unResult = RtFile_GetPointer(lpFile);
 
   /* Go back to original position. */
-  if (!RtSetFilePointer(lpFile, unOldPos, RT_FILE_POS_BEGIN)) goto handle_error;
+  if (!RtFile_SetPointer(lpFile, unOldPos, RT_FILE_POS_BEGIN)) goto handle_error;
 
 free_resources:
   return unResult;
@@ -224,7 +224,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
+RT_B RT_API RtFile_SetPointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
 {
 #ifndef RT_DEFINE_WINDOWS
   RT_N32 nFlag;
@@ -260,7 +260,7 @@ RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
   return bResult;
 }
 
-RT_UN RT_API RtGetFilePointer(RT_FILE* lpFile)
+RT_UN RT_API RtFile_GetPointer(RT_FILE* lpFile)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unReturnedValue;
@@ -292,7 +292,7 @@ RT_UN RT_API RtGetFilePointer(RT_FILE* lpFile)
   return unResult;
 }
 
-RT_B RT_API RtFreeFile(RT_FILE* lpFile)
+RT_B RT_API RtFile_Free(RT_FILE* lpFile)
 {
   RT_B bResult;
 

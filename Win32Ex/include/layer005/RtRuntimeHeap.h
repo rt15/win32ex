@@ -13,6 +13,6 @@ typedef struct _RtRuntimeHeap
 }
 RtRuntimeHeap;
 
-void* RT_API RtRuntimeHeapCreate(RtRuntimeHeap* lpThis);
+void* RT_API RtRuntimeHeap_Create(RtRuntimeHeap* lpThis);
 
 #endif /* RT_RUNTIME_HEAP_H */

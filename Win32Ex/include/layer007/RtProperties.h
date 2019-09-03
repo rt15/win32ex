@@ -25,14 +25,14 @@ typedef struct _RT_PROPERTIES
 }
 RT_PROPERTIES;
 
-RT_B RT_API RtCreateProperties(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_UN unEncoding, RT_HEAP** lpHeap);
+RT_B RT_API RtProperties_Create(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_UN unEncoding, RT_HEAP** lpHeap);
 
-RT_CHAR* RT_API RtGetStringProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue);
+RT_CHAR* RT_API RtProperties_GetString(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue);
 
-RT_N RT_API RtGetIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue);
+RT_N RT_API RtProperties_GetInteger(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue);
 
-RT_B RT_API RtGetBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue);
+RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue);
 
-RT_B RT_API RtFreeProperties(RT_PROPERTIES* lpProperties);
+RT_B RT_API RtProperties_Free(RT_PROPERTIES* lpProperties);
 
 #endif /* RT_PROPERTIES_H */

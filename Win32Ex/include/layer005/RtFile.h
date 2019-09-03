@@ -44,7 +44,7 @@ RT_FILE;
  * @param nMode Le mode d'ouverture RT_FILE_MODE_XXX
  * @return Zero en cas d'échec
  */
-RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
+RT_B RT_API RtFile_Create(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
 
 /**
  * Create a temporary file.
@@ -56,7 +56,7 @@ RT_B RT_API RtCreateFile(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
  * @param lpBuffer Receive the path to the file so the caller can delete the file.
  * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
  */
-RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtFile_CreateTemp(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 /**
  * Create a temporary file in given path.
@@ -69,7 +69,7 @@ RT_B RT_API RtCreateTempFile(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuff
  * @param lpBuffer Receive the path to the file so the caller can delete the file.
  * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
  */
-RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtFile_CreateTempWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 /**
  * Read from a file.
@@ -78,7 +78,7 @@ RT_B RT_API RtCreateTempFileWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, R
  * @param lpBytesRead Count of bytes actually read as we may have reached the end of file/pipe.
  * @return RT_FAILURE in cas of failure.
  */
-RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead);
+RT_B RT_API RtFile_Read(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead);
 
 /**
  * Ecrit un certain nombre d'octets dans un fichier
@@ -87,14 +87,14 @@ RT_B RT_API RtReadFromFile(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToR
  * @param nNumberOfBytesToWrite Nombre d'octets à écrire
  * @return Zero en cas d'échec
  */
-RT_B RT_API RtWriteToFile(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite);
+RT_B RT_API RtFile_Write(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite);
 
 /**
  * Compute the size of an open file.
  *
  * @return RT_TYPE_MAX_UN in case of error (And the file pointer might be corrupted).
  */
-RT_UN RT_API RtGetFileSize(RT_FILE* lpFile);
+RT_UN RT_API RtFile_GetSize(RT_FILE* lpFile);
 
 /**
  * Déplace le pointeur dans le fichier
@@ -103,18 +103,18 @@ RT_UN RT_API RtGetFileSize(RT_FILE* lpFile);
  * @param nFrom Type de positionnement : RT_FILE_POS_XXXX
  * @return Zero en cas d'échec
  */
-RT_B RT_API RtSetFilePointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom);
+RT_B RT_API RtFile_SetPointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom);
 
 /**
  * Récupère la position courante dans le fichier
  *
  * @return La position courante, RT_TYPE_MAX_UN en cas de problème.
  */
-RT_UN RT_API RtGetFilePointer(RT_FILE* lpFile);
+RT_UN RT_API RtFile_GetPointer(RT_FILE* lpFile);
 
 /**
  * Ferme le fichier spécifié
  */
-RT_B RT_API RtFreeFile(RT_FILE* lpFile);
+RT_B RT_API RtFile_Free(RT_FILE* lpFile);
 
 #endif /* RT_FILE_H */

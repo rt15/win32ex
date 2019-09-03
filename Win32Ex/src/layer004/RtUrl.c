@@ -3,7 +3,7 @@
 #include "layer002/RtError.h"
 #include "layer003/RtChar.h"
 
-RT_B RT_API RtParseUrl(RT_CHAR* lpUrl, RT_URL_INFO* lpUrlInfo)
+RT_B RT_API RtUrl_Parse(RT_CHAR* lpUrl, RT_URL_INFO* lpUrlInfo)
 {
   RT_CHAR lpPort[16];
   RT_UN unWritten;

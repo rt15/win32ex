@@ -19,7 +19,7 @@ RT_UN rt_unMajorOsVersion;
 RT_UN rt_unMinorOsVersion;
 RT_UN rt_unPatchOsVersion;
 
-RT_B RT_API RtGetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpPatch)
+RT_B RT_API RtSystemInfo_GetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpPatch)
 {
 #ifdef RT_DEFINE_WINDOWS
   OSVERSIONINFOEX rtOsVersionInfo;
@@ -146,14 +146,14 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtIsOsVersionGreaterOrEqualTo(RT_UN unMajor, RT_UN unMinor, RT_UN unPatch, RT_B* lpResult)
+RT_B RT_API RtSystemInfo_IsOsVersionGreaterOrEqualTo(RT_UN unMajor, RT_UN unMinor, RT_UN unPatch, RT_B* lpResult)
 {
   RT_UN unCurrentMajor;
   RT_UN unCurrentMinor;
   RT_UN unCurrentPatch;
   RT_B bResult;
 
-  if (!RtGetOsVersion(&unCurrentMajor, &unCurrentMinor, &unCurrentPatch)) goto handle_error;
+  if (!RtSystemInfo_GetOsVersion(&unCurrentMajor, &unCurrentMinor, &unCurrentPatch)) goto handle_error;
 
   if (unCurrentMajor > unMajor)
   {

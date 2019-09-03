@@ -13,7 +13,7 @@ RT_H rt_hStaticHeapProcessHeap;
 
 #endif
 
-void* RT_API RtAlloc(void** lpArea, RT_UN unSize)
+void* RT_API RtStaticHeap_Alloc(void** lpArea, RT_UN unSize)
 {
 #ifdef RT_DEFINE_WINDOWS
 
@@ -47,7 +47,7 @@ free_resources:
   return *lpArea;
 }
 
-void* RT_API RtReAlloc(void** lpArea, RT_UN unSize)
+void* RT_API RtStaticHeap_ReAlloc(void** lpArea, RT_UN unSize)
 {
   void* lpResult;
 
@@ -66,7 +66,7 @@ void* RT_API RtReAlloc(void** lpArea, RT_UN unSize)
   return lpResult;
 }
 
-RT_B RT_API RtFree(void** lpArea)
+RT_B RT_API RtStaticHeap_Free(void** lpArea)
 {
   RT_B bResult;
 
@@ -89,7 +89,7 @@ RT_B RT_API RtFree(void** lpArea)
   return bResult;
 }
 
-void* RT_API RtAllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea, RT_UN unSize)
+void* RT_API RtStaticHeap_AllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea, RT_UN unSize)
 {
   if ((unSize < RT_TYPE_MAX_N) && (unSize <= unBufferSize))
   {
@@ -105,11 +105,11 @@ void* RT_API RtAllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBu
     {
       if (*lpHeapBuffer)
       {
-        *lpArea = RtReAlloc(lpHeapBuffer, unSize);
+        *lpArea = RtStaticHeap_ReAlloc(lpHeapBuffer, unSize);
       }
       else
       {
-        *lpArea = RtAlloc(lpHeapBuffer, unSize);
+        *lpArea = RtStaticHeap_Alloc(lpHeapBuffer, unSize);
       }
     }
     *lpHeapBufferSize = unSize;

@@ -37,7 +37,7 @@ RT_RANDOM_RTL_GEN_RANDOM rt_lpRtlGenRandom;
 
 #ifdef RT_DEFINE_WINDOWS
 
-RT_B RT_CALL RtInitializeRandom()
+RT_B RT_CALL RtRandom_Initialize()
 {
   RT_H hLibrary;
   RT_B bResult;
@@ -58,14 +58,14 @@ handle_error:
 
 #endif
 
-RT_B RT_API RtGetRandomBytes(void* lpArea, RT_UN32 unSize)
+RT_B RT_API RtRandom_GetBytes(void* lpArea, RT_UN32 unSize)
 {
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
   if (RtFastInitialization_IsRequired(&rt_randomInitialization))
   {
-    rt_bRandomInitializationSuccessful = RtInitializeRandom();
+    rt_bRandomInitializationSuccessful = RtRandom_Initialize();
     RtFastInitialization_NotifyDone(&rt_randomInitialization);
   }
   if (!rt_bRandomInitializationSuccessful)
@@ -95,22 +95,22 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtGetRandomInteger(RT_N* lpResult)
+RT_B RT_API RtRandom_GetInteger(RT_N* lpResult)
 {
-  return RtGetRandomBytes(lpResult, sizeof(RT_N));
+  return RtRandom_GetBytes(lpResult, sizeof(RT_N));
 }
 
-RT_B RT_API RtGetRandomUInteger(RT_UN* lpResult)
+RT_B RT_API RtRandom_GetUInteger(RT_UN* lpResult)
 {
-  return RtGetRandomBytes(lpResult, sizeof(RT_UN));
+  return RtRandom_GetBytes(lpResult, sizeof(RT_UN));
 }
 
-RT_B RT_API RtGetRandomUIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperBound, RT_UN* lpResult)
+RT_B RT_API RtRandom_GetUIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperBound, RT_UN* lpResult)
 {
   RT_UN unUnsigned;
   RT_B bResult;
 
-  if (!RtGetRandomUInteger(&unUnsigned)) goto handle_error;
+  if (!RtRandom_GetUInteger(&unUnsigned)) goto handle_error;
   unUnsigned = unUnsigned % (unUpperBound + 1 - unLowerBound);
   *lpResult = unUnsigned + unLowerBound;
 
@@ -122,12 +122,12 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtGetRandomIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperBound, RT_N* lpResult)
+RT_B RT_API RtRandom_GetIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperBound, RT_N* lpResult)
 {
   RT_UN unUnsigned;
   RT_B bResult;
 
-  if (!RtGetRandomUInteger(&unUnsigned)) goto handle_error;
+  if (!RtRandom_GetUInteger(&unUnsigned)) goto handle_error;
   unUnsigned = unUnsigned % (RT_UN)(nUpperBound + 1 - nLowerBound);
   *lpResult = unUnsigned + nLowerBound;
 

@@ -36,8 +36,8 @@
  * @param lpMinor Can be RT_NULL.
  * @param lpPatch Can be RT_NULL.
  */
-RT_B RT_API RtGetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpPatch);
+RT_B RT_API RtSystemInfo_GetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpPatch);
 
-RT_B RT_API RtIsOsVersionGreaterOrEqualTo(RT_UN unMajor, RT_UN unMinor, RT_UN unPatch, RT_B* lpResult);
+RT_B RT_API RtSystemInfo_IsOsVersionGreaterOrEqualTo(RT_UN unMajor, RT_UN unMinor, RT_UN unPatch, RT_B* lpResult);
 
 #endif /* RT_SYSTEM_INFO_H */

@@ -1,6 +1,6 @@
 #include "layer005/RtLinkedList.h"
 
-void* RT_API RtCreateLinkedList(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize)
+void* RT_API RtLinkedList_Create(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize)
 {
   RT_LINKED_LIST_HEADER* lpHeader;
   RT_CHAR8* lpItems;
@@ -34,7 +34,7 @@ void* RT_API RtCreateLinkedList(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN unS
   return *lpLinkedList;
 }
 
-RT_UN RT_API RtNewLinkedListItemIndex(void** lpLinkedList, RT_UN* lpItemIndex)
+RT_UN RT_API RtLinkedList_NewItemIndex(void** lpLinkedList, RT_UN* lpItemIndex)
 {
   RT_LINKED_LIST_HEADER* lpHeader;
   RT_LINKED_LIST_ITEM_HEADER* lpItem;

@@ -17,7 +17,7 @@
  *
  * <p>
  * Correspond to <tt>environ</tt> Linux variable and <tt>GetEnvironmentStrings</tt> in Windows.<br>
- * The main purpose of this structure is to be used as argument in RtCreateProcess.
+ * The main purpose of this structure is to be used as argument in RtProcess_Create.
  * </p>
  *
  * <p>
@@ -50,7 +50,7 @@ typedef struct _RT_ENV_VARS
 }
 RT_ENV_VARS;
 
-RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars);
+RT_B RT_API RtEnvVars_Create(RT_ENV_VARS* lpEnvVars);
 
 /**
  * Add or update <tt>lpEnvVarName</tt> within <tt>lpEnvVars</tt>.
@@ -65,7 +65,7 @@ RT_B RT_API RtEnvVars_GetArray(RT_ENV_VARS* lpEnvVars, RT_CHAR*** lpEnvVarsArray
 /**
  * Find whether a variable exists in <tt>lpEnvVars</tt>.
  */
-RT_B RT_API RtEnvVarsContains(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_B* lpContains);
+RT_B RT_API RtEnvVars_Contains(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_B* lpContains);
 
 /**
  * Retrieve value of <tt>lpEnvVarName</tt> in <tt>lpEnvVars</tt>.<br>
@@ -75,26 +75,26 @@ RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
 
 /**
  * Be sure that the variable doesn't exist yet.<br>
- * You can use <tt>RtRemoveEnvVarFromEnvVars</tt> to ensure that.
+ * You can use <tt>RtEnvVars_RemoveEnvVar</tt> to ensure that.
  *
  * <p>
  * The <tt>RT_ENV_VARS</tt> should be considered corrupted in case of failure.
  * </p>
  */
-RT_B RT_API RtAddEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
+RT_B RT_API RtEnvVars_AddEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
 
 /**
  * Remove an environment variable of given <tt>RT_ENV_VARS</tt> if it exists.<br>
  * Can be used to ensure that an environment variable doesn't exist before adding it.
  */
-RT_B RT_API RtRemoveEnvVarFromEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName);
+RT_B RT_API RtEnvVars_RemoveEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName);
 
 /**
  * If the variable already exists, replace the value.<br>
  * If the variable does not exist, add the variable.
  */
-RT_B RT_API RtMergeEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
+RT_B RT_API RtEnvVars_MergeEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue);
 
-RT_B RT_API RtFreeEnvVars(RT_ENV_VARS* lpEnvVars);
+RT_B RT_API RtEnvVars_Free(RT_ENV_VARS* lpEnvVars);
 
 #endif /* RT_ENV_VARS_H */

@@ -7,7 +7,7 @@
 #include "layer004/RtSystemInfo.h"
 
 
-RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
+RT_B RT_API RtEnvVars_Create(RT_ENV_VARS* lpEnvVars)
 {
   RT_UN unBlockSize;
 #ifdef RT_DEFINE_WINDOWS
@@ -32,7 +32,7 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
   if (!lpEnvVars->lpEnvVarsBlock) goto handle_error;
 
   /* In Vista 6.0.6001.18631 kernel32.dll disassembly, GetEnvironmentStrings returns a copy of the environment variables block. */
-  if (!RtIsOsVersionGreaterOrEqualTo(6, 0, 0, &bGreaterOrEqual)) goto handle_error;
+  if (!RtSystemInfo_IsOsVersionGreaterOrEqualTo(6, 0, 0, &bGreaterOrEqual)) goto handle_error;
   if (!bGreaterOrEqual)
   {
     /* GetEnvironmentStrings return direct pointer on the environment on old (At least XP) Windows versions. */
@@ -57,7 +57,7 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
     /* Count trailing zero. */
     unBlockSize++;
 
-    if (!RtAlloc((void**)&lpLibraryEnvVarsBlock, unBlockSize * sizeof(RT_CHAR))) goto handle_error;
+    if (!RtStaticHeap_Alloc((void**)&lpLibraryEnvVarsBlock, unBlockSize * sizeof(RT_CHAR))) goto handle_error;
     lpEnvVars->bWindowsBlock = RT_FALSE;
     lpEnvVars->lpEnvVarsBlock = lpLibraryEnvVarsBlock;
     RtMemory_Copy(lpWindowsEnvVarsBlock, lpLibraryEnvVarsBlock, unBlockSize * sizeof(RT_CHAR));
@@ -81,7 +81,7 @@ RT_B RT_API RtCreateEnvVars(RT_ENV_VARS* lpEnvVars)
   /* Null character after the last null character. */
   unBlockSize++;
 
-  if (!RtAlloc((void**)&lpEnvVars->lpEnvVarsBlock, unBlockSize * sizeof(RT_CHAR))) goto handle_error;
+  if (!RtStaticHeap_Alloc((void**)&lpEnvVars->lpEnvVarsBlock, unBlockSize * sizeof(RT_CHAR))) goto handle_error;
 
   /* Notice that environ might have been modified by another thread. Environment is not thread safe under Linux. */
   lpEnvVarsArray = __environ;
@@ -104,7 +104,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  RtFreeEnvVars(lpEnvVars);
+  RtEnvVars_Free(lpEnvVars);
   bResult = RT_FAILURE;
   goto free_resources;
 }
@@ -146,7 +146,7 @@ RT_B RT_API RtEnvVars_GetArray(RT_ENV_VARS* lpEnvVars, RT_CHAR*** lpEnvVarsArray
     }
 
     /* Alloc variables count plus one for the trailing null. */
-    if (!RtAlloc((void**)&lpEnvVars->lpEnvVarsArray, (unVarsCount + 1) * sizeof(RT_CHAR*))) goto handle_error;
+    if (!RtStaticHeap_Alloc((void**)&lpEnvVars->lpEnvVarsArray, (unVarsCount + 1) * sizeof(RT_CHAR*))) goto handle_error;
 
     if (unVarsCount)
     {
@@ -192,7 +192,7 @@ handle_error:
 /**
  * Find a pointer on <tt>lpEnvVarName</tt> in <tt>lpEnvVars->lpEnvVarsBlock</tt>
  */
-RT_B RT_CALL RtEnvVar_GetPointer(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR** lpResult)
+RT_B RT_CALL RtEnvVars_GetPointer(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR** lpResult)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLocalEnvVarName[RT_CHAR_HALF_BIG_STRING_SIZE];
@@ -289,12 +289,12 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtEnvVarsContains(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_B* lpContains)
+RT_B RT_API RtEnvVars_Contains(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_B* lpContains)
 {
   RT_CHAR* lpEnvVar;
   RT_B bResult;
 
-  if (!RtEnvVar_GetPointer(lpEnvVars, lpEnvVarName, &lpEnvVar)) goto handle_error;
+  if (!RtEnvVars_GetPointer(lpEnvVars, lpEnvVarName, &lpEnvVar)) goto handle_error;
   if (lpEnvVar)
   {
     *lpContains = RT_TRUE;
@@ -318,7 +318,7 @@ RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
   RT_CHAR* lpEnvVar;
   RT_B bResult;
 
-  if (!RtEnvVar_GetPointer(lpEnvVars, lpEnvVarName, &lpEnvVar)) goto handle_error;
+  if (!RtEnvVars_GetPointer(lpEnvVars, lpEnvVarName, &lpEnvVar)) goto handle_error;
   if (!lpEnvVar)
   {
     /* Variable not found. */
@@ -337,7 +337,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtRemoveEnvVarFromEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName)
+RT_B RT_API RtEnvVars_RemoveEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName)
 {
   RT_CHAR* lpEnvVar;
   RT_CHAR* lpDestination;
@@ -345,9 +345,9 @@ RT_B RT_API RtRemoveEnvVarFromEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarN
   RT_B bResult;
 
   /* The array will be built back if and when needed. */
-  if (!RtFree((void**)&lpEnvVars->lpEnvVarsArray)) goto handle_error;
+  if (!RtStaticHeap_Free((void**)&lpEnvVars->lpEnvVarsArray)) goto handle_error;
 
-  if (!RtEnvVar_GetPointer(lpEnvVars, lpEnvVarName, &lpEnvVar)) goto handle_error;
+  if (!RtEnvVars_GetPointer(lpEnvVars, lpEnvVarName, &lpEnvVar)) goto handle_error;
 
   /* Remove only if exists. */
   if (lpEnvVar)
@@ -390,7 +390,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtAddEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue)
+RT_B RT_API RtEnvVars_AddEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue)
 {
   RT_CHAR* lpOldEnvVarsBlock;
   RT_CHAR* lpNewEnvVarsBlock;
@@ -403,7 +403,7 @@ RT_B RT_API RtAddEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName
   lpNewEnvVarsBlock = RT_NULL;
 
   /* The array will be built back if and when needed. */
-  if (!RtFree((void**)&lpEnvVars->lpEnvVarsArray)) goto handle_error;
+  if (!RtStaticHeap_Free((void**)&lpEnvVars->lpEnvVarsArray)) goto handle_error;
 
   lpOldEnvVarsBlock = lpEnvVars->lpEnvVarsBlock;
 
@@ -433,17 +433,17 @@ RT_B RT_API RtAddEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName
 #ifdef RT_DEFINE_WINDOWS
   if (lpEnvVars->bWindowsBlock)
   {
-    if (!RtAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
+    if (!RtStaticHeap_Alloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
     RT_MEMORY_COPY(lpOldEnvVarsBlock, lpNewEnvVarsBlock, unOldEnvVarsBlockSize * sizeof(RT_CHAR*));
   }
   else
   {
     lpNewEnvVarsBlock = lpOldEnvVarsBlock;
-    if (!RtReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
+    if (!RtStaticHeap_ReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
   }
 #else
   lpNewEnvVarsBlock = lpOldEnvVarsBlock;
-  if (!RtReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
+  if (!RtStaticHeap_ReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
 #endif
 
   unWritten = unOldEnvVarsBlockSize - 1;
@@ -477,23 +477,23 @@ free_resources:
 handle_error:
   if (*lpNewEnvVarsBlock != *lpOldEnvVarsBlock)
   {
-    RtFree((void**)&lpNewEnvVarsBlock);
+    RtStaticHeap_Free((void**)&lpNewEnvVarsBlock);
   }
   bResult = RT_FAILURE;
   goto free_resources;
 }
 
-RT_B RT_API RtMergeEnvVarIntoEnvVars(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue)
+RT_B RT_API RtEnvVars_MergeEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpValue)
 {
   RT_B bContains;
   RT_B bResult;
 
-  if (!RtEnvVarsContains(lpEnvVars, lpEnvVarName, &bContains)) goto handle_error;
+  if (!RtEnvVars_Contains(lpEnvVars, lpEnvVarName, &bContains)) goto handle_error;
   if (bContains)
   {
-    if (!RtRemoveEnvVarFromEnvVars(lpEnvVars, lpEnvVarName)) goto handle_error;
+    if (!RtEnvVars_RemoveEnvVar(lpEnvVars, lpEnvVarName)) goto handle_error;
   }
-  if (!RtAddEnvVarIntoEnvVars(lpEnvVars, lpEnvVarName, lpValue)) goto handle_error;
+  if (!RtEnvVars_AddEnvVar(lpEnvVars, lpEnvVarName, lpValue)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -504,7 +504,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtFreeEnvVars(RT_ENV_VARS* lpEnvVars)
+RT_B RT_API RtEnvVars_Free(RT_ENV_VARS* lpEnvVars)
 {
   RT_B bResult;
 
@@ -524,13 +524,13 @@ RT_B RT_API RtFreeEnvVars(RT_ENV_VARS* lpEnvVars)
   else
   {
     /* lpEnvVarsBlock allocated by the library. */
-    if (!(RtFree((void**)&lpEnvVars->lpEnvVarsBlock))) bResult = RT_FAILURE;
+    if (!(RtStaticHeap_Free((void**)&lpEnvVars->lpEnvVarsBlock))) bResult = RT_FAILURE;
   }
 #else
-  if (!(RtFree((void**)&lpEnvVars->lpEnvVarsBlock))) bResult = RT_FAILURE;
+  if (!(RtStaticHeap_Free((void**)&lpEnvVars->lpEnvVarsBlock))) bResult = RT_FAILURE;
 #endif
 
-  if (!(RtFree((void**)&lpEnvVars->lpEnvVarsArray))) bResult = RT_FAILURE;
+  if (!(RtStaticHeap_Free((void**)&lpEnvVars->lpEnvVarsArray))) bResult = RT_FAILURE;
 
   return bResult;
 }

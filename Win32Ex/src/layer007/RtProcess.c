@@ -9,12 +9,12 @@
 #include "layer004/RtStaticHeap.h"
 #include "layer006/RtErrorMessage.h"
 
-RT_B RT_API RtCreateProcess(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs)
+RT_B RT_API RtProcess_Create(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs)
 {
-  return RtCreateProcessWithRedirections(lpProcess, bChild, lpCurrentDirectory, lpEnvVars, RT_NULL, RT_NULL, RT_NULL, lpApplicationPathAndArgs);
+  return RtProcess_CreateWithRedirections(lpProcess, bChild, lpCurrentDirectory, lpEnvVars, RT_NULL, RT_NULL, RT_NULL, lpApplicationPathAndArgs);
 }
 
-RT_B RT_API RtSpawnProcessSync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs, RT_UN32* lpExitCode)
+RT_B RT_API RtProcess_SpawnSync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs, RT_UN32* lpExitCode)
 {
   RT_PROCESS rtProcess;
   RT_B bProcessCreated;
@@ -22,18 +22,18 @@ RT_B RT_API RtSpawnProcessSync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVa
 
   bProcessCreated = RT_FALSE;
 
-  if (!RtCreateProcess(&rtProcess, RT_TRUE, lpCurrentDirectory, lpEnvVars, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_Create(&rtProcess, RT_TRUE, lpCurrentDirectory, lpEnvVars, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
-  if (!RtJoinProcess(&rtProcess)) goto handle_error;
-  if (!RtGetProcessExitCode(&rtProcess, lpExitCode)) goto handle_error;
+  if (!RtProcess_Join(&rtProcess)) goto handle_error;
+  if (!RtProcess_GetExitCode(&rtProcess, lpExitCode)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bProcessCreated)
   {
     bProcessCreated = RT_FALSE;
-    if (!RtFreeProcess(&rtProcess) && bResult) goto handle_error;
+    if (!RtProcess_Free(&rtProcess) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -42,7 +42,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtSpawnProcessASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs)
+RT_B RT_API RtProcess_SpawnASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars, RT_CHAR** lpApplicationPathAndArgs)
 {
   RT_PROCESS rtProcess;
   RT_B bProcessCreated;
@@ -50,7 +50,7 @@ RT_B RT_API RtSpawnProcessASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvV
 
   bProcessCreated = RT_FALSE;
 
-  if (!RtCreateProcess(&rtProcess, RT_FALSE, lpCurrentDirectory, lpEnvVars, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_Create(&rtProcess, RT_FALSE, lpCurrentDirectory, lpEnvVars, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   bResult = RT_SUCCESS;
@@ -58,7 +58,7 @@ free_resources:
   if (bProcessCreated)
   {
     bProcessCreated = RT_FALSE;
-    if (!RtFreeProcess(&rtProcess) && bResult) goto handle_error;
+    if (!RtProcess_Free(&rtProcess) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -69,9 +69,9 @@ handle_error:
 
 /**
  * Convert given argv so it can be used in command line.<br>
- * See <tt>RtArgVToCommandLine</tt>.
+ * See <tt>RtProcess_ArgVToCommandLine</tt>.
  */
-RT_B RT_CALL RtConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_CALL RtProcess_ConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
 {
   RT_B bNeedDoubleQuotes;
   RT_UN unWritten;
@@ -163,7 +163,7 @@ handle_error:
  * If double-quotes are needed, add 1 character per anti-slash (Not always required) and '"' (Always required).
  * </p>
  */
-RT_UN RT_CALL RtGetArgSizeInCommandLine(RT_CHAR* lpArg)
+RT_UN RT_CALL RtProcess_GetArgSizeInCommandLine(RT_CHAR* lpArg)
 {
   RT_UN unAntiSlashes;
   RT_UN unDoubleQuotes;
@@ -234,7 +234,7 @@ RT_UN RT_CALL RtGetArgSizeInCommandLine(RT_CHAR* lpArg)
  * </ul>
  *
  */
-RT_B RT_CALL RtArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpCommandLine)
+RT_B RT_CALL RtProcess_ArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, RT_CHAR** lpCommandLine)
 {
   RT_CHAR** lpInApplicationPathAndArgs;
   RT_UN unCommandLineBufferSize;
@@ -257,7 +257,7 @@ RT_B RT_CALL RtArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lp
     {
       unCommandLineBufferSize++; /* Space separator between arguments. */
     }
-    unCommandLineBufferSize += RtGetArgSizeInCommandLine(*lpInApplicationPathAndArgs);
+    unCommandLineBufferSize += RtProcess_GetArgSizeInCommandLine(*lpInApplicationPathAndArgs);
 
     lpInApplicationPathAndArgs++;
   }
@@ -265,7 +265,7 @@ RT_B RT_CALL RtArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lp
   /* Add one for trailing zero. */
   unCommandLineBufferSize++;
 
-  if (!RtAllocIfNeeded(lpBuffer, unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpCommandLine, unCommandLineBufferSize * sizeof(RT_CHAR))) goto handle_error;
+  if (!RtStaticHeap_AllocIfNeeded(lpBuffer, unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpCommandLine, unCommandLineBufferSize * sizeof(RT_CHAR))) goto handle_error;
 
   /* Simplify pointer access. */
   lpLocalCommandLine = *lpCommandLine;
@@ -285,7 +285,7 @@ RT_B RT_CALL RtArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_CHAR* lp
       if (!RtChar_CopyStringWithSize(_R(" "), 1, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
     }
     /* Convert argument. */
-    if (!RtConvertArgToCommandLine(*lpInApplicationPathAndArgs, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+    if (!RtProcess_ConvertArgToCommandLine(*lpInApplicationPathAndArgs, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
 
     lpInApplicationPathAndArgs++;
   }
@@ -304,7 +304,7 @@ handle_error:
 /**
  * Called either by the main process or by a forked process if bChild is RT_TRUE.
  */
-RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
+RT_B RT_CALL RtProcess_CreateActualLinux(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                         RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
                                         RT_CHAR** lpApplicationPathAndArgs)
 {
@@ -337,7 +337,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     /* Close the read pipe, used by the parent/intermediate. */
     if (!RtIoDevice_Free(lpInput))
     {
-      RtWriteLastErrorMessage(_R("Failed to close reading pipe: "));
+      RtErrorMessage_WriteLast(_R("Failed to close reading pipe: "));
       goto handle_child_error;
     }
 
@@ -348,7 +348,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     {
       if (dup2(lpStdInput->nFileDescriptor, 0) == -1)
       {
-        RtWriteLastErrorMessage(_R("Failed to duplicate stdin redirection: "));
+        RtErrorMessage_WriteLast(_R("Failed to duplicate stdin redirection: "));
         goto handle_child_error;
       }
     }
@@ -356,7 +356,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     {
       if (dup2(lpStdOutput->nFileDescriptor, 1) == -1)
       {
-        RtWriteLastErrorMessage(_R("Failed to duplicate stdout redirection: "));
+        RtErrorMessage_WriteLast(_R("Failed to duplicate stdout redirection: "));
         goto handle_child_error;
       }
     }
@@ -364,7 +364,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     {
       if (dup2(lpStdError->nFileDescriptor, 2) == -1)
       {
-        RtWriteLastErrorMessage(_R("Failed to duplicate stderr redirection: "));
+        RtErrorMessage_WriteLast(_R("Failed to duplicate stderr redirection: "));
         goto handle_child_error;
       }
     }
@@ -375,7 +375,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
       /* chdir Returns zero in case of success, set errno. */
        if (chdir(lpCurrentDirectory))
        {
-         RtWriteLastErrorMessageVariadic(RT_NULL, _R("Failed to change current directory to \""), lpCurrentDirectory, _R("\": "), (RT_CHAR*)RT_NULL);
+         RtErrorMessage_WriteLastVariadic(RT_NULL, _R("Failed to change current directory to \""), lpCurrentDirectory, _R("\": "), (RT_CHAR*)RT_NULL);
          goto handle_child_error;
        }
     }
@@ -385,7 +385,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     {
       if (!RtEnvVars_GetArray(lpEnvVars, &lpEnvVarsArray))
       {
-        RtWriteLastErrorMessage(_R("Failed to compute environment: "));
+        RtErrorMessage_WriteLast(_R("Failed to compute environment: "));
         goto handle_child_error;
       }
       execvpe(lpApplicationPathAndArgs[0], lpApplicationPathAndArgs, lpEnvVarsArray);
@@ -394,7 +394,7 @@ RT_B RT_CALL RtCreateActualLinuxProcess(RT_PROCESS* lpProcess, RT_CHAR* lpCurren
     {
       execvp(lpApplicationPathAndArgs[0], lpApplicationPathAndArgs);
     }
-    RtWriteLastErrorMessageVariadic(RT_NULL, _R("Failed to start \""), lpApplicationPathAndArgs[0], _R("\": "), (RT_CHAR*)RT_NULL);
+    RtErrorMessage_WriteLastVariadic(RT_NULL, _R("Failed to start \""), lpApplicationPathAndArgs[0], _R("\": "), (RT_CHAR*)RT_NULL);
 
 handle_child_error:
 
@@ -402,13 +402,13 @@ handle_child_error:
     nErrno = errno;
     if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
     {
-      RtWriteLastErrorMessage(_R("Failed to write to parent pipe: "));
+      RtErrorMessage_WriteLast(_R("Failed to write to parent pipe: "));
     }
 
     /* We do not need the writing pipe anymore so we close it. */
     if (!RtIoDevice_Free(lpOutput))
     {
-      RtWriteLastErrorMessage(_R("Failed to close writing pipe: "));
+      RtErrorMessage_WriteLast(_R("Failed to close writing pipe: "));
     }
 
     /* Kill forked child process. */
@@ -460,7 +460,7 @@ handle_error:
 /**
  * Fork a process that will fork again to avoid zombification.
  */
-RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
+RT_B RT_CALL RtProcess_CreateLinuxUsingIntermediate(RT_PROCESS* lpProcess, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                                    RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
                                                    RT_CHAR** lpApplicationPathAndArgs)
 {
@@ -495,18 +495,18 @@ RT_B RT_CALL RtCreateLinuxProcessUsingIntermediate(RT_PROCESS* lpProcess, RT_CHA
     /* Close the read pipe, used by the parent. */
     if (!RtIoDevice_Free(lpInput))
     {
-      RtWriteLastErrorMessage(_R("Failed to close intermediate reading pipe: "));
+      RtErrorMessage_WriteLast(_R("Failed to close intermediate reading pipe: "));
       goto handle_child_error;
     }
 
     /* Fork actual process from the current forked process. */
-    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_child_error;
+    if (!RtProcess_CreateActualLinux(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_child_error;
 
     /* Write child PID into the pipe. */
     nChildPid = lpProcess->nPid;
     if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nChildPid, sizeof(nChildPid)))
     {
-      RtWriteLastErrorMessage(_R("Failed to write the child PID into the pipe: "));
+      RtErrorMessage_WriteLast(_R("Failed to write the child PID into the pipe: "));
       goto handle_child_error;
     }
 
@@ -519,13 +519,13 @@ handle_child_error:
     nErrno = errno;
     if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
     {
-      RtWriteLastErrorMessage(_R("Failed to write to parent pipe: "));
+      RtErrorMessage_WriteLast(_R("Failed to write to parent pipe: "));
     }
 
     /* We do not need the writing pipe anymore so we close it. */
     if (!RtIoDevice_Free(lpOutput))
     {
-      RtWriteLastErrorMessage(_R("Failed to close writing pipe: "));
+      RtErrorMessage_WriteLast(_R("Failed to close writing pipe: "));
     }
 
     /* Kill forked intermediate process. */
@@ -543,8 +543,8 @@ handle_child_error:
     if (!RtIoDevice_Free(lpOutput)) goto handle_error;
 
     /* Retrieve intermediate exit code. */
-    if (!RtJoinProcess(&rtIntermediateProcess)) goto handle_error;
-    if (!RtGetProcessExitCode(&rtIntermediateProcess, &unExitCode)) goto handle_error;
+    if (!RtProcess_Join(&rtIntermediateProcess)) goto handle_error;
+    if (!RtProcess_GetExitCode(&rtIntermediateProcess, &unExitCode)) goto handle_error;
 
     if (unExitCode)
     {
@@ -607,7 +607,7 @@ handle_error:
 
 #endif
 
-RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
+RT_B RT_API RtProcess_CreateWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
                                             RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
                                             RT_CHAR** lpApplicationPathAndArgs)
 {
@@ -715,7 +715,7 @@ RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, 
     }
   }
 
-  if (!RtArgVToCommandLine(lpApplicationPathAndArgs, lpCommandLineBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, &lpCommandLine)) goto handle_error;
+  if (!RtProcess_ArgVToCommandLine(lpApplicationPathAndArgs, lpCommandLineBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &lpHeapBuffer, &unHeapBufferSize, &lpCommandLine)) goto handle_error;
 
   if (lpEnvVars)
   {
@@ -742,7 +742,7 @@ RT_B RT_API RtCreateProcessWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, 
 free_resources:
   if (lpHeapBuffer)
   {
-    if (!RtFree(&lpHeapBuffer) && bResult) goto handle_error;
+    if (!RtStaticHeap_Free(&lpHeapBuffer) && bResult) goto handle_error;
   }
   if (bRestoreErrorNonInheritable)
   {
@@ -769,11 +769,11 @@ handle_error:
 
   if (bChild)
   {
-    if (!RtCreateActualLinuxProcess(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_error;
+    if (!RtProcess_CreateActualLinux(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_error;
   }
   else
   {
-    if (!RtCreateLinuxProcessUsingIntermediate(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_error;
+    if (!RtProcess_CreateLinuxUsingIntermediate(lpProcess, lpCurrentDirectory, lpEnvVars, lpStdInput, lpStdOutput, lpStdError, lpApplicationPathAndArgs)) goto handle_error;
   }
 
   bResult = RT_SUCCESS;
@@ -787,7 +787,7 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtJoinProcess(RT_PROCESS* lpProcess)
+RT_B RT_API RtProcess_Join(RT_PROCESS* lpProcess)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unReturnedValue;
@@ -835,7 +835,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtGetProcessExitCode(RT_PROCESS* lpProcess, RT_UN32* lpExitCode)
+RT_B RT_API RtProcess_GetExitCode(RT_PROCESS* lpProcess, RT_UN32* lpExitCode)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_B bResult;
@@ -857,7 +857,7 @@ handle_error:
 #endif
 }
 
-RT_B RT_API RtFreeProcess(RT_PROCESS* lpProcess)
+RT_B RT_API RtProcess_Free(RT_PROCESS* lpProcess)
 {
   RT_B bResult;
 

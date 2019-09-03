@@ -17,7 +17,7 @@
  *
  * @return RT_FALSE in case of error.
  */
-RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtErrorMessage_GetLast(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 /**
  * Write last error message into console standard error stream.
@@ -26,7 +26,7 @@ RT_B RT_API RtGetLastErrorMessage(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *
  * The optional <tt>lpPrefix</tt> is directly concatenated before the operating system error.
  * </p>
  */
-RT_B RT_API RtWriteLastErrorMessage(RT_CHAR* lpPrefix);
+RT_B RT_API RtErrorMessage_WriteLast(RT_CHAR* lpPrefix);
 
 /**
  * Write last error message into console standard error stream.
@@ -38,8 +38,8 @@ RT_B RT_API RtWriteLastErrorMessage(RT_CHAR* lpPrefix);
  * @param lpNull Not used, should be RT_NULL.
  * @param ... Do not forget trailing (RT_CHAR*)RT_NULL.
  */
-RT_B RT_CDECL_API RtWriteLastErrorMessageVariadic(void* lpNull, ...);
+RT_B RT_CDECL_API RtErrorMessage_WriteLastVariadic(void* lpNull, ...);
 
-RT_B RT_API RtVWriteLastErrorMessage(va_list lpVaList);
+RT_B RT_API RtErrorMessage_VWriteLast(va_list lpVaList);
 
 #endif /* RT_ERROR_MESSAGE_H */
