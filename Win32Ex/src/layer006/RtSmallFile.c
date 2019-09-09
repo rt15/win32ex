@@ -17,6 +17,7 @@ RT_UN RT_API RtSmallFile_ReadWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer,
 {
   RT_FILE rtFile;
   RT_B bFreeFile;
+  RT_INPUT_STREAM* lpInputStream;
   RT_UN unBytesRead;
   RT_UN unResult;
 
@@ -26,14 +27,14 @@ RT_UN RT_API RtSmallFile_ReadWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer,
   bFreeFile = RT_TRUE;
 
   /* Retrieve the size of the file. */
-  unResult = RtFile_GetSize(&rtFile);
-  if (unResult == RT_TYPE_MAX_UN) goto handle_error;
+  if (!RtFile_GetSize(&rtFile, &unResult)) goto handle_error;
 
   /* Allocate a space of size of file + 1 for trailing zero. */
   if (!RtHeap_AllocIfNeeded(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unResult + 1, _R("File buffer"), lpHeap)) goto handle_error;
 
   /* Write file content into buffer. */
-  if (!RtFile_Read(&rtFile, *lpOutput, unResult, &unBytesRead)) goto handle_error;
+  lpInputStream = RtIoDevice_GetInputStream(&rtFile.rtIoDevice);
+  if (!lpInputStream->lpRead(lpInputStream, *lpOutput, unResult, &unBytesRead)) goto handle_error;
 
   /* We know the size of the file so we should be able to read it completely. */
   if (unResult != unBytesRead)
@@ -53,7 +54,7 @@ free_resources:
   if (bFreeFile)
   {
     bFreeFile = RT_FALSE;
-    if (!RtFile_Free(&rtFile) && unResult != RT_TYPE_MAX_UN) goto handle_error;
+    if (!RtIoDevice_Free(&rtFile.rtIoDevice) && unResult != RT_TYPE_MAX_UN) goto handle_error;
     bFreeFile = RT_FALSE;
   }
   return unResult;
@@ -64,6 +65,7 @@ RT_B RT_API RtSmallFile_Write(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpFi
   RT_FILE rtFile;
   RT_B bFileOpen;
   RT_UN unFileMode;
+  RT_OUTPUT_STREAM* lpOutputStream;
   RT_B bResult;
 
   bFileOpen = RT_FALSE;
@@ -91,14 +93,16 @@ RT_B RT_API RtSmallFile_Write(RT_CHAR8* lpInput, RT_UN unDataSize, RT_CHAR* lpFi
   {
     if (!RtFile_SetPointer(&rtFile, 0, RT_FILE_POS_END)) goto handle_error;
   }
-  if (!RtFile_Write(&rtFile, lpInput, unDataSize)) goto handle_error;
+
+  lpOutputStream = RtIoDevice_GetOutputStream(&rtFile.rtIoDevice);
+  if (!lpOutputStream->lpWrite(lpOutputStream, lpInput, unDataSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bFileOpen)
   {
     bFileOpen = RT_FALSE;
-    if (!RtFile_Free(&rtFile) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(&rtFile.rtIoDevice) && bResult) goto handle_error;
   }
   return bResult;
 

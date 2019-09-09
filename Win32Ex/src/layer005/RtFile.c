@@ -17,8 +17,10 @@ RT_B RT_API RtFile_Create(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
 #ifdef RT_DEFINE_WINDOWS
   DWORD unFlags;   /* Flags d'ouverture du fichier                              */
   DWORD unCreationDistribution;
+  RT_H hFile;
 #else
   int nFlags;      /* Flags d'ouverture du fichier                              */
+  RT_N32 nFile;
 #endif
   RT_B bResult;
 
@@ -64,18 +66,24 @@ RT_B RT_API RtFile_Create(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode)
 
 #ifdef RT_DEFINE_WINDOWS
 
-  lpFile->hFile = CreateFile(lpFilePath,
-                             unFlags,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             NULL,
-                             unCreationDistribution,
-                             FILE_ATTRIBUTE_NORMAL,
-                             NULL);
-  if (lpFile->hFile == INVALID_HANDLE_VALUE) goto handle_error;
+  hFile = CreateFile(lpFilePath,
+                     unFlags,
+                     FILE_SHARE_READ | FILE_SHARE_WRITE,
+                     NULL,
+                     unCreationDistribution,
+                     FILE_ATTRIBUTE_NORMAL,
+                     NULL);
+  if (hFile == INVALID_HANDLE_VALUE) goto handle_error;
 
 #else /* NOT RT_DEFINE_WINDOWS */
-  lpFile->nFile = open(lpFilePath, nFlags, RT_FILE_RIGHTS);
-  if (lpFile->nFile == -1) goto handle_error;
+  nFile = open(lpFilePath, nFlags, RT_FILE_RIGHTS);
+  if (nFile == -1) goto handle_error;
+#endif
+
+#ifdef RT_DEFINE_WINDOWS
+  RtIoDevice_CreateFromHandle(&lpFile->rtIoDevice, hFile);
+#else
+  RtIoDevice_CreateFromFileDescriptor(&lpFile->rtIoDevice, nFile);
 #endif
 
   bResult = RT_SUCCESS;
@@ -87,140 +95,29 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtFile_CreateTemp(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
-{
-  RT_UN unWritten;
-  RT_B bResult;
-
-  /* Little trick: use the buffer to store the temp directory. */
-  unWritten = 0;
-  if (!RtFileSystem_GetTempDirectory(lpBuffer, unBufferSize, &unWritten)) goto handle_error;
-
-  if (!RtFile_CreateTempWithParentPath(lpFile, lpPrefix, lpBuffer, unWritten, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
-
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
-
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
-}
-
-RT_B RT_API RtFile_CreateTempWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
-{
-#ifdef RT_DEFINE_LINUX
-  RT_UN unWritten;
-#endif
-  RT_B bResult;
-
-#ifdef RT_DEFINE_WINDOWS
-  /* GetTempFileName create an empty file. */
-  if (!GetTempFileName(lpParentPath, lpPrefix, 0, lpBuffer)) goto handle_error;
-
-  if (!RtFile_Create(lpFile, lpBuffer, RT_FILE_MODE_TRUNCATE)) goto handle_error;
-
-  *lpWritten += RtChar_GetStringSize(lpBuffer);
-#else
-  unWritten = unParentPathSize;
-  if (!RtFileSystem_BuildPath(lpParentPath, unParentPathSize, lpPrefix, unBufferSize, &unWritten)) goto handle_error;
-
-  /* The 6 last characters of mkstemp template must be "XXXXXX" and they will be replaced by mkstemp. */
-  if (!RtChar_CopyStringWithSize(_R("XXXXXX"), 6, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
-
-  /* Returns -1 and set errno in case of error. */
-  lpFile->nFile = mkostemp(lpBuffer, O_CLOEXEC);
-  if (lpFile->nFile == -1) goto handle_error;
-
-  *lpWritten += unWritten;
-#endif
-
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
-
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
-}
-
-RT_B RT_API RtFile_Read(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead)
-{
-#ifdef RT_DEFINE_WINDOWS
-  DWORD unBytesRead;
-#else
-  ssize_t nBytesRead;
-#endif
-  RT_B bResult;
-
-  bResult = RT_FAILURE;
-
-#ifdef RT_DEFINE_WINDOWS
-  /* TODO: Manage more than 4Go? */
-  if (!ReadFile(lpFile->hFile, lpBuffer, (DWORD)unBytesToRead, &unBytesRead, NULL)) goto handle_error;
-  *lpBytesRead = unBytesRead;
-#else
-  /* read returns -1 and set errno in case of issue. */
-  nBytesRead = read(lpFile->nFile, lpBuffer, unBytesToRead);
-  if (nBytesRead == -1) goto handle_error;
-  *lpBytesRead = nBytesRead;
-#endif
-
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
-
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
-}
-
-RT_B RT_API RtFile_Write(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite)
-{
-#ifdef RT_DEFINE_WINDOWS
-  DWORD unBytesWritten;
-#endif
-  RT_B bResult;
-
-  bResult = RT_FAILURE;
-
-#ifdef RT_DEFINE_WINDOWS
-  if (WriteFile(lpFile->hFile,
-                lpData,
-                (DWORD)unBytesToWrite,
-                &unBytesWritten,
-                NULL))
-    if (unBytesWritten == unBytesToWrite)
-      bResult = RT_SUCCESS;
-#else
-  if (write(lpFile->nFile, lpData, unBytesToWrite) != -1)
-    bResult = RT_SUCCESS;
-#endif
-
-  return bResult;
-}
-
-RT_UN RT_API RtFile_GetSize(RT_FILE* lpFile)
+RT_B RT_API RtFile_GetSize(RT_FILE* lpFile, RT_UN* lpFileSize)
 {
   RT_UN unOldPos;
-  RT_UN unResult;
+  RT_B bResult;
 
   /* Backup the current position */
-  unOldPos = RtFile_GetPointer(lpFile);
+  if (!RtFile_GetPointer(lpFile, &unOldPos)) goto handle_error;
 
   /* Go to end of file. */
   if (!RtFile_SetPointer(lpFile, 0, RT_FILE_POS_END)) goto handle_error;
 
   /* Get the new position which is the file size. */
-  unResult = RtFile_GetPointer(lpFile);
+  if (!RtFile_GetPointer(lpFile, lpFileSize)) goto handle_error;
 
   /* Go back to original position. */
   if (!RtFile_SetPointer(lpFile, unOldPos, RT_FILE_POS_BEGIN)) goto handle_error;
 
+  bResult = RT_SUCCESS;
 free_resources:
-  return unResult;
+  return bResult;
+
 handle_error:
-  unResult = RT_TYPE_MAX_UN;
+  bResult = RT_FAILURE;
   goto free_resources;
 }
 
@@ -234,7 +131,7 @@ RT_B RT_API RtFile_SetPointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
   bResult = RT_FAILURE;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (SetFilePointer(lpFile->hFile, (LONG)nOffset, NULL, (DWORD)unFrom) != INVALID_SET_FILE_POINTER)
+  if (SetFilePointer(lpFile->rtIoDevice.hHandle, (LONG)nOffset, NULL, (DWORD)unFrom) != INVALID_SET_FILE_POINTER)
   {
     bResult = RT_SUCCESS;
   }
@@ -251,7 +148,7 @@ RT_B RT_API RtFile_SetPointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
       nFlag = SEEK_SET;
       break;
   }
-  if (lseek(lpFile->nFile, nOffset, nFlag) != -1)
+  if (lseek(lpFile->rtIoDevice.nFile, nOffset, nFlag) != -1)
   {
     bResult = RT_SUCCESS;
   }
@@ -260,46 +157,30 @@ RT_B RT_API RtFile_SetPointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
   return bResult;
 }
 
-RT_UN RT_API RtFile_GetPointer(RT_FILE* lpFile)
+RT_B RT_API RtFile_GetPointer(RT_FILE* lpFile, RT_UN* lpOffset)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD unReturnedValue;
 #else
   off_t nReturnedValue;
 #endif
-  RT_UN unResult;
-#ifdef RT_DEFINE_WINDOWS
-  unReturnedValue = SetFilePointer(lpFile->hFile, 0, NULL, FILE_CURRENT);
-  if (unReturnedValue == INVALID_SET_FILE_POINTER)
-  {
-    unResult = RT_TYPE_MAX_UN;
-  }
-  else
-  {
-    unResult = unReturnedValue;
-  }
-#else
-  nReturnedValue = lseek(lpFile->nFile, 0, SEEK_CUR);
-  if (nReturnedValue < 0)
-  {
-    unResult = RT_TYPE_MAX_UN;
-  }
-  else
-  {
-    unResult = nReturnedValue;
-  }
-#endif
-  return unResult;
-}
-
-RT_B RT_API RtFile_Free(RT_FILE* lpFile)
-{
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  bResult = CloseHandle(lpFile->hFile);
+  unReturnedValue = SetFilePointer(lpFile->rtIoDevice.hHandle, 0, NULL, FILE_CURRENT);
+  if (unReturnedValue == INVALID_SET_FILE_POINTER) goto handle_error;
+  *lpOffset = unReturnedValue;
 #else
-  bResult = (! close(lpFile->nFile));
+  nReturnedValue = lseek(lpFile->rtIoDevice.nFile, 0, SEEK_CUR);
+  if (nReturnedValue < 0) goto handle_error;
+  *lpOffset = nReturnedValue;
 #endif
+
+  bResult = RT_SUCCESS;
+free_resources:
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

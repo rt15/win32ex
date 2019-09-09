@@ -18,7 +18,7 @@ free_resources:
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFile_Free(&rtFile) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(&rtFile.rtIoDevice) && bResult) goto handle_error;
   }
   return bResult;
 

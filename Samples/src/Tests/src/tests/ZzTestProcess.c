@@ -10,10 +10,9 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   RT_FILE zzFile;
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
-  RT_IO_DEVICE zzFileIoDevice;
   RT_PIPE zzPipe;
-  RT_IO_DEVICE* lpInput;
-  RT_IO_DEVICE* lpOutput;
+  RT_IO_DEVICE* lpInputIoDevice;
+  RT_IO_DEVICE* lpOutputIoDevice;
   RT_B bInputCreated;
   RT_B bOutputCreated;
   RT_CHAR* lpApplicationPathAndArgs[3];
@@ -31,13 +30,13 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
-  if (!RtFile_CreateTemp(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
   if (!RtPipe_Create(&zzPipe)) goto handle_error;
-  lpInput = RtPipe_GetInput(&zzPipe);
-  lpOutput = RtPipe_GetOutput(&zzPipe);
+  lpInputIoDevice = RtPipe_GetInput(&zzPipe);
+  lpOutputIoDevice = RtPipe_GetOutput(&zzPipe);
   bInputCreated = RT_TRUE;
   bOutputCreated = RT_TRUE;
 
@@ -45,16 +44,10 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   lpApplicationPathAndArgs[1] = _R("--read-line");
   lpApplicationPathAndArgs[2] = RT_NULL;
 
-#ifdef RT_DEFINE_WINDOWS
-  RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
-#else
-  RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
-#endif
-
-  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpInput, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpInputIoDevice, &zzFile.rtIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
-  if (!ZzWriteLinesToDevice(lpOutput, lpHeap, _R("123"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!ZzWriteLinesToDevice(lpOutputIoDevice, lpHeap, _R("123"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   if (!RtProcess_Join(&zzProcess)) goto handle_error;
   if (!RtProcess_GetExitCode(&zzProcess, &unExitCode)) goto handle_error;
@@ -72,17 +65,17 @@ free_resources:
   if (bOutputCreated)
   {
     bOutputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpOutputIoDevice) && bResult) goto handle_error;
   }
   if (bInputCreated)
   {
     bInputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpInputIoDevice) && bResult) goto handle_error;
   }
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(&zzFile.rtIoDevice) && bResult) goto handle_error;
   }
   if (bDeleteTempFile)
   {
@@ -104,7 +97,6 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
   RT_FILE zzFile;
-  RT_IO_DEVICE zzFileIoDevice;
   RT_CHAR* lpApplicationPathAndArgs[13];
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
@@ -119,7 +111,7 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
-  if (!RtFile_CreateTemp(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -137,13 +129,7 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   lpApplicationPathAndArgs[11] = _R("b\\\"r");
   lpApplicationPathAndArgs[12] = RT_NULL;
 
-#ifdef RT_DEFINE_WINDOWS
-  RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
-#else
-  RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
-#endif
-
-  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, &zzFile.rtIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtProcess_Join(&zzProcess)) goto handle_error;
@@ -174,7 +160,7 @@ free_resources:
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(&zzFile.rtIoDevice) && bResult) goto handle_error;
   }
   if (bDeleteTempFile)
   {
@@ -196,7 +182,6 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
   RT_FILE zzFile;
-  RT_IO_DEVICE zzFileIoDevice;
   RT_CHAR* lpApplicationPathAndArgs[3];
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
@@ -212,7 +197,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unWritten = 0;
-  if (!RtFile_CreateTemp(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -220,12 +205,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   lpApplicationPathAndArgs[1] = _R("--bad");
   lpApplicationPathAndArgs[2] = RT_NULL;
 
-#ifdef RT_DEFINE_WINDOWS
-  RtIoDevice_CreateFromHandle(&zzFileIoDevice, zzFile.hFile);
-#else
-  RtIoDevice_CreateFromFileDescriptor(&zzFileIoDevice, zzFile.nFile);
-#endif
-  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, RT_NULL, &zzFileIoDevice, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, RT_NULL, RT_NULL, &zzFile.rtIoDevice, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtProcess_Join(&zzProcess)) goto handle_error;
@@ -245,7 +225,7 @@ free_resources:
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(&zzFile.rtIoDevice) && bResult) goto handle_error;
   }
   if (bDeleteTempFile)
   {
@@ -263,8 +243,8 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_PIPE zzPipe;
-  RT_IO_DEVICE* lpInput;
-  RT_IO_DEVICE* lpOutput;
+  RT_IO_DEVICE* lpInputIoDevice;
+  RT_IO_DEVICE* lpOutputIoDevice;
   RT_B bInputCreated;
   RT_B bOutputCreated;
   RT_ENV_VARS zzEnvVars;
@@ -287,8 +267,8 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   if (!RtPipe_Create(&zzPipe)) goto handle_error;
-  lpInput = RtPipe_GetInput(&zzPipe);
-  lpOutput = RtPipe_GetOutput(&zzPipe);
+  lpInputIoDevice = RtPipe_GetInput(&zzPipe);
+  lpOutputIoDevice = RtPipe_GetOutput(&zzPipe);
   bInputCreated = RT_TRUE;
   bOutputCreated = RT_TRUE;
 
@@ -302,7 +282,7 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   lpApplicationPathAndArgs[2] = _R("RT_PROCESS_VAR");
   lpApplicationPathAndArgs[3] = RT_NULL;
 
-  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzEnvVars, RT_NULL, lpOutput, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
+  if (!RtProcess_CreateWithRedirections(&zzProcess, RT_TRUE, RT_NULL, &zzEnvVars, RT_NULL, lpOutputIoDevice, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtProcess_Join(&zzProcess)) goto handle_error;
@@ -311,9 +291,9 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
 
   /* Close writing pipe on parent side. */
   bOutputCreated = RT_FALSE;
-  if (!RtIoDevice_Free(lpOutput)) goto handle_error;
+  if (!RtIoDevice_Free(lpOutputIoDevice)) goto handle_error;
 
-  if (!RtIoDevice_Read(RtIoDevice_GetInputStream(lpInput), lpPipeContent, 256 - 1, &unBytesRead)) goto handle_error;
+  if (!RtIoDevice_Read(RtIoDevice_GetInputStream(lpInputIoDevice), lpPipeContent, 256 - 1, &unBytesRead)) goto handle_error;
   lpPipeContent[unBytesRead] = 0;
   if (RtChar8_CompareStrings(lpPipeContent, "RT_PROCESS_VAR=VAR_VALUE\n")) goto handle_error;
 
@@ -332,12 +312,12 @@ free_resources:
   if (bOutputCreated)
   {
     bOutputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpOutputIoDevice) && bResult) goto handle_error;
   }
   if (bInputCreated)
   {
     bInputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpInputIoDevice) && bResult) goto handle_error;
   }
   return bResult;
 

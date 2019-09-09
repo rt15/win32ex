@@ -246,10 +246,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\src\Tests\src\tests\ZzTestFile.c"
-					>
-				</File>
-				<File
 					RelativePath="..\src\Tests\src\tests\ZzTestFileSystem.c"
 					>
 				</File>
@@ -278,6 +274,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestPipe.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Tests\src\tests\ZzTestProcess.c"
 					>
 				</File>
@@ -287,6 +287,10 @@
 				</File>
 				<File
 					RelativePath="..\src\Tests\src\tests\ZzTestRandom.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestSmallFile.c"
 					>
 				</File>
 				<File

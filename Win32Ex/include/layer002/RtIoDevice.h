@@ -27,6 +27,10 @@ typedef struct _RT_IO_DEVICE
 }
 RT_IO_DEVICE;
 
+/**
+ * In most cases, you should not need these functions.<br>
+ * Create the correct I/O device instead using <tt>RtFile_Create</tt>, <tt>RtPipe_Create</tt> and so on.
+ */
 #ifdef RT_DEFINE_WINDOWS
 void RT_API RtIoDevice_CreateFromHandle(RT_IO_DEVICE* lpIoDevice, RT_H hHandle);
 #else /* NOT RT_DEFINE_WINDOWS */
@@ -39,6 +43,18 @@ RT_B RT_API RtIoDevice_CreateFromStdError(RT_IO_DEVICE* lpIoDevice);
 
 RT_INPUT_STREAM* RT_API RtIoDevice_GetInputStream(RT_IO_DEVICE* lpIoDevice);
 RT_OUTPUT_STREAM* RT_API RtIoDevice_GetOutputStream(RT_IO_DEVICE* lpIoDevice);
+
+/**
+ * In most cases, you should not need this functions.<br>
+ * Use <tt>lpInputStream->lpRead</tt> instead.
+ */
+RT_B RT_API RtIoDevice_Read(RT_INPUT_STREAM* lpInputStream, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead);
+
+/**
+ * In most cases, you should not need this functions.<br>
+ * Use <tt>lpOutputStream->lpWrite</tt> instead.
+ */
+RT_B RT_API RtIoDevice_Write(RT_OUTPUT_STREAM* lpOutputStream, RT_CHAR8* lpData, RT_UN unBytesToWrite);
 
 /**
  * <p>
@@ -71,10 +87,6 @@ RT_B RT_API RtIoDevice_IsInheritable(RT_IO_DEVICE* lpIoDevice, RT_B* lpInheritab
  * </p>
  */
 RT_B RT_API RtIoDevice_SetInheritable(RT_IO_DEVICE* lpIoDevice, RT_B bInheritable);
-
-RT_B RT_API RtIoDevice_Read(RT_INPUT_STREAM* lpInputStream, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead);
-
-RT_B RT_API RtIoDevice_Write(RT_OUTPUT_STREAM* lpOutputStream, RT_CHAR8* lpData, RT_UN unBytesToWrite);
 
 /**
  * Should be called only with generic devices like files and pipes, not socket.<br>

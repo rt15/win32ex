@@ -63,6 +63,7 @@
 #include "layer006/RtSocket.h"
 #include "layer006/RtSmallFile.h"
 #include "layer006/RtTableMetadata.h"
+#include "layer006/RtTempFile.h"
 
 #include "layer007/RtProcess.h"
 #include "layer007/RtProperties.h"

@@ -938,6 +938,10 @@
 						/>
 					</FileConfiguration>
 				</File>
+				<File
+					RelativePath="..\src\layer006\RtTempFile.c"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="layer007"
@@ -1266,6 +1270,10 @@
 				</File>
 				<File
 					RelativePath="..\include\layer006\RtTableMetadata.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\layer006\RtTempFile.h"
 					>
 				</File>
 			</Filter>

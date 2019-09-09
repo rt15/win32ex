@@ -2,6 +2,7 @@
 #define RT_FILE_H
 
 #include "layer000/RtWin32ExTypes.h"
+#include "layer002/RtIoDevice.h"
 
 /**
  * @file
@@ -10,11 +11,7 @@
 
 typedef struct _RT_FILE
 {
-#ifdef RT_DEFINE_WINDOWS
-  RT_H hFile;
-#else /* NOT RT_DEFINE_WINDOWS */
-  RT_N32 nFile;
-#endif
+  RT_IO_DEVICE rtIoDevice;
 }
 RT_FILE;
 
@@ -32,89 +29,26 @@ RT_FILE;
 #define RT_FILE_MODE_NEW 3
 
 /**
- * Ouvre le fichier spécifié
- *
- * Le fichier est créé s'il n'existe pas.
- *
- * <p>
- * The created file is not inheritable.
- * </p>
- *
- * @param lpFilePath Le fichier à ouvrir
- * @param nMode Le mode d'ouverture RT_FILE_MODE_XXX
- * @return Zero en cas d'échec
- */
-RT_B RT_API RtFile_Create(RT_FILE* lpFile, RT_CHAR* lpFileName, RT_UN unMode);
-
-/**
- * Create a temporary file.
+ * Open the specified file.<br>
+ * Use <tt>RtIoDevice_Free</tt> to close the file.
  *
  * <p>
  * The created file is not inheritable.
  * </p>
- *
- * @param lpBuffer Receive the path to the file so the caller can delete the file.
- * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
  */
-RT_B RT_API RtFile_CreateTemp(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
-
-/**
- * Create a temporary file in given path.
- *
- * <p>
- * The created file is not inheritable.
- * </p>
- *
- * @param lpParentPath Directory in which the temporary file is created.
- * @param lpBuffer Receive the path to the file so the caller can delete the file.
- * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
- */
-RT_B RT_API RtFile_CreateTempWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
-
-/**
- * Read from a file.
- *
- * @param unBytesToRead Count of bytes to read.
- * @param lpBytesRead Count of bytes actually read as we may have reached the end of file/pipe.
- * @return RT_FAILURE in cas of failure.
- */
-RT_B RT_API RtFile_Read(RT_FILE* lpFile, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead);
-
-/**
- * Ecrit un certain nombre d'octets dans un fichier
- *
- * @param lpData Données à écrire
- * @param nNumberOfBytesToWrite Nombre d'octets à écrire
- * @return Zero en cas d'échec
- */
-RT_B RT_API RtFile_Write(RT_FILE* lpFile, RT_CHAR8* lpData, RT_UN unBytesToWrite);
+RT_B RT_API RtFile_Create(RT_FILE* lpFile, RT_CHAR* lpFilePath, RT_UN unMode);
 
 /**
  * Compute the size of an open file.
  *
- * @return RT_TYPE_MAX_UN in case of error (And the file pointer might be corrupted).
+ * @return RT_FAILURE in case of error (And the file pointer might be corrupted).
  */
-RT_UN RT_API RtFile_GetSize(RT_FILE* lpFile);
+RT_B RT_API RtFile_GetSize(RT_FILE* lpFile, RT_UN* lpFileSize);
 
-/**
- * Déplace le pointeur dans le fichier
- *
- * @param nOffset Déplacement à effectué
- * @param nFrom Type de positionnement : RT_FILE_POS_XXXX
- * @return Zero en cas d'échec
- */
 RT_B RT_API RtFile_SetPointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom);
 
-/**
- * Récupère la position courante dans le fichier
- *
- * @return La position courante, RT_TYPE_MAX_UN en cas de problème.
- */
-RT_UN RT_API RtFile_GetPointer(RT_FILE* lpFile);
+RT_B RT_API RtFile_GetPointer(RT_FILE* lpFile, RT_UN* lpOffset);
 
-/**
- * Ferme le fichier spécifié
- */
 RT_B RT_API RtFile_Free(RT_FILE* lpFile);
 
 #endif /* RT_FILE_H */

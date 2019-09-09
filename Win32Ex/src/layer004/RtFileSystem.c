@@ -588,7 +588,7 @@ RT_B RT_API RtFileSystem_SetCurrentDirectory(RT_CHAR* lpPath)
   return bResult;
 }
 
-RT_B RT_API RtFileSystem_GetFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
+RT_B RT_API RtFileSystem_GetFileSize(RT_CHAR* lpFilePath, RT_UN64* lpFileSize)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_CHAR lpLongPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
@@ -601,7 +601,7 @@ RT_B RT_API RtFileSystem_GetFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!RtFileSystem_GetLongPath(lpPath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetLongPath(lpFilePath, lpLongPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   /* GetFileAttributesEx returns 0 and use SetLastError in case of error. */
   if (!GetFileAttributesEx(lpLongPath, GetFileExInfoStandard, &fileInfo)) goto handle_error;
@@ -613,7 +613,7 @@ RT_B RT_API RtFileSystem_GetFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize)
 #else /* RT_DEFINE_WINDOWS */
 
   /* stat returns zero in case of success, -1 in case of failure and set errno. */
-  if (stat(lpPath, &fileInfo)) goto handle_error;
+  if (stat(lpFilePath, &fileInfo)) goto handle_error;
   *lpFileSize = fileInfo.st_size;
 #endif
 

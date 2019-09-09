@@ -42,3 +42,14 @@ RT_IO_DEVICE* RtPipe_GetOutput(RT_PIPE* lpPipe)
 {
   return &lpPipe->rtOutputIoDevice;
 }
+
+RT_B RT_API RtPipe_Free(RT_PIPE* lpPipe)
+{
+  RT_B bResult;
+
+  bResult = RT_SUCCESS;
+  if (!RtIoDevice_Free(&lpPipe->rtInputIoDevice)) bResult = RT_FAILURE;
+  if (!RtIoDevice_Free(&lpPipe->rtOutputIoDevice)) bResult = RT_FAILURE;
+
+  return bResult;
+}

@@ -226,19 +226,22 @@ RT_B RT_CALL ZzTestCreateFile(RT_CHAR* lpFilePath)
 {
   RT_B bFileCreated;
   RT_FILE zzFile;
+  RT_OUTPUT_STREAM* lpOutputStream;
   RT_B bResult;
 
   bFileCreated = RT_FALSE;
   if (!RtFile_Create(&zzFile, lpFilePath, RT_FILE_MODE_TRUNCATE)) goto handle_error;
   bFileCreated = RT_TRUE;
-  if (!RtFile_Write(&zzFile, "Hello, world!", 13)) goto handle_error;
+
+  lpOutputStream = RtIoDevice_GetOutputStream(&zzFile.rtIoDevice);
+  if (!lpOutputStream->lpWrite(lpOutputStream, "Hello, world!", 13)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
   if (bFileCreated)
   {
     bFileCreated = RT_FALSE;
-    if (!RtFile_Free(&zzFile) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(&zzFile.rtIoDevice) && bResult) goto handle_error;
   }
   return bResult;
 

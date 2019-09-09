@@ -26,6 +26,7 @@ typedef void* (RT_CALL *RT_HEAP_RE_ALLOC)(void* lpThis, void** lpArea, RT_UN unS
  *
  */
 typedef RT_B (RT_CALL *RT_HEAP_FREE)(void* lpThis, void** lpArea);
+
 typedef RT_B (RT_CALL *RT_HEAP_CLOSE)(void* lpThis);
 
 typedef struct _RT_HEAP

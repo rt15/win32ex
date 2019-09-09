@@ -102,7 +102,7 @@ RT_B RT_API RtFileSystem_GetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSi
 
 RT_B RT_API RtFileSystem_SetCurrentDirectory(RT_CHAR* lpPath);
 
-RT_B RT_API RtFileSystem_GetFileSize(RT_CHAR* lpPath, RT_UN64* lpFileSize);
+RT_B RT_API RtFileSystem_GetFileSize(RT_CHAR* lpFilePath, RT_UN64* lpFileSize);
 
 /**
  * Return RT_SUCCESS if the path is correct. Set last error in case of issue.

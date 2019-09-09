@@ -142,9 +142,6 @@
 		<Unit filename="../src/Tests/src/tests/ZzTestEvent.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/tests/ZzTestFile.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestFileSystem.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -166,6 +163,9 @@
 		<Unit filename="../src/Tests/src/tests/ZzTestNonBlockingSocket.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestPipe.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestProcess.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -173,6 +173,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestRandom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestSmallFile.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestSocket.c">

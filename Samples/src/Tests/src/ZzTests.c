@@ -121,7 +121,7 @@ RT_B RT_CALL ZzTests()
 
   if (!ZzAdjustDirectory())
   {
-    RtErrorMessage_WriteLast(_R("Directory adjustement failed: "));
+    RtErrorMessage_WriteLast(_R("Directory adjustment failed: "));
     goto handle_error;
   }
 
@@ -130,11 +130,12 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestRandom()) goto tests_failed;
   if (!ZzTestHeap(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestIoDevice()) goto tests_failed;
-  if (!ZzTestFile()) goto tests_failed;
+  if (!ZzTestPipe()) goto tests_failed;
   if (!ZzTestFileSystem()) goto tests_failed;
   if (!ZzTestChar()) goto tests_failed;
   if (!ZzTestBase64()) goto tests_failed;
   if (!ZzTestEncoding()) goto tests_failed;
+  if (!ZzTestSmallFile(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestProperties(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestAtomic()) goto tests_failed;
   if (!ZzTestThread()) goto tests_failed;
