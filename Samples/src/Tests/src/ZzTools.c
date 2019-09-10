@@ -132,6 +132,7 @@ RT_B RT_CALL ZzVWriteLinesToDevice(va_list lpVaList, RT_IO_DEVICE* lpIoDevice, R
   RT_CHAR* lpLines;
   RT_CHAR8* lpRawFileContent;
   RT_UN unRawFileContentSize;
+  RT_OUTPUT_STREAM* lpOutputStream;
   RT_B bResult;
 
   lpLines = RT_NULL;
@@ -142,7 +143,8 @@ RT_B RT_CALL ZzVWriteLinesToDevice(va_list lpVaList, RT_IO_DEVICE* lpIoDevice, R
   unRawFileContentSize = RtEncoding_EncodeWithHeap(lpLines, RT_TYPE_MAX_UN, RT_ENCODING_US_ASCII, &lpRawFileContent, lpHeap);
   if (unRawFileContentSize == -1) goto handle_error;
 
-  if (!RtIoDevice_Write(RtIoDevice_GetOutputStream(lpIoDevice), lpRawFileContent, unRawFileContentSize)) goto handle_error;
+  lpOutputStream = RtIoDevice_GetOutputStream(lpIoDevice);
+  if (!lpOutputStream->lpWrite(lpOutputStream, lpRawFileContent, unRawFileContentSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -175,11 +177,11 @@ RT_B RT_CALL ZzAdjustDirectory()
 
   unPathSize = unWritten;
   unWritten = 0;
-  if (!RtFileSystem_GetNewParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   unPathSize = unWritten;
   unWritten = 0;
-  if (!RtFileSystem_GetNewParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
 
   if (!RtFileSystem_BuildPath(lpPath, unWritten, _R("src"), RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
 

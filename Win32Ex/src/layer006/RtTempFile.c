@@ -46,8 +46,8 @@ RT_B RT_API RtTempFile_CreateWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, 
   if (!RtChar_CopyStringWithSize(_R("XXXXXX"), 6, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
   /* Returns -1 and set errno in case of error. */
-  lpFile->nFile = mkostemp(lpBuffer, O_CLOEXEC);
-  if (lpFile->nFile == -1) goto handle_error;
+  lpFile->rtIoDevice.nFileDescriptor = mkostemp(lpBuffer, O_CLOEXEC);
+  if (lpFile->rtIoDevice.nFileDescriptor == -1) goto handle_error;
 
   *lpWritten += unWritten;
 #endif

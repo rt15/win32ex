@@ -161,24 +161,25 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzTestDoGetNewParentPath(RT_CHAR* lpPath, RT_CHAR* lpExpected)
+RT_B RT_CALL ZzTestDoGetParentPath(RT_CHAR* lpPath, RT_CHAR* lpExpected)
 {
   RT_CHAR lpBuffer[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtChar_CopyString(_R("Testing RtFileSystem_GetNewParentPath on \""),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(lpPath,                                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\", expecting \""),                  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(lpExpected,                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\", found \""),                      &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtFileSystem_GetNewParentPath(lpPath, RtChar_GetStringSize(lpPath),   &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\"\n"),                              &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("Testing RtFileSystem_GetParentPath on \""), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpPath,                                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\", expecting \""),                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpExpected,                                     &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\", found \""),                             &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpPath, RtChar_GetStringSize(lpPath),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("\"\n"),                                     &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   unWritten = 0;
-  if (!RtFileSystem_GetNewParentPath(lpPath, RtChar_GetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpPath, RtChar_GetStringSize(lpPath), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (unWritten != RtChar_GetStringSize(lpBuffer)) goto handle_error;
   if (RtChar_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
 
   bResult = RT_SUCCESS;
@@ -190,27 +191,27 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzTestGetNewParentPath()
+RT_B RT_CALL ZzTestGetParentPath()
 {
   RT_B bResult;
 
-  if (!ZzTestDoGetNewParentPath(_R("foo.txt"), _R("."))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("../data.txt"), _R(".."))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("./data.txt"), _R("."))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("data/foo.txt"), _R("data"))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("data//foo.txt"), _R("data"))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("/data/foo.txt"), _R("/data"))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("/foo/../data.txt"), _R("/foo/.."))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("foo.txt"), _R("."))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("../data.txt"), _R(".."))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("./data.txt"), _R("."))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("data/foo.txt"), _R("data"))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("data//foo.txt"), _R("data"))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/data/foo.txt"), _R("/data"))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/data/files/foo.txt"), _R("/data/files"))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/foo/../data.txt"), _R("/foo/.."))) goto handle_error;
 
 #ifdef RT_DEFINE_WINDOWS
-  if (!ZzTestDoGetNewParentPath(_R("/"), _R("."))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("/data"), _R("."))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("//data"), _R("."))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/"), _R("."))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/data"), _R("."))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("//data"), _R("."))) goto handle_error;
 #else /* NOT RT_DEFINE_WINDOWS */
-  if (!ZzTestDoGetNewParentPath(_R("/"), _R("/"))) goto handle_error;
-  if (!ZzTestDoGetNewParentPath(_R("/data"), _R("/"))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/"), _R("/"))) goto handle_error;
+  if (!ZzTestDoGetParentPath(_R("/data"), _R("/"))) goto handle_error;
 #endif
 
   bResult = RT_SUCCESS;
@@ -263,24 +264,24 @@ RT_B RT_CALL ZzTestCreateEmptyFile(RT_CHAR* lpFilePath1, RT_CHAR* lpFilePath2)
   if (RtFileSystem_CheckFileOrDirectory(lpFilePath2)) goto handle_error;
 
   /* Non existing, truncate. */
-  if (!RtFileUtils_CreateEmpty(lpFilePath2, RT_TRUE)) goto handle_error;
+  if (!RtFileSystem_CreateEmptyFile(lpFilePath2, RT_TRUE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath2, &unFileZize)) goto handle_error;
   if (unFileZize) goto handle_error;
   if (!RtFileSystem_DeleteFile(lpFilePath2)) goto handle_error;
 
   /* Non existing, new. */
-  if (!RtFileUtils_CreateEmpty(lpFilePath2, RT_FALSE)) goto handle_error;
+  if (!RtFileSystem_CreateEmptyFile(lpFilePath2, RT_FALSE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath2, &unFileZize)) goto handle_error;
   if (unFileZize) goto handle_error;
   if (!RtFileSystem_DeleteFile(lpFilePath2)) goto handle_error;
 
   /* Existing, new. */
-  if (RtFileUtils_CreateEmpty(lpFilePath1, RT_FALSE)) goto handle_error;
+  if (RtFileSystem_CreateEmptyFile(lpFilePath1, RT_FALSE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath1, &unFileZize)) goto handle_error;
   if (!unFileZize) goto handle_error;
 
   /* Existing, truncate. */
-  if (!RtFileUtils_CreateEmpty(lpFilePath1, RT_TRUE)) goto handle_error;
+  if (!RtFileSystem_CreateEmptyFile(lpFilePath1, RT_TRUE)) goto handle_error;
   if (!RtFileSystem_GetFileSize(lpFilePath1, &unFileZize)) goto handle_error;
   if (unFileZize) goto handle_error;
   if (!RtFileSystem_DeleteFile(lpFilePath1)) goto handle_error;
@@ -407,7 +408,7 @@ RT_B RT_CALL ZzTestFileSystem()
   if (!ZzTestGetLastSeparator()) goto handle_error;
   if (!ZzTestRemoveTrailingSeparators()) goto handle_error;
   if (!ZzTestGetFileName()) goto handle_error;
-  if (!ZzTestGetNewParentPath()) goto handle_error;
+  if (!ZzTestGetParentPath()) goto handle_error;
   if (!ZzTestMisc()) goto handle_error;
 
   bResult = RT_SUCCESS;

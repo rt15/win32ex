@@ -247,6 +247,7 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   RT_IO_DEVICE* lpOutputIoDevice;
   RT_B bInputCreated;
   RT_B bOutputCreated;
+  RT_INPUT_STREAM* lpInputStream;
   RT_ENV_VARS zzEnvVars;
   RT_B bEnvVarsCreated;
   RT_UN unWritten;
@@ -293,7 +294,8 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   bOutputCreated = RT_FALSE;
   if (!RtIoDevice_Free(lpOutputIoDevice)) goto handle_error;
 
-  if (!RtIoDevice_Read(RtIoDevice_GetInputStream(lpInputIoDevice), lpPipeContent, 256 - 1, &unBytesRead)) goto handle_error;
+  lpInputStream = RtIoDevice_GetInputStream(lpInputIoDevice);
+  if (!lpInputStream->lpRead(lpInputStream, lpPipeContent, 256 - 1, &unBytesRead)) goto handle_error;
   lpPipeContent[unBytesRead] = 0;
   if (RtChar8_CompareStrings(lpPipeContent, "RT_PROCESS_VAR=VAR_VALUE\n")) goto handle_error;
 

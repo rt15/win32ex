@@ -34,6 +34,7 @@
 #include "layer003/RtChar8.h"
 #include "layer003/RtEnvVar.h"
 #include "layer003/RtFastInitialization.h"
+#include "layer003/RtFile.h"
 #include "layer003/RtHeap.h"
 #include "layer003/RtInitialization.h"
 #include "layer003/RtPipe.h"
@@ -52,14 +53,12 @@
 
 #include "layer005/RtConsole.h"
 #include "layer005/RtEnvVars.h"
-#include "layer005/RtFile.h"
 #include "layer005/RtLinkedList.h"
 #include "layer005/RtList.h"
 #include "layer005/RtRuntimeHeap.h"
 #include "layer005/RtSortableArray.h"
 
 #include "layer006/RtErrorMessage.h"
-#include "layer006/RtFileUtils.h"
 #include "layer006/RtSocket.h"
 #include "layer006/RtSmallFile.h"
 #include "layer006/RtTableMetadata.h"

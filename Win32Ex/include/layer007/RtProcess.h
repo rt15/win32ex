@@ -4,7 +4,6 @@
 #include "layer000/RtWin32ExTypes.h"
 #include "layer002/RtIoDevice.h"
 #include "layer005/RtEnvVars.h"
-#include "layer005/RtFile.h"
 
 /**
  * @file
@@ -75,8 +74,8 @@ RT_B RT_API RtProcess_SpawnASync(RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnv
  * @param lpStdError Can be RT_NULL.
  */
 RT_B RT_API RtProcess_CreateWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
-                                            RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
-                                            RT_CHAR** lpApplicationPathAndArgs);
+                                             RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
+                                             RT_CHAR** lpApplicationPathAndArgs);
 
 /**
  * Can be used only if bChild was RT_TRUE while creating the process.<br>

@@ -413,6 +413,10 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\src\layer003\RtFile.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\layer003\RtHeap.c"
 					>
 					<FileConfiguration
@@ -737,28 +741,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\src\layer005\RtFile.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\src\layer005\RtLinkedList.c"
 					>
 					<FileConfiguration
@@ -783,24 +765,6 @@
 				<File
 					RelativePath="..\src\layer005\RtList.c"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\src\layer005\RtRuntimeHeap.c"
@@ -852,28 +816,6 @@
 				>
 				<File
 					RelativePath="..\src\layer006\RtErrorMessage.c"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\$(InputName)1.obj"
-							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\src\layer006\RtFileUtils.c"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -1157,6 +1099,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\include\layer003\RtFile.h"
+					>
+				</File>
+				<File
 					RelativePath="..\include\layer003\RtHeap.h"
 					>
 				</File>
@@ -1229,10 +1175,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\include\layer005\RtFile.h"
-					>
-				</File>
-				<File
 					RelativePath="..\include\layer005\RtLinkedList.h"
 					>
 				</File>
@@ -1254,10 +1196,6 @@
 				>
 				<File
 					RelativePath="..\include\layer006\RtErrorMessage.h"
-					>
-				</File>
-				<File
-					RelativePath="..\include\layer006\RtFileUtils.h"
 					>
 				</File>
 				<File

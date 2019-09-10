@@ -45,14 +45,12 @@ typedef RT_B (RT_CALL *RT_FILE_SYSTEM_BROWSE_CALLBACK)(RT_CHAR* lpPath, RT_UN un
  */
 RT_B RT_API RtFileSystem_BrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLBACK lpCallBack, RT_B bRecursively, RT_B bChildrenFirst, void* lpContext);
 
-RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten);
-
 /**
  * <p>
  * <tt>lpBuffer</tt> can be equals to <tt>lpPath</tt>.
  * </p>
  */
-RT_B RT_API RtFileSystem_GetNewParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
 
 /**
  * Find index of the last interesting separator.<br>
@@ -70,6 +68,12 @@ void RT_API RtFileSystem_RemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathS
  * @param lpBuffer Tampon de récupération du dernier élément
  */
 RT_B RT_API RtFileSystem_GetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+
+/**
+ * If <tt>bTruncate</tt> is true and corresponding file exists, it is replaced by an empty one.<br>
+ * If <tt>bTruncate</tt> is false, there is an error if the file already exists.
+ */
+RT_B RT_API RtFileSystem_CreateEmptyFile(RT_CHAR* lpFilePath, RT_B bTruncate);
 
 /**
  * Move a file.
@@ -182,7 +186,7 @@ RT_B RT_API RtFileSystem_GetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize,
 
 /**
  * Append a separator to <tt>lpPath</tt> if there is not already one.<br>
- * Should always be used as "/" is a valide path that can be returned by <tt>RtFileSystem_GetNewParentPath</tt>.<br>
+ * Should always be used as "/" is a valide path that can be returned by <tt>RtFileSystem_GetParentPath</tt>.<br>
  * So we cannot blindly add a separator to a path.
  */
 RT_B RT_API RtFileSystem_AppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten);

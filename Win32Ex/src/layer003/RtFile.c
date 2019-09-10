@@ -1,9 +1,7 @@
-#include "layer005/RtFile.h"
+#include "layer003/RtFile.h"
 
 #include "layer001/RtWin32ExOsHeaders.h"
 #include "layer002/RtError.h"
-#include "layer003/RtChar.h"
-#include "layer004/RtFileSystem.h"
 
 #ifndef RT_DEFINE_WINDOWS
 
@@ -148,7 +146,7 @@ RT_B RT_API RtFile_SetPointer(RT_FILE* lpFile, RT_N nOffset, RT_UN unFrom)
       nFlag = SEEK_SET;
       break;
   }
-  if (lseek(lpFile->rtIoDevice.nFile, nOffset, nFlag) != -1)
+  if (lseek(lpFile->rtIoDevice.nFileDescriptor, nOffset, nFlag) != -1)
   {
     bResult = RT_SUCCESS;
   }
@@ -171,7 +169,7 @@ RT_B RT_API RtFile_GetPointer(RT_FILE* lpFile, RT_UN* lpOffset)
   if (unReturnedValue == INVALID_SET_FILE_POINTER) goto handle_error;
   *lpOffset = unReturnedValue;
 #else
-  nReturnedValue = lseek(lpFile->rtIoDevice.nFile, 0, SEEK_CUR);
+  nReturnedValue = lseek(lpFile->rtIoDevice.nFileDescriptor, 0, SEEK_CUR);
   if (nReturnedValue < 0) goto handle_error;
   *lpOffset = nReturnedValue;
 #endif

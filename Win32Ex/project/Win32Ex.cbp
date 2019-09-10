@@ -125,6 +125,7 @@
 		<Unit filename="../include/layer003/RtChar8.h" />
 		<Unit filename="../include/layer003/RtEnvVar.h" />
 		<Unit filename="../include/layer003/RtFastInitialization.h" />
+		<Unit filename="../include/layer003/RtFile.h" />
 		<Unit filename="../include/layer003/RtHeap.h" />
 		<Unit filename="../include/layer003/RtInitialization.h" />
 		<Unit filename="../include/layer003/RtPipe.h" />
@@ -147,7 +148,6 @@
 		<Unit filename="../include/layer005/RtRuntimeHeap.h" />
 		<Unit filename="../include/layer005/RtSortableArray.h" />
 		<Unit filename="../include/layer006/RtErrorMessage.h" />
-		<Unit filename="../include/layer006/RtFileUtils.h" />
 		<Unit filename="../include/layer006/RtSmallFile.h" />
 		<Unit filename="../include/layer006/RtSocket.h" />
 		<Unit filename="../include/layer006/RtTableMetadata.h" />
@@ -206,6 +206,9 @@
 		<Unit filename="../src/layer003/RtFastInitialization.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/layer003/RtFile.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/layer003/RtHeap.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -254,9 +257,6 @@
 		<Unit filename="../src/layer005/RtEnvVars.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer005/RtFile.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/layer005/RtLinkedList.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -270,9 +270,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/RtErrorMessage.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer006/RtFileUtils.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/RtSmallFile.c">

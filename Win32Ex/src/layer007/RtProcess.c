@@ -310,10 +310,12 @@ RT_B RT_CALL RtProcess_CreateActualLinux(RT_PROCESS* lpProcess, RT_CHAR* lpCurre
 {
   RT_N nErrno;
   RT_PIPE rtPipe;
-  RT_IO_DEVICE* lpInput;
-  RT_IO_DEVICE* lpOutput;
+  RT_IO_DEVICE* lpInputIoDevice;
+  RT_IO_DEVICE* lpOutputIoDevice;
   RT_B bInputCreated;
   RT_B bOutputCreated;
+  RT_INPUT_STREAM* lpInputStream;
+  RT_OUTPUT_STREAM* lpOutputStream;
   pid_t nPid;
   RT_UN unBytesRead;
   RT_CHAR** lpEnvVarsArray;
@@ -324,10 +326,13 @@ RT_B RT_CALL RtProcess_CreateActualLinux(RT_PROCESS* lpProcess, RT_CHAR* lpCurre
 
   /* Not inheritable, only used by the forked process before execvp/execvpe. */
   if (!RtPipe_Create(&rtPipe)) goto handle_error;
-  lpInput = RtPipe_GetInput(&rtPipe);
-  lpOutput = RtPipe_GetOutput(&rtPipe);
+  lpInputIoDevice = RtPipe_GetInput(&rtPipe);
+  lpOutputIoDevice = RtPipe_GetOutput(&rtPipe);
   bInputCreated = RT_TRUE;
   bOutputCreated = RT_TRUE;
+
+  lpInputStream = RtIoDevice_GetInputStream(lpInputIoDevice);
+  lpOutputStream = RtIoDevice_GetOutputStream(lpOutputIoDevice);
 
   nPid = fork();
   if (nPid == 0)
@@ -335,7 +340,7 @@ RT_B RT_CALL RtProcess_CreateActualLinux(RT_PROCESS* lpProcess, RT_CHAR* lpCurre
     /* We are in the child process. */
 
     /* Close the read pipe, used by the parent/intermediate. */
-    if (!RtIoDevice_Free(lpInput))
+    if (!RtIoDevice_Free(lpInputIoDevice))
     {
       RtErrorMessage_WriteLast(_R("Failed to close reading pipe: "));
       goto handle_child_error;
@@ -400,13 +405,13 @@ handle_child_error:
 
     /* We will write errno in the pipe to be read by the parent. */
     nErrno = errno;
-    if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
+    if (!lpOutputStream->lpWrite(lpOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
     {
       RtErrorMessage_WriteLast(_R("Failed to write to parent pipe: "));
     }
 
     /* We do not need the writing pipe anymore so we close it. */
-    if (!RtIoDevice_Free(lpOutput))
+    if (!RtIoDevice_Free(lpOutputIoDevice))
     {
       RtErrorMessage_WriteLast(_R("Failed to close writing pipe: "));
     }
@@ -421,10 +426,10 @@ handle_child_error:
 
     /* We close writing pipe to avoid a dead lock. It will be used only by the child. */
     bOutputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpOutput)) goto handle_error;
+    if (!RtIoDevice_Free(lpOutputIoDevice)) goto handle_error;
 
     /* Synchronously read errno or zero bytes (success!) from created child. */
-    if (!RtIoDevice_Read(&lpInput->rtInputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
+    if (!lpInputStream->lpRead(lpInputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
     if (unBytesRead)
     {
       /* Copy errno read from child pipe into parent/intermediate errno. */
@@ -443,12 +448,12 @@ free_resources:
   if (bOutputCreated)
   {
     bOutputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpOutputIoDevice) && bResult) goto handle_error;
   }
   if (bInputCreated)
   {
     bInputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpInputIoDevice) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -467,10 +472,12 @@ RT_B RT_CALL RtProcess_CreateLinuxUsingIntermediate(RT_PROCESS* lpProcess, RT_CH
   RT_N nChildPid;
   RT_N nErrno;
   RT_PIPE rtPipe;
-  RT_IO_DEVICE* lpInput;
-  RT_IO_DEVICE* lpOutput;
+  RT_IO_DEVICE* lpInputIoDevice;
+  RT_IO_DEVICE* lpOutputIoDevice;
   RT_B bInputCreated;
   RT_B bOutputCreated;
+  RT_INPUT_STREAM* lpInputStream;
+  RT_OUTPUT_STREAM* lpOutputStream;
   pid_t nPid;
   RT_UN unBytesRead;
   RT_PROCESS rtIntermediateProcess;
@@ -482,10 +489,13 @@ RT_B RT_CALL RtProcess_CreateLinuxUsingIntermediate(RT_PROCESS* lpProcess, RT_CH
 
   /* Not inheritable, only used by the forked process. */
   if (!RtPipe_Create(&rtPipe)) goto handle_error;
-  lpInput = RtPipe_GetInput(&rtPipe);
-  lpOutput = RtPipe_GetOutput(&rtPipe);
+  lpInputIoDevice = RtPipe_GetInput(&rtPipe);
+  lpOutputIoDevice = RtPipe_GetOutput(&rtPipe);
   bInputCreated = RT_TRUE;
   bOutputCreated = RT_TRUE;
+
+  lpInputStream = RtIoDevice_GetInputStream(lpInputIoDevice);
+  lpOutputStream = RtIoDevice_GetOutputStream(lpOutputIoDevice);
 
   nPid = fork();
   if (nPid == 0)
@@ -493,7 +503,7 @@ RT_B RT_CALL RtProcess_CreateLinuxUsingIntermediate(RT_PROCESS* lpProcess, RT_CH
     /* We are in the intermediate process. */
 
     /* Close the read pipe, used by the parent. */
-    if (!RtIoDevice_Free(lpInput))
+    if (!RtIoDevice_Free(lpInputIoDevice))
     {
       RtErrorMessage_WriteLast(_R("Failed to close intermediate reading pipe: "));
       goto handle_child_error;
@@ -504,7 +514,7 @@ RT_B RT_CALL RtProcess_CreateLinuxUsingIntermediate(RT_PROCESS* lpProcess, RT_CH
 
     /* Write child PID into the pipe. */
     nChildPid = lpProcess->nPid;
-    if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nChildPid, sizeof(nChildPid)))
+    if (!lpOutputStream->lpWrite(lpOutputStream, (RT_CHAR8*)&nChildPid, sizeof(nChildPid)))
     {
       RtErrorMessage_WriteLast(_R("Failed to write the child PID into the pipe: "));
       goto handle_child_error;
@@ -517,13 +527,13 @@ handle_child_error:
 
     /* We will write errno in the pipe to be read by the parent. */
     nErrno = errno;
-    if (!RtIoDevice_Write(&lpOutput->rtOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
+    if (!lpOutputStream->lpWrite(lpOutputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno)))
     {
       RtErrorMessage_WriteLast(_R("Failed to write to parent pipe: "));
     }
 
     /* We do not need the writing pipe anymore so we close it. */
-    if (!RtIoDevice_Free(lpOutput))
+    if (!RtIoDevice_Free(lpOutputIoDevice))
     {
       RtErrorMessage_WriteLast(_R("Failed to close writing pipe: "));
     }
@@ -540,7 +550,7 @@ handle_child_error:
 
     /* We close writing pipe to avoid a dead lock. It will be used only by the intermediate. */
     bOutputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpOutput)) goto handle_error;
+    if (!RtIoDevice_Free(lpOutputIoDevice)) goto handle_error;
 
     /* Retrieve intermediate exit code. */
     if (!RtProcess_Join(&rtIntermediateProcess)) goto handle_error;
@@ -549,7 +559,7 @@ handle_child_error:
     if (unExitCode)
     {
       /* Synchronously read errno or zero bytes (should not happen) from created intermediate. */
-      if (!RtIoDevice_Read(&lpInput->rtInputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
+      if (!lpInputStream->lpRead(lpInputStream, (RT_CHAR8*)&nErrno, sizeof(nErrno), &unBytesRead)) goto handle_error;
       if (unBytesRead)
       {
         /* Copy errno read from child pipe into parent errno. */
@@ -566,7 +576,7 @@ handle_child_error:
     else
     {
       /* Synchronously read pid or zero bytes (should not happen) from created intermediate. */
-      if (!RtIoDevice_Read(&lpInput->rtInputStream, (RT_CHAR8*)&nChildPid, sizeof(nChildPid), &unBytesRead)) goto handle_error;
+      if (!lpInputStream->lpRead(lpInputStream, (RT_CHAR8*)&nChildPid, sizeof(nChildPid), &unBytesRead)) goto handle_error;
       if (unBytesRead)
       {
         /* Great, we have read the child pid from the intermediate pipe. */
@@ -591,12 +601,12 @@ free_resources:
   if (bOutputCreated)
   {
     bOutputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpOutput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpOutputIoDevice) && bResult) goto handle_error;
   }
   if (bInputCreated)
   {
     bInputCreated = RT_FALSE;
-    if (!RtIoDevice_Free(lpInput) && bResult) goto handle_error;
+    if (!RtIoDevice_Free(lpInputIoDevice) && bResult) goto handle_error;
   }
   return bResult;
 
@@ -608,8 +618,8 @@ handle_error:
 #endif
 
 RT_B RT_API RtProcess_CreateWithRedirections(RT_PROCESS* lpProcess, RT_B bChild, RT_CHAR* lpCurrentDirectory, RT_ENV_VARS* lpEnvVars,
-                                            RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
-                                            RT_CHAR** lpApplicationPathAndArgs)
+                                             RT_IO_DEVICE* lpStdInput, RT_IO_DEVICE* lpStdOutput, RT_IO_DEVICE* lpStdError,
+                                             RT_CHAR** lpApplicationPathAndArgs)
 {
 #ifdef RT_DEFINE_WINDOWS
   RT_IO_DEVICE rtStdInput;

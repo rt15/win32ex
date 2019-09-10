@@ -4,6 +4,7 @@
 #include "layer002/RtError.h"
 #include "layer003/RtChar.h"
 #include "layer003/RtEnvVar.h"
+#include "layer003/RtFile.h"
 
 #ifndef RT_DEFINE_WINDOWS
 
@@ -479,27 +480,7 @@ void RT_API RtFileSystem_RemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathS
   *lpWritten = *lpWritten - (unPathSize - (unI + 1));
 }
 
-RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten)
-{
-  RT_UN unWritten;
-  RT_B bResult;
-
-  unWritten = 0;
-  if (!RtFileSystem_GetNewParentPath(lpPath, unPathSize, lpPath, unBufferSize, &unWritten)) goto handle_error;
-
-  /* Set *lpWritten as we update a buffer. */
-  *lpWritten = unWritten;
-
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
-
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
-}
-
-RT_B RT_API RtFileSystem_GetNewParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
 {
   RT_UN unLastSeparator;
   RT_B bResult;
@@ -646,7 +627,7 @@ RT_B RT_API FileSys_FullPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferS
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtFileSystem_GetCurrentDirectory(                                   &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetCurrentDirectory(                             &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyStringWithSize(RT_FILE_SYSTEM_SEPARATOR_STRING, 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(lpPath,                                     &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
 
@@ -994,6 +975,30 @@ free_resources:
   return bResult;
 }
 
+RT_B RT_API RtFileSystem_CreateEmptyFile(RT_CHAR* lpPath, RT_B bTruncate)
+{
+  RT_FILE rtFile;
+  RT_B bFileCreated;
+  RT_B bResult;
+
+  bFileCreated = RT_FALSE;
+
+  if (!RtFile_Create(&rtFile, lpPath, bTruncate ? RT_FILE_MODE_TRUNCATE : RT_FILE_MODE_NEW)) goto handle_error;
+  bFileCreated = RT_TRUE;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  if (bFileCreated)
+  {
+    bFileCreated = RT_FALSE;
+    if (!RtIoDevice_Free(&rtFile.rtIoDevice) && bResult) goto handle_error;
+  }
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
 
 RT_B RT_CALL RtFileSystem_MoveOrRenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFilePath, RT_B bRename)
 {
@@ -1110,7 +1115,7 @@ RT_B RT_API RtFileSystem_RenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFi
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtFileSystem_GetNewParentPath(lpCurrentFilePath, RtChar_GetStringSize(lpCurrentFilePath), lpNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpCurrentFilePath, RtChar_GetStringSize(lpCurrentFilePath), lpNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   if (!RtFileSystem_AppendSeparator(lpNewFilePath, unWritten, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
   if (!RtChar_CopyString(lpNewFileName, &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
   if (!RtFileSystem_MoveOrRenameFile(lpCurrentFilePath, lpNewFilePath, RT_TRUE)) goto handle_error;
