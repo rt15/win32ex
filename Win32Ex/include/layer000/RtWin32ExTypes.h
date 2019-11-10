@@ -128,7 +128,7 @@ typedef int RT_N32;                  /* INT/INT32/LONG     */
 #endif
 
 #ifdef RT_DEFINE_GCC
-typedef long long RT_N64;
+typedef long long RT_N64;            /* Should be off_t as _FILE_OFFSET_BITS should be set to 64 even in 32 bits case. */
 typedef unsigned long long RT_UN64;
 #else
 typedef __int64 RT_N64;
@@ -141,7 +141,7 @@ typedef unsigned __int64 RT_UN64;
   typedef unsigned __int64 RT_UN;
 #else
   #ifdef RT_DEFINE_GCC
-    typedef long RT_N;                 /* Should be ssize_t on most systems (int on linux i386, long on x86_64). Should also be off_t. */
+    typedef long RT_N;                 /* Should be ssize_t on most systems (int on linux i386, long on x86_64). */
     typedef unsigned long RT_UN;       /* Should be size_t (Result of sizeof, can be considered primitive) but not on VC 32 bits which is using unsigned int. */
   #else
     /* _W64 is used to signal to VC compiler that even if the types are 32 bits, they will be 64 bits when targeting 64 bits. */

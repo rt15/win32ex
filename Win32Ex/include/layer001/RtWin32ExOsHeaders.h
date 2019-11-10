@@ -67,6 +67,9 @@
 
 #else /* NOT RT_DEFINE_WINDOWS */
 
+/* Required otherwise Linux files functions (like stats) may fail even when dealing with small files. */
+#define _FILE_OFFSET_BITS 64
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
