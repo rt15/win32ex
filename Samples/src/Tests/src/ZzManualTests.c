@@ -96,6 +96,7 @@ RT_B RT_CALL ZzMisc()
 
   /* Application configuration directory. */
   if (!RtFileSystem_GetApplicationDataDirectory(_R("Tests"), lpMessage, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
+  if (unOutputSize != RtChar_GetStringSize(lpMessage)) goto handle_error;
   if (!RtConsole_WriteStringsOrErrors(RT_TRUE, _R("App config dir = "), lpMessage, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* OS version. */
