@@ -379,7 +379,7 @@ RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName,
       }
       else
       {
-        /* No matchin password found. */
+        /* No matching password found. */
         RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
       }
       free(lpPasswdBuffer);
