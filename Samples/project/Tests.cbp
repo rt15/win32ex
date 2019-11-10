@@ -142,9 +142,6 @@
 		<Unit filename="../src/Tests/src/tests/ZzTestEnvVars.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/Tests/src/tests/ZzTestErrorMessage.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestEvent.c">
 			<Option compilerVar="CC" />
 		</Unit>
