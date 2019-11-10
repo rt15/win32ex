@@ -71,7 +71,7 @@ RT_B RT_API RtEnvVars_Contains(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT
  * Retrieve value of <tt>lpEnvVarName</tt> in <tt>lpEnvVars</tt>.<br>
  * Fails if the variable does not exist.
  */
-RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Be sure that the variable doesn't exist yet.<br>

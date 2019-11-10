@@ -47,10 +47,11 @@ RT_B RT_API RtFileSystem_BrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLB
 
 /**
  * <p>
- * <tt>lpBuffer</tt> can be equals to <tt>lpPath</tt>.
+ * <tt>lpBuffer</tt> can be equals to <tt>lpPath</tt>.<br>
+ * In that case we only cut <tt>lpPath</tt> at the right place efficiently.
  * </p>
  */
-RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Find index of the last interesting separator.<br>
@@ -59,7 +60,7 @@ RT_B RT_API RtFileSystem_GetParentPath(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHA
  */
 RT_UN RT_API RtFileSystem_GetLastSeparator(RT_CHAR* lpPath, RT_UN unPathSize);
 
-void RT_API RtFileSystem_RemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN *lpWritten);
+void RT_API RtFileSystem_RemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN* lpOutputSize);
 
 /**
  * Renvoie le nom du fichier ou du répertoire à partir d'un chemin
@@ -67,7 +68,7 @@ void RT_API RtFileSystem_RemoveTrailingSeparators(RT_CHAR* lpPath, RT_UN unPathS
  * @param lpPath Chemin dont on veut extraire le dernier élément
  * @param lpBuffer Tampon de récupération du dernier élément
  */
-RT_B RT_API RtFileSystem_GetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtFileSystem_GetFileName(RT_CHAR* lpPath, RT_UN unPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * If <tt>bTruncate</tt> is true and corresponding file exists, it is replaced by an empty one.<br>
@@ -102,7 +103,7 @@ RT_B RT_API RtFileSystem_DeleteFile(RT_CHAR* lpFilePath);
  */
 RT_B RT_API RtFileSystem_DeleteFileIfExists(RT_CHAR* lpFilePath);
 
-RT_B RT_API RtFileSystem_GetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtFileSystem_GetCurrentDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 RT_B RT_API RtFileSystem_SetCurrentDirectory(RT_CHAR* lpPath);
 
@@ -178,40 +179,36 @@ RT_B RT_API RtFileSystem_DeleteDirectoryIfExists(RT_CHAR* lpPath);
  */
 RT_B RT_API RtFileSystem_DeleteDirectoryRecursively(RT_CHAR* lpPath);
 
-RT_B RT_API RtFileSystem_GetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtFileSystem_GetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
-RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
-RT_B RT_API RtFileSystem_GetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtFileSystem_GetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Append a separator to <tt>lpPath</tt> if there is not already one.<br>
  * Should always be used as "/" is a valide path that can be returned by <tt>RtFileSystem_GetParentPath</tt>.<br>
  * So we cannot blindly add a separator to a path.
  */
-RT_B RT_API RtFileSystem_AppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtFileSystem_AppendSeparator(RT_CHAR* lpPath, RT_UN unPathSize, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Concatenate <tt>lpChildName</tt> after <tt>lpParentPath</tt> managing separator.
  *
- * @param lpParentPath Can ends with a separator or not.
- */
-RT_B RT_API RtFileSystem_BuildPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_UN unBufferSize, RT_UN* lpWritten);
-
-/**
- * Build a new path concatenating <tt>lpParentPath</tt> and <tt>lpChildName</tt> and managing separator.
+ * <p>
+ * lpBuffer can be the same as lpParentPath.
+ * </p>
  *
  * @param lpParentPath Can ends with a separator or not.
- * @param lpWritten Incremented with the characters written to lpParentPath.
  */
-RT_B RT_API RtFileSystem_BuildNewPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtFileSystem_BuildPath(RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpChildName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 #ifdef RT_DEFINE_WINDOWS
 
 /**
  * Some functions of Win32 api must be called with a "long path" to handles paths longer than MAX_PATH.
  */
-RT_B RT_API RtFileSystem_GetLongPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtFileSystem_GetLongPath(RT_CHAR* lpPath, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 #endif
 

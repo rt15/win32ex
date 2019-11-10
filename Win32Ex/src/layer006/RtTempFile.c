@@ -4,16 +4,15 @@
 #include "layer003/RtChar.h"
 #include "layer004/RtFileSystem.h"
 
-RT_B RT_API RtTempFile_Create(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtTempFile_Create(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
 {
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   /* Little trick: use the buffer to store the temp directory. */
-  unWritten = 0;
-  if (!RtFileSystem_GetTempDirectory(lpBuffer, unBufferSize, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetTempDirectory(lpBuffer, unBufferSize, &unOutputSize)) goto handle_error;
 
-  if (!RtTempFile_CreateWithParentPath(lpFile, lpPrefix, lpBuffer, unWritten, lpBuffer, unBufferSize, lpWritten)) goto handle_error;
+  if (!RtTempFile_CreateWithParentPath(lpFile, lpPrefix, lpBuffer, unOutputSize, lpBuffer, unBufferSize, lpOutputSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -24,10 +23,10 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtTempFile_CreateWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten)
+RT_B RT_API RtTempFile_CreateWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
 {
 #ifdef RT_DEFINE_LINUX
-  RT_UN unWritten;
+  RT_UN unOutputSize;
 #endif
   RT_B bResult;
 
@@ -37,19 +36,17 @@ RT_B RT_API RtTempFile_CreateWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, 
 
   if (!RtFile_Create(lpFile, lpBuffer, RT_FILE_MODE_TRUNCATE)) goto handle_error;
 
-  *lpWritten += RtChar_GetStringSize(lpBuffer);
+  *lpOutputSize = RtChar_GetStringSize(lpBuffer);
 #else
-  unWritten = unParentPathSize;
-  if (!RtFileSystem_BuildPath(lpParentPath, unParentPathSize, lpPrefix, unBufferSize, &unWritten)) goto handle_error;
+  *lpOutputSize = 0;
+  if (!RtFileSystem_BuildPath(lpParentPath, unParentPathSize, lpPrefix, lpParentPath, unBufferSize, &unOutputSize)) goto handle_error; *lpOutputSize += unOutputSize;
 
   /* The 6 last characters of mkstemp template must be "XXXXXX" and they will be replaced by mkstemp. */
-  if (!RtChar_CopyStringWithSize(_R("XXXXXX"), 6, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyStringWithSize(_R("XXXXXX"), 6, &lpBuffer[*lpOutputSize], unBufferSize - *lpOutputSize, &unOutputSize)) goto handle_error; *lpOutputSize += unOutputSize;
 
   /* Returns -1 and set errno in case of error. */
   lpFile->rtIoDevice.nFileDescriptor = mkostemp(lpBuffer, O_CLOEXEC);
   if (lpFile->rtIoDevice.nFileDescriptor == -1) goto handle_error;
-
-  *lpWritten += unWritten;
 #endif
 
   bResult = RT_SUCCESS;

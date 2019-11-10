@@ -13,6 +13,7 @@ void RT_CALL ZzTestDisplayList(void* lpList)
   RT_UN unSize;
   ZZ_LIST_ITEM* lpItem;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bFirst;
   RT_UN unI;
 
@@ -27,14 +28,14 @@ void RT_CALL ZzTestDisplayList(void* lpList)
     }
     else
     {
-      RtChar_CopyString(_R(", "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+      RtChar_CopyString(_R(", "), &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
     }
 
     RtList_GetItem(lpList, unI, (void**)&lpItem);
-    RtChar_ConvertIntegerToString(lpItem->unValue, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+    RtChar_ConvertIntegerToString(lpItem->unValue, &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
   }
 
-  RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
   RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 }
 
@@ -47,6 +48,7 @@ RT_B RT_CALL ZzTestCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpecte
   RT_LIST_HEADER* lpListHeader;
   RT_CHAR lpBuffer[512];
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   lpListHeader = lpList;
@@ -58,19 +60,19 @@ RT_B RT_CALL ZzTestCheckList(void* lpList, RT_UN unExpectedSize, RT_UN unExpecte
   unChunksCount = lpListHeader->rtArrayHeader.unSize;
 
   unWritten = 0;
-  RtChar_CopyString(_R("List size = "), lpBuffer, 512, &unWritten);
-  RtChar_ConvertIntegerToString(unSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("List size = "),        &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_ConvertIntegerToString(unSize,        &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
 
-  RtChar_CopyString(_R(", itemSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtChar_ConvertIntegerToString(unItemSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R(", itemSize = "),       &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_ConvertIntegerToString(unItemSize,    &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
 
-  RtChar_CopyString(_R(", chunkSize = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtChar_ConvertIntegerToString(unChunkSize, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R(", chunkSize = "),      &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_ConvertIntegerToString(unChunkSize,   &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
 
-  RtChar_CopyString(_R(", chunksCount = "), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
-  RtChar_ConvertIntegerToString(unChunksCount, &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R(", chunksCount = "),    &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_ConvertIntegerToString(unChunksCount, &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
 
-  RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 512 - unWritten, &unWritten);
+  RtChar_CopyString(_R("\n"),                  &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
   RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   if (unExpectedSize != unSize) goto handle_error;
@@ -93,7 +95,7 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
   RT_UN32 unI;
   ZZ_LIST_ITEM* lpItem;
   RT_UN unItemIndex;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_UN unItemSize;
   RT_B bResult;
 
@@ -109,7 +111,7 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
   {
     RtList_GetItem(lpList, unI, (void**)&lpItem);
     lpItem->unValue = unI;
-    RtChar_CopyString(_R("This is item characters."), lpItem->lpValue, 32, &unWritten);
+    RtChar_CopyString(_R("This is item characters."), lpItem->lpValue, 32, &unOutputSize);
   }
 
   ZzTestDisplayList(lpList);

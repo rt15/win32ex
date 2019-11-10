@@ -22,12 +22,13 @@ void RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
 {
   RT_UN unResourceIndex;
   RT_UN unWritten;
-
-  unWritten = 0;
-  RtChar_CopyString(_R("New item "), lpBuffer, ZZ_RESOURCES_NAME_SIZE, &unWritten);
+  RT_UN unOutputSize;
 
   RtRandom_GetUIntegerWithBoundaries(1, 20, &unResourceIndex);
-  RtChar_ConvertUIntegerToString(unResourceIndex, &lpBuffer[unWritten], ZZ_RESOURCES_NAME_SIZE - unWritten, &unWritten);
+
+  unWritten = 0;
+  RtChar_CopyString(_R("New item "),              &lpBuffer[unWritten], ZZ_RESOURCES_NAME_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_ConvertUIntegerToString(unResourceIndex, &lpBuffer[unWritten], ZZ_RESOURCES_NAME_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
 }
 
 /**

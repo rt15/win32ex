@@ -5,42 +5,43 @@ RT_B RT_CALL ZzParseArgsCallback(RT_UN unArgType, RT_B bValid, RT_CHAR nShortOpt
 {
   RT_CHAR lpMsg[RT_CHAR_BIG_STRING_SIZE];
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   unWritten = 0;
 
   if (unArgType == RT_COMMAND_LINE_ARG_TYPE_SHORT)
   {
-    if (!RtChar_CopyStringWithSize(&nShortOption, 1,  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-    if (!RtChar_CopyString(_R(", short"),              &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+    if (!RtChar_CopyStringWithSize(&nShortOption, 1, &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+    if (!RtChar_CopyString(_R(", short"),            &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
   else
   {
     /* RT_COMMAND_LINE_ARG_TYPE_LONG */
 
-    if (!RtChar_CopyString(lpLongOption,   &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-    if (!RtChar_CopyString(_R(", long"),  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(lpLongOption, &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+    if (!RtChar_CopyString(_R(", long"), &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
 
   if (bValid)
   {
-   if (!RtChar_CopyString(_R(", valid"),  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+   if (!RtChar_CopyString(_R(", valid"),   &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
   else
   {
-   if (!RtChar_CopyString(_R(", invalid"),  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+   if (!RtChar_CopyString(_R(", invalid"), &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
 
   switch (unValueCardinality)
   {
     case RT_COMMAND_LINE_ARG_VALUE_NONE:
-      if (!RtChar_CopyString(_R(", without value"),       &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+      if (!RtChar_CopyString(_R(", without value"),       &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
       break;
     case RT_COMMAND_LINE_ARG_VALUE_OPTIONAL:
-      if (!RtChar_CopyString(_R(", with optional value"),  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+      if (!RtChar_CopyString(_R(", with optional value"), &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
       break;
     case RT_COMMAND_LINE_ARG_VALUE_REQUIRED:
-      if (!RtChar_CopyString(_R(", with required value"),  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+      if (!RtChar_CopyString(_R(", with required value"), &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
       break;
     default:
       goto handle_error;
@@ -48,15 +49,15 @@ RT_B RT_CALL ZzParseArgsCallback(RT_UN unArgType, RT_B bValid, RT_CHAR nShortOpt
 
   if (lpValue)
   {
-    if (!RtChar_CopyString(_R(" => "),  &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-    if (!RtChar_CopyString(lpValue,     &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(_R(" => "), &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+    if (!RtChar_CopyString(lpValue,    &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
   else
   {
-    if (!RtChar_CopyString(_R(", empty"), &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(_R(", empty"), &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
 
-  if (!RtChar_CopyStringWithSize(_R("\n"), 1, &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtChar_CopyStringWithSize(_R("\n"), 1, &lpMsg[unWritten], unWritten - RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtConsole_WriteStringWithSize(lpMsg, unWritten)) goto handle_error;
 
   bResult = RT_SUCCESS;

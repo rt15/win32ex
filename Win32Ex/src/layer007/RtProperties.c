@@ -265,7 +265,7 @@ RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey,
 {
   RT_CHAR* lpStringProperty;
   RT_CHAR lpLowerCaseValue[8];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   lpStringProperty = RtProperties_GetString(lpProperties, lpKey, RT_NULL);
@@ -275,7 +275,7 @@ RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey,
     bResult = RT_FALSE;
     goto free_resources;
   }
-  if (!RtChar_CopyString(lpStringProperty, lpLowerCaseValue, 8, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpStringProperty, lpLowerCaseValue, 8, &unOutputSize)) goto handle_error;
   RtChar_FastLowerString(lpLowerCaseValue);
   bResult = (!RtChar_CompareStrings(lpLowerCaseValue, _R("true")) ||
              !RtChar_CompareStrings(lpLowerCaseValue, _R("yes")) ||

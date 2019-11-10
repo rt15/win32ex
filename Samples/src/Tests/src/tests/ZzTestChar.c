@@ -91,19 +91,18 @@ RT_B RT_CALL ZzDoTestCopyString(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_CHAR* 
 {
   RT_CHAR lpLocalBuffer[200];
   RT_CHAR* lpLocalReference;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
-  RtChar_ConvertIntegerToString(unBufferSize, lpLocalBuffer, 200, &unWritten);
+  RtChar_ConvertIntegerToString(unBufferSize, lpLocalBuffer, 200, &unOutputSize);
   RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Testing RtChar_CopyString with input string = \""), lpSource, _R("\" and buffer size = "), lpLocalBuffer, _R("...\n"), (RT_CHAR*)RT_NULL);
 
-  unWritten = 0;
-  RtChar_CopyString(lpSource, lpBuffer, unBufferSize, &unWritten);
+  RtChar_CopyString(lpSource, lpBuffer, unBufferSize, &unOutputSize);
 
   /* Check function result. */
-  if (unWritten != unReference)
+  if (unOutputSize != unReference)
   {
-    RtChar_ConvertIntegerToString(unWritten, lpLocalBuffer, 200, &unWritten);
+    RtChar_ConvertIntegerToString(unOutputSize, lpLocalBuffer, 200, &unOutputSize);
     RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Wrong result = "), lpLocalBuffer, _R(".\n"), (RT_CHAR*)RT_NULL);
     goto handle_error;
   }
@@ -164,20 +163,19 @@ RT_B RT_CALL ZzDoTestCopyStringWithSize(RT_CHAR* lpBuffer, RT_UN unBufferSize, R
 {
   RT_CHAR lpLocalBuffer1[200];
   RT_CHAR lpLocalBuffer2[200];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
-  RtChar_ConvertIntegerToString(unBufferSize, lpLocalBuffer1, 200, &unWritten);
-  RtChar_ConvertIntegerToString(unSize, lpLocalBuffer2, 200, &unWritten);
+  RtChar_ConvertIntegerToString(unBufferSize, lpLocalBuffer1, 200, &unOutputSize);
+  RtChar_ConvertIntegerToString(unSize, lpLocalBuffer2, 200, &unOutputSize);
   RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Testing RtChar_CopyStringWithSize with input string = \""), lpSource, _R("\", buffer size = "), lpLocalBuffer1, _R(" and size = "), lpLocalBuffer2, _R("...\n"), (RT_CHAR*)RT_NULL);
 
-  unWritten = 0;
-  RtChar_CopyStringWithSize(lpSource, unSize, lpBuffer, unBufferSize, &unWritten);
+  RtChar_CopyStringWithSize(lpSource, unSize, lpBuffer, unBufferSize, &unOutputSize);
 
  /* Check function result. */
-  if (unWritten != unReference)
+  if (unOutputSize != unReference)
   {
-    RtChar_ConvertIntegerToString(unWritten, lpLocalBuffer1, 200, &unWritten);
+    RtChar_ConvertIntegerToString(unOutputSize, lpLocalBuffer1, 200, &unOutputSize);
     RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Wrong result = "), lpLocalBuffer1, _R(".\n"), (RT_CHAR*)RT_NULL);
     goto handle_error;
   }
@@ -226,20 +224,19 @@ RT_B RT_CALL ZzDoTestLeftPadString(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_CHA
 {
   RT_CHAR lpLocalBuffer1[200];
   RT_CHAR lpLocalBuffer2[200];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
-  RtChar_ConvertIntegerToString(unBufferSize, lpLocalBuffer1, 200, &unWritten);
-  RtChar_ConvertIntegerToString(unSize, lpLocalBuffer2, 200, &unWritten);
+  RtChar_ConvertIntegerToString(unBufferSize, lpLocalBuffer1, 200, &unOutputSize);
+  RtChar_ConvertIntegerToString(unSize, lpLocalBuffer2, 200, &unOutputSize);
   RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Testing RtChar_LeftPadString with input string = \""), lpInput, _R("\", buffer size = "), lpLocalBuffer1, _R(" and size = "), lpLocalBuffer2, _R("...\n"), (RT_CHAR*)RT_NULL);
 
-  unWritten = 0;
-  RtChar_LeftPadString(lpInput, nChar, unSize, lpBuffer, unBufferSize, &unWritten);
+  RtChar_LeftPadString(lpInput, RtChar_GetStringSize(lpInput), nChar, unSize, lpBuffer, unBufferSize, &unOutputSize);
 
  /* Check function result. */
-  if (unWritten != unReference)
+  if (unOutputSize != unReference)
   {
-    RtChar_ConvertIntegerToString(unWritten, lpLocalBuffer1, 200, &unWritten);
+    RtChar_ConvertIntegerToString(unOutputSize, lpLocalBuffer1, 200, &unOutputSize);
     RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Wrong result = "), lpLocalBuffer1, _R(".\n"), (RT_CHAR*)RT_NULL);
     goto handle_error;
   }
@@ -283,18 +280,20 @@ handle_error:
 RT_B RT_CALL ZzDoTestRightTrimString(RT_CHAR* lpInput, RT_UN unReference, RT_CHAR* lpReference)
 {
   RT_CHAR lpLocalBuffer[200];
-  RT_UN unWritten;
+  RT_UN unInputSize;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Testing RtChar_RightTrimString with input string = \""), lpInput, _R("\"...\n"), (RT_CHAR*)RT_NULL);
 
-  RtChar_CopyString(lpInput, lpLocalBuffer, 200, &unWritten);
+  unInputSize = 0;
+  RtChar_CopyString(lpInput, lpLocalBuffer, 200, &unInputSize);
 
-  RtChar_RightTrimString(lpLocalBuffer, &unWritten);
+  RtChar_RightTrimString(lpLocalBuffer, unInputSize, &unOutputSize);
 
-  if (unWritten != unReference)
+  if (unOutputSize != unReference)
   {
-    RtChar_ConvertIntegerToString(unWritten, lpLocalBuffer, 200, &unWritten);
+    RtChar_ConvertIntegerToString(unOutputSize, lpLocalBuffer, 200, &unOutputSize);
     RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Wrong result = "), lpLocalBuffer, _R(".\n"), (RT_CHAR*)RT_NULL);
     goto handle_error;
   }
@@ -339,15 +338,15 @@ RT_B RT_CALL ZzDoTestCountStringOccurrences(RT_CHAR* lpString, RT_CHAR* lpSearch
   RT_CHAR lpFound[64];
   RT_CHAR lpExpected[64];
   RT_UN unFound;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Testing RtChar_CountStringOccurrences, occurences count of \""), lpSearched, _R("\" in \""), lpString, _R("\"...\n"), (RT_CHAR*)RT_NULL);
   unFound = RtChar_CountStringOccurrences(lpString, lpSearched);
   if (unFound != unExpected)
   {
-    RtChar_ConvertUIntegerToString(unExpected, lpExpected, 64, &unWritten);
-    RtChar_ConvertUIntegerToString(unFound, lpFound, 64, &unWritten);
+    RtChar_ConvertUIntegerToString(unExpected, lpExpected, 64, &unOutputSize);
+    RtChar_ConvertUIntegerToString(unFound, lpFound, 64, &unOutputSize);
     RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Wrong result, expected "), lpExpected, _R(" but found "), lpFound, _R(".\n"), (RT_CHAR*)RT_NULL);
     goto handle_error;
   }
@@ -382,11 +381,24 @@ handle_error:
 RT_B RT_CALL ZzDoTestReplaceString(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpReference)
 {
   RT_CHAR lpBuffer[64];
-  RT_UN unWritten;
+  RT_UN unStringSize;
+  RT_UN unSearchedSize;
+  RT_UN unReplacementSize;
+  RT_UN unOutputSize;
   RT_B bResult;
 
+  unStringSize = RtChar_GetStringSize(lpString);
+  unSearchedSize = RtChar_GetStringSize(lpSearched);
+  unReplacementSize = RtChar_GetStringSize(lpReplacement);
+
   RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Replacing \""), lpSearched, _R("\" by \""), lpReplacement, _R("\" in \""), lpString, _R("\".\n"), (RT_CHAR*)RT_NULL);
-  if (!RtChar_ReplaceString(lpString, lpSearched, lpReplacement, lpBuffer, 64, &unWritten)) goto handle_error;
+  if (!RtChar_ReplaceString(lpString, unStringSize,
+                            lpSearched, unSearchedSize,
+                            lpReplacement, unReplacementSize,
+                            lpBuffer, 64, &unOutputSize)) goto handle_error;
+
+  if (unOutputSize != RtChar_GetStringSize(lpBuffer)) goto handle_error;
+
   if (RtChar_CompareStrings(lpBuffer, lpReference))
   {
     RtConsole_WriteStringsOrErrors(RT_TRUE, _R("Wrong value \""), lpBuffer, _R("\" expected \""), lpReference, _R("\".\n"), (RT_CHAR*)RT_NULL);
@@ -410,6 +422,8 @@ RT_B RT_CALL ZzTestReplaceString()
   if (!ZzDoTestReplaceString(_R("foo"), _R("o"), _R("a"), _R("faa"))) goto handle_error;
   if (!ZzDoTestReplaceString(_R("foobarfoo"), _R("foo"), _R("a"), _R("abara"))) goto handle_error;
   if (!ZzDoTestReplaceString(_R("foobarfoo"), _R("foo"), _R("long_string"), _R("long_stringbarlong_string"))) goto handle_error;
+  if (!ZzDoTestReplaceString(_R("foobarfoo"), _R("foo"), _R(""), _R("bar"))) goto handle_error;
+  if (!ZzDoTestReplaceString(_R("foofoo"), _R("foo"), _R(""), _R(""))) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -424,14 +438,15 @@ RT_B RT_CALL ZzTestConcatStrings()
 {
   RT_CHAR lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtChar_ConcatStrings(&lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten, _R("foo"), _R("bar"), _R("team"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtChar_ConcatStrings(&lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize, _R("foo"), _R("bar"), _R("team"), (RT_CHAR*)RT_NULL)) goto handle_error; unWritten += unOutputSize;
   if (unWritten != 10) goto handle_error;
   if (RtChar_CompareStrings(_R("foobarteam"), lpBuffer)) goto handle_error;
 
-  if (!RtChar_ConcatStrings(&lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten, _R("Hello, world!"), (RT_CHAR*)RT_NULL)) goto handle_error;
+  if (!RtChar_ConcatStrings(&lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize, _R("Hello, world!"), (RT_CHAR*)RT_NULL)) goto handle_error; unWritten += unOutputSize;
   if (unWritten != 23) goto handle_error;
   if (RtChar_CompareStrings(_R("foobarteamHello, world!"), lpBuffer)) goto handle_error;
 

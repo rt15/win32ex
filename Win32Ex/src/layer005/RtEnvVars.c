@@ -17,6 +17,7 @@ RT_B RT_API RtEnvVars_Create(RT_ENV_VARS* lpEnvVars)
 #else
   RT_CHAR** lpEnvVarsArray;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_CHAR* lpEnvVarsBlock;
 #endif
   RT_B bResult;
@@ -90,13 +91,13 @@ RT_B RT_API RtEnvVars_Create(RT_ENV_VARS* lpEnvVars)
   unWritten = 0;
   while (*lpEnvVarsArray)
   {
-    if (!RtChar_CopyString(*lpEnvVarsArray, &lpEnvVarsBlock[unWritten], unBlockSize - unWritten, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(*lpEnvVarsArray, &lpEnvVarsBlock[unWritten], unBlockSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
     /* We need to keep the trailing null. */
     unWritten++;
     lpEnvVarsArray++;
   }
   unWritten--; /* We will overwrite last null and RtChar_CopyStringWithSize will add one. */
-  if (!RtChar_CopyStringWithSize(_R("\0"), 1, &lpEnvVarsBlock[unWritten], unBlockSize - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyStringWithSize(_R("\0"), 1, &lpEnvVarsBlock[unWritten], unBlockSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 #endif
 
   bResult = RT_SUCCESS;
@@ -201,14 +202,13 @@ RT_B RT_CALL RtEnvVars_GetPointer(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName,
 #endif
   RT_CHAR* lpEnvVarsBlock;
   RT_CHAR lpCurrentEnvVarName[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_UN unI;
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
   /* Build upper case variable name under Windows. */
-  unWritten = 0;
-  if (!RtChar_CopyString(lpEnvVarName, lpLocalEnvVarName, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpEnvVarName, lpLocalEnvVarName, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
   RtChar_FastUpperString(lpLocalEnvVarName);
 #else
   lpLocalEnvVarName = lpEnvVarName;
@@ -248,8 +248,7 @@ RT_B RT_CALL RtEnvVars_GetPointer(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName,
       /* Null before equals. Something went wrong. */
       if (!lpEnvVarsBlock[unI]) goto handle_error;
 
-      unWritten = 0;
-      if (!RtChar_CopyStringWithSize(lpEnvVarsBlock, unI, lpCurrentEnvVarName, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+      if (!RtChar_CopyStringWithSize(lpEnvVarsBlock, unI, lpCurrentEnvVarName, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
 
 #ifdef RT_DEFINE_WINDOWS
       /* Build upper case variable name under Windows. */
@@ -313,7 +312,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
 {
   RT_CHAR* lpEnvVar;
   RT_B bResult;
@@ -326,7 +325,7 @@ RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
   }
 
   /* Copy the value, after the name and '='. */
-  if (!RtChar_CopyString(&lpEnvVar[RtChar_GetStringSize(lpEnvVarName) + 1], lpBuffer, unBufferSize, lpWritten)) goto handle_error;
+  if (!RtChar_CopyString(&lpEnvVar[RtChar_GetStringSize(lpEnvVarName) + 1], lpBuffer, unBufferSize, lpOutputSize)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -397,6 +396,7 @@ RT_B RT_API RtEnvVars_AddEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
   RT_UN unOldEnvVarsBlockSize;
   RT_UN unNewEnvVarsBlockSize;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   /* Will be free in case of error. */
@@ -433,24 +433,24 @@ RT_B RT_API RtEnvVars_AddEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
 #ifdef RT_DEFINE_WINDOWS
   if (lpEnvVars->bWindowsBlock)
   {
-    if (!RtStaticHeap_Alloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
-    RT_MEMORY_COPY(lpOldEnvVarsBlock, lpNewEnvVarsBlock, unOldEnvVarsBlockSize * sizeof(RT_CHAR*));
+    if (!RtStaticHeap_Alloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR))) goto handle_error;
+    RT_MEMORY_COPY(lpOldEnvVarsBlock, lpNewEnvVarsBlock, unOldEnvVarsBlockSize * sizeof(RT_CHAR));
   }
   else
   {
     lpNewEnvVarsBlock = lpOldEnvVarsBlock;
-    if (!RtStaticHeap_ReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
+    if (!RtStaticHeap_ReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR))) goto handle_error;
   }
 #else
   lpNewEnvVarsBlock = lpOldEnvVarsBlock;
-  if (!RtStaticHeap_ReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR*))) goto handle_error;
+  if (!RtStaticHeap_ReAlloc((void**)&lpNewEnvVarsBlock, unNewEnvVarsBlockSize * sizeof(RT_CHAR))) goto handle_error;
 #endif
 
   unWritten = unOldEnvVarsBlockSize - 1;
-  if (!RtChar_CopyString(lpEnvVarName,         &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyStringWithSize(_R("="), 1,   &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(lpValue,              &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyStringWithSize(_R("\0"), 1,  &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpEnvVarName,         &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyStringWithSize(_R("="), 1,   &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(lpValue,              &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyStringWithSize(_R("\0"), 1,  &lpNewEnvVarsBlock[unWritten], unNewEnvVarsBlockSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
 #ifdef RT_DEFINE_WINDOWS
   if (lpEnvVars->bWindowsBlock)

@@ -25,10 +25,8 @@
  *
  */
 
-RT_B RT_API RtBase64_Encode(RT_CHAR8* lpString, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
-RT_B RT_API RtBase64_EncodeWithSize(RT_CHAR8* lpString, RT_UN unStringSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtBase64_Encode(RT_CHAR8* lpString, RT_UN unStringSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
-RT_B RT_API RtBase64_Decode(RT_CHAR8* lpBase64, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
-RT_B RT_API RtBase64_DecodeWithSize(RT_CHAR8* lpBase64, RT_UN unBase64Size, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtBase64_Decode(RT_CHAR8* lpBase64, RT_UN unBase64Size, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 #endif /* RT_BASE_64_H */

@@ -4,6 +4,7 @@ RT_B RT_CALL ZzVConcatLines(va_list lpVaList, RT_HEAP** lpHeap, void** lpBuffer)
 {
   va_list lpVaList2;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_CHAR* lpLine;
   RT_CHAR* lpBufferChars;
   RT_UN unReferenceSize;
@@ -40,8 +41,8 @@ RT_B RT_CALL ZzVConcatLines(va_list lpVaList, RT_HEAP** lpHeap, void** lpBuffer)
     lpLine = va_arg(lpVaList2, RT_CHAR*);
     if (lpLine)
     {
-      if (!RtChar_CopyString(lpLine,               &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
-      if (!RtChar_CopyStringWithSize(_R("\n"), 1,  &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtChar_CopyString(lpLine,               &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+      if (!RtChar_CopyStringWithSize(_R("\n"), 1,  &lpBufferChars[unWritten], unReferenceBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
     }
     else
     {
@@ -168,24 +169,14 @@ handle_error:
 RT_B RT_CALL ZzAdjustDirectory()
 {
   RT_CHAR lpPath[RT_FILE_SYSTEM_MAX_FILE_PATH];
-  RT_UN unWritten;
-  RT_UN unPathSize;
+  RT_UN unOutputSize;
   RT_B bResult;
 
-  unWritten = 0;
-  if (!RtFileSystem_GetExecutableFilePath(lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
-
-  unPathSize = unWritten;
-  unWritten = 0;
-  if (!RtFileSystem_GetParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
-
-  unPathSize = unWritten;
-  unWritten = 0;
-  if (!RtFileSystem_GetParentPath(lpPath, unPathSize, lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
-
-  if (!RtFileSystem_BuildPath(lpPath, unWritten, _R("src"), RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
-
-  if (!RtFileSystem_BuildPath(lpPath, unWritten, _R("Tests"), RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(                       lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpPath, unOutputSize,          lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpPath, unOutputSize,          lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
+  if (!RtFileSystem_BuildPath(lpPath, unOutputSize, _R("src"),   lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
+  if (!RtFileSystem_BuildPath(lpPath, unOutputSize, _R("Tests"), lpPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
 
   if (!RtFileSystem_SetCurrentDirectory(lpPath)) goto handle_error;
 

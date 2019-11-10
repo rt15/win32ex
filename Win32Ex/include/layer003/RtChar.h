@@ -22,9 +22,9 @@
 /* String size that can be used four times in a function and avoid stack probe. */
 #define RT_CHAR_QUARTER_BIG_STRING_SIZE 480
 
-RT_B RT_API RtChar_ConvertIntegerToString(RT_N nInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtChar_ConvertIntegerToString(RT_N nInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
-RT_B RT_API RtChar_ConvertUIntegerToString(RT_UN unInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtChar_ConvertUIntegerToString(RT_UN unInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 RT_B RT_API RtChar_ConvertStringToInteger(RT_CHAR* lpInput, RT_N* lpResult);
 RT_B RT_API RtChar_ConvertStringToIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_N* lpResult);
@@ -59,7 +59,20 @@ RT_UN RT_API RtChar_SearchString(RT_CHAR* lpString, RT_CHAR* lpSearched);
  */
 RT_UN RT_API RtChar_CountStringOccurrences(RT_CHAR* lpString, RT_CHAR* lpSearched);
 
-RT_B RT_API RtChar_ReplaceString(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+/**
+ * Replace all occurrences of <tt>lpSearched</tt> in <tt>lpString</tt> with <tt>lpReplacement</tt>.<br>
+ * The result is written in <tt>lpBuffer</tt>. <tt>lpString</tt> is not modified.
+ *
+ * <p>
+ * The result is written in a new buffer because doing it in place would be expensive if the size of <tt>lpReplacement</tt> was
+ * greater than the size <tt>lpSearched</tt>.<br>
+ * <tt>lpBuffer</tt> must be different than <tt>lpString</tt>.
+ * </p>
+ */
+RT_B RT_API RtChar_ReplaceString(RT_CHAR* lpString, RT_UN unStringSize,
+                                 RT_CHAR* lpSearched, RT_UN unSearchedSize,
+                                 RT_CHAR* lpReplacement, RT_UN unReplacementSize,
+                                 RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Copy <tt>unSize</tt> characters from <tt>lpSource</tt> to <tt>lpBuffer</tt>.<br>
@@ -69,19 +82,19 @@ RT_B RT_API RtChar_ReplaceString(RT_CHAR* lpString, RT_CHAR* lpSearched, RT_CHAR
  * @param lpSource Its size must be at least <tt>unSize</tt>.
  * @param unSize Can be zero but not negative.
  */
-RT_B RT_API RtChar_CopyStringWithSize(RT_CHAR* lpSource, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtChar_CopyStringWithSize(RT_CHAR* lpSource, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Copy from lpSource to lpBuffer.
  * If the buffer is too small then unBufferSize - 1 is returned and RtSetLastError is called.
  * If the buffer size is negative or zero, then zero is returned.
  */
-RT_B RT_API RtChar_CopyString(RT_CHAR* lpSource, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtChar_CopyString(RT_CHAR* lpSource, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Write <tt>nChar</tt> as first character of given buffer and zero as second character.
  */
-RT_B RT_API RtChar_Copy(RT_CHAR nChar, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtChar_Copy(RT_CHAR nChar, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Manage only characters from 'A' to 'Z'.<br>
@@ -112,22 +125,18 @@ RT_UN RT_API RtChar_FastUpperString(RT_CHAR* lpString);
 RT_CHAR RT_API RtChar_FastUpper(RT_CHAR nChar);
 
 /**
- * Use this function in place of <tt>RtChar_LeftPadStringWithSize</tt> if you do not know the size of <tt>lpInput</tt>.
- */
-RT_B RT_API RtChar_LeftPadString(RT_CHAR* lpInput, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
-
-/**
  * Add some <tt>nChar</tt> at the left of <tt>lpInput</tt> to ensure that <tt>lpBuffer</tt> size is at least <tt>unSize</tt>.
  *
  * <p>
- * <tt>lpBuffer</tt> can be the same as <tt>lpInput</tt>.
+ * <tt>lpBuffer</tt> can be the same as <tt>lpInput</tt>.<br>
+ * This function takes an <tt>lpBuffer</tt> because we have to copy <tt>lpInput</tt> even if we pad in place.
  * </p>
  */
-RT_B RT_API RtChar_LeftPadStringWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtChar_LeftPadString(RT_CHAR* lpInput, RT_UN unInputSize, RT_CHAR nChar, RT_UN unSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
-RT_B RT_CDECL_API RtChar_ConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten, ...);
+RT_B RT_CDECL_API RtChar_ConcatStrings(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize, ...);
 
-RT_B RT_API RtChar_VConcatStrings(va_list lpVaList, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtChar_VConcatStrings(va_list lpVaList, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 RT_B RT_API RtChar_StringEndsWith(RT_CHAR* lpString, RT_CHAR* lpSearched);
 
@@ -136,14 +145,9 @@ RT_B RT_API RtChar_StringEndsWithWithSize(RT_CHAR* lpString, RT_UN unStringSize,
 RT_UN RT_API RtChar_GetStringHash(RT_CHAR* lpString);
 
 /**
- * Use RtRightTrimStringWithSize when you know the size of the string.
- */
-RT_B RT_API RtChar_RightTrimString(RT_CHAR* lpString, RT_UN *lpWritten);
-
-/**
  * Remove trailing characters <= ' '.
  */
-RT_B RT_API RtChar_RightTrimStringWithSize(RT_CHAR* lpString, RT_UN unStringSize, RT_UN *lpWritten);
+void RT_API RtChar_RightTrimString(RT_CHAR* lpString, RT_UN unStringSize, RT_UN *lpOutputSize);
 
 /**
  * Search first string of <tt>lpStrings</tt> that is <tt>lpSearched</tt>.

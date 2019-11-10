@@ -28,7 +28,7 @@ RT_B RT_API RtSystemInfo_GetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpP
   RT_CHAR lpVersion[RT_CHAR_THIRD_BIG_STRING_SIZE];
   RT_CHAR* lpStart;
   RT_CHAR* lpEnd;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bPatchVersion;
 #endif
   RT_B bResult;
@@ -59,7 +59,7 @@ RT_B RT_API RtSystemInfo_GetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpP
     /* rtUtsName.release looks like "4.4.0-66-generic". */
     /* But it might look like "2.6" too. */
 
-    if (!RtChar_CopyString(rtUtsName.release, lpVersion, RT_CHAR_THIRD_BIG_STRING_SIZE, &unWritten)) goto handle_initialization_error;
+    if (!RtChar_CopyString(rtUtsName.release, lpVersion, RT_CHAR_THIRD_BIG_STRING_SIZE, &unOutputSize)) goto handle_initialization_error;
     lpStart = lpVersion;
     lpEnd = lpVersion;
 

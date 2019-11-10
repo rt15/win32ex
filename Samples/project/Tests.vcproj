@@ -242,6 +242,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\Tests\src\tests\ZzTestErrorMessage.c"
+					>
+				</File>
+				<File
 					RelativePath="..\src\Tests\src\tests\ZzTestEvent.c"
 					>
 				</File>

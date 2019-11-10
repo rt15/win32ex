@@ -95,7 +95,7 @@
 			<Add option="-pedantic" />
 			<Add option="-Wall" />
 			<Add option="-std=c99" />
-			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long" />
+			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long -Wno-misleading-indentation" />
 			<Add directory="../../win32ex/include" />
 			<Add directory="../src/Tests/include" />
 		</Compiler>
@@ -118,6 +118,9 @@
 		<Unit filename="../src/Tests/src/ZzTools.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/Tests/src/manual_tests/ZzTestErrorMessage.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestAtomic.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -137,6 +140,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestEnvVars.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestErrorMessage.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestEvent.c">

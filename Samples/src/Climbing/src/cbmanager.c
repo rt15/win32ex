@@ -11,7 +11,7 @@ void RT_CALL CbDisplayList(CB_MANAGER_CONTEXT* lpManagerContext, RT_B bWithIndex
   RT_N nObjectsCount;
   CB_OBJECT* lpObject;
   RT_CHAR lpBuffer[16];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_N nI;
 
   lpTable = &lpManagerContext->lpCompetition->lpTables[lpManagerContext->nClass];
@@ -23,7 +23,7 @@ void RT_CALL CbDisplayList(CB_MANAGER_CONTEXT* lpManagerContext, RT_B bWithIndex
     RtArray_GetItem(lpTable->lpTableData, lpTable->lpTableIndexes[0].lpIndexes[nI], (void**)&lpObject);
     if (bWithIndex)
     {
-      RtChar_ConvertIntegerToString(nI + 1, lpBuffer, 16, &unWritten);
+      RtChar_ConvertIntegerToString(nI + 1, lpBuffer, 16, &unOutputSize);
       RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R(": "), lpObject->lpName, _R("\n"), (RT_CHAR*)RT_NULL);
     }
     else
@@ -42,7 +42,7 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
   CB_OBJECT* lpObject;
   RT_CHAR lpName[256];
   RT_UN unRead;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_UN32 unResult;
 
   while (RT_TRUE)
@@ -79,7 +79,7 @@ RT_UN16 RT_CALL CbAddObject(void* lpContext)
         unResult = 1;
         break;
       }
-      RtChar_CopyStringWithSize(lpName, unRead, lpObject->lpName, CB_NAME_SIZE, &unWritten);
+      RtChar_CopyStringWithSize(lpName, unRead, lpObject->lpName, CB_NAME_SIZE, &unOutputSize);
       if (!RtTable_IndexNewItem(lpTable))
       {
         unResult = 1;

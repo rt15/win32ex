@@ -948,7 +948,7 @@ free_resources:
 RT_CHAR* RT_CALL RtEncoding_GetLinuxSystemEncoding()
 {
   RT_CHAR* lpReturnedValue;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_UN unEncodingNameSize;
 
   if (RtFastInitialization_IsRequired(&rt_encodingSystemInitialization))
@@ -962,7 +962,7 @@ RT_CHAR* RT_CALL RtEncoding_GetLinuxSystemEncoding()
       if (unEncodingNameSize)
       {
         /* The pointer nl_langinfo is not thread safe so we make a copy fastly. */
-        if (RtChar_CopyString(lpReturnedValue, rt_lpEncodingSystemBuffer, 64, &unWritten))
+        if (RtChar_CopyString(lpReturnedValue, rt_lpEncodingSystemBuffer, 64, &unOutputSize))
         {
           rt_lpEncodingSystem = rt_lpEncodingSystemBuffer;
         }

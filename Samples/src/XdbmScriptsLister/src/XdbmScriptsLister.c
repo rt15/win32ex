@@ -80,7 +80,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
   RT_CHAR* lpFileContent;
   RT_N nFileContentSize;
   RT_N nDataSize;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_N nI;
   RT_B bResult;
 
@@ -88,15 +88,13 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
 
   if (unType == RT_FILE_SYSTEM_TYPE_FILE)
   {
-    unWritten = 0;
-    RtChar_CopyString(lpPath, lpLowerCasePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten);
+    RtChar_CopyString(lpPath, lpLowerCasePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize);
     RtChar_FastLowerString(lpLowerCasePath);
-    if (RtChar_StringEndsWithWithSize(lpLowerCasePath, unWritten, _R(".sql"), 4))
+    if (RtChar_StringEndsWithWithSize(lpLowerCasePath, unOutputSize, _R(".sql"), 4))
     {
-      unWritten = 0;
-      RtFileSystem_GetFileName(lpPath, RtChar_GetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
+      RtFileSystem_GetFileName(lpPath, RtChar_GetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unOutputSize);
       /* Write file name without extension. */
-      RtConsole_WriteStringWithSize(lpFileName, unWritten - 4);
+      RtConsole_WriteStringWithSize(lpFileName, unOutputSize - 4);
 
       lpXsContext = (XS_CONTEXT*)lpContext;
       lpHeap = lpXsContext->lpHeap;
@@ -148,6 +146,7 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
   RtRuntimeHeap runtimeHeap;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_CHAR* lpSchema;
   RT_CHAR lpPath[XS_BUFFER_SIZE];
   XS_CONTEXT context;
@@ -167,9 +166,9 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
     lpSchema = xs_lpSchemas[nI];
 
     unWritten = 0;
-    RtChar_CopyString(_R("database/"),                &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
-    RtChar_CopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
-    RtChar_CopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unWritten);
+    RtChar_CopyString(_R("database/"),                &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
 
     if (!RtFileSystem_BrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, RT_FALSE, &context))
     {

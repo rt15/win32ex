@@ -122,7 +122,7 @@ RT_B RT_API RtConsole_VWriteStringsOrErrors(va_list lpVaList, RT_B bString)
   RT_UN unStringsCount;
   RT_UN unStringsLenght;
   RT_CHAR* lpString;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_CHAR lpBuffer[512];
   RT_CHAR* lpStrings;
   void* lpHeapBuffer;
@@ -165,10 +165,9 @@ RT_B RT_API RtConsole_VWriteStringsOrErrors(va_list lpVaList, RT_B bString)
     unHeapBufferSize = 0;
     if (RtStaticHeap_AllocIfNeeded(lpBuffer, 512 * sizeof(RT_CHAR), &lpHeapBuffer, &unHeapBufferSize, (void**)&lpStrings, (unStringsLenght + 1) * sizeof(RT_CHAR)))
     {
-      unWritten = 0;
-      RtChar_VConcatStrings(lpVaList3, lpStrings, unStringsLenght + 1, &unWritten);
+      RtChar_VConcatStrings(lpVaList3, lpStrings, unStringsLenght + 1, &unOutputSize);
 
-      bResult = RtConsole_WriteStringWithSize(lpStrings, unWritten);
+      bResult = RtConsole_WriteStringWithSize(lpStrings, unOutputSize);
       if (lpHeapBuffer)
       {
         bResult = (RtStaticHeap_Free(&lpHeapBuffer) && bResult);

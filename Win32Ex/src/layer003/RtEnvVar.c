@@ -3,7 +3,7 @@
 #include "layer001/RtWin32ExOsHeaders.h"
 #include "layer002/RtError.h"
 
-RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
 {
 #ifdef RT_DEFINE_WINDOWS
   DWORD nReturnedValue;
@@ -37,7 +37,7 @@ RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBuffe
     RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
     goto handle_error;
   }
-  *lpWritten += nReturnedValue;
+  *lpOutputSize = nReturnedValue;
 
 #else /* NOT RT_DEFINE_WINDOWS */
   lpReturnedValue = getenv(lpEnvVarName);
@@ -58,7 +58,7 @@ RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBuffe
 
   /* Copy result to buffer. */
   strcpy(lpBuffer, lpReturnedValue);
-  *lpWritten += nLength;
+  *lpOutputSize = nLength;
 #endif
 
   bResult = RT_SUCCESS;

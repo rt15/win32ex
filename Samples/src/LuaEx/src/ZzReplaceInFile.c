@@ -14,7 +14,7 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   RT_N nNewFileContentSize;
   RT_N nDelta;
 
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_UN unFileSize;
   RT_UN unNewFileSize;
   RT_N nOcurrencesCount;
@@ -43,10 +43,12 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
     nNewFileContentSize = nFileContentSize + nDelta;
     if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpNewFileContent, (nNewFileContentSize + 1) * sizeof(RT_CHAR), _R("New file content as string."))) goto handle_error;
 
-    unWritten = 0;
-    if (!RtChar_ReplaceString(lpFileContent, lpSearched, lpReplacement, lpNewFileContent, nNewFileContentSize + 1, &unWritten)) goto handle_error;
+    if (!RtChar_ReplaceString(lpFileContent, RtChar_GetStringSize(lpFileContent),
+                              lpSearched, RtChar_GetStringSize(lpSearched),
+                              lpReplacement, RtChar_GetStringSize(lpReplacement),
+                              lpNewFileContent, nNewFileContentSize + 1, &unOutputSize)) goto handle_error;
 
-    unNewFileSize = RtEncoding_EncodeWithHeap(lpNewFileContent, unWritten, 0, &lpNewFileContent8, lpHeap);
+    unNewFileSize = RtEncoding_EncodeWithHeap(lpNewFileContent, unOutputSize, 0, &lpNewFileContent8, lpHeap);
     if (unNewFileSize == -1) goto handle_error;
 
     if (!RtSmallFile_Write(lpNewFileContent8, unNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE)) goto handle_error;

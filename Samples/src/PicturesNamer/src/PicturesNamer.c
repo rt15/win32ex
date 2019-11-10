@@ -71,7 +71,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
 {
   RT_CHAR lpExtension[5];
   RT_UN unPathSize;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   FILE_INFO* lpFileInfo;
   RT_B bResult;
 
@@ -81,7 +81,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
     if (unPathSize > 4)
     {
       /* Extract extension. */
-      RtChar_CopyString(&lpPath[unPathSize - 4], lpExtension, 5, &unWritten);
+      RtChar_CopyString(&lpPath[unPathSize - 4], lpExtension, 5, &unOutputSize);
       RtChar_FastLowerString(lpExtension);
       if (!RtChar_CompareStrings(_R(".jpg"), lpExtension))
       {
@@ -93,7 +93,7 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
         }
 
         /* Fill file info. */
-        RtFileSystem_GetFileName(lpPath, unPathSize, lpFileInfo->lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unWritten);
+        RtFileSystem_GetFileName(lpPath, unPathSize, lpFileInfo->lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unOutputSize);
         RetrieveOriginalDate(lpPath, lpFileInfo->lpOriginalDate);
       }
     }
@@ -122,6 +122,8 @@ RT_UN16 Perform(RT_CHAR* lpPath)
   RT_CHAR lpNewFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpOldFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unWritten;
+  RT_UN unOutputSize;
+  RT_UN unInputSize;
   FILE_INFO* lpFileInfos;
   RtRuntimeHeap runtimeHeap;
   RT_UN32 unArraySize;
@@ -157,9 +159,9 @@ RT_UN16 Perform(RT_CHAR* lpPath)
   unArraySize = RtArray_GetSize(lpFileInfos);
 
   unWritten = 0;
-  RtChar_CopyString(_R("Files count: "), lpMessage, RT_FILE_SYSTEM_MAX_FILE_PATH + 200, &unWritten);
-  RtChar_ConvertIntegerToString(unArraySize, &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unWritten);
-  RtChar_CopyStringWithSize(_R("\n"), 1, &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unWritten);
+  RtChar_CopyString(_R("Files count: "),     &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_ConvertIntegerToString(unArraySize, &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_CopyStringWithSize(_R("\n"), 1,     &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
   RtConsole_WriteStringWithSize(lpMessage, unWritten);
 
   RtSortableArray_Sort(lpFileInfos);
@@ -167,32 +169,32 @@ RT_UN16 Perform(RT_CHAR* lpPath)
   for (nI = 0; nI < unArraySize; nI++)
   {
     /* Compute the new file name. */
+    RtChar_ConvertIntegerToString((nI + 1) * 5, lpNewFileName, 20, &unInputSize);
     unWritten = 0;
-    RtChar_ConvertIntegerToString((nI + 1) * 5, lpNewFileName, 20, &unWritten);
-    RtChar_LeftPadStringWithSize(lpNewFileName, unWritten, _R('0'), 5, lpNewFileName, 20, &unWritten);
-    RtChar_CopyString(_R(".jpg"), &lpNewFileName[unWritten], 20 - unWritten, &unWritten);
+    RtChar_LeftPadString(lpNewFileName, unInputSize, _R('0'), 5, &lpNewFileName[unWritten], 20 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R(".jpg"),                                &lpNewFileName[unWritten], 20 - unWritten, &unOutputSize); unWritten += unOutputSize;
 
     /* Display a log message. */
     unWritten = 0;
-    RtChar_CopyString(lpFileInfos[nI].lpFileName,      &lpMessage[unWritten], 200 - unWritten, &unWritten);
-    RtChar_CopyString(_R(" => "),                      &lpMessage[unWritten], 200 - unWritten, &unWritten);
-    RtChar_CopyString(lpFileInfos[nI].lpOriginalDate,  &lpMessage[unWritten], 200 - unWritten, &unWritten);
-    RtChar_CopyString(_R(" => "),                      &lpMessage[unWritten], 200 - unWritten, &unWritten);
-    RtChar_CopyString(lpNewFileName,                   &lpMessage[unWritten], 200 - unWritten, &unWritten);
-    RtChar_CopyString(_R("\n"),                        &lpMessage[unWritten], 200 - unWritten, &unWritten);
+    RtChar_CopyString(lpFileInfos[nI].lpFileName,     &lpMessage[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R(" => "),                     &lpMessage[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(lpFileInfos[nI].lpOriginalDate, &lpMessage[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R(" => "),                     &lpMessage[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(lpNewFileName,                  &lpMessage[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R("\n"),                       &lpMessage[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
     RtConsole_WriteStringWithSize(lpMessage, unWritten);
 
     /* Compute old file path. */
     unWritten = 0;
-    RtChar_CopyString(lpPath,                          &lpOldFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
-    RtChar_CopyString(RT_FILE_SYSTEM_SEPARATOR_STRING, &lpOldFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
-    RtChar_CopyString(lpFileInfos[nI].lpFileName,      &lpOldFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
+    RtChar_CopyString(lpPath,                          &lpOldFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(RT_FILE_SYSTEM_SEPARATOR_STRING, &lpOldFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(lpFileInfos[nI].lpFileName,      &lpOldFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize); unWritten += unOutputSize;
 
     /* Compute new file path. */
     unWritten = 0;
-    RtChar_CopyString(lpPath,                          &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
-    RtChar_CopyString(RT_FILE_SYSTEM_SEPARATOR_STRING, &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
-    RtChar_CopyString(lpNewFileName,                   &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unWritten);
+    RtChar_CopyString(lpPath,                          &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(RT_FILE_SYSTEM_SEPARATOR_STRING, &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(lpNewFileName,                   &lpNewFilePath[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize); unWritten += unOutputSize;
 
     if (!RtFileSystem_MoveFile(lpOldFilePath, lpNewFilePath))
     {

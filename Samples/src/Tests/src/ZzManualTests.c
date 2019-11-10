@@ -4,13 +4,14 @@ RT_B RT_CALL ZzManualDisplayEnvVar(RT_CHAR* lpName)
 {
   RT_CHAR lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   unWritten = 0;
-  if (!RtChar_CopyString(lpName,             &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R(" env var = "),  &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtEnvVar_Get(lpName,              &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\n"),           &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpName,            &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R(" env var = "), &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtEnvVar_Get(lpName,                 &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R("\n"),          &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
   if (!RtConsole_WriteStringWithSize(lpBuffer, unWritten)) goto handle_error;
 
@@ -62,6 +63,7 @@ RT_B RT_CALL ZzMisc()
 {
   RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_UN unMajorOsVersion;
   RT_UN unMinorOsVersion;
   RT_UN unPatchOsVersion;
@@ -71,9 +73,9 @@ RT_B RT_CALL ZzMisc()
 
   /* Executable path. */
   unWritten = 0;
-  if (!RtChar_CopyString(_R("Executable path = "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtFileSystem_GetExecutableFilePath(                &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\n"),                  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("Executable path = "), &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtFileSystem_GetExecutableFilePath(         &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R("\n"),                 &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
   if (!RtConsole_WriteStringWithSize(lpMessage, unWritten)) goto handle_error;
 
@@ -86,27 +88,26 @@ RT_B RT_CALL ZzMisc()
 
   /* Temporary directory. */
   unWritten = 0;
-  if (!RtChar_CopyString(_R("Temp directory = "),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtFileSystem_GetTempDirectory(                    &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\n"),                 &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("Temp directory = "), &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtFileSystem_GetTempDirectory(             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R("\n"),                &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
   if (!RtConsole_WriteStringWithSize(lpMessage, unWritten)) goto handle_error;
 
   /* Application configuration directory. */
-  unWritten = 0;
-  if (!RtFileSystem_GetApplicationDataDirectory(_R("Tests"), lpMessage, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetApplicationDataDirectory(_R("Tests"), lpMessage, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
   if (!RtConsole_WriteStringsOrErrors(RT_TRUE, _R("App config dir = "), lpMessage, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   /* OS version. */
   if (!RtSystemInfo_GetOsVersion(&unMajorOsVersion, &unMinorOsVersion, &unPatchOsVersion)) goto handle_error;
   unWritten = 0;
-  if (!RtChar_CopyString(_R("OS version = "),            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_ConvertUIntegerToString(unMajorOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyStringWithSize(_R("."), 1,             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_ConvertUIntegerToString(unMinorOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyStringWithSize(_R("."), 1,             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_ConvertUIntegerToString(unPatchOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyStringWithSize(_R("\n"), 1,            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("OS version = "),            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_ConvertUIntegerToString(unMajorOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyStringWithSize(_R("."), 1,             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_ConvertUIntegerToString(unMinorOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyStringWithSize(_R("."), 1,             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_ConvertUIntegerToString(unPatchOsVersion,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyStringWithSize(_R("\n"), 1,            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtConsole_WriteStringWithSize(lpMessage, unWritten)) goto handle_error;
 
   if (!RtConsole_WriteStringWithSize(_R("\n"), 1)) goto handle_error;
@@ -168,6 +169,7 @@ RT_B RT_CALL ZzManuallyTestInput()
   RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_CHAR lpLine[RT_CHAR_THIRD_BIG_STRING_SIZE];
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_CHAR nRead;
   RT_UN unRead;
   RT_B bResult;
@@ -180,11 +182,11 @@ RT_B RT_CALL ZzManuallyTestInput()
   nRead = RtConsole_ReadChar();
 
   unWritten = 0;
-  if (!RtChar_CopyString(_R("Read character: \""),      &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyStringWithSize(&nRead, 1,             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\", value: "),             &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_ConvertUIntegerToString((RT_UCHAR)nRead,  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R(".\n"),                     &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(_R("Read character: \""),     &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyStringWithSize(&nRead, 1,            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R("\", value: "),            &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_ConvertUIntegerToString((RT_UCHAR)nRead, &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R(".\n"),                    &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
   if (!RtConsole_WriteStringWithSize(lpMessage, unWritten)) goto handle_error;
 
@@ -192,10 +194,10 @@ RT_B RT_CALL ZzManuallyTestInput()
   unRead = RtConsole_ReadLine(lpLine, RT_CHAR_THIRD_BIG_STRING_SIZE);
   if (unRead == RT_TYPE_MAX_UN) goto handle_error;
   unWritten = 0;
-  if (!RtChar_ConvertUIntegerToString(unRead,         &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R(" characters read: \""),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(lpLine,                      &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R("\".\n"),                 &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_ConvertUIntegerToString(unRead,         &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R(" characters read: \""),  &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(lpLine,                      &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R("\".\n"),                 &lpMessage[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
   if (!RtConsole_WriteStringWithSize(lpMessage, unWritten)) goto handle_error;
 
@@ -218,6 +220,7 @@ RT_B RT_CALL ZzManualTests()
 
   ZzDisplayFlags();
   if (!ZzMisc()) goto handle_error;
+  if (!ZzTestErrorMessage()) goto handle_error;
   if (!ZzManuallyTestProcess()) goto handle_error;
   if (!ZzManuallyTestInput()) goto handle_error;
 

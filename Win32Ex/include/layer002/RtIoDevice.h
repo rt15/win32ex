@@ -45,13 +45,13 @@ RT_INPUT_STREAM* RT_API RtIoDevice_GetInputStream(RT_IO_DEVICE* lpIoDevice);
 RT_OUTPUT_STREAM* RT_API RtIoDevice_GetOutputStream(RT_IO_DEVICE* lpIoDevice);
 
 /**
- * In most cases, you should not need this functions.<br>
+ * In most cases, you should not need this function.<br>
  * Use <tt>lpInputStream->lpRead</tt> instead.
  */
 RT_B RT_API RtIoDevice_Read(RT_INPUT_STREAM* lpInputStream, RT_CHAR8* lpBuffer, RT_UN unBytesToRead, RT_UN* lpBytesRead);
 
 /**
- * In most cases, you should not need this functions.<br>
+ * In most cases, you should not need this function.<br>
  * Use <tt>lpOutputStream->lpWrite</tt> instead.
  */
 RT_B RT_API RtIoDevice_Write(RT_OUTPUT_STREAM* lpOutputStream, RT_CHAR8* lpData, RT_UN unBytesToWrite);

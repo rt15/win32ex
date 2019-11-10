@@ -64,10 +64,10 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
   RT_UN unDataSize;
   RT_UN unFileSize;
   RT_CHAR lpBuffer[500];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
 
   unFileSize = RtSmallFile_Read(lpPath, &lpFileContent, lpHeap);
-  RtChar_ConvertIntegerToString(unFileSize, lpBuffer, 500, &unWritten);
+  RtChar_ConvertIntegerToString(unFileSize, lpBuffer, 500, &unOutputSize);
   RtConsole_WriteStringsOrErrors(RT_TRUE, lpPath, _R(" file size: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   lpData = &lpFileContent[unBomSize];
@@ -109,6 +109,7 @@ RT_B RT_CALL ZzTests()
   RT_UN unIndex;
   RT_UN32 unI;
   RT_UN unWritten;
+  RT_UN unOutputSize;
 
   bHeapCreated = RT_FALSE;
 
@@ -158,17 +159,16 @@ tests_failed:
   goto handle_error;
 end_of_tests:
 
-  RtChar_ConvertIntegerToString(RtVirtualMemory_GetPageSize(), lpBuffer, 500, &unWritten);
+  RtChar_ConvertIntegerToString(RtVirtualMemory_GetPageSize(), lpBuffer, 500, &unOutputSize);
   RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
-  RtChar_CopyString(_R("FooBarPad"), lpBuffer, 500, &unWritten);
+  RtChar_CopyString(_R("FooBarPad"), lpBuffer, 500, &unOutputSize);
 
-  RtChar_LeftPadString(lpBuffer, _R('0'), 11, lpBuffer, 500, &unWritten);
+  RtChar_LeftPadString(lpBuffer, RtChar_GetStringSize(lpBuffer), _R('0'), 11, lpBuffer, 500, &unOutputSize);
   RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
-  unWritten = 0;
-  RtChar_ConcatStrings(lpBuffer, 500, &unWritten, _R("foo"), _R("bar"), _R("team"), _R("\n"), (RT_CHAR*)RT_NULL);
-  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
+  RtChar_ConcatStrings(lpBuffer, 500, &unOutputSize, _R("foo"), _R("bar"), _R("team"), _R("\n"), (RT_CHAR*)RT_NULL);
+  RtConsole_WriteStringWithSize(lpBuffer, unOutputSize);
 
   DiplayFileContent(_R("data/file.txt"), 0, 0, &zzRuntimeHeap.lpHeap);
   DiplayFileContent(_R("data/latin1.txt"), RT_ENCODING_ISO_8859_15, 0, &zzRuntimeHeap.lpHeap);
@@ -192,8 +192,8 @@ end_of_tests:
   {
     RtLinkedList_NewItemIndex((void**)&lpLinkedList, &unIndex);
     unWritten = 0;
-    RtChar_ConvertIntegerToString(unIndex, &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-    RtChar_CopyString(_R("\n"),     &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+    RtChar_ConvertIntegerToString(unIndex, &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R("\n"),            &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
     RtConsole_WriteStringWithSize(lpBuffer, unWritten);
   }
   RtArray_Free((void**)&lpLinkedList);
@@ -214,17 +214,17 @@ end_of_tests:
   for (unI = 0; unI < 100; unI++)
   {
     unWritten = 0;
-    RtChar_ConvertIntegerToString(lpArray[unI], &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-    RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+    RtChar_ConvertIntegerToString(lpArray[unI], &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R("\n"),                 &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
     RtConsole_WriteStringWithSize(lpBuffer, unWritten);
   }
 
   unToSearch = 1025;
   RtSortableArray_SearchItemIndex(lpArray, &unToSearch, &unIndex);
   unWritten = 0;
-  RtChar_CopyString(_R("Item found at index: "), &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-  RtChar_ConvertIntegerToString(unIndex,                &lpBuffer[unWritten], 200 - unWritten, &unWritten);
-  RtChar_CopyString(_R("\n"),                    &lpBuffer[unWritten], 200 - unWritten, &unWritten);
+  RtChar_CopyString(_R("Item found at index: "), &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_ConvertIntegerToString(unIndex,         &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_CopyString(_R("\n"),                    &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
   RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   RtArray_Free((void**)&lpArray);
@@ -234,6 +234,8 @@ end_of_tests:
     RtErrorMessage_WriteLast(_R("Failed to free some bytes: "));
     goto handle_error;
   }
+
+  RtConsole_WriteString(_R("\nSuccess!!\n"));
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -346,11 +348,10 @@ handle_error:
 RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVar)
 {
   RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
-  unWritten = 0;
-  if (!RtEnvVar_Get(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+  if (!RtEnvVar_Get(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
   if (!RtConsole_WriteStringsOrErrors(RT_TRUE, lpEnvVar, _R("="), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
 
   bResult = RT_SUCCESS;

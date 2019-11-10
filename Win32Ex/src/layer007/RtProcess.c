@@ -71,10 +71,11 @@ handle_error:
  * Convert given argv so it can be used in command line.<br>
  * See <tt>RtProcess_ArgVToCommandLine</tt>.
  */
-RT_B RT_CALL RtProcess_ConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_CALL RtProcess_ConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
 {
   RT_B bNeedDoubleQuotes;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_UN unAntiSlashes;
   RT_UN unI;
   RT_UN unJ;
@@ -99,7 +100,7 @@ RT_B RT_CALL RtProcess_ConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer
   if (bNeedDoubleQuotes)
   {
     /* Open double-quotes. */
-    if (!RtChar_CopyStringWithSize(_R("\""), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+    if (!RtChar_CopyStringWithSize(_R("\""), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
     unI = 0;
     unAntiSlashes = 0;
@@ -116,17 +117,17 @@ RT_B RT_CALL RtProcess_ConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer
           for (unJ = 0; unJ < unAntiSlashes; unJ++)
           {
             /* Escape slashes just before the double quote. */
-            if (!RtChar_CopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+            if (!RtChar_CopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
           }
 
           /* Escape double-quote. */
-          if (!RtChar_CopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+          if (!RtChar_CopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
         }
         unAntiSlashes = 0;
       }
 
       /* Copy character. */
-      if (!RtChar_CopyStringWithSize(&lpArg[unI], 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtChar_CopyStringWithSize(&lpArg[unI], 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
       unI++;
     }
@@ -134,20 +135,20 @@ RT_B RT_CALL RtProcess_ConvertArgToCommandLine(RT_CHAR* lpArg, RT_CHAR* lpBuffer
     /* Protect possible slashes before added closing double-quote. */
     for (unJ = 0; unJ < unAntiSlashes; unJ++)
     {
-      if (!RtChar_CopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtChar_CopyStringWithSize(_R("\\"), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
     }
 
     /* Close double-quotes. */
-    if (!RtChar_CopyStringWithSize(_R("\""), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unWritten)) goto handle_error;
+    if (!RtChar_CopyStringWithSize(_R("\""), 1, &lpBuffer[unWritten], unBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
   else
   {
-    if (!RtChar_CopyString(lpArg, lpBuffer, unBufferSize, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(lpArg, lpBuffer, unBufferSize, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   }
 
   bResult = RT_SUCCESS;
 free_resources:
-  *lpWritten += unWritten;
+  *lpOutputSize = unWritten;
   return bResult;
 
 handle_error:
@@ -240,6 +241,7 @@ RT_B RT_CALL RtProcess_ArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_
   RT_UN unCommandLineBufferSize;
   RT_CHAR* lpLocalCommandLine;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bFirst;
   RT_B bResult;
 
@@ -282,10 +284,10 @@ RT_B RT_CALL RtProcess_ArgVToCommandLine(RT_CHAR** lpApplicationPathAndArgs, RT_
     else
     {
       /* Arguments separator. */
-      if (!RtChar_CopyStringWithSize(_R(" "), 1, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+      if (!RtChar_CopyStringWithSize(_R(" "), 1, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
     }
     /* Convert argument. */
-    if (!RtProcess_ConvertArgToCommandLine(*lpInApplicationPathAndArgs, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unWritten)) goto handle_error;
+    if (!RtProcess_ConvertArgToCommandLine(*lpInApplicationPathAndArgs, &lpLocalCommandLine[unWritten], unCommandLineBufferSize - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
     lpInApplicationPathAndArgs++;
   }

@@ -19,10 +19,10 @@
  * Fails if the variable does not exist.
  *
  * <p>
- * In case of error, lpBuffer starts with a zero character and <tt>lpWritten</tt> is left untouched.
+ * In case of error, lpBuffer starts with a zero character and <tt>lpOutputSize</tt> is left untouched.
  * </p>
  */
-RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten);
+RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  *

@@ -33,12 +33,13 @@ RT_B RT_CALL ZzPrintUrlInfo(RT_URL_INFO* lpUrlInfo)
 {
   RT_CHAR lpMsg[RT_CHAR_HALF_BIG_STRING_SIZE];
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
-  if (!ZzPrintUrlInfoItem(_R("Scheme = "), lpUrlInfo->lpScheme, lpUrlInfo->unSchemeSize)) goto handle_error;
-  if (!ZzPrintUrlInfoItem(_R("User = "), lpUrlInfo->lpUser, lpUrlInfo->unUserSize)) goto handle_error;
+  if (!ZzPrintUrlInfoItem(_R("Scheme = "),   lpUrlInfo->lpScheme,   lpUrlInfo->unSchemeSize)) goto handle_error;
+  if (!ZzPrintUrlInfoItem(_R("User = "),     lpUrlInfo->lpUser,     lpUrlInfo->unUserSize)) goto handle_error;
   if (!ZzPrintUrlInfoItem(_R("Password = "), lpUrlInfo->lpPassword, lpUrlInfo->unPasswordSize)) goto handle_error;
-  if (!ZzPrintUrlInfoItem(_R("Host = "), lpUrlInfo->lpHost, lpUrlInfo->unHostSize)) goto handle_error;
+  if (!ZzPrintUrlInfoItem(_R("Host = "),     lpUrlInfo->lpHost,     lpUrlInfo->unHostSize)) goto handle_error;
 
   if (lpUrlInfo->unPort == RT_TYPE_MAX_UN)
   {
@@ -47,9 +48,9 @@ RT_B RT_CALL ZzPrintUrlInfo(RT_URL_INFO* lpUrlInfo)
   else
   {
     unWritten = 0;
-    if (!RtChar_CopyString(_R("Port = "),                   &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-    if (!RtChar_ConvertUIntegerToString(lpUrlInfo->unPort,  &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-    if (!RtChar_CopyString(_R("\n"),                        &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+    if (!RtChar_CopyString(_R("Port = "),                  &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+    if (!RtChar_ConvertUIntegerToString(lpUrlInfo->unPort, &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+    if (!RtChar_CopyString(_R("\n"),                       &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
     if (!RtConsole_WriteStringWithSize(lpMsg, unWritten)) goto handle_error;
   }
 
@@ -68,15 +69,14 @@ handle_error:
 RT_B RT_CALL RtCheckUrlInfoItem(RT_CHAR* lpUrlInfoItem, RT_UN unUrlInfoItemSize, RT_CHAR* lpItem)
 {
   RT_CHAR lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bResult;
 
   if (lpUrlInfoItem)
   {
     if (!lpItem) goto handle_error;
 
-    unWritten = 0;
-    if (!RtChar_CopyStringWithSize(lpUrlInfoItem, unUrlInfoItemSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
+    if (!RtChar_CopyStringWithSize(lpUrlInfoItem, unUrlInfoItemSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
     if (RtChar_CompareStrings(lpBuffer, lpItem)) goto handle_error;
   }
   else

@@ -3,19 +3,17 @@
 RT_B RT_CALL ZzDoTestBase64WithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_CHAR8* lpBase64)
 {
   RT_CHAR8 lpBuffer[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
 
   RT_B bResult;
 
-  unWritten = 0;
-  if (!RtBase64_EncodeWithSize(lpInput, unInputSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-  if (unWritten != RtChar8_GetStringSize(lpBase64)) goto handle_error;
+  if (!RtBase64_Encode(lpInput, unInputSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
+  if (unOutputSize != RtChar8_GetStringSize(lpBase64)) goto handle_error;
 
   if (RtChar8_CompareStrings(lpBuffer, lpBase64)) goto handle_error;
 
-  unWritten = 0;
-  if (!RtBase64_Decode(lpBase64, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unWritten)) goto handle_error;
-  if (unWritten != unInputSize) goto handle_error;
+  if (!RtBase64_Decode(lpBase64, RtChar8_GetStringSize(lpBase64), lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
+  if (unOutputSize != unInputSize) goto handle_error;
 
   if (RtChar8_CompareStrings(lpBuffer, lpInput)) goto handle_error;
 

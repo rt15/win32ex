@@ -19,7 +19,7 @@
  * @param lpBuffer Receive the path to the file so the caller can delete the file.
  * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
  */
-RT_B RT_API RtTempFile_Create(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtTempFile_Create(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 /**
  * Create a temporary file in given path.
@@ -32,6 +32,6 @@ RT_B RT_API RtTempFile_Create(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpBuf
  * @param lpBuffer Receive the path to the file so the caller can delete the file.
  * @param unBufferSize Should be RT_FILE_SYSTEM_MAX_FILE_PATH.
  */
-RT_B RT_API RtTempFile_CreateWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN *lpWritten);
+RT_B RT_API RtTempFile_CreateWithParentPath(RT_FILE* lpFile, RT_CHAR* lpPrefix, RT_CHAR* lpParentPath, RT_UN unParentPathSize, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
 #endif /* RT_TEMP_FILE_H */

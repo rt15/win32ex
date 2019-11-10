@@ -27,13 +27,7 @@ RT_UCHAR8 rt_lpDecodeBase64[] = {
   66,66,66,66,66,66
 };
 
-RT_B RT_API RtBase64_Encode(RT_CHAR8* lpString, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
-{
-  return RtBase64_EncodeWithSize(lpString, RtChar8_GetStringSize(lpString), lpBuffer, unBufferSize, lpWritten);
-}
-
-
-RT_B RT_API RtBase64_EncodeWithSize(RT_CHAR8* lpString, RT_UN unStringSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtBase64_Encode(RT_CHAR8* lpString, RT_UN unStringSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
 {
   RT_UCHAR8* lpUString;
   RT_UN32 unNumber;
@@ -129,7 +123,7 @@ RT_B RT_API RtBase64_EncodeWithSize(RT_CHAR8* lpString, RT_UN unStringSize, RT_C
 
   bResult = RT_SUCCESS;
 free_resources:
-  (*lpWritten) += unIndexInBuffer;
+  *lpOutputSize = unIndexInBuffer;
   return bResult;
 
 handle_error:
@@ -137,12 +131,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtBase64_Decode(RT_CHAR8* lpBase64, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
-{
-  return RtBase64_DecodeWithSize(lpBase64, RtChar8_GetStringSize(lpBase64), lpBuffer, unBufferSize, lpWritten);
-}
-
-RT_B RT_API RtBase64_DecodeWithSize(RT_CHAR8* lpBase64, RT_UN unBase64Size, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpWritten)
+RT_B RT_API RtBase64_Decode(RT_CHAR8* lpBase64, RT_UN unBase64Size, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
 {
   RT_CHAR8* lpEnd;
   RT_UN32 unBuffer;
@@ -224,7 +213,7 @@ RT_B RT_API RtBase64_DecodeWithSize(RT_CHAR8* lpBase64, RT_UN unBase64Size, RT_C
 
   bResult = RT_SUCCESS;
 free_resources:
-  (*lpWritten) += unOutputSize;
+  *lpOutputSize = unOutputSize;
   return bResult;
 
 handle_error:

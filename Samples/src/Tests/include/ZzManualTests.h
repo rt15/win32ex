@@ -5,4 +5,6 @@
 
 RT_B RT_CALL ZzManualTests();
 
+RT_B RT_CALL ZzTestErrorMessage();
+
 #endif /* ZZ_MANUAL_TESTS_H */

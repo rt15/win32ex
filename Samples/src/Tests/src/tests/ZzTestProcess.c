@@ -6,7 +6,7 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpTempFile[RT_FILE_SYSTEM_MAX_FILE_PATH];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_FILE zzFile;
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
@@ -26,11 +26,9 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   bOutputCreated = RT_FALSE;
   bProcessCreated = RT_FALSE;
 
-  unWritten = 0;
-  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
 
-  unWritten = 0;
-  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -93,7 +91,7 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpTempFile[RT_FILE_SYSTEM_MAX_FILE_PATH];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
   RT_FILE zzFile;
@@ -107,11 +105,9 @@ RT_B RT_CALL ZzTestRedirectStdOutToFile(RT_HEAP** lpHeap)
   bProcessCreated = RT_FALSE;
   bDeleteTempFile = RT_FALSE;
 
-  unWritten = 0;
-  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
 
-  unWritten = 0;
-  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -178,7 +174,7 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
 {
   RT_CHAR lpExecutablePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpTempFile[RT_FILE_SYSTEM_MAX_FILE_PATH];
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_B bFileCreated;
   RT_B bDeleteTempFile;
   RT_FILE zzFile;
@@ -193,11 +189,9 @@ RT_B RT_CALL ZzTestRedirectStdErrToFile()
   bProcessCreated = RT_FALSE;
   bDeleteTempFile = RT_FALSE;
 
-  unWritten = 0;
-  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
 
-  unWritten = 0;
-  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
   bFileCreated = RT_TRUE;
   bDeleteTempFile = RT_TRUE;
 
@@ -250,7 +244,7 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   RT_INPUT_STREAM* lpInputStream;
   RT_ENV_VARS zzEnvVars;
   RT_B bEnvVarsCreated;
-  RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_CHAR* lpApplicationPathAndArgs[4];
   RT_PROCESS zzProcess;
   RT_B bProcessCreated;
@@ -264,8 +258,8 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   bEnvVarsCreated = RT_FALSE;
   bProcessCreated = RT_FALSE;
 
-  unWritten = 0;
-  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unWritten)) goto handle_error;
+  unOutputSize = 0;
+  if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
 
   if (!RtPipe_Create(&zzPipe)) goto handle_error;
   lpInputIoDevice = RtPipe_GetInput(&zzPipe);

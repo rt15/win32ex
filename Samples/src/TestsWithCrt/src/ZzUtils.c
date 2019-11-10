@@ -9,6 +9,7 @@ RT_B RT_CALL ZzStopChrono(RT_CHAR* lpIdentifier, RT_CHRONO* lpChrono)
 {
   RT_UN unDuration;
   RT_UN unWritten;
+  RT_UN unOutputSize;
   RT_CHAR lpBuffer[RT_CHAR_THIRD_BIG_STRING_SIZE];
   RT_B bResult;
 
@@ -16,10 +17,10 @@ RT_B RT_CALL ZzStopChrono(RT_CHAR* lpIdentifier, RT_CHRONO* lpChrono)
   unDuration = unDuration / 1000;
 
   unWritten = 0;
-  if (!RtChar_CopyString(lpIdentifier,            &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R(": "),                &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_ConvertUIntegerToString(unDuration, &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
-  if (!RtChar_CopyString(_R(" ms\n"),             &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unWritten)) goto handle_error;
+  if (!RtChar_CopyString(lpIdentifier,            &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R(": "),                &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_ConvertUIntegerToString(unDuration, &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_CopyString(_R(" ms\n"),             &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtConsole_WriteStringWithSize(lpBuffer, unWritten)) goto handle_error;
 
   bResult = RT_SUCCESS;

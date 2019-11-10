@@ -79,7 +79,7 @@
 			<Add option="-pedantic" />
 			<Add option="-Wall" />
 			<Add option="-ansi" />
-			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long" />
+			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long -Wno-misleading-indentation" />
 			<Add directory="../../Win32Ex/include" />
 			<Add directory="../src/TestsWithCrt/include" />
 		</Compiler>
