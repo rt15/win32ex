@@ -19,7 +19,7 @@ RT_B RT_CALL ZzTestCopyMemory()
   /* Initialize source buffer. */
   for (unI = 0; unI < ZZ_BUFFER_SIZE; unI++)
   {
-    lpSource[unI] = (RT_UCHAR8)(unI % 200);
+    lpSource[unI] = (RT_UCHAR8)(RT_MEMORY_MODULO_POWER_OF_TWO(unI, 256));
   }
 
   /* Test memcpy. */

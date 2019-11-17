@@ -38,6 +38,31 @@
 /* Find the address of the "container" of given member. */
 #define RT_MEMORY_CONTAINER_OF(POINTER, STRUCT, MEMBER) ((STRUCT*)((char*)(POINTER) - RT_MEMORY_OFFSET_OF(STRUCT, MEMBER)))
 
+/* UINT % sizeof(RT_UN). */
+/* Notice that most compilers should automatically perform this optimization as sizeof(RT_UN) is known at runtime. */
+/* This macro only applies to positive integers. */
+#ifdef RT_DEFINE_32
+  #define RT_MEMORY_MODULO_RT_UN_SIZE(UINT) (UINT & 3)
+#else
+  #define RT_MEMORY_MODULO_RT_UN_SIZE(UINT) (UINT & 7)
+#endif
+
+/* C modulo operator % is very often dramatically slow because it is an integer division. */
+/* On the other hand, modulo power of two is very fast because it is only a bitwise operation. */
+/* As a result, you should try to always use following macro instead of % operator. */
+#define RT_MEMORY_MODULO_POWER_OF_TWO(UINT, POWER_OF_TWO) (UINT & (POWER_OF_TWO - 1))
+
+/* Can be used to check that a given value is power of two to be able to use RT_MEMORY_MODULO_POWER_OF_TWO later on. */
+#define RT_MEMORY_IS_POWER_OF_TWO(UINT) (UINT && ((UINT & (UINT - 1)) == 0))
+
+/* Compute the count of chunks given <tt>unSize</tt> (The elements count) and the size of a chunk. */
+/* CHUNK_SIZE must be a power of 2. */
+#ifdef RT_DEFINE_GCC
+  #define RT_MEMORY_GET_CHUNKS_COUNT(SIZE, CHUNK_SIZE) ((SIZE >> __builtin_ctzl(CHUNK_SIZE)) + (RT_MEMORY_MODULO_POWER_OF_TWO(SIZE, CHUNK_SIZE) ? 1 : 0))
+#else
+  /* TODO */
+#endif
+
 #ifndef RT_DEFINE_USE_CRT
 #ifdef RT_DEFINE_VC
 /* memmove is not available as intrinsic for VC and not declared outside CRT. */
@@ -130,12 +155,5 @@ RT_UN16* RT_API RtMemory_SwapBytes16(RT_UN16* lpSource, RT_UN16* lpDestination, 
  * @return The destination in all cases.
  */
 RT_UN32* RT_API RtMemory_SwapBytes32(RT_UN32* lpSource, RT_UN32* lpDestination, RT_UN unSize);
-
-/**
- * Compute the count of chunks given <tt>unSize</tt> (The elements count) and the size of a chunk.
- *
- * @return RT_TYPE_MAX_UN in case of error.
- */
-RT_UN RT_API RtMemory_GetChunksCount(RT_UN unSize, RT_UN unChunkSize);
 
 #endif /* RT_MEMORY_H */

@@ -305,16 +305,95 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzTestGetChunksCount()
+RT_B RT_CALL ZzTestGetChunksCountValues(RT_UN unSize, RT_UN unChunkSize)
 {
+  RT_UN unExpected;
   RT_B bResult;
 
-  if (RtMemory_GetChunksCount(5, 5) != 1)              goto handle_error;
-  if (RtMemory_GetChunksCount(6, 5) != 2)              goto handle_error;
-  if (RtMemory_GetChunksCount(1, 1) != 1)              goto handle_error;
-  if (RtMemory_GetChunksCount(5, 6) != 1)              goto handle_error;
-  if (RtMemory_GetChunksCount(0, 1) != 0)              goto handle_error;
-  if (RtMemory_GetChunksCount(1, 0) != RT_TYPE_MAX_UN) goto handle_error;
+  unExpected = unSize / unChunkSize;
+  if (unSize % unChunkSize)
+  {
+    unExpected++;
+  }
+
+  if (RT_MEMORY_GET_CHUNKS_COUNT(unSize, unChunkSize) != unExpected) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzTestGetChunksCount()
+{
+  RT_UN unI;
+  RT_B bResult;
+
+  for (unI = 2; unI < 80000; unI++)
+  {
+    if (!ZzTestGetChunksCountValues(unI, 1))   goto handle_error;
+    if (!ZzTestGetChunksCountValues(unI, 2))   goto handle_error;
+    if (!ZzTestGetChunksCountValues(unI, 4))   goto handle_error;
+    if (!ZzTestGetChunksCountValues(unI, 8))   goto handle_error;
+    if (!ZzTestGetChunksCountValues(unI, 16))  goto handle_error;
+    if (!ZzTestGetChunksCountValues(unI, 32))  goto handle_error;
+    if (!ZzTestGetChunksCountValues(unI, 64))  goto handle_error;
+    if (!ZzTestGetChunksCountValues(unI, 128)) goto handle_error;
+  }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_B RT_CALL ZzTestModulo()
+{
+  RT_UN unI;
+  RT_B bResult;
+
+  for (unI = 0; unI < 80000; unI++)
+  {
+    if (unI % sizeof(RT_N) != RT_MEMORY_MODULO_RT_UN_SIZE(unI)) goto handle_error;
+
+    if (unI % 1   != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 1))   goto handle_error;
+    if (unI % 2   != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 2))   goto handle_error;
+    if (unI % 4   != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 4))   goto handle_error;
+    if (unI % 8   != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 8))   goto handle_error;
+    if (unI % 16  != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 16))  goto handle_error;
+    if (unI % 32  != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 32))  goto handle_error;
+    if (unI % 64  != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 64))  goto handle_error;
+    if (unI % 128 != RT_MEMORY_MODULO_POWER_OF_TWO(unI, 128)) goto handle_error;
+
+    switch (unI)
+    {
+      case 1:
+      case 2:
+      case 4:
+      case 8:
+      case 16:
+      case 32:
+      case 64:
+      case 128:
+      case 256:
+      case 512:
+      case 1024:
+      case 2048:
+      case 4096:
+      case 8192:
+      case 16384:
+      case 32768:
+      case 65536:
+        if (!RT_MEMORY_IS_POWER_OF_TWO(unI)) goto handle_error;
+        break;
+      default:
+        if (RT_MEMORY_IS_POWER_OF_TWO(unI)) goto handle_error;
+    }
+  }
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -334,6 +413,7 @@ RT_B RT_CALL ZzTestMemory()
   if (!ZzTestSetMemory()) goto handle_error;
   if (!ZzTestSwapMemory()) goto handle_error;
   if (!ZzTestGetChunksCount()) goto handle_error;
+  if (!ZzTestModulo()) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

@@ -103,11 +103,11 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
 
   unItemSize = sizeof(RT_UN32) + 32 * sizeof(RT_CHAR);
 
-  if (!RtList_Create(&lpList, lpHeap, 23, sizeof(ZZ_LIST_ITEM), 10)) goto handle_error;
+  if (!RtList_Create(&lpList, lpHeap, 35, sizeof(ZZ_LIST_ITEM), 16)) goto handle_error;
 
-  if (!ZzTestCheckList(lpList, 23, unItemSize, 10, 3)) goto handle_error;
+  if (!ZzTestCheckList(lpList, 35, unItemSize, 16, 3)) goto handle_error;
 
-  for (unI = 0; unI < 23; unI++)
+  for (unI = 0; unI < 35; unI++)
   {
     RtList_GetItem(lpList, unI, (void**)&lpItem);
     lpItem->unValue = unI;
@@ -117,18 +117,18 @@ RT_B RT_CALL ZzTestList(RT_HEAP** lpHeap)
   ZzTestDisplayList(lpList);
 
   /* Reduce the size of the list. */
-  if (!RtList_SetSize(&lpList, 17)) goto handle_error;
+  if (!RtList_SetSize(&lpList, 29)) goto handle_error;
 
 
-  if (!ZzTestCheckList(lpList, 17, unItemSize, 10, 2)) goto handle_error;
+  if (!ZzTestCheckList(lpList, 29, unItemSize, 16, 2)) goto handle_error;
   ZzTestDisplayList(lpList);
 
   /* Increase the size of the list. */
-  if (!RtList_SetSize(&lpList, 31)) goto handle_error;
+  if (!RtList_SetSize(&lpList, 49)) goto handle_error;
 
-  if (!ZzTestCheckList(lpList, 31, unItemSize, 10, 4)) goto handle_error;
+  if (!ZzTestCheckList(lpList, 49, unItemSize, 16, 4)) goto handle_error;
 
-  for (unI = 0; unI < 31; unI++)
+  for (unI = 0; unI < 49; unI++)
   {
     RtList_GetItem(lpList, unI, (void**)&lpItem);
     lpItem->unValue = unI;

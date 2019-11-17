@@ -19,7 +19,7 @@ RT_B RT_CALL ZzCreateAppContext(ZZ_APP_CONTEXT* lpAppContext)
 
   for (unI = 0; unI < ZZ_RESOURCES_ENTITIES_COUNT; unI++)
   {
-    if (!RtList_Create(&lpAppContext->lpLists[unI], &lpAppContext->rtRuntimeHeap.lpHeap, 0, ZZ_RESOURCES_NAME_SIZE, 3000 / ZZ_RESOURCES_NAME_SIZE)) goto handle_error;
+    if (!RtList_Create(&lpAppContext->lpLists[unI], &lpAppContext->rtRuntimeHeap.lpHeap, 0, ZZ_RESOURCES_NAME_SIZE, 128)) goto handle_error;
   }
 
   lpAppContext->hInstance = RtGetInstance();

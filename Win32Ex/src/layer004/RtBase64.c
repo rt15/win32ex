@@ -1,5 +1,6 @@
 #include "layer004/RtBase64.h"
 
+#include "layer001/RtMemory.h"
 #include "layer002/RtError.h"
 #include "layer003/RtChar8.h"
 
@@ -103,7 +104,7 @@ RT_B RT_API RtBase64_Encode(RT_CHAR8* lpString, RT_UN unStringSize, RT_CHAR8* lp
   }
 
   /* Add padding that is required if we did not have a multiple of 4 number of characters in output. */
-  while (unIndexInBuffer % 4)
+  while (RT_MEMORY_MODULO_POWER_OF_TWO(unIndexInBuffer, 4))
   {
     if (unIndexInBuffer >= unBufferSize)
     {

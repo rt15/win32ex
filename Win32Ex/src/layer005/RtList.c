@@ -12,8 +12,14 @@ void* RT_API RtList_Create(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN 
 
   lpChunks = RT_NULL;
 
+  if (!RT_MEMORY_IS_POWER_OF_TWO(unChunkSize))
+  {
+    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
+    goto handle_error;
+  }
+
   /* Compute chunks count. */
-  unChunksCount = RtMemory_GetChunksCount(unSize, unChunkSize);
+  unChunksCount = RT_MEMORY_GET_CHUNKS_COUNT(unSize, unChunkSize);
   if (unChunksCount == RT_TYPE_MAX_UN)
   {
     goto handle_error;
@@ -111,7 +117,7 @@ void* RT_API RtList_GetItem(void* lpList, RT_UN unItemIndex, void** lpItem)
   }
 
   /* Find the item. */
-  unItemIndexInChunk = (unItemIndex % unChunkSize);
+  unItemIndexInChunk = (RT_MEMORY_MODULO_POWER_OF_TWO(unItemIndex, unChunkSize));
   lpChunks = (void**)lpList;
   *lpItem = ((RT_UCHAR8*)lpChunks[unChunkIndex]) + unItemIndexInChunk * unItemSize;
 free_resources:
@@ -137,7 +143,7 @@ void* RT_API RtList_SetSize(void** lpList, RT_UN unSize)
   unItemSize = lpListHeader->unItemSize;
 
   /* Compute new chunks count. */
-  unNewChunksCount = RtMemory_GetChunksCount(unSize, unChunkSize);
+  unNewChunksCount = RT_MEMORY_GET_CHUNKS_COUNT(unSize, unChunkSize);
   if (unNewChunksCount == RT_TYPE_MAX_UN)
   {
     goto handle_error;

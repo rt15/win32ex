@@ -60,7 +60,7 @@ int RT_CDECL memcmp(const void* lpArea1, const void* lpArea2, size_t unSize)
         goto handleRemainder;
       }
     }
-    unRemainder = unSize % sizeof(RT_UN);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     lpUCharArea1 = (RT_UCHAR8*)&lpWordArea1[unWordsCount];
     lpUCharArea2 = (RT_UCHAR8*)&lpWordArea2[unWordsCount];
   }
@@ -98,7 +98,7 @@ void* RT_CDECL memcpy(void* lpDestination, const void* lpSource, size_t unSize)
     {
       lpWordDestination[unI] = lpWordSource[unI];
     }
-    unRemainder = unSize % sizeof(RT_UN);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     if (unRemainder)
     {
       lpCharSource = (RT_CHAR8*)&lpWordSource[unWordsCount];
@@ -143,7 +143,7 @@ void* RT_CDECL memmove(void* lpDestination, const void* lpSource, size_t unSize)
       {
         lpWordDestination[-(RT_N)unI] = lpWordSource[-(RT_N)unI];
       }
-      unRemainder = unSize % sizeof(RT_UN);
+      unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
       lpCharSource = (RT_CHAR8*)&lpWordSource[-(RT_N)unWordsCount];
       lpCharDestination = (RT_CHAR8*)&lpWordDestination[-(RT_N)unWordsCount];;
     }
@@ -169,7 +169,7 @@ void* RT_CDECL memmove(void* lpDestination, const void* lpSource, size_t unSize)
       {
         lpWordDestination[unI] = lpWordSource[unI];
       }
-      unRemainder = unSize % sizeof(RT_UN);
+      unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
       if (unRemainder)
       {
         lpCharSource = (RT_CHAR8*)&lpWordSource[unWordsCount];
@@ -224,7 +224,7 @@ void* RT_CDECL memset(void* lpArea, int nValue, size_t unSize)
     {
       lpWordArea[unI] = nWord;
     }
-    unRemainder = unSize % sizeof(RT_N);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     if (unRemainder)
     {
       lpCharArea = (RT_CHAR8*)&lpWordArea[unWordsCount];

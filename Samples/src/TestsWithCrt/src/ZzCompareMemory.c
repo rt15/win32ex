@@ -20,7 +20,7 @@ RT_B RT_CALL ZzTestCompareMemory()
   /* Initialize source buffer. */
   for (unI = 0; unI < ZZ_BUFFER_SIZE - 1; unI++)
   {
-    lpArea1[unI] = (RT_UCHAR8)(unI % 200);
+    lpArea1[unI] = (RT_UCHAR8)(RT_MEMORY_MODULO_POWER_OF_TWO(unI, 256));
     lpArea2[unI] = lpArea1[unI];
   }
   lpArea1[ZZ_BUFFER_SIZE - 1] = 'b';

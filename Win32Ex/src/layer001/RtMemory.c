@@ -25,7 +25,7 @@ RT_N RT_API RtMemory_Compare(void* lpArea1, void* lpArea2, RT_UN unSize)
         goto handleRemainder;
       }
     }
-    unRemainder = unSize % sizeof(RT_UN);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     lpUCharArea1 = (RT_UCHAR8*)&lpWordArea1[unWordsCount];
     lpUCharArea2 = (RT_UCHAR8*)&lpWordArea2[unWordsCount];
   }
@@ -63,7 +63,7 @@ void* RT_API RtMemory_Copy(void* lpSource, void* lpDestination, RT_UN unSize)
     {
       lpWordDestination[unI] = lpWordSource[unI];
     }
-    unRemainder = unSize % sizeof(RT_UN);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     if (unRemainder)
     {
       lpCharSource = (RT_CHAR8*)&lpWordSource[unWordsCount];
@@ -108,7 +108,7 @@ void* RT_API RtMemory_Move(void* lpSource, void* lpDestination, RT_UN unSize)
       {
         lpWordDestination[-(RT_N)unI] = lpWordSource[-(RT_N)unI];
       }
-      unRemainder = unSize % sizeof(RT_UN);
+      unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
       lpCharSource = (RT_CHAR8*)&lpWordSource[-(RT_N)unWordsCount];
       lpCharDestination = (RT_CHAR8*)&lpWordDestination[-(RT_N)unWordsCount];;
     }
@@ -134,7 +134,7 @@ void* RT_API RtMemory_Move(void* lpSource, void* lpDestination, RT_UN unSize)
       {
         lpWordDestination[unI] = lpWordSource[unI];
       }
-      unRemainder = unSize % sizeof(RT_UN);
+      unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
       if (unRemainder)
       {
         lpCharSource = (RT_CHAR8*)&lpWordSource[unWordsCount];
@@ -189,7 +189,7 @@ void* RT_API RtMemory_Set(void* lpArea, RT_N32 nValue, RT_UN unSize)
     {
       lpWordArea[unI] = nWord;
     }
-    unRemainder = unSize % sizeof(RT_N);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     if (unRemainder)
     {
       lpCharArea = (RT_CHAR8*)&lpWordArea[unWordsCount];
@@ -227,7 +227,7 @@ void* RT_API RtMemory_Zero(void* lpArea, RT_UN unSize)
     {
       lpWordArea[unI] = 0;
     }
-    unRemainder = unSize % sizeof(RT_N);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     if (unRemainder)
     {
       lpCharArea = (RT_CHAR8*)&lpWordArea[unWordsCount];
@@ -272,7 +272,7 @@ void RT_API RtMemory_Swap(void* lpArea1, void* lpArea2, RT_UN unSize)
       lpWordArea1[unI] = lpWordArea2[unI];
       lpWordArea2[unI] = unTempWord;
     }
-    unRemainder = unSize % sizeof(RT_UN);
+    unRemainder = RT_MEMORY_MODULO_RT_UN_SIZE(unSize);
     if (unRemainder)
     {
       lpCharArea1 = (RT_UCHAR8*)&lpWordArea1[unWordsCount];
@@ -320,23 +320,4 @@ RT_UN32* RT_API RtMemory_SwapBytes32(RT_UN32* lpSource, RT_UN32* lpDestination, 
   }
 
   return lpDestination;
-}
-
-RT_UN RT_API RtMemory_GetChunksCount(RT_UN unSize, RT_UN unChunkSize)
-{
-  RT_UN unResult;
-
-  if (!unChunkSize)
-  {
-    unResult = RT_TYPE_MAX_UN;
-  }
-  else
-  {
-    unResult = unSize / unChunkSize;
-    if (unSize % unChunkSize)
-    {
-      unResult++;
-    }
-  }
-  return unResult;
 }

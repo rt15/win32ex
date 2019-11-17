@@ -26,7 +26,7 @@ RT_LIST_HEADER;
  *
  * @param unSize Total items count in the list.
  * @param unItemSize Size of an item.
- * @param unChunkSize Maximum items count in a chunk.
+ * @param unChunkSize Maximum items count in a chunk. Must be a power of two.
  */
 void* RT_API RtList_Create(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_UN unChunkSize);
 
