@@ -90,12 +90,57 @@
 					<Add library="crypto" />
 				</Linker>
 			</Target>
+			<Target title="Win64Debug">
+				<Option platforms="Windows;" />
+				<Option output="../bin/Testsd" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../src/Tests" />
+				<Option object_output="../obj/Debug" />
+				<Option type="1" />
+				<Option compiler="gnu_gcc_compiler_x64" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+				</Compiler>
+				<Linker>
+					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add library="win32exd" />
+					<Add library="ws2_32" />
+					<Add library="shell32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+				</Linker>
+			</Target>
+			<Target title="Win64Release">
+				<Option platforms="Windows;" />
+				<Option output="../bin/Tests" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../src/Tests" />
+				<Option object_output="../obj/Release" />
+				<Option type="1" />
+				<Option compiler="gnu_gcc_compiler_x64" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add library="win32ex" />
+					<Add library="ws2_32" />
+					<Add library="shell32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-pedantic" />
 			<Add option="-Wall" />
 			<Add option="-std=c99" />
-			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long -Wno-misleading-indentation" />
+			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long -Wno-misleading-indentation" />
 			<Add directory="../../win32ex/include" />
 			<Add directory="../src/Tests/include" />
 		</Compiler>

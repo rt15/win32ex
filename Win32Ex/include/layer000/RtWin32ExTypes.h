@@ -122,7 +122,7 @@ typedef short RT_N16;
 typedef int RT_B;                    /* BOOL               */
 typedef int RT_N32;                  /* INT/INT32/LONG     */
 #if defined(RT_DEFINE_WINDOWS) && defined(RT_DEFINE_64)
-  typedef unsigned int RT_UN32;      /* DWORD, UINT        */
+  typedef unsigned long int RT_UN32; /* DWORD, UINT        */
 #else
   typedef unsigned long RT_UN32;     /* DWORD, ULONG       */
 #endif

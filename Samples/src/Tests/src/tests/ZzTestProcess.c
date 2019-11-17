@@ -26,6 +26,9 @@ RT_B RT_CALL ZzTestRedirectStdInToPipe(RT_HEAP** lpHeap)
   bOutputCreated = RT_FALSE;
   bProcessCreated = RT_FALSE;
 
+  lpInputIoDevice = RT_NULL;
+  lpOutputIoDevice = RT_NULL;
+
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
 
   if (!RtTempFile_Create(&zzFile, _R("Zz"), lpTempFile, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
@@ -257,6 +260,9 @@ RT_B RT_CALL ZzTestCreateProcessEnv()
   bOutputCreated = RT_FALSE;
   bEnvVarsCreated = RT_FALSE;
   bProcessCreated = RT_FALSE;
+
+  lpInputIoDevice = RT_NULL;
+  lpOutputIoDevice = RT_NULL;
 
   unOutputSize = 0;
   if (!RtFileSystem_GetExecutableFilePath(lpExecutablePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;

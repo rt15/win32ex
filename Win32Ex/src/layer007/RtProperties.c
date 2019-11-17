@@ -16,6 +16,9 @@ RT_B RT_CALL RtProperties_GetEntries(RT_PROPERTY_ENTRY** lpPropertiesEntries, RT
   RT_UN unContext; /* 0 = in end of lines, 1 = in key, 2 = in separator, 3 = in value. */
   RT_B bResult;
 
+  lpKey = RT_NULL;
+  lpValue = RT_NULL;
+
   bResult = RT_FAILURE;
 
   unCurrentIndex = 0;

@@ -16,6 +16,9 @@ RT_B RT_CALL ZzTestPipeWithClose()
   bInputCreated = RT_FALSE;
   bOutputCreated = RT_FALSE;
 
+  lpInputIoDevice = RT_NULL;
+  lpOutputIoDevice = RT_NULL;
+
   if (!RtPipe_Create(&zzPipe)) goto handle_error;
   lpInputIoDevice = RtPipe_GetInput(&zzPipe);
   lpOutputIoDevice = RtPipe_GetOutput(&zzPipe);

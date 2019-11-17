@@ -658,6 +658,10 @@ RT_B RT_API RtProcess_CreateWithRedirections(RT_PROCESS* lpProcess, RT_B bChild,
   bRestoreOutputNonInheritable = RT_FALSE;
   bRestoreErrorNonInheritable = RT_FALSE;
 
+  lpActualStdInput = RT_NULL;
+  lpActualStdOutput = RT_NULL;
+  lpActualStdError = RT_NULL;
+
   RT_MEMORY_ZERO(&rtStartupInfo, sizeof(rtStartupInfo));
   rtStartupInfo.cb = sizeof(rtStartupInfo);
 

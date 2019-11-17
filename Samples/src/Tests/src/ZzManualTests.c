@@ -36,7 +36,7 @@ void RT_CALL ZzDisplayFlags()
 #ifdef RT_DEFINE_32
   RtConsole_WriteString(_R("Architecture = 32 bits\n"));
 #else
-  RtConsole_WriteString(_R("Architecture = 64 bits\n");
+  RtConsole_WriteString(_R("Architecture = 64 bits\n"));
 #endif
 
 #ifdef RT_DEFINE_WINDOWS

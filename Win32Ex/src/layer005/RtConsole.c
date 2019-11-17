@@ -336,7 +336,7 @@ RT_CHAR RT_API RtConsole_ReadChar()
 {
 #ifdef RT_DEFINE_WINDOWS
   HANDLE hInput;    /* Handle de l'entrée standard                            */
-  RT_UN unRead;    /* Nombre d'octets lus                                    */
+  RT_UN32 unRead;    /* Nombre d'octets lus                                    */
   RT_UN32 unOldMode; /* Sauvegarde le mode précédent pour le restituer         */
 #else
   struct termios termConfig;

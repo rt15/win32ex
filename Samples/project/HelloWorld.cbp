@@ -84,12 +84,54 @@
 					<Add library="win32ex" />
 				</Linker>
 			</Target>
+			<Target title="Win64Debug">
+				<Option platforms="Windows;" />
+				<Option output="../bin/HelloWorldd" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/Debug" />
+				<Option type="1" />
+				<Option compiler="gnu_gcc_compiler_x64" />
+				<Option parameters='toto &quot;t t&quot;' />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_CONSOLE" />
+				</Compiler>
+				<Linker>
+					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add library="win32exd" />
+					<Add library="shell32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+				</Linker>
+			</Target>
+			<Target title="Win64Release">
+				<Option platforms="Windows;" />
+				<Option output="../bin/HelloWorld" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../obj/Release" />
+				<Option type="1" />
+				<Option compiler="gnu_gcc_compiler_x64" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_CONSOLE" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
+					<Add library="win32ex" />
+					<Add library="shell32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-pedantic" />
 			<Add option="-Wall" />
 			<Add option="-ansi" />
-			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -march=i486 -Wno-long-long" />
+			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long" />
 			<Add directory="../../win32ex/include" />
 		</Compiler>
 		<Linker>

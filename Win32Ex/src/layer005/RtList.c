@@ -11,6 +11,7 @@ void* RT_API RtList_Create(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN 
   RT_UN unI;
 
   lpChunks = RT_NULL;
+  unChunksCount = 0;
 
   if (!RT_MEMORY_IS_POWER_OF_TWO(unChunkSize))
   {

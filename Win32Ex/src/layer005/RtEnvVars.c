@@ -402,10 +402,10 @@ RT_B RT_API RtEnvVars_AddEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
   /* Will be free in case of error. */
   lpNewEnvVarsBlock = RT_NULL;
 
+  lpOldEnvVarsBlock = lpEnvVars->lpEnvVarsBlock;
+
   /* The array will be built back if and when needed. */
   if (!RtStaticHeap_Free((void**)&lpEnvVars->lpEnvVarsArray)) goto handle_error;
-
-  lpOldEnvVarsBlock = lpEnvVars->lpEnvVarsBlock;
 
   unOldEnvVarsBlockSize = 0;
   while (RT_TRUE)
