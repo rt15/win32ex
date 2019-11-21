@@ -13,7 +13,7 @@
  *
  * <p>
  * Each group of 6 bits are converted in a character in 'A-Z', 'a-z', '0-9', '+' and '/' (2^6 = 64 characters).<br>
- * As a result, the input lenght is considered to be a multiple of 6 bits (And obvioulsy 8 bits), so 3, 6, 9, ... characters.<br>
+ * As a result, the input length is considered to be a multiple of 6 bits (And obviously 8 bits), so 3, 6, 9, ... characters.<br>
  * The size of the result is the considered input bits count divided by 6, so 4, 8, 12.<br>
  * The last 6 bits group of input is padded with zeros if necessary and the resulting base64 string is padded with '=' to be a multiple of 4.
  * </p>
