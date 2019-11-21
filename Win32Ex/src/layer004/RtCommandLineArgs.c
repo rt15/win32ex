@@ -23,7 +23,7 @@ RT_B RT_CALL RtAnalyzeCommandLineArg(RT_CHAR* lpArg, RT_UN* lpArgType,
   RT_UN unI;
   RT_B bResult;
 
-  unArgSize = RtChar_GetStringSize(lpArg);
+  unArgSize = RtChar_GetCStringSize(lpArg);
   if (unArgSize <= 1)
   {
     /* Empty string or only one character like 'a' or '-'. */
@@ -140,14 +140,14 @@ RT_B RT_API RtCommandLineArgs_Parse(RT_N32* lpArgC, RT_CHAR* lpArgV[], RT_COMMAN
       {
         nShortOption = lpShortOptionsBuffer[unJ];
 
-        if (RtChar_Search(lpShortOptionsWithoutArg, nShortOption) != RT_TYPE_MAX_UN)
+        if (RtChar1337_Search(lpShortOptionsWithoutArg, nShortOption) != RT_TYPE_MAX_UN)
         {
           bValid = RT_TRUE;
           unValueCardinality = RT_COMMAND_LINE_ARG_VALUE_NONE;
           lpValue = RT_NULL;
           /* No value, we will switch to the next character. */
         }
-        else if (RtChar_Search(lpShortOptionsWithOptionalArg, nShortOption) != RT_TYPE_MAX_UN)
+        else if (RtChar1337_Search(lpShortOptionsWithOptionalArg, nShortOption) != RT_TYPE_MAX_UN)
         {
           bValid = RT_TRUE;
           unValueCardinality = RT_COMMAND_LINE_ARG_VALUE_OPTIONAL;
@@ -162,7 +162,7 @@ RT_B RT_API RtCommandLineArgs_Parse(RT_N32* lpArgC, RT_CHAR* lpArgV[], RT_COMMAN
             unJ = unShortOptionsWritten;
           }
         }
-        else if (RtChar_Search(lpShortOptionsWithArg, nShortOption) != RT_TYPE_MAX_UN)
+        else if (RtChar1337_Search(lpShortOptionsWithArg, nShortOption) != RT_TYPE_MAX_UN)
         {
           bValid = RT_TRUE;
           unValueCardinality = RT_COMMAND_LINE_ARG_VALUE_REQUIRED;
@@ -261,12 +261,12 @@ RT_B RT_API RtCommandLineArgs_Parse(RT_N32* lpArgC, RT_CHAR* lpArgV[], RT_COMMAN
             {
               nShortOption = lpShortOptionsBuffer[unJ];
 
-              if (RtChar_Search(lpShortOptionsWithOptionalArg, nShortOption) != RT_TYPE_MAX_UN)
+              if (RtChar1337_Search(lpShortOptionsWithOptionalArg, nShortOption) != RT_TYPE_MAX_UN)
               {
                 /* Optional value should be concatenated, skip it. */
                 break;
               }
-              else if (RtChar_Search(lpShortOptionsWithArg, nShortOption) != RT_TYPE_MAX_UN)
+              else if (RtChar1337_Search(lpShortOptionsWithArg, nShortOption) != RT_TYPE_MAX_UN)
               {
                 /* If the mandatory value is not concatenated. */
                 if (unJ == unShortOptionsWritten - 1)

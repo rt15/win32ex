@@ -1,10 +1,10 @@
-#include "layer004/RtFileSystem.h"
+#include "layer005/RtFileSystem.h"
 
 #include "layer001/RtWin32ExOsHeaders.h"
 #include "layer002/RtError.h"
 #include "layer003/RtChar.h"
-#include "layer003/RtEnvVar.h"
 #include "layer003/RtFile.h"
+#include "layer004/RtEnvVar.h"
 
 #ifndef RT_DEFINE_WINDOWS
 
@@ -289,38 +289,68 @@ free_resources:
   return bResult;
 }
 
-RT_B RT_API RtFileSystem_GetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
+RT_B RT_API RtFileSystem_GetTempDirectory(RT_ARRAY* lpBuffer)
 {
+#ifdef RT_DEFINE_WINDOWS
+  DWORD unReturnedValue;
+#endif
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  /* Returns the characters copied to lpBuffer, not including the zero terminating character. */
-  *lpOutputSize = GetTempPath((DWORD)unBufferSize, lpBuffer);
-  if (!*lpOutputSize)
+  /* Returns the characters copied to lpBuffer, not including the null terminating character. */
+  unReturnedValue = GetTempPath(lpBuffer->unCapacity, lpBuffer->lpData);
+  if (!unReturnedValue)
   {
     goto handle_error;
   }
-#else /* NOT RT_DEFINE_WINDOWS */
-  if (!RtEnvVar_Get(_R("TMPDIR"), lpBuffer, unBufferSize, lpOutputSize))
+
+  /* If buffer is too small GetTempPath return the required buffer size and lpBuffer is unknown. */
+  if (unReturnedValue > lpBuffer->unCapacity)
   {
-    /* P_tmpdir macro appears to be "/tmp". */
-    if (!RtChar_CopyString(P_tmpdir, lpBuffer, unBufferSize, lpOutputSize)) goto handle_error;
+    if (lpBuffer->unFlags && RT_ARRAY_FLAG_DYNAMIC)
+    {
+      /* Try to allocate the required size. */
+      if (!RtArray_SetSize(lpBuffer, unReturnedValue)) goto handle_error;
+
+      /* Try again. */
+      unReturnedValue = GetTempPath(lpBuffer->unCapacity, lpBuffer->lpData);
+      if (!unReturnedValue)
+      {
+        goto handle_error;
+      }
+
+      /* Should not happen as we provided an array with sufficient size. */
+      if (unReturnedValue > lpBuffer->unCapacity)
+      {
+        RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
+        goto handle_error;
+      }
+    }
+    else
+    {
+      RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
+      goto handle_error;
+    }
+  }
+  if (!RtArray_SetSize(lpBuffer, unReturnedValue)) goto handle_error;
+
+#else /* NOT RT_DEFINE_WINDOWS */
+  if (!RtEnvVar_Get(_R("TMPDIR"), lpBuffer))
+  {
+    if (!RtChar_CopyCString(lpBuffer, P_tmpdir)) goto handle_error;
   }
 #endif
 
   bResult = RT_SUCCESS;
-  goto free_resources;
-handle_error:
-  if (unBufferSize > 0)
-  {
-    lpBuffer[0] = 0;
-  }
-  bResult = RT_FAILURE;
 free_resources:
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
-RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
+RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_ARRAY* lpBuffer)
 {
 #ifdef RT_DEFINE_WINDOWS
   HRESULT hResult;
@@ -329,28 +359,32 @@ RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName,
   long int nPasswdBufferSize;
   char* lpPasswdBuffer;
   int nReturnedValue;
-  RT_UN unFirstCharIndex;
+  RT_UN32 unFirstCharIndex;
   struct passwd passwordInfo;
   struct passwd* lpPasswordInfo;
+  RT_CHAR* lpData;
 #endif
-  RT_UN unWritten;
-  RT_UN unOutputSize;
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  hResult = SHGetFolderPath(RT_NULL, CSIDL_APPDATA, RT_NULL, 0, lpBuffer);
+  /* SHGetFolderPath expect lpBuffer length to be at least MAX_PATH. */
+  if (!RtArray_SetSize(lpBuffer, MAX_PATH)) goto handle_error;
+
+  hResult = SHGetFolderPath(RT_NULL, CSIDL_APPDATA, RT_NULL, 0, (RT_CHAR*)lpBuffer->lpData);
   if (FAILED(hResult))
   {
     SetLastError(HRESULT_CODE(hResult));
     goto handle_error;
   }
-  unWritten = RtChar_GetStringSize(lpBuffer);
-  if (!RtChar_CopyString(_R("\\"),          &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
-  if (!RtChar_CopyString(lpApplicationName, &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtArray_SetSize(lpBuffer, RtChar_GetCStringSize((RT_CHAR*)lpBuffer->lpData))) goto handle_error;
+  /* SHGetFolderPath returns a path without separator. */
+  if (!RtChar_Append(lpBuffer, _R('\\'))) goto handle_error;
+  if (!RtChar_AppendCString(lpBuffer, lpApplicationName)) goto handle_error;
+
 #else /* NOT RT_DEFINE_WINDOWS */
 
-  unWritten = 0;
-  if (!RtEnvVar_Get(_R("HOME"), lpBuffer, unBufferSize, &unOutputSize))
+  /* Use folder pointer by HOME environment variable if available. */
+  if (!RtEnvVar_Get(_R("HOME"), lpBuffer))
   {
     /* The getuid function is always successful. */
     nUid = getuid();
@@ -386,45 +420,42 @@ RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName,
       goto handle_error;
     }
 
-    if (!RtChar_CopyString(passwordInfo.pw_dir, lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize))
+    if (!RtChar_CopyCString(lpBuffer, passwordInfo.pw_dir))
     {
       free(lpPasswdBuffer);
       goto handle_error;
     }
     free(lpPasswdBuffer);
   }
-  unWritten = unOutputSize;
 
   /* Add separator if necessary. */
-  if (lpBuffer[unWritten - 1] != _R('/'))
+  lpData = (RT_CHAR*)lpBuffer->lpData;
+  if (lpData[lpBuffer->unSize - 1] != _R('/'))
   {
-    if (!RtChar_CopyString(_R("/"), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+    if (!RtChar_Append(lpBuffer, _R('/'))) goto handle_error;
   }
 
   /* Add dot for hidden directory. */
-  if (!RtChar_CopyString(_R("."), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_Append(lpBuffer, _R('.'))) goto handle_error;
 
   /* Remember index of the first application name character. */
-  unFirstCharIndex = unWritten;
+  unFirstCharIndex = lpBuffer->unSize;
 
   /* Copy application name. */
-  if (!RtChar_CopyString(lpApplicationName, &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtChar_AppendCString(lpBuffer, lpApplicationName)) goto handle_error;
 
   /* Lower first character, "ApplicationName" -> "applicationName". */
-  lpBuffer[unFirstCharIndex] = RtChar_FastLower(lpBuffer[unFirstCharIndex]);
+  lpData = (RT_CHAR*)lpBuffer->lpData;
+  lpData[unFirstCharIndex] = RtChar_FastLower(lpData[unFirstCharIndex]);
 #endif
 
-  *lpOutputSize = unWritten;
   bResult = RT_SUCCESS;
-  goto free_resources;
-handle_error:
-  if (unBufferSize > 0)
-  {
-    lpBuffer[0] = 0;
-  }
-  bResult = RT_FAILURE;
 free_resources:
   return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_UN RT_API RtFileSystem_GetLastSeparator(RT_CHAR* lpPath, RT_UN unPathSize)
@@ -695,7 +726,7 @@ RT_B RT_API RtFileSystem_BrowsePath(RT_CHAR* lpPath, RT_FILE_SYSTEM_BROWSE_CALLB
   RT_UN unOutputSize;
 #else
   DIR* lpDir;
-  struct dirent *lpDirEntry;
+  struct dirent* lpDirEntry;
 #endif
   RT_CHAR lpChild[RT_FILE_SYSTEM_MAX_FILE_PATH]; /* Chemin de travail                    */
   RT_B bResult;
@@ -1117,7 +1148,7 @@ RT_B RT_API RtFileSystem_RenameFile(RT_CHAR* lpCurrentFilePath, RT_CHAR* lpNewFi
   RT_UN unOutputSize;
   RT_B bResult;
 
-  if (!RtFileSystem_GetParentPath(lpCurrentFilePath, RtChar_GetStringSize(lpCurrentFilePath), lpNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpCurrentFilePath, RtChar_GetCStringSize(lpCurrentFilePath), lpNewFilePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
   if (!RtFileSystem_AppendSeparator(lpNewFilePath, unOutputSize, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
   if (!RtChar_CopyString(lpNewFileName, &lpNewFilePath[unOutputSize], RT_FILE_SYSTEM_MAX_FILE_PATH - unOutputSize, &unOutputSize)) goto handle_error;
   if (!RtFileSystem_MoveOrRenameFile(lpCurrentFilePath, lpNewFilePath, RT_TRUE)) goto handle_error;

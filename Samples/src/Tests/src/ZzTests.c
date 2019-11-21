@@ -56,19 +56,29 @@ void RT_CALL ZzWriteToFile(RT_CHAR* lpPath, RT_CHAR* lpString, RT_UN unEncoding,
   }
 }
 
-void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSize, RT_HEAP** lpHeap)
+RT_B RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSize, RT_HEAP** lpHeap)
 {
+  RT_ARRAY rtMessage;
+  RT_CHAR lpMessage[512];
+  RT_ARRAY rtConversionBuffer;
+  RT_CHAR lpConversionBuffer[64];
   RT_CHAR* lpFileContentAsString;
   RT_CHAR8* lpFileContent;
   RT_CHAR8* lpData;
   RT_UN unDataSize;
   RT_UN unFileSize;
-  RT_CHAR lpBuffer[500];
-  RT_UN unOutputSize;
+  RT_B bResult;
 
   unFileSize = RtSmallFile_Read(lpPath, &lpFileContent, lpHeap);
-  RtChar_ConvertIntegerToString(unFileSize, lpBuffer, 500, &unOutputSize);
-  RtConsole_WriteStringsOrErrors(RT_TRUE, lpPath, _R(" file size: "), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
+
+  RtArray_Create(&rtMessage, lpMessage, sizeof(RT_CHAR), 512);
+  RtArray_Create(&rtConversionBuffer, lpConversionBuffer, sizeof(RT_CHAR), 64);
+
+  if (!RtChar_ConvertUnsignedIntegerToString(unFileSize, &rtConversionBuffer)) goto handle_error;
+  if (!RtChar_AppendCString(&rtMessage, _R(" file size: "))) goto handle_error;
+  if (!RtArray_Append(&rtMessage, &rtConversionBuffer)) goto handle_error;
+  if (!RtChar_AppendCString(&rtMessage, _R("\n"))) goto handle_error;
+  if (!RtConsole_WriteString(&rtMessage)) goto handle_error;
 
   lpData = &lpFileContent[unBomSize];
   unDataSize = unFileSize - unBomSize;
@@ -88,6 +98,14 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
   {
     RtErrorMessage_WriteLast(_R("Failed free file content: "));
   }
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 /**
@@ -95,10 +113,11 @@ void RT_CALL DiplayFileContent(RT_CHAR* lpPath, RT_UN unEncoding, RT_UN unBomSiz
  */
 RT_B RT_CALL ZzTests()
 {
-  RT_B bResult;
-
   RT_B bHeapCreated;
-
+  RT_ARRAY rtMessage;
+  RT_CHAR lpMessage[512];
+  RT_ARRAY rtConversionBuffer;
+  RT_CHAR lpConversionBuffer[64];
   RtRuntimeHeap zzRuntimeHeap;
   void* lpArea;
   RT_UN32* lpArray;
@@ -108,8 +127,8 @@ RT_B RT_CALL ZzTests()
   RT_CHAR* lpTestingString;
   RT_UN unIndex;
   RT_UN32 unI;
-  RT_UN unWritten;
   RT_UN unOutputSize;
+  RT_B bResult;
 
   bHeapCreated = RT_FALSE;
 
@@ -130,6 +149,7 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestMemory()) goto tests_failed;
   if (!ZzTestRandom()) goto tests_failed;
   if (!ZzTestHeap(&zzRuntimeHeap.lpHeap)) goto tests_failed;
+  if (!ZzTestArray(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestIoDevice()) goto tests_failed;
   if (!ZzTestPipe()) goto tests_failed;
   if (!ZzTestFileSystem()) goto tests_failed;
@@ -146,25 +166,31 @@ RT_B RT_CALL ZzTests()
   if (!ZzTestSocket()) goto tests_failed;
   /* if (!ZzTestNonBlockingSocket()) goto tests_failed; */
   if (!ZzTestList(&zzRuntimeHeap.lpHeap)) goto tests_failed;
-  if (!ZzTestEnvVar()) goto tests_failed;
+  if (!ZzTestEnvVar(&zzRuntimeHeap.lpHeap)) goto tests_failed;
   if (!ZzTestEnvVars()) goto tests_failed;
   if (!ZzTestCommandLineArgs()) goto tests_failed;
   if (!ZzTestProcess(&zzRuntimeHeap.lpHeap)) goto tests_failed;
 
-  RtConsole_WriteString(_R("Tests successful!!\n\n"));
+  RtConsole_WriteCString(_R("Tests successful!!\n\n"));
   goto end_of_tests;
 
 tests_failed:
-  RtConsole_WriteString(_R("Tests failed!!\n\n"));
+  RtConsole_WriteCString(_R("Tests failed!!\n\n"));
   goto handle_error;
 end_of_tests:
 
-  RtChar_ConvertIntegerToString(RtVirtualMemory_GetPageSize(), lpBuffer, 500, &unOutputSize);
-  RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
+  RtArray_Create(&rtMessage, lpMessage, sizeof(RT_CHAR), 512);
+  RtArray_Create(&rtConversionBuffer, lpConversionBuffer, sizeof(RT_CHAR), 64);
+
+  if (!RtChar_ConvertUnsignedIntegerToString(RtVirtualMemory_GetPageSize(), &rtConversionBuffer)) goto handle_error;
+  if (!RtChar_AppendCString(&rtMessage, _R("Page size: "))) goto handle_error;
+  if (!RtArray_Append(&rtMessage, &rtConversionBuffer)) goto handle_error;
+  if (!RtChar_AppendCString(&rtMessage, _R("\n"))) goto handle_error;
+  if (!RtConsole_WriteString(&rtMessage)) goto handle_error;
 
   RtChar_CopyString(_R("FooBarPad"), lpBuffer, 500, &unOutputSize);
 
-  RtChar_LeftPadString(lpBuffer, RtChar_GetStringSize(lpBuffer), _R('0'), 11, lpBuffer, 500, &unOutputSize);
+  RtChar_LeftPadString(lpBuffer, RtChar_GetCStringSize(lpBuffer), _R('0'), 11, lpBuffer, 500, &unOutputSize);
   RtConsole_WriteStringsOrErrors(RT_TRUE, lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL);
 
   RtChar_ConcatStrings(lpBuffer, 500, &unOutputSize, _R("foo"), _R("bar"), _R("team"), _R("\n"), (RT_CHAR*)RT_NULL);
@@ -191,12 +217,12 @@ end_of_tests:
   for (unI = 0; unI < 5; unI++)
   {
     RtLinkedList_NewItemIndex((void**)&lpLinkedList, &unIndex);
-    unWritten = 0;
-    RtChar_ConvertIntegerToString(unIndex, &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtChar_CopyString(_R("\n"),            &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtConsole_WriteStringWithSize(lpBuffer, unWritten);
+
+    if (!RtChar_ConvertUnsignedIntegerToString(unI, &rtMessage)) goto handle_error;
+    if (!RtChar_AppendCString(&rtMessage, _R("\n"))) goto handle_error;
+    if (!RtConsole_WriteString(&rtMessage)) goto handle_error;
   }
-  RtArray_Free((void**)&lpLinkedList);
+  RtArray1337_Free((void**)&lpLinkedList);
 
   RtSortableArray_Create((void**)&lpArray, &zzRuntimeHeap.lpHeap, 200, sizeof(RT_UN32), &ZzCompare, RT_NULL);
   for (unI = 0; unI < 200; unI++)
@@ -208,26 +234,26 @@ end_of_tests:
   lpArray[34] = 7;
   lpArray[50] = 8;
 
-  RtArray_SetSize((void**)&lpArray, 100);
+  RtArray1337_SetSize((void**)&lpArray, 100);
   RtSortableArray_Sort(lpArray);
 
   for (unI = 0; unI < 100; unI++)
   {
-    unWritten = 0;
-    RtChar_ConvertIntegerToString(lpArray[unI], &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtChar_CopyString(_R("\n"),                 &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtConsole_WriteStringWithSize(lpBuffer, unWritten);
+    if (!RtChar_ConvertUnsignedIntegerToString(lpArray[unI], &rtMessage)) goto handle_error;
+    if (!RtChar_AppendCString(&rtMessage, _R("\n"))) goto handle_error;
+    if (!RtConsole_WriteString(&rtMessage)) goto handle_error;
   }
 
   unToSearch = 1025;
   RtSortableArray_SearchItemIndex(lpArray, &unToSearch, &unIndex);
-  unWritten = 0;
-  RtChar_CopyString(_R("Item found at index: "), &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_ConvertIntegerToString(unIndex,         &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_CopyString(_R("\n"),                    &lpBuffer[unWritten], 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
+  if (!RtArray_SetSize(&rtMessage, 0)) goto handle_error;
+  if (!RtChar_ConvertUnsignedIntegerToString(unIndex, &rtConversionBuffer)) goto handle_error;
+  if (!RtChar_AppendCString(&rtMessage, _R("Item found at index: "))) goto handle_error;
+  if (!RtArray_Append(&rtMessage, &rtConversionBuffer)) goto handle_error;
+  if (!RtChar_AppendCString(&rtMessage, _R("\n"))) goto handle_error;
+  if (!RtConsole_WriteString(&rtMessage)) goto handle_error;
 
-  RtArray_Free((void**)&lpArray);
+  RtArray1337_Free((void**)&lpArray);
 
   if (!zzRuntimeHeap.lpHeap->lpFree(&zzRuntimeHeap, &lpArea))
   {
@@ -235,7 +261,7 @@ end_of_tests:
     goto handle_error;
   }
 
-  RtConsole_WriteString(_R("\nSuccess!!\n"));
+  RtConsole_WriteCString(_R("\nSuccess!!\n"));
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -324,12 +350,12 @@ RT_B RT_CALL ZzDisplayEnvVars()
 
   while (*lpEnvVarsArray)
   {
-    if (!RtConsole_WriteString(*lpEnvVarsArray)) goto handle_error;
+    if (!RtConsole_WriteCString(*lpEnvVarsArray)) goto handle_error;
     if (!RtConsole_WriteStringWithSize(_R("\n"), 1)) goto handle_error;
     lpEnvVarsArray++;
   }
 
-  if (!RtConsole_WriteString(_R("\n"))) goto handle_error;
+  if (!RtConsole_WriteCString(_R("\n"))) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -345,67 +371,54 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVar)
-{
-  RT_CHAR lpBuffer[RT_CHAR_BIG_STRING_SIZE];
-  RT_UN unOutputSize;
-  RT_B bResult;
-
-  if (!RtEnvVar_Get(lpEnvVar, lpBuffer, RT_CHAR_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
-  if (!RtConsole_WriteStringsOrErrors(RT_TRUE, lpEnvVar, _R("="), lpBuffer, _R("\n"), (RT_CHAR*)RT_NULL)) goto handle_error;
-
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
-
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
-}
-
 RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
+  RT_ARRAY zzFirstArgument;
   RT_B bResult;
+
+  if (nArgC >= 2)
+  {
+    RtChar_CreateString(&zzFirstArgument, lpArgV[1]);
+  }
 
   if (nArgC == 1)
   {
     bResult = ZzTests();
   }
-  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--manual")) ||
-                          !RtChar_CompareStrings(lpArgV[1], _R("-m"))))
+  else if (nArgC == 2 && (RtChar_StringEqualsCString(&zzFirstArgument, _R("--manual")) ||
+                          RtChar_StringEqualsCString(&zzFirstArgument, _R("-m"))))
   {
     bResult = ZzManualTests();
   }
-
-  else if (!RtChar_CompareStrings(lpArgV[1], _R("--parse-args")) ||
-           !RtChar_CompareStrings(lpArgV[1], _R("-p")))
+  else if (RtChar_StringEqualsCString(&zzFirstArgument, _R("--parse-args")) ||
+           RtChar_StringEqualsCString(&zzFirstArgument, _R("-p")))
   {
     bResult = ZzTestParseArgs(nArgC - 1, &lpArgV[1]);
   }
 
-  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--read-line")) ||
-                          !RtChar_CompareStrings(lpArgV[1], _R("-r"))))
+  else if (nArgC == 2 && (RtChar_StringEqualsCString(&zzFirstArgument, _R("--read-line")) ||
+                          RtChar_StringEqualsCString(&zzFirstArgument, _R("-r"))))
   {
     bResult = ZzReadLine();
   }
-  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--help")) ||
-                          !RtChar_CompareStrings(lpArgV[1], _R("-h")) ||
-                          !RtChar_CompareStrings(lpArgV[1], _R("/?"))))
+  else if (nArgC == 2 && (RtChar_StringEqualsCString(&zzFirstArgument, _R("--help")) ||
+                          RtChar_StringEqualsCString(&zzFirstArgument, _R("-h")) ||
+                          RtChar_StringEqualsCString(&zzFirstArgument, _R("/?"))))
   {
     bResult = ZzDisplayHelp(RT_SUCCESS);
   }
-  else if (nArgC == 2 && (!RtChar_CompareStrings(lpArgV[1], _R("--display-env-var")) ||
-                          !RtChar_CompareStrings(lpArgV[1], _R("-d"))))
+  else if (nArgC == 2 && (RtChar_StringEqualsCString(&zzFirstArgument, _R("--display-env-var")) ||
+                          RtChar_StringEqualsCString(&zzFirstArgument, _R("-d"))))
   {
     bResult = ZzDisplayEnvVars();
   }
-  else if (nArgC == 3 && (!RtChar_CompareStrings(lpArgV[1], _R("--display-env-var")) ||
-                          !RtChar_CompareStrings(lpArgV[1], _R("-d"))))
+  else if (nArgC == 3 && (RtChar_StringEqualsCString(&zzFirstArgument, _R("--display-env-var")) ||
+                          RtChar_StringEqualsCString(&zzFirstArgument, _R("-d"))))
   {
     bResult = ZzDisplayEnvVar(lpArgV[2]);
   }
-  else if (!RtChar_CompareStrings(lpArgV[1], _R("--args")) ||
-           !RtChar_CompareStrings(lpArgV[1], _R("-a")))
+  else if (RtChar_StringEqualsCString(&zzFirstArgument, _R("--args")) ||
+           RtChar_StringEqualsCString(&zzFirstArgument, _R("-a")))
   {
     bResult = ZzDisplayArgs(nArgC, lpArgV);
   }

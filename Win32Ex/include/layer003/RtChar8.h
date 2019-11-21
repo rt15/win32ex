@@ -16,8 +16,8 @@ RT_UN RT_API RtChar8_SearchString(RT_CHAR8* lpString, RT_CHAR8* lpSearched);
 RT_B RT_API RtChar8_ConvertStringToInteger(RT_CHAR8* lpInput, RT_N* lpResult);
 RT_B RT_API RtChar8_ConvertStringToIntegerWithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_N* lpResult);
 
-RT_B RT_API RtChar8_ConvertStringToUInteger(RT_CHAR8* lpInput, RT_UN* lpResult);
-RT_B RT_API RtChar8_ConvertStringToUIntegerWithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN* lpResult);
+RT_B RT_API RtChar8_ConvertStringToUnsignedInteger(RT_CHAR8* lpInput, RT_UN* lpResult);
+RT_B RT_API RtChar8_ConvertStringToUnsignedIntegerWithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN* lpResult);
 
 /**
  *

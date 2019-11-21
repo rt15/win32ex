@@ -14,12 +14,14 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-m32" />
 					<Add option="-g" />
 					<Add option="-DWIN32" />
 					<Add option="-D_DEBUG" />
 					<Add option="-D_CONSOLE" />
 				</Compiler>
 				<Linker>
+					<Add option="-m32" />
 					<Add option="-nostartfiles -nodefaultlibs -nostdlib -ffreestanding" />
 					<Add library="win32exd" />
 					<Add library="ws2_32" />
@@ -166,6 +168,9 @@
 		<Unit filename="../src/Tests/src/manual_tests/ZzTestErrorMessage.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/Tests/src/tests/ZzTestArray.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/Tests/src/tests/ZzTestAtomic.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -239,9 +244,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>

@@ -27,7 +27,7 @@ void* RT_API RtList_Create(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN 
   }
 
   /* Create array of pointers on chunks. */
-  if (RtArray_Create(lpList, sizeof(RT_LIST_HEADER), lpHeap, unChunksCount, sizeof(void*)))
+  if (RtArray1337_Create(lpList, sizeof(RT_LIST_HEADER), lpHeap, unChunksCount, sizeof(void*)))
   {
     lpHeader = *lpList;
     lpHeader--;
@@ -75,7 +75,7 @@ handle_error:
       }
     }
     /* Free chunks pointers. */
-    RtArray_Free((void**)&lpChunks);
+    RtArray1337_Free((void**)&lpChunks);
   }
   *lpList = RT_NULL;
 free_resources:
@@ -170,12 +170,12 @@ void* RT_API RtList_SetSize(void** lpList, RT_UN unSize)
       }
 
       /* Reduce chunks array size. TODO: There can be a memory leak of chunks. */
-      if (!RtArray_SetSize(lpList, unNewChunksCount)) goto free_resources;
+      if (!RtArray1337_SetSize(lpList, unNewChunksCount)) goto free_resources;
     }
     else
     {
       /* Size increased. We need more chunks. TODO: There can be a memory leak of chunks. */
-      if (!RtArray_SetSize(lpList, unNewChunksCount)) goto free_resources;
+      if (!RtArray1337_SetSize(lpList, unNewChunksCount)) goto free_resources;
 
       lpChunks = (void**)*lpList;
 
@@ -306,7 +306,7 @@ RT_B RT_API RtList_Free(void** lpList)
     }
 
     /* Free pointers array. */
-    if (!RtArray_Free(lpList))
+    if (!RtArray1337_Free(lpList))
     {
       bResult = RT_FAILURE;
     }

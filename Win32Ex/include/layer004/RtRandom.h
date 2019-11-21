@@ -16,12 +16,12 @@ RT_B RT_API RtRandom_GetInteger(RT_N* lpResult);
 /**
  * Provide a random positive integer.
  */
-RT_B RT_API RtRandom_GetUInteger(RT_UN* lpResult);
+RT_B RT_API RtRandom_GetUnsignedInteger(RT_UN* lpResult);
 
 /**
  * Provide a random positive integer between <tt>unLowerBound</tt> included and <tt>unUpperBound</tt> included.
  */
-RT_B RT_API RtRandom_GetUIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperBound, RT_UN* lpResult);
+RT_B RT_API RtRandom_GetUnsignedIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperBound, RT_UN* lpResult);
 
 /**
  * Provide a random integer between <tt>nLowerBound</tt> included and <tt>nUpperBound</tt> included.

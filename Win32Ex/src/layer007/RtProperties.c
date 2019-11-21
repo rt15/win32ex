@@ -158,7 +158,7 @@ RT_B RT_CALL RtProperties_CreateFromString(RT_PROPERTIES* lpProperties, RT_CHAR*
   }
   else
   {
-    RtArray_Free((void**)&lpPropertiesEntries);
+    RtArray1337_Free((void**)&lpPropertiesEntries);
     bResult = RT_FAILURE;
   }
 
@@ -236,7 +236,7 @@ RT_CHAR* RT_API RtProperties_GetString(RT_PROPERTIES* lpProperties, RT_CHAR* lpK
     /* Find the right item by checking the key. */
     while ((unIndex < RT_TYPE_MAX_N) && (unIndex < unSize) && (lpPropertiesEntries[unIndex].unHash == unHash))
     {
-      if (!RtChar_CompareStrings(lpPropertiesEntries[unIndex].lpKey, lpKey))
+      if (!RtChar1337_CompareStrings(lpPropertiesEntries[unIndex].lpKey, lpKey))
       {
         lpResult = lpPropertiesEntries[unIndex].lpValue;
         break;
@@ -248,20 +248,21 @@ RT_CHAR* RT_API RtProperties_GetString(RT_PROPERTIES* lpProperties, RT_CHAR* lpK
   return lpResult;
 }
 
-RT_N RT_API RtProperties_GetInteger(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue)
+RT_UN RT_API RtProperties_GetUnsignedInteger(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_UN unDefaultValue)
 {
+  RT_ARRAY rtString;
   RT_CHAR* lpStringProperty;
-  RT_N nResult;
+  RT_UN unResult;
 
   lpStringProperty = RtProperties_GetString(lpProperties, lpKey, RT_NULL);
   if (!lpStringProperty) goto handle_error;
-  if (!RtChar_ConvertStringToInteger(lpStringProperty, &nResult)) goto handle_error;
+  if (!RtChar_ConvertStringToUnsignedInteger(RtChar_CreateString(&rtString, lpStringProperty), &unResult)) goto handle_error;
 
   goto free_resources;
 handle_error:
-  nResult = nDefaultValue;
+  unResult = unDefaultValue;
 free_resources:
-  return nResult;
+  return unResult;
 }
 
 RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue)
@@ -273,18 +274,18 @@ RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey,
 
   lpStringProperty = RtProperties_GetString(lpProperties, lpKey, RT_NULL);
   if (!lpStringProperty) goto handle_error;
-  if (RtChar_GetStringSize(lpStringProperty) > 4)
+  if (RtChar_GetCStringSize(lpStringProperty) > 4)
   {
     bResult = RT_FALSE;
     goto free_resources;
   }
   if (!RtChar_CopyString(lpStringProperty, lpLowerCaseValue, 8, &unOutputSize)) goto handle_error;
   RtChar_FastLowerString(lpLowerCaseValue);
-  bResult = (!RtChar_CompareStrings(lpLowerCaseValue, _R("true")) ||
-             !RtChar_CompareStrings(lpLowerCaseValue, _R("yes")) ||
-             !RtChar_CompareStrings(lpLowerCaseValue, _R("y")) ||
-             !RtChar_CompareStrings(lpLowerCaseValue, _R("t")) ||
-             !RtChar_CompareStrings(lpLowerCaseValue, _R("1"))
+  bResult = (!RtChar1337_CompareStrings(lpLowerCaseValue, _R("true")) ||
+             !RtChar1337_CompareStrings(lpLowerCaseValue, _R("yes")) ||
+             !RtChar1337_CompareStrings(lpLowerCaseValue, _R("y")) ||
+             !RtChar1337_CompareStrings(lpLowerCaseValue, _R("t")) ||
+             !RtChar1337_CompareStrings(lpLowerCaseValue, _R("1"))
             );
 
   goto free_resources;
@@ -300,7 +301,7 @@ RT_B RT_API RtProperties_Free(RT_PROPERTIES* lpProperties)
   RT_CHAR* lpData;
   RT_B bResult;
 
-  bResult = RtArray_Free((void**)&lpProperties->lpPropertiesEntries);
+  bResult = RtArray1337_Free((void**)&lpProperties->lpPropertiesEntries);
   lpHeap = lpProperties->lpHeap;
   lpData = lpProperties->lpData;
 

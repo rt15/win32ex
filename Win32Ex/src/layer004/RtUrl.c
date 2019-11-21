@@ -5,8 +5,7 @@
 
 RT_B RT_API RtUrl_Parse(RT_CHAR* lpUrl, RT_URL_INFO* lpUrlInfo)
 {
-  RT_CHAR lpPort[16];
-  RT_UN unOutputSize;
+  RT_ARRAY zzPort;
   RT_B bAuthentication;
   RT_UN unI;
   RT_UN unJ;
@@ -146,8 +145,9 @@ RT_B RT_API RtUrl_Parse(RT_CHAR* lpUrl, RT_URL_INFO* lpUrlInfo)
     {
       unJ++;
     }
-    if (!RtChar_CopyStringWithSize(&lpUrl[unI], unJ - unI, lpPort, 16, &unOutputSize)) goto handle_error;
-    if (!RtChar_ConvertStringToUInteger(lpPort, &lpUrlInfo->unPort)) goto handle_error;
+
+    RtChar_CreateStringWithSize(&zzPort, &lpUrl[unI], unJ - unI);
+    if (!RtChar_ConvertStringToUnsignedInteger(&zzPort, &lpUrlInfo->unPort)) goto handle_error;
     unI = unJ;
   }
   else

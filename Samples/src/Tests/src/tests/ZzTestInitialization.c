@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_INITIALIZATION zz_Initialization;
 RT_B zz_bInitialized;
@@ -8,7 +8,7 @@ RT_B RT_CALL ZzTestCommonFunction()
   RT_UN unI;
   RT_B bResult;
 
-  RtConsole_WriteString(_R("Initialize?\n"));
+  RtConsole_WriteCString(_R("Initialize?\n"));
   if (RtInitialization_IsRequired(&zz_Initialization))
   {
     if (zz_bInitialized) goto handle_error;
@@ -16,16 +16,16 @@ RT_B RT_CALL ZzTestCommonFunction()
 
     for (unI = 0; unI < 5; unI++)
     {
-      RtConsole_WriteString(_R("Initializing...\n"));
+      RtConsole_WriteCString(_R("Initializing...\n"));
       RtSleep_Sleep(1);
     }
-    RtConsole_WriteString(_R("Initialized.\n"));
+    RtConsole_WriteCString(_R("Initialized.\n"));
     RtInitialization_NotifyDone(&zz_Initialization);
   }
   else
   {
     if (!zz_bInitialized) goto handle_error;
-    RtConsole_WriteString(_R("Already initialized.\n"));
+    RtConsole_WriteCString(_R("Already initialized.\n"));
   }
 
   bResult = RT_TRUE;
@@ -61,7 +61,7 @@ RT_B RT_CALL ZzTestInitialization()
   if (!ZzTestCommonFunction()) goto handle_error;
 
   if (!RtThread_Join(&zzThread)) goto handle_error;
-  RtConsole_WriteString(_R("Joined.\n"));
+  RtConsole_WriteCString(_R("Joined.\n"));
 
   if (!RtThread_GetExitCode(&zzThread, &unExitCode)) goto handle_error;
 

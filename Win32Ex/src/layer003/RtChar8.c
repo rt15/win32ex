@@ -255,13 +255,13 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtChar8_ConvertStringToUInteger(RT_CHAR8* lpInput, RT_UN* lpResult)
+RT_B RT_API RtChar8_ConvertStringToUnsignedInteger(RT_CHAR8* lpInput, RT_UN* lpResult)
 {
   /* TODO: Better implementation. */
   return RtChar8_ConvertStringToInteger(lpInput, (RT_N*)lpResult);
 }
 
-RT_B RT_API RtChar8_ConvertStringToUIntegerWithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN* lpResult)
+RT_B RT_API RtChar8_ConvertStringToUnsignedIntegerWithSize(RT_CHAR8* lpInput, RT_UN unInputSize, RT_UN* lpResult)
 {
   /* TODO: Better implementation. */
   return RtChar8_ConvertStringToIntegerWithSize(lpInput, unInputSize, (RT_N*)lpResult);

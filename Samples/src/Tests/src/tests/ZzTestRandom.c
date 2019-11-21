@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_B RT_CALL ZzTestGetRandomIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperBound, RT_B bCheckBoundaries)
 {

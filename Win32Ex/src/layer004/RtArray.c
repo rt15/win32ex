@@ -5,7 +5,7 @@
 /**
  * Initialise un tableau avec la taille sépcifiée
  */
-void* RT_API RtArray_Create(void** lpArray, RT_UN unHeaderSize, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize)
+void* RT_API RtArray1337_Create(void** lpArray, RT_UN unHeaderSize, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize)
 {
   RT_ARRAY_HEADER* lpArrayHeader;
   void* lpArea;
@@ -38,7 +38,7 @@ void* RT_API RtArray_Create(void** lpArray, RT_UN unHeaderSize, RT_HEAP** lpHeap
  * est inférieure à la taille de l'ancienne, les
  * données sont tronquées.
  */
-void* RT_API RtArray_SetSize(void** lpArray, RT_UN unSize)
+void* RT_API RtArray1337_SetSize(void** lpArray, RT_UN unSize)
 {
   RT_ARRAY_HEADER* lpArrayHeader;
   RT_UN unHeaderSize;
@@ -98,7 +98,7 @@ void* RT_API RtArray_NewItem(void** lpArray, void** lpItem)
   lpArrayHeader--;
   unInitialSize = lpArrayHeader->unSize;
   unItemSize = lpArrayHeader->unItemSize;
-  if (RtArray_SetSize(lpArray, unInitialSize + 1))
+  if (RtArray1337_SetSize(lpArray, unInitialSize + 1))
   {
     *lpItem = (void*)(((RT_UCHAR8*)*lpArray) + unInitialSize * unItemSize);
   }
@@ -117,7 +117,7 @@ RT_UN RT_API RtArray_NewItemIndex(void** lpArray, RT_UN* lpItemIndex)
   lpArrayHeader = *lpArray;
   lpArrayHeader--;
   unInitialSize = lpArrayHeader->unSize;
-  if (RtArray_SetSize(lpArray, unInitialSize + 1))
+  if (RtArray1337_SetSize(lpArray, unInitialSize + 1))
   {
     *lpItemIndex = unInitialSize;
   }
@@ -145,7 +145,7 @@ void* RT_API RtArray_DeleteItemIndex(void** lpArray, RT_UN unItemIndex)
     /* Copy the last item in the deleted item */
     RT_MEMORY_COPY(((RT_UCHAR8*)*lpArray) + unLastItemIndex * unItemSize, ((RT_UCHAR8*)*lpArray) + unItemIndex * unItemSize, unItemSize);
   }
-  return RtArray_SetSize(lpArray, unLastItemIndex);
+  return RtArray1337_SetSize(lpArray, unLastItemIndex);
 }
 
 void* RT_API RtArray_GetItem(void* lpArray, RT_UN unItemIndex, void** lpItem)
@@ -173,10 +173,10 @@ void* RT_API RtArray_DeleteLastItem(void** lpArray)
 
   lpArrayHeader = *lpArray;
   lpArrayHeader--;
-  return RtArray_SetSize(lpArray, lpArrayHeader->unSize - 1);
+  return RtArray1337_SetSize(lpArray, lpArrayHeader->unSize - 1);
 }
 
-RT_B RT_API RtArray_Free(void** lpArray)
+RT_B RT_API RtArray1337_Free(void** lpArray)
 {
   RT_ARRAY_HEADER* lpArrayHeader;
   RT_UN unHeaderSize;

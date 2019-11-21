@@ -7,7 +7,7 @@ void* RT_API RtLinkedList_Create(void** lpLinkedList, RT_HEAP** lpHeap, RT_UN un
   RT_LINKED_LIST_ITEM_HEADER* lpItem;
   RT_UN unI;
 
-  if (RtArray_Create(lpLinkedList, sizeof(RT_LINKED_LIST_HEADER), lpHeap, unSize, unItemSize))
+  if (RtArray1337_Create(lpLinkedList, sizeof(RT_LINKED_LIST_HEADER), lpHeap, unSize, unItemSize))
   {
     lpHeader = *lpLinkedList;
     lpHeader--;

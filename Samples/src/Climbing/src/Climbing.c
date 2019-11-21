@@ -9,10 +9,10 @@
 
 #include "cbmanager.h"
 
-RT_UN16 RT_CALL CbCompetitionHeaderCallback(void* lpContext)
+RT_B RT_CALL CbCompetitionHeaderCallback(void* lpContext)
 {
   CbWriteMenuTitle(_R("Competition"));
-  return 0;
+  return RT_SUCCESS;
 }
 
 RT_UN16 RT_CALL CbCallManager(void* lpContext, RT_N nClass, RT_CHAR* lpClassName)
@@ -26,17 +26,17 @@ RT_UN16 RT_CALL CbCallManager(void* lpContext, RT_N nClass, RT_CHAR* lpClassName
   return CbManageEntities(&managerContext);
 }
 
-RT_UN16 RT_CALL CbClimbers(void* lpContext)
+RT_B RT_CALL CbClimbers(void* lpContext)
 {
   return CbCallManager(lpContext, CB_CLIMBERS_INDEX, _R("Climbers"));
 }
 
-RT_UN16 RT_CALL CbRoutes(void* lpContext)
+RT_B RT_CALL CbRoutes(void* lpContext)
 {
   return CbCallManager(lpContext, CB_ROUTES_INDEX, _R("Routes"));
 }
 
-RT_UN16 RT_CALL CbGrades(void* lpContext)
+RT_B RT_CALL CbGrades(void* lpContext)
 {
   return CbCallManager(lpContext, CB_GRADES_INDEX, _R("Grades"));
 }
@@ -52,6 +52,8 @@ RT_B RT_CALL CbNameComparisonCallback(void* lpItem1, void* lpItem2, void* lpCont
   RT_TABLE* lpTable;
   RT_N* lpIndex1;
   RT_N* lpIndex2;
+  RT_ARRAY zzString1;
+  RT_ARRAY zzString2;
   RT_CHAR* lpString1;
   RT_CHAR* lpString2;
 
@@ -63,7 +65,9 @@ RT_B RT_CALL CbNameComparisonCallback(void* lpItem1, void* lpItem2, void* lpCont
   lpString1 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->unItemSize * *lpIndex1));
   lpString2 = (RT_CHAR*)(((RT_UCHAR8*)lpTable->lpTableData) + (lpTable->lpTableMetadata->unItemSize * *lpIndex2));
 
-  *lpComparisonResult = RtChar_CompareStrings(lpString1, lpString2);
+  RtChar_CreateString(&zzString1, lpString1);
+  RtChar_CreateString(&zzString2, lpString2);
+  *lpComparisonResult = RtChar_CompareStrings(&zzString1, &zzString2);
   return RT_TRUE;
 }
 
@@ -75,48 +79,82 @@ RT_TABLE_METADATA cb_lpTablesMetadata[] = {
                                             { sizeof(CB_GRADE),   sizeof(CB_GRADE_ITEM),   1, cb_lpComparisonCallbacks }
                                           };
 
-RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+RT_B RT_CALL ZzMain()
 {
   CB_COMPETITION competition;
+  RT_B bTableCreated[CB_TABLES_COUNT];
   RtRuntimeHeap runtimeHeap;
-  RT_N nI, unJ;
-  RT_UN32 unResult;
+  RT_B bRuntimeHeapCreated;
+  RT_UN unI;
+  RT_B bResult;
+
+  bRuntimeHeapCreated = RT_FALSE;
+
+  for (unI = 0; unI < CB_TABLES_COUNT; unI++)
+  {
+    bTableCreated[unI] = RT_FALSE;
+  }
 
   if (!RtRuntimeHeap_Create(&runtimeHeap))
   {
     RtErrorMessage_WriteLast(_R("Runtime heap creation failed: "));
-    unResult = 1;
-    goto the_end;
+    goto handle_error;
   }
+  bRuntimeHeapCreated = RT_TRUE;
 
-  for (nI = 0; nI < CB_TABLES_COUNT; nI++)
+  for (unI = 0; unI < CB_TABLES_COUNT; unI++)
   {
-    if (!RtTable_Create(&competition.lpTables[nI], &cb_lpTablesMetadata[nI], &runtimeHeap.lpHeap))
+    if (!RtTable_Create(&competition.lpTables[unI], &cb_lpTablesMetadata[unI], &runtimeHeap.lpHeap))
     {
       RtErrorMessage_WriteLast(_R("Tables creation failed: "));
-      unResult = 1;
-      goto cleanup_tables;
+      goto handle_error;
     }
+    bTableCreated[unI] = RT_TRUE;
   }
 
-  unResult = CbManageMenu(&CbCompetitionHeaderCallback, cb_lpCompetitionMenuItems, 3, &competition);
+  if (!CbManageMenu(&CbCompetitionHeaderCallback, cb_lpCompetitionMenuItems, 3, &competition)) goto handle_error;
 
-cleanup_tables:
-  /* Cleaning up. */
-  for (unJ = 0; unJ < nI; unJ++)
+  bResult = RT_SUCCESS;
+free_resources:
+  for (unI = 0; unI < CB_TABLES_COUNT; unI++)
   {
-    if (!RtTable_Free(&competition.lpTables[unJ]))
+    if (bTableCreated[unI])
     {
-      RtErrorMessage_WriteLast(_R("Failed to free tables: "));
-      unResult = 1;
+      bTableCreated[unI] = RT_FALSE;
+      if (!RtTable_Free(&competition.lpTables[unI]) && bResult)
+      {
+        RtErrorMessage_WriteLast(_R("Failed to free tables: "));
+        goto handle_error;
+      }
+    }
+  }
+  if (bRuntimeHeapCreated)
+  {
+    bRuntimeHeapCreated = RT_FALSE;
+    if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap) && bResult)
+    {
+      RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
+      goto handle_error;
     }
   }
 
-  if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
+}
+
+RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+{
+  RT_UN16 unResult;
+  if (ZzMain())
   {
-    RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
+    unResult = 0;
+  }
+  else
+  {
     unResult = 1;
   }
-the_end:
   return unResult;
 }

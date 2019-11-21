@@ -19,8 +19,8 @@
  * </ul>
  *
  * <p>
- * Also, when performing 64 bits arithmetic while targeting 32 bits, VC can * call arithmetic alldiv, allmul and
- * some other functions from CRT.
+ * Also, when performing 64 bits arithmetic while targeting 32 bits, VC can
+ * call arithmetic alldiv, allmul and  some other functions from CRT.
  * </p>
  */
 

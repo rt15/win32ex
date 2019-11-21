@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 #include "ZzTools.h"
 
@@ -352,15 +352,15 @@ RT_B RT_CALL ZzTestFailingProcess()
   if (RtProcess_Create(&zzProcess, RT_FALSE,  _R("Wrong, wrong directory"), RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
 
   /* Test bad argument. */
-  if (!RtConsole_WriteString(_R("====================================================\n"))) goto handle_error;
+  if (!RtConsole_WriteCString(_R("====================================================\n"))) goto handle_error;
 
   lpApplicationPathAndArgs[1] = _R("-pong");
   if (!RtProcess_Create(&zzProcess, RT_TRUE, RT_NULL, RT_NULL, lpApplicationPathAndArgs)) goto handle_error;
   bProcessCreated = RT_TRUE;
 
   if (!RtProcess_Join(&zzProcess)) goto handle_error;
-  if (!RtConsole_WriteString(_R("====================================================\n"))) goto handle_error;
-  if (!RtConsole_WriteString(_R("Joined!\n"))) goto handle_error;
+  if (!RtConsole_WriteCString(_R("====================================================\n"))) goto handle_error;
+  if (!RtConsole_WriteCString(_R("Joined!\n"))) goto handle_error;
   if (!RtProcess_GetExitCode(&zzProcess, &unExitCode)) goto handle_error;
   if (!unExitCode) goto handle_error;
 

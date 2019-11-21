@@ -18,17 +18,32 @@
 /**
  * Generate a new resource name.
  */
-void RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
+RT_B RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
 {
+  RT_ARRAY zzResourceName;
+  RT_ARRAY zzConversionBuffer;
+  RT_CHAR lpConversionBuffer[64];
   RT_UN unResourceIndex;
-  RT_UN unWritten;
-  RT_UN unOutputSize;
+  RT_B bResult;
 
-  RtRandom_GetUIntegerWithBoundaries(1, 20, &unResourceIndex);
+  RtArray_Create(&zzResourceName, lpBuffer, sizeof(RT_CHAR), ZZ_RESOURCES_NAME_SIZE);
 
-  unWritten = 0;
-  RtChar_CopyString(_R("New item "),              &lpBuffer[unWritten], ZZ_RESOURCES_NAME_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_ConvertUIntegerToString(unResourceIndex, &lpBuffer[unWritten], ZZ_RESOURCES_NAME_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
+  if (!RtRandom_GetUnsignedIntegerWithBoundaries(1, 20, &unResourceIndex)) goto handle_error;
+
+  RtArray_Create(&zzConversionBuffer, lpConversionBuffer, sizeof(RT_CHAR), 64);
+  if (!RtChar_ConvertUnsignedIntegerToString(unResourceIndex, &zzConversionBuffer)) goto handle_error;
+
+  if (!RtChar_AppendCString(&zzResourceName, _R("New item "))) goto handle_error;
+  if (!RtArray_Append(&zzResourceName, &zzConversionBuffer)) goto handle_error;
+  if (!RtChar_Append(&zzResourceName, 0)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 /**

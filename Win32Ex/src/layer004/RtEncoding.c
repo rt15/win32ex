@@ -5,6 +5,7 @@
 #include "layer002/RtError.h"
 #include "layer003/RtChar.h"
 #include "layer003/RtFastInitialization.h"
+#include "layer003/RtHeapHelper.h"
 
 #ifdef RT_DEFINE_WINDOWS
 
@@ -286,7 +287,7 @@ RT_UN RT_CALL RtEncoding_EncodeOrDecodeUsingWindows(RT_CHAR8* lpInput, RT_UN unI
           /* As unInputSize is provided, we need place for trailing zero. */
           unAccurateBufferSize = unResult + 1;
         }
-        if (RtHeap_AllocIfNeeded(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (bEncode) ? unAccurateBufferSize : unAccurateBufferSize * sizeof(RT_CHAR), _R("Encoded/decoded stuff"), lpHeap))
+        if (RtHeapHelper_AllocIfNeeded(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (bEncode) ? unAccurateBufferSize : unAccurateBufferSize * sizeof(RT_CHAR), _R("Encoded/decoded stuff"), lpHeap))
         {
           if (bEncode)
           {
@@ -460,8 +461,8 @@ RT_UN RT_CALL RtEncoding_EncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_UN unInputC
     unOutputCharSize = unInputCharSize;
   }
 
-  /* Allocate resulting buffer, adding one for zero terminating character. */
-  if (!RtHeap_AllocIfNeeded(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (unOutputCharSize + 1) * unOutputTerminatingZeroSize, _R("Encode/decode unicode"), lpHeap))
+  /* Allocate resulting buffer, adding one for null terminating character. */
+  if (!RtHeapHelper_AllocIfNeeded(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, (unOutputCharSize + 1) * unOutputTerminatingZeroSize, _R("Encode/decode unicode"), lpHeap))
   {
     goto handle_error;
   }
@@ -576,7 +577,7 @@ RT_UN RT_CALL RtEncoding_EncodeOrDecodeUnicode(RT_CHAR8* lpInput, RT_UN unInputC
       break;
   }
 
-  /* Result is size in bytes without counting the zero terminating bytes. */
+  /* Result is size in bytes without counting the null terminating bytes. */
   unResult = unOutputCharSize * unOutputTerminatingZeroSize;
 
   /* Add terminating zero bytes. */
@@ -672,7 +673,7 @@ free_resources:
 #else /* NOT RT_DEFINE_WINDOWS */
 
 /**
- * Call iconv, manage returned value and add zero terminating characters.
+ * Call iconv, manage returned value and add null terminating characters.
  */
 RT_UN RT_CALL RtEncoding_PerformIconvWithBuffer(iconv_t lpIconv, RT_CHAR8* lpInput, RT_UN unInputSize, RT_CHAR8* lpBuffer, RT_UN unBufferSize, RT_UN unOutputTerminatingZeroSize)
 {
@@ -689,7 +690,7 @@ RT_UN RT_CALL RtEncoding_PerformIconvWithBuffer(iconv_t lpIconv, RT_CHAR8* lpInp
   nIconvInputSize = unInputSize;
   lpIconvBuffer = lpBuffer;
 
-  /* Keep bytes for zero terminating characters. */
+  /* Keep bytes for null terminating characters. */
   nIconvBufferSize = unBufferSize - unOutputTerminatingZeroSize;
 
   nReturnedValue = iconv(lpIconv, &lpIconvInput, &nIconvInputSize, &lpIconvBuffer, &nIconvBufferSize);
@@ -697,7 +698,7 @@ RT_UN RT_CALL RtEncoding_PerformIconvWithBuffer(iconv_t lpIconv, RT_CHAR8* lpInp
   {
     /* Conversion is ok. */
     unResult = unBufferSize - unOutputTerminatingZeroSize - nIconvBufferSize;
-    /* As iconv does not put zero terminating character, it is done here. */
+    /* As iconv does not put null terminating character, it is done here. */
     for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
     {
       lpBuffer[unResult + unI] = 0;
@@ -743,7 +744,7 @@ RT_UN RT_CALL RtEncoding_PerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput
   nInputBytesLeft = unInputSize;
   lpIconvBuffer = *lpOutput;
 
-  /* Keep bytes for zero terminating characters. */
+  /* Keep bytes for null terminating characters. */
   unHeapBufferSize = unInitialHeapBufferSize - unOutputTerminatingZeroSize;
   nOutBytesLeft = unHeapBufferSize;
 
@@ -755,7 +756,7 @@ RT_UN RT_CALL RtEncoding_PerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput
     {
       /* Conversion is ok. */
       unResult = lpIconvBuffer - *lpOutput;
-      /* As iconv does not put zero terminating character, it is done here. */
+      /* As iconv does not put null terminating character, it is done here. */
       for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
       {
         (*lpOutput)[unResult + unI] = 0;
@@ -775,7 +776,7 @@ RT_UN RT_CALL RtEncoding_PerformIconvWithHeap(iconv_t lpIconv, RT_CHAR8* lpInput
         /* Re-allocate more space. */
         unHeapBufferSize += unIncrease;
         nOutBytesLeft += unIncrease;
-        if (!RtHeap_AllocIfNeeded(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unHeapBufferSize, _R("Foo"), lpHeap)) goto handle_error;
+        if (!RtHeapHelper_AllocIfNeeded(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unHeapBufferSize, _R("Foo"), lpHeap)) goto handle_error;
         lpIconvBuffer = *lpOutput + unLength;
       }
       else
@@ -866,7 +867,7 @@ RT_UN RT_CALL RtEncoding_IconvWithIconv(iconv_t lpIconv, RT_CHAR8* lpInput, RT_U
         unHeapBufferSize = 16 + 1.2 * unInputSize * ((float)unOutputTerminatingZeroSize / (float)unInputTerminatingZeroSize);
       }
 
-      if (!RtHeap_AllocIfNeeded(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unHeapBufferSize, _R("Encoded/decoded stuff"), lpHeap)) goto handle_error;
+      if (!RtHeapHelper_AllocIfNeeded(RT_NULL, 0, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unHeapBufferSize, _R("Encoded/decoded stuff"), lpHeap)) goto handle_error;
       unResult = RtEncoding_PerformIconvWithHeap(lpIconv, lpInput, unInputSize, unHeapBufferSize, lpHeapBuffer, lpHeapBufferSize, lpOutput, lpHeap, unOutputTerminatingZeroSize);
     }
     else
@@ -958,7 +959,7 @@ RT_CHAR* RT_CALL RtEncoding_GetLinuxSystemEncoding()
     lpReturnedValue = nl_langinfo(CODESET);
     if (lpReturnedValue)
     {
-      unEncodingNameSize = RtChar_GetStringSize(lpReturnedValue);
+      unEncodingNameSize = RtChar_GetCStringSize(lpReturnedValue);
       if (unEncodingNameSize)
       {
         /* The pointer nl_langinfo is not thread safe so we make a copy fastly. */
@@ -1049,7 +1050,7 @@ RT_UN RT_CALL RtEncoding_EncodeOrDecode(RT_CHAR8* lpInput, RT_UN unInputSize, RT
   if (!unInputSize)
   {
     /* Allocate a buffer for zero character. */
-    if (!RtHeap_AllocIfNeeded(lpBuffer, (bEncode) ? unBufferSize : unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unOutputTerminatingZeroSize, _R("Null encoding/decoding result"), lpHeap)) goto handle_error;
+    if (!RtHeapHelper_AllocIfNeeded(lpBuffer, (bEncode) ? unBufferSize : unBufferSize * sizeof(RT_CHAR), lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unOutputTerminatingZeroSize, _R("Null encoding/decoding result"), lpHeap)) goto handle_error;
     for (unI = 0; unI < unOutputTerminatingZeroSize; unI++)
     {
       (*lpOutput)[unI] = 0;

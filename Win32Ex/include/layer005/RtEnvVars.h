@@ -2,6 +2,7 @@
 #define RT_ENV_VARS_H
 
 #include "layer000/RtWin32ExTypes.h"
+#include "layer003/RtArray.h"
 
 /**
  * @file
@@ -67,11 +68,7 @@ RT_B RT_API RtEnvVars_GetArray(RT_ENV_VARS* lpEnvVars, RT_CHAR*** lpEnvVarsArray
  */
 RT_B RT_API RtEnvVars_Contains(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_B* lpContains);
 
-/**
- * Retrieve value of <tt>lpEnvVarName</tt> in <tt>lpEnvVars</tt>.<br>
- * Fails if the variable does not exist.
- */
-RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
+RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_ARRAY* lpBuffer);
 
 /**
  * Be sure that the variable doesn't exist yet.<br>

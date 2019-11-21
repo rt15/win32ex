@@ -2,7 +2,7 @@
 
 void RT_CALL CbWriteSeparator()
 {
-  RtConsole_WriteString(_R("============\n"));
+  RtConsole_WriteCString(_R("============\n"));
 }
 
 void RT_CALL CbWriteMenuTitle(RT_CHAR* lpLabel)

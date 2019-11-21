@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_B RT_CALL ZzDisplayErrorMessage(RT_CHAR* lpErrorName, RT_UN unError)
 {
@@ -14,7 +14,7 @@ RT_B RT_CALL ZzDisplayErrorMessage(RT_CHAR* lpErrorName, RT_UN unError)
   if (!RtChar_CopyString(_R(" = "),   &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtErrorMessage_GetLast(        &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
-  if (unWritten != RtChar_GetStringSize(lpBuffer)) goto handle_error;
+  if (unWritten != RtChar_GetCStringSize(lpBuffer)) goto handle_error;
 
   if (!RtChar_CopyString(_R("\n"), &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
@@ -36,7 +36,7 @@ RT_B RT_CALL ZzTestErrorMessage()
   RT_UN unOutputSize;
   RT_B bResult;
 
-  if (!RtConsole_WriteString(_R("## Error messages:\n\n"))) goto handle_error;
+  if (!RtConsole_WriteCString(_R("## Error messages:\n\n"))) goto handle_error;
 
   if (RtChar_CopyString(_R("Long string."), lpBuffer, 3, &unOutputSize)) goto handle_error;
   if (unOutputSize != 2) goto handle_error;
@@ -45,12 +45,12 @@ RT_B RT_CALL ZzTestErrorMessage()
   if (!RtChar_CopyString(_R("Error: \""), &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtErrorMessage_GetLast(            &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
 
-  if (unWritten != RtChar_GetStringSize(lpBuffer)) goto handle_error;
+  if (unWritten != RtChar_GetCStringSize(lpBuffer)) goto handle_error;
 
   if (!RtChar_CopyString(_R("\"\n"), &lpBuffer[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtConsole_WriteStringWithSize(lpBuffer, unWritten));
 
-  if (!RtConsole_WriteString(_R("\n"))) goto handle_error;
+  if (!RtConsole_WriteCString(_R("\n"))) goto handle_error;
 
   if (!ZzDisplayErrorMessage(_R("RT_ERROR_SUCCESS"),             RT_ERROR_SUCCESS))             goto handle_error;
   if (!ZzDisplayErrorMessage(_R("RT_ERROR_INSUFFICIENT_BUFFER"), RT_ERROR_INSUFFICIENT_BUFFER)) goto handle_error;
@@ -62,7 +62,7 @@ RT_B RT_CALL ZzTestErrorMessage()
   if (!ZzDisplayErrorMessage(_R("RT_ERROR_WOULD_BLOCK"),         RT_ERROR_WOULD_BLOCK))         goto handle_error;
   if (!ZzDisplayErrorMessage(_R("RT_ERROR_SOCKET_WOULD_BLOCK"),  RT_ERROR_SOCKET_WOULD_BLOCK))  goto handle_error;
 
-  if (!RtConsole_WriteString(_R("\n"))) goto handle_error;
+  if (!RtConsole_WriteCString(_R("\n"))) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

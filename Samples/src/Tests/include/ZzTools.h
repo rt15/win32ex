@@ -11,6 +11,6 @@ RT_B RT_CALL ZzVCheckTextFile(va_list lpValist, RT_CHAR* lpFilePath, RT_HEAP** l
 RT_B RT_CDECL ZzWriteLinesToDevice(RT_IO_DEVICE* lpIoDevice, RT_HEAP** lpHeap, ...);
 RT_B RT_CALL ZzVWriteLinesToDevice(va_list lpValist, RT_IO_DEVICE* lpIoDevice, RT_HEAP** lpHeap);
 
-RT_N RT_CALL ZzCompareStringsArrays(RT_CHAR** lpStrings1, RT_CHAR** lpStrings2);
+RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVarName);
 
 #endif /* ZZ_TOOLS_H */

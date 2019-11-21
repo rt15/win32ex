@@ -2,7 +2,7 @@
 #define RT_TABLE_H
 
 #include "layer000/RtWin32ExTypes.h"
-#include "layer003/RtHeap.h"
+#include "layer001/RtHeap.h"
 #include "layer006/RtTableMetadata.h"
 
 typedef struct _RT_TABLE_INDEX

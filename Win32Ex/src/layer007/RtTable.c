@@ -14,7 +14,7 @@ RT_B RT_API RtTable_Create(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata
 
   lpTable->lpTableMetadata = lpTableMetadata;
 
-  if (!RtArray_Create(&lpTable->lpTableData, 0, lpHeap, 0, lpTableMetadata->unItemSize))
+  if (!RtArray1337_Create(&lpTable->lpTableData, 0, lpHeap, 0, lpTableMetadata->unItemSize))
   {
     goto the_end;
   }
@@ -25,7 +25,7 @@ RT_B RT_API RtTable_Create(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata
   }
   else
   {
-    if (!RtArray_Create((void**)&lpTable->lpTableIndexes, 0, lpHeap, unTableIndexesCount, sizeof(RT_TABLE_INDEX)))
+    if (!RtArray1337_Create((void**)&lpTable->lpTableIndexes, 0, lpHeap, unTableIndexesCount, sizeof(RT_TABLE_INDEX)))
     {
       goto free_table_data;
     }
@@ -51,11 +51,11 @@ RT_B RT_API RtTable_Create(RT_TABLE* lpTable, RT_TABLE_METADATA* lpTableMetadata
 cleanup_table_indexes:
   for (unI = 0; unI < unTableIndexesCount; unI++)
   {
-    RtArray_Free((void**)&lpTable->lpTableIndexes[unI].lpIndexes);
+    RtArray1337_Free((void**)&lpTable->lpTableIndexes[unI].lpIndexes);
   }
-  RtArray_Free((void**)&lpTable->lpTableIndexes);
+  RtArray1337_Free((void**)&lpTable->lpTableIndexes);
 free_table_data:
-  RtArray_Free(&lpTable->lpTableData);
+  RtArray1337_Free(&lpTable->lpTableData);
 the_end:
   return bResult;
 }
@@ -192,10 +192,10 @@ RT_B RT_API RtTable_Free(RT_TABLE* lpTable)
 
     for (unI = 0; unI < unTableIndexesCount; unI++)
     {
-      bResult = bResult && RtArray_Free((void**)&lpTable->lpTableIndexes[unI].lpIndexes);
+      bResult = bResult && RtArray1337_Free((void**)&lpTable->lpTableIndexes[unI].lpIndexes);
     }
-    bResult = bResult && RtArray_Free((void**)&lpTable->lpTableIndexes);
-    bResult = bResult && RtArray_Free(&lpTable->lpTableData);
+    bResult = bResult && RtArray1337_Free((void**)&lpTable->lpTableIndexes);
+    bResult = bResult && RtArray1337_Free(&lpTable->lpTableData);
   }
 
   return bResult;

@@ -1,6 +1,6 @@
 #include "layer001/RtMemory.h"
 
-RT_N RT_API RtMemory_Compare(void* lpArea1, void* lpArea2, RT_UN unSize)
+RT_N32 RT_API RtMemory_Compare(void* lpArea1, void* lpArea2, RT_UN unSize)
 {
   RT_UN unWordsCount;
   RT_UN* lpWordArea1;

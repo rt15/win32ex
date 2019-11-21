@@ -153,6 +153,7 @@
 		<Unit filename="../include/layer000/RtWin32ExTypes.h" />
 		<Unit filename="../include/layer001/RtAtomic.h" />
 		<Unit filename="../include/layer001/RtComparison.h" />
+		<Unit filename="../include/layer001/RtHeap.h" />
 		<Unit filename="../include/layer001/RtInputStream.h" />
 		<Unit filename="../include/layer001/RtMemory.h" />
 		<Unit filename="../include/layer001/RtOutputStream.h" />
@@ -166,12 +167,12 @@
 		<Unit filename="../include/layer002/RtQuickSort.h" />
 		<Unit filename="../include/layer002/RtSleep.h" />
 		<Unit filename="../include/layer002/RtVirtualMemory.h" />
+		<Unit filename="../include/layer003/RtArray.h" />
 		<Unit filename="../include/layer003/RtChar.h" />
 		<Unit filename="../include/layer003/RtChar8.h" />
-		<Unit filename="../include/layer003/RtEnvVar.h" />
 		<Unit filename="../include/layer003/RtFastInitialization.h" />
 		<Unit filename="../include/layer003/RtFile.h" />
-		<Unit filename="../include/layer003/RtHeap.h" />
+		<Unit filename="../include/layer003/RtHeapHelper.h" />
 		<Unit filename="../include/layer003/RtInitialization.h" />
 		<Unit filename="../include/layer003/RtPipe.h" />
 		<Unit filename="../include/layer003/RtThread.h" />
@@ -179,7 +180,7 @@
 		<Unit filename="../include/layer004/RtBase64.h" />
 		<Unit filename="../include/layer004/RtCommandLineArgs.h" />
 		<Unit filename="../include/layer004/RtEncoding.h" />
-		<Unit filename="../include/layer004/RtFileSystem.h" />
+		<Unit filename="../include/layer004/RtEnvVar.h" />
 		<Unit filename="../include/layer004/RtPageHeap.h" />
 		<Unit filename="../include/layer004/RtRandom.h" />
 		<Unit filename="../include/layer004/RtStaticHeap.h" />
@@ -187,7 +188,7 @@
 		<Unit filename="../include/layer004/RtUrl.h" />
 		<Unit filename="../include/layer005/RtConsole.h" />
 		<Unit filename="../include/layer005/RtEnvVars.h" />
-		<Unit filename="../include/layer005/RtFile.h" />
+		<Unit filename="../include/layer005/RtFileSystem.h" />
 		<Unit filename="../include/layer005/RtLinkedList.h" />
 		<Unit filename="../include/layer005/RtList.h" />
 		<Unit filename="../include/layer005/RtRuntimeHeap.h" />
@@ -239,13 +240,13 @@
 		<Unit filename="../src/layer002/RtVirtualMemory.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/layer003/RtArray.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../src/layer003/RtChar.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/RtChar8.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtEnvVar.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/RtFastInitialization.c">
@@ -254,7 +255,7 @@
 		<Unit filename="../src/layer003/RtFile.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer003/RtHeap.c">
+		<Unit filename="../src/layer003/RtHeapHelper.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer003/RtInitialization.c">
@@ -278,7 +279,7 @@
 		<Unit filename="../src/layer004/RtEncoding.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer004/RtFileSystem.c">
+		<Unit filename="../src/layer004/RtEnvVar.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer004/RtPageHeap.c">
@@ -300,6 +301,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/RtEnvVars.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/layer005/RtFileSystem.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer005/RtLinkedList.c">
@@ -336,9 +340,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>

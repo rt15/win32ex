@@ -92,7 +92,7 @@
 /* Calling convention for few public cdecl functions. */
 #define RT_CDECL_API RT_CDECL
 
-/* Use gccc __va_copy if va_copy is not available.                                    */
+/* Use gcc __va_copy if va_copy is not available.                                    */
 /* Unlike va_copy/__va_copy, First parameter is destination, next parameter is source. */
 #if defined(RT_DEFINE_GCC) && !defined(va_copy)
   #define RT_VA_COPY(SOURCE, DESTINATION) __va_copy(DESTINATION, SOURCE)
@@ -117,6 +117,8 @@ typedef short RT_N16;
   typedef RT_CHAR8 RT_CHAR;
   typedef RT_UCHAR8 RT_UCHAR;
 #endif
+
+#define RT_GENERIC void
 
 /* Fixed size types */
 typedef int RT_B;                    /* BOOL               */

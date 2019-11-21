@@ -8,7 +8,7 @@ void* RT_API RtSortableArray_Create(void** lpSortableArray, RT_HEAP** lpHeap, RT
 {
   RT_SORTABLE_ARRAY_HEADER* lpHeader;
 
-  if (RtArray_Create(lpSortableArray, sizeof(RT_SORTABLE_ARRAY_HEADER), lpHeap, unSize, unItemSize))
+  if (RtArray1337_Create(lpSortableArray, sizeof(RT_SORTABLE_ARRAY_HEADER), lpHeap, unSize, unItemSize))
   {
     lpHeader = *lpSortableArray;
     lpHeader--;
@@ -55,7 +55,7 @@ RT_UN RT_API RtSortableArray_AddItem(void** lpSortableArray, void* lpNewItem)
     if (unResult == RT_TYPE_MAX_UN)
     {
       /* Drop create empty space. */
-      RtArray_SetSize(lpSortableArray, unSize - 1);
+      RtArray1337_SetSize(lpSortableArray, unSize - 1);
       goto the_end;
     }
 
@@ -101,7 +101,7 @@ void* RT_API RtSortableArray_DeleteItemIndex(void** lpSortableArray, RT_UN unIte
   }
 
   /* Truncate the array. */
-  RtArray_SetSize(lpSortableArray, unSize - 1);
+  RtArray1337_SetSize(lpSortableArray, unSize - 1);
 
   return *lpSortableArray;
 }

@@ -31,14 +31,14 @@ RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
   RT_N unJ;
   RT_B bResult;
 
-  nBegin = RtChar_SearchString(lpFileContent, lpTagName);
+  nBegin = RtChar1337_SearchString(lpFileContent, lpTagName);
   if (nBegin == -1)
   {
-    RtConsole_WriteString(_R("Tag not found"));
+    RtConsole_WriteCString(_R("Tag not found"));
     bResult = RT_FAILURE;
     goto the_end;
   }
-  nBegin += RtChar_GetStringSize(lpTagName);
+  nBegin += RtChar_GetCStringSize(lpTagName);
   while (lpFileContent[nBegin] != _R(':'))
   {
     nBegin++;
@@ -92,7 +92,7 @@ RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
     RtChar_FastLowerString(lpLowerCasePath);
     if (RtChar_StringEndsWithWithSize(lpLowerCasePath, unOutputSize, _R(".sql"), 4))
     {
-      RtFileSystem_GetFileName(lpPath, RtChar_GetStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unOutputSize);
+      RtFileSystem_GetFileName(lpPath, RtChar_GetCStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unOutputSize);
       /* Write file name without extension. */
       RtConsole_WriteStringWithSize(lpFileName, unOutputSize - 4);
 

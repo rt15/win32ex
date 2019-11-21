@@ -2,7 +2,7 @@
 #define RT_PROPERTIES_H
 
 #include "layer000/RtWin32ExTypes.h"
-#include "layer003/RtHeap.h"
+#include "layer001/RtHeap.h"
 
 /**
  * @file
@@ -29,7 +29,7 @@ RT_B RT_API RtProperties_Create(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath
 
 RT_CHAR* RT_API RtProperties_GetString(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue);
 
-RT_N RT_API RtProperties_GetInteger(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue);
+RT_UN RT_API RtProperties_GetUnsignedInteger(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_UN unDefaultValue);
 
 RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue);
 

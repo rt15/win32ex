@@ -1,8 +1,8 @@
-#include "layer003/RtHeap.h"
+#include "layer003/RtHeapHelper.h"
 
 #include "layer002/RtError.h"
 
-void* RT_API RtHeap_AllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea,  RT_UN unSize, RT_CHAR* lpName, RT_HEAP** lpHeap)
+void* RT_API RtHeapHelper_AllocIfNeeded(void* lpBuffer, RT_UN unBufferSize, void** lpHeapBuffer, RT_UN* lpHeapBufferSize, void** lpArea,  RT_UN unSize, RT_CHAR* lpName, RT_HEAP** lpHeap)
 {
   /* If a buffer is provided, attempt to use it. */
   if (lpBuffer && unBufferSize > 0)

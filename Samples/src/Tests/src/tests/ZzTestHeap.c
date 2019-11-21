@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
 {
@@ -10,24 +10,24 @@ RT_B RT_CALL ZzTestHeap(RT_HEAP** lpHeap)
 
   lpHeapBuffer = RT_NULL;
 
-  if (!RtHeap_AllocIfNeeded(lpBuffer, 50, RT_NULL, RT_NULL, &lpArea, 30, _R("foo"), RT_NULL)) goto handle_error;
+  if (!RtHeapHelper_AllocIfNeeded(lpBuffer, 50, RT_NULL, RT_NULL, &lpArea, 30, _R("foo"), RT_NULL)) goto handle_error;
   if (lpArea != lpBuffer) goto handle_error;
 
   /* Alloc. */
   unHeapBufferSize = 0;
-  if (!RtHeap_AllocIfNeeded(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 30, _R("foo"), lpHeap)) goto handle_error;
+  if (!RtHeapHelper_AllocIfNeeded(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 30, _R("foo"), lpHeap)) goto handle_error;
   if (lpArea != lpHeapBuffer) goto handle_error;
   if (unHeapBufferSize != 30) goto handle_error;
 
   /* Big enough heap buffer . */
   lpArea = RT_NULL;
-  if (!RtHeap_AllocIfNeeded(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 15, _R("foo"), lpHeap)) goto handle_error;
+  if (!RtHeapHelper_AllocIfNeeded(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 15, _R("foo"), lpHeap)) goto handle_error;
   if (lpArea != lpHeapBuffer) goto handle_error;
   if (unHeapBufferSize != 30) goto handle_error;
 
   /* Re-alloc. */
   lpArea = RT_NULL;
-  if (!RtHeap_AllocIfNeeded(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 40, _R("foo"), lpHeap)) goto handle_error;
+  if (!RtHeapHelper_AllocIfNeeded(RT_NULL, 0, &lpHeapBuffer, &unHeapBufferSize, &lpArea, 40, _R("foo"), lpHeap)) goto handle_error;
   if (lpArea != lpHeapBuffer) goto handle_error;
   if (unHeapBufferSize != 40) goto handle_error;
 

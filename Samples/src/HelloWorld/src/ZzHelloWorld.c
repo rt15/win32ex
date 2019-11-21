@@ -4,6 +4,16 @@
 
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
-  RtConsole_WriteString(_R("Hello, world!\n"));
-  return 0;
+  RT_ARRAY zzMessage;
+  RT_UN16 unResult;
+
+  if (RtConsole_WriteString(RtChar_CreateString(&zzMessage, _R("Hello, world!\n"))))
+  {
+    unResult = 0;
+  }
+  else
+  {
+    unResult = 1;
+  }
+  return unResult;
 }

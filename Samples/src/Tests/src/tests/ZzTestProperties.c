@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_B RT_CALL ZzTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
 {
@@ -14,13 +14,13 @@ RT_B RT_CALL ZzTestProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey)
   return RT_SUCCESS;
 }
 
-RT_B RT_CALL ZzTestIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_N nDefaultValue, RT_N nExpected)
+RT_B RT_CALL ZzTestIntegerProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_UN unDefaultValue, RT_UN unExpected)
 {
-  RT_N nValue;
+  RT_N unValue;
 
-  nValue = RtProperties_GetInteger(lpProperties, lpKey, nDefaultValue);
+  unValue = RtProperties_GetUnsignedInteger(lpProperties, lpKey, unDefaultValue);
 
-  return (nValue == nExpected);
+  return (unValue == unExpected);
 }
 
 RT_B RT_CALL ZzTestBooleanProperty(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue, RT_B bExpected)

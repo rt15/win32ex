@@ -2,11 +2,18 @@
 #define RT_CONSOLE_H
 
 #include "layer000/RtWin32ExTypes.h"
+#include "layer003/RtArray.h"
 
 /**
  * @file
  * Console functions.
  */
+
+
+RT_B RT_API RtConsole_WriteString(RT_ARRAY* lpString);
+
+
+RT_B RT_API RtConsole_WriteError(RT_ARRAY* lpString);
 
 /**
  * @param unBufferSize Must be at least 3.
@@ -14,11 +21,11 @@
  */
 RT_UN RT_API RtConsole_ReadLine(RT_CHAR* lpBuffer, RT_UN unBufferSize);
 
-RT_B RT_API RtConsole_WriteString(RT_CHAR* lpString);
+RT_B RT_API RtConsole_WriteCString(RT_CHAR* lpString);
 
 RT_B RT_API RtConsole_WriteStringWithSize(RT_CHAR* lpString, RT_UN unSize);
 
-RT_B RT_API RtConsole_WriteError(RT_CHAR* lpString);
+RT_B RT_API RtConsole1337_WriteError(RT_CHAR* lpString);
 
 RT_B RT_API RtConsole_WriteErrorWithSize(RT_CHAR* lpString, RT_UN unSize);
 

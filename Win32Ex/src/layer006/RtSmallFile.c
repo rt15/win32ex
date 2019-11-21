@@ -2,6 +2,7 @@
 
 #include "layer002/RtError.h"
 #include "layer003/RtFile.h"
+#include "layer003/RtHeapHelper.h"
 
 RT_UN RT_API RtSmallFile_Read(RT_CHAR* lpFilePath, RT_CHAR8** lpOutput, RT_HEAP** lpHeap)
 {
@@ -30,7 +31,7 @@ RT_UN RT_API RtSmallFile_ReadWithBuffer(RT_CHAR* lpFilePath, RT_CHAR8* lpBuffer,
   if (!RtFile_GetSize(&rtFile, &unResult)) goto handle_error;
 
   /* Allocate a space of size of file + 1 for trailing zero. */
-  if (!RtHeap_AllocIfNeeded(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unResult + 1, _R("File buffer"), lpHeap)) goto handle_error;
+  if (!RtHeapHelper_AllocIfNeeded(lpBuffer, unBufferSize, lpHeapBuffer, lpHeapBufferSize, (void**)lpOutput, unResult + 1, _R("File buffer"), lpHeap)) goto handle_error;
 
   /* Write file content into buffer. */
   lpInputStream = RtIoDevice_GetInputStream(&rtFile.rtIoDevice);

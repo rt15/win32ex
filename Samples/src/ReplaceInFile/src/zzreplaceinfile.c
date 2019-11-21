@@ -5,7 +5,7 @@
 
 RT_UN16 ZzDisplayHelp(RT_UN32 unResult)
 {
-  RtConsole_WriteString(_R("Replace all occurrences of a String by another.\nUsage:\nReplaceInFile searched replacement file\n"));
+  RtConsole_WriteCString(_R("Replace all occurrences of a String by another.\nUsage:\nReplaceInFile searched replacement file\n"));
   return unResult;
 }
 
@@ -56,16 +56,16 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   nOcurrencesCount = RtChar_CountStringOccurrences(lpFileContentAsString, lpSearched);
   if (nOcurrencesCount > 0)
   {
-    nDelta = (RtChar_GetStringSize(lpReplacement) - RtChar_GetStringSize(lpSearched)) * nOcurrencesCount;
+    nDelta = (RtChar_GetCStringSize(lpReplacement) - RtChar_GetCStringSize(lpSearched)) * nOcurrencesCount;
     nNewFileContentAsStringSize = nFileContentAsStringSize + nDelta;
     if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpNewFileContentAsString, (nNewFileContentAsStringSize + 1) * sizeof(RT_CHAR), _R("New file content as string.")))
     {
       RtErrorMessage_WriteLast(_R("Failed to allocate result buffer: "));
       goto handle_error;
     }
-    if (!RtChar_ReplaceString(lpFileContentAsString, RtChar_GetStringSize(lpFileContentAsString),
-                              lpSearched, RtChar_GetStringSize(lpSearched),
-                              lpReplacement, RtChar_GetStringSize(lpReplacement),
+    if (!RtChar_ReplaceString(lpFileContentAsString, RtChar_GetCStringSize(lpFileContentAsString),
+                              lpSearched, RtChar_GetCStringSize(lpSearched),
+                              lpReplacement, RtChar_GetCStringSize(lpReplacement),
                               lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &unOutputSize))
     {
       RtErrorMessage_WriteLast(_R("Replacement failed: "));
@@ -158,6 +158,7 @@ free_resources:
 
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
+  RT_ARRAY zzFirstArgument;
   RT_UN32 unResult;
 
   if (nArgC == 4)
@@ -166,9 +167,10 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   }
   else if (nArgC == 2)
   {
-    if ((!RtChar_CompareStrings(_R("/?"), lpArgV[1])) ||
-        (!RtChar_CompareStrings(_R("-h"), lpArgV[1])) ||
-        (!RtChar_CompareStrings(_R("--help"), lpArgV[1])))
+    RtChar_CreateString(&zzFirstArgument, lpArgV[1]);
+    if (RtChar_StringEqualsCString(&zzFirstArgument, _R("/?")) ||
+        RtChar_StringEqualsCString(&zzFirstArgument, _R("-h")) ||
+        RtChar_StringEqualsCString(&zzFirstArgument, _R("--help")))
     {
       unResult = 0;
     }

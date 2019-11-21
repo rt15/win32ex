@@ -100,17 +100,17 @@ RT_B RT_API RtRandom_GetInteger(RT_N* lpResult)
   return RtRandom_GetBytes(lpResult, sizeof(RT_N));
 }
 
-RT_B RT_API RtRandom_GetUInteger(RT_UN* lpResult)
+RT_B RT_API RtRandom_GetUnsignedInteger(RT_UN* lpResult)
 {
   return RtRandom_GetBytes(lpResult, sizeof(RT_UN));
 }
 
-RT_B RT_API RtRandom_GetUIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperBound, RT_UN* lpResult)
+RT_B RT_API RtRandom_GetUnsignedIntegerWithBoundaries(RT_UN unLowerBound, RT_UN unUpperBound, RT_UN* lpResult)
 {
   RT_UN unUnsigned;
   RT_B bResult;
 
-  if (!RtRandom_GetUInteger(&unUnsigned)) goto handle_error;
+  if (!RtRandom_GetUnsignedInteger(&unUnsigned)) goto handle_error;
   unUnsigned = unUnsigned % (unUpperBound + 1 - unLowerBound);
   *lpResult = unUnsigned + unLowerBound;
 
@@ -127,7 +127,7 @@ RT_B RT_API RtRandom_GetIntegerWithBoundaries(RT_N nLowerBound, RT_N nUpperBound
   RT_UN unUnsigned;
   RT_B bResult;
 
-  if (!RtRandom_GetUInteger(&unUnsigned)) goto handle_error;
+  if (!RtRandom_GetUnsignedInteger(&unUnsigned)) goto handle_error;
   unUnsigned = unUnsigned % (RT_UN)(nUpperBound + 1 - nLowerBound);
   *lpResult = unUnsigned + nLowerBound;
 

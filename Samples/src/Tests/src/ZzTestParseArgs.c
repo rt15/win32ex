@@ -104,7 +104,7 @@ RT_B RT_CALL ZzTestParseArgs(RT_N32 nArgC, RT_CHAR* lpArgV[])
                               lpLongOptionsWithoutArg, lpLongOptionsWithOptionalArg, lpLongOptionsWithArg,
                               &nNonOptionsIndex)) goto handle_error;
 
-  RtConsole_WriteString(_R("\nNon-options:\n"));
+  RtConsole_WriteCString(_R("\nNon-options:\n"));
 
   for (nI = nNonOptionsIndex; nI < nArgC; nI++)
   {
@@ -116,7 +116,7 @@ free_resources:
   return bResult;
 
 handle_error:
-  RtConsole_WriteString(_R("Parsing has failed.\n"));
+  RtConsole_WriteCString(_R("Parsing has failed.\n"));
   bResult = RT_FAILURE;
   goto free_resources;
 }

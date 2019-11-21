@@ -5,20 +5,32 @@
 #include "layer003/RtChar.h"
 #include "layer004/RtStaticHeap.h"
 
+
+RT_B RT_API RtConsole_WriteString(RT_ARRAY* lpString)
+{
+  return RtConsole_WriteStringWithSize(lpString->lpData, lpString->unSize);
+}
+
+
+RT_B RT_API RtConsole_WriteError(RT_ARRAY* lpString)
+{
+  return RtConsole_WriteErrorWithSize(lpString->lpData, lpString->unSize);
+}
+
 /**
  * Affiche le texte indiqué dans la console
  *
  * @param lpString Texte à écrire dans la console
  * @return Zero en cas de problème
  */
-RT_B RT_API RtConsole_WriteString(RT_CHAR* lpString)
+RT_B RT_API RtConsole_WriteCString(RT_CHAR* lpString)
 {
-  return RtConsole_WriteStringWithSize(lpString, RtChar_GetStringSize(lpString));
+  return RtConsole_WriteStringWithSize(lpString, RtChar_GetCStringSize(lpString));
 }
 
 RT_B RT_API RtConsole_WriteStringOrError(RT_CHAR* lpString, RT_B bString)
 {
-  return RtConsole_WriteStringOrErrorWithSize(lpString, RtChar_GetStringSize(lpString), bString);
+  return RtConsole_WriteStringOrErrorWithSize(lpString, RtChar_GetCStringSize(lpString), bString);
 }
 
 /**
@@ -93,9 +105,9 @@ RT_B RT_API RtConsole_WriteStringWithSize(RT_CHAR* lpString, RT_UN unSize)
   return RtConsole_WriteStringOrErrorWithSize(lpString, unSize, RT_TRUE);
 }
 
-RT_B RT_API RtConsole_WriteError(RT_CHAR* lpString)
+RT_B RT_API RtConsole1337_WriteError(RT_CHAR* lpString)
 {
-  return RtConsole_WriteErrorWithSize(lpString, RtChar_GetStringSize(lpString));
+  return RtConsole_WriteErrorWithSize(lpString, RtChar_GetCStringSize(lpString));
 }
 
 RT_B RT_API RtConsole_WriteErrorWithSize(RT_CHAR* lpString, RT_UN unSize)
@@ -149,7 +161,7 @@ RT_B RT_API RtConsole_VWriteStringsOrErrors(va_list lpVaList, RT_B bString)
     /* If there is one String, directly call RtWriteToConsole. */
     lpString = va_arg(lpVaList2, RT_CHAR*);
 
-    bResult = RtConsole_WriteString(lpString);
+    bResult = RtConsole_WriteCString(lpString);
   }
   else
   {
@@ -158,7 +170,7 @@ RT_B RT_API RtConsole_VWriteStringsOrErrors(va_list lpVaList, RT_B bString)
     for (unI = 0; unI < unStringsCount; unI++)
     {
       lpString = va_arg(lpVaList2, RT_CHAR*);
-      unStringsLenght += RtChar_GetStringSize(lpString);
+      unStringsLenght += RtChar_GetCStringSize(lpString);
     }
 
     lpHeapBuffer = RT_NULL;
@@ -285,7 +297,7 @@ RT_UN RT_API RtConsole_ReadLine(RT_CHAR* lpBuffer, RT_UN unBufferSize)
       {
         /* Skip CR/LF. */
         unRead -= 2;
-        /* Zero terminated String. */
+        /* Null terminated String. */
         lpBuffer[unRead] = 0;
         unResult = unRead;
       }

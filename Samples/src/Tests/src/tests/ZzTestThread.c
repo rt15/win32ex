@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_UN32 RT_CALL ZzTestSimpleThreadCallback(void* lpParameter)
 {
@@ -6,7 +6,7 @@ RT_UN32 RT_CALL ZzTestSimpleThreadCallback(void* lpParameter)
 
   for (unI = 0; unI < 5; unI++)
   {
-    RtConsole_WriteString((RT_CHAR*)lpParameter);
+    RtConsole_WriteCString((RT_CHAR*)lpParameter);
     RtSleep_Sleep(1);
   }
 
@@ -26,7 +26,7 @@ RT_B RT_CALL ZzTestThread()
   bThreadCreated = RT_TRUE;
 
   if (!RtThread_Join(&zzThread)) goto handle_error;
-  RtConsole_WriteString(_R("Joined!\n"));
+  RtConsole_WriteCString(_R("Joined!\n"));
   if (!RtThread_GetExitCode(&zzThread, &unExitCode)) goto handle_error;
   if (unExitCode != 12) goto handle_error;
 

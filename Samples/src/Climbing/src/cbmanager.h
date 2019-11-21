@@ -13,6 +13,6 @@ typedef struct _CB_MANAGER_CONTEXT
 }
 CB_MANAGER_CONTEXT;
 
-RT_UN16 RT_CALL CbManageEntities(CB_MANAGER_CONTEXT* lpContext);
+RT_B RT_CALL CbManageEntities(CB_MANAGER_CONTEXT* lpContext);
 
 #endif /* CB_MANAGER_H */

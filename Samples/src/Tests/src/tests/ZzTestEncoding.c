@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_CHAR* zz_System_0 = _R("ea");
 RT_UCHAR8 zz_Ascii[3] = { 0x65, 0x61, 0x00 };
@@ -28,6 +28,7 @@ RT_UCHAR8 zz_Utf8_2[5] = { 0xC3, 0xA9, 0xC5, 0xA3, 0x00 };
 
 RT_B RT_CALL ZzTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, RT_UN unEncoding, RT_UN unEncodedLength, RT_UN unEncodedCharSize, RT_B bDecodeOnly)
 {
+  RT_ARRAY zzCharacters;
   RT_UN unExpectedStringSize;
   RT_CHAR8 lpBuffer[512];
   RT_CHAR lpCharBuffer[512];
@@ -44,9 +45,11 @@ RT_B RT_CALL ZzTestEncodeDecode(RT_CHAR* lpCharacters, RT_UCHAR8* lpEncoded, RT_
   }
 
   /* Decode. */
-  unExpectedStringSize = RtChar_GetStringSize(lpCharacters);
+  unExpectedStringSize = RtChar_GetCStringSize(lpCharacters);
   if (RtEncoding_DecodeWithBuffer((RT_CHAR8*)lpEncoded, RT_TYPE_MAX_UN, unEncoding, lpCharBuffer, 512) != unExpectedStringSize) goto handle_error;
-  if (RtChar_CompareStrings(lpCharBuffer, lpCharacters)) goto handle_error;
+
+  RtChar_CreateString(&zzCharacters, lpCharacters);
+  if (!RtChar_StringEqualsCString(&zzCharacters, lpCharBuffer)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:

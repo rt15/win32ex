@@ -1,10 +1,10 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_B RT_CALL ZzPrintUrlInfoItem(RT_CHAR* lpFieldName, RT_CHAR* lpFieldValue, RT_UN unFieldSize)
 {
   RT_B bResult;
 
-  if (!RtConsole_WriteString(lpFieldName)) goto handle_error;
+  if (!RtConsole_WriteCString(lpFieldName)) goto handle_error;
   if (lpFieldValue)
   {
     if (!RtConsole_WriteStringWithSize(lpFieldValue, unFieldSize)) goto handle_error;
@@ -31,9 +31,10 @@ Test ipv4/ipv6.
 
 RT_B RT_CALL ZzPrintUrlInfo(RT_URL_INFO* lpUrlInfo)
 {
-  RT_CHAR lpMsg[RT_CHAR_HALF_BIG_STRING_SIZE];
-  RT_UN unWritten;
-  RT_UN unOutputSize;
+  RT_ARRAY zzMessage;
+  RT_CHAR lpMessage[RT_CHAR_HALF_BIG_STRING_SIZE];
+  RT_ARRAY zzConversionBuffer;
+  RT_CHAR lpConversionBuffer[64];
   RT_B bResult;
 
   if (!ZzPrintUrlInfoItem(_R("Scheme = "),   lpUrlInfo->lpScheme,   lpUrlInfo->unSchemeSize)) goto handle_error;
@@ -43,15 +44,17 @@ RT_B RT_CALL ZzPrintUrlInfo(RT_URL_INFO* lpUrlInfo)
 
   if (lpUrlInfo->unPort == RT_TYPE_MAX_UN)
   {
-    if (!RtConsole_WriteString(_R("Port = null\n"))) goto handle_error;
+    if (!RtConsole_WriteCString(_R("Port = null\n"))) goto handle_error;
   }
   else
   {
-    unWritten = 0;
-    if (!RtChar_CopyString(_R("Port = "),                  &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
-    if (!RtChar_ConvertUIntegerToString(lpUrlInfo->unPort, &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
-    if (!RtChar_CopyString(_R("\n"),                       &lpMsg[unWritten], RT_CHAR_HALF_BIG_STRING_SIZE - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
-    if (!RtConsole_WriteStringWithSize(lpMsg, unWritten)) goto handle_error;
+    RtArray_Create(&zzMessage, lpMessage, sizeof(RT_CHAR), RT_CHAR_HALF_BIG_STRING_SIZE);
+    if (!RtChar_AppendCString(&zzMessage, _R("Port = "))) goto handle_error;
+    RtArray_Create(&zzConversionBuffer, lpConversionBuffer, sizeof(RT_CHAR), 64);
+    if (!RtChar_ConvertUnsignedIntegerToString(lpUrlInfo->unPort, &zzConversionBuffer)) goto handle_error;
+    if (!RtArray_Append(&zzMessage, &zzConversionBuffer)) goto handle_error;
+    if (!RtChar_AppendCString(&zzMessage, _R("\n"))) goto handle_error;
+    if (!RtConsole_WriteString(&zzMessage)) goto handle_error;
   }
 
   if (!ZzPrintUrlInfoItem(_R("Query = "), lpUrlInfo->lpQuery, lpUrlInfo->unQuerySize)) goto handle_error;
@@ -77,7 +80,7 @@ RT_B RT_CALL RtCheckUrlInfoItem(RT_CHAR* lpUrlInfoItem, RT_UN unUrlInfoItemSize,
     if (!lpItem) goto handle_error;
 
     if (!RtChar_CopyStringWithSize(lpUrlInfoItem, unUrlInfoItemSize, lpBuffer, RT_CHAR_HALF_BIG_STRING_SIZE, &unOutputSize)) goto handle_error;
-    if (RtChar_CompareStrings(lpBuffer, lpItem)) goto handle_error;
+    if (RtChar1337_CompareStrings(lpBuffer, lpItem)) goto handle_error;
   }
   else
   {

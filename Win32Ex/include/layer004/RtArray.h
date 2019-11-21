@@ -1,8 +1,8 @@
-#ifndef RT_ARRAY_H
-#define RT_ARRAY_H
+#ifndef RT_ARRAY1337_H
+#define RT_ARRAY1337_H
 
 #include "layer000/RtWin32ExTypes.h"
-#include "layer003/RtHeap.h"
+#include "layer001/RtHeap.h"
 
 /**
  * @file
@@ -32,8 +32,8 @@ RT_ARRAY_HEADER;
  *
  * @param nHeaderSize The total size of the custom header ending with RT_ARRAY_HEADER.
  */
-void* RT_API RtArray_Create(void** lpArray, RT_UN unHeaderSize, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize);
-void* RT_API RtArray_SetSize(void** lpArray, RT_UN unSize);
+void* RT_API RtArray1337_Create(void** lpArray, RT_UN unHeaderSize, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize);
+void* RT_API RtArray1337_SetSize(void** lpArray, RT_UN unSize);
 RT_UN RT_API RtArray_GetSize(void* lpArray);
 RT_UN RT_API RtArray_GetItemSize(void* lpArray);
 
@@ -76,6 +76,6 @@ void* RT_API RtArray_GetItem(void* lpArray, RT_UN unItemIndex, void** lpItem);
  */
 void* RT_API RtArray_DeleteLastItem(void** lpArray);
 
-RT_B RT_API RtArray_Free(void** lpArray);
+RT_B RT_API RtArray1337_Free(void** lpArray);
 
-#endif /* RT_ARRAY_H */
+#endif /* RT_ARRAY1337_H */

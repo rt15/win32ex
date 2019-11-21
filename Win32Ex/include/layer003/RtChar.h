@@ -3,6 +3,8 @@
 
 #include "layer000/RtWin32ExTypes.h"
 
+#include "layer003/RtArray.h"
+
 /**
  * @file
  * Characters management.
@@ -22,21 +24,86 @@
 /* String size that can be used four times in a function and avoid stack probe. */
 #define RT_CHAR_QUARTER_BIG_STRING_SIZE 480
 
-RT_B RT_API RtChar_ConvertIntegerToString(RT_N nInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
+/**
+ * Create a String pointing on a CString.<br>
+ *
+ * <p>
+ * The resulting array is immutable.<br>
+ * The size of the array does not include the trailing zero.
+ * </p>
+ */
+RT_ARRAY* RT_API RtChar_CreateString(RT_ARRAY* lpString, RT_CHAR* lpCString);
 
-RT_B RT_API RtChar_ConvertUIntegerToString(RT_UN unInput, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
+RT_ARRAY* RT_API RtChar_CreateStringWithSize(RT_ARRAY* lpString, RT_CHAR* lpCString, RT_UN unSize);
 
-RT_B RT_API RtChar_ConvertStringToInteger(RT_CHAR* lpInput, RT_N* lpResult);
-RT_B RT_API RtChar_ConvertStringToIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_N* lpResult);
+RT_UN RT_API RtChar_GetStringSize(RT_ARRAY* lpString);
 
-RT_B RT_API RtChar_ConvertStringToUInteger(RT_CHAR* lpInput, RT_UN* lpResult);
-RT_B RT_API RtChar_ConvertStringToUIntegerWithSize(RT_CHAR* lpInput, RT_UN unInputSize, RT_UN* lpResult);
+RT_B RT_API RtChar_CopyCString(RT_ARRAY* lpString, RT_CHAR* lpCString);
+
+RT_B RT_API RtChar_AppendCString(RT_ARRAY* lpString, RT_CHAR* lpCString);
+
+RT_B RT_API RtChar_Append(RT_ARRAY* lpString, RT_CHAR nChar);
+
+RT_UN RT_API RtChar_GetCStringSize(RT_CHAR* lpInput);
+
+/**
+ *
+ * <p>
+ * If <tt>lpSearched</tt> (or <tt>lpString</tt>) is empty, then RT_TYPE_MAX_UN is returned.
+ * </p>
+ *
+ * @return The index of the searched string in given string, or RT_TYPE_MAX_UN if not found.
+ */
+RT_UN RT_API RtChar_SearchString(RT_ARRAY* lpString, RT_ARRAY* lpSearched);
+
+/**
+ * @return index of <tt>nSearched</tt> in <tt>lpString</tt> or RT_TYPE_MAX_UN if not found.
+ */
+RT_UN RT_API RtChar_Search(RT_ARRAY* lpString, RT_CHAR nSearched);
+
+/**
+ * Test two Strings for equality.
+ *
+ * <p>
+ * This function can be faster than traditional strcmp because it first check that the strings have the same size.<br>
+ * If the size is different, RT_FALSE is immediately returned. As a result, this function cannot return an RT_N32 with the difference like classical strcmp.
+ * </p>
+ *
+ */
+RT_B RT_API RtChar_StringEqualsString(RT_ARRAY* lpString, RT_ARRAY* lpOtherString);
+
+RT_B RT_API RtChar_StringEqualsCString(RT_ARRAY* lpString, RT_CHAR* lpCString);
+
+RT_B RT_API RtChar_ConvertIntegerToString(RT_N nInput, RT_ARRAY* lpString);
+
+RT_B RT_API RtChar_ConvertUnsignedIntegerToString(RT_UN unInput, RT_ARRAY* lpString);
+
+RT_B RT_API RtChar_ConvertStringToInteger(RT_ARRAY* lpInput, RT_N* lpResult);
+
+RT_B RT_API RtChar_ConvertStringToUnsignedInteger(RT_ARRAY* lpInput, RT_UN* lpResult);
+
+/**
+ * Return 0 if the Strings are equals, a negative value if the first string is less than the second one, a positive value otherwise.<br>
+ * The result is somehow lpString1 - lpString2.<br>
+ * Characters are compared as unsigned characters.
+ *
+ * <p>
+ * Can be used to sort strings.<br>
+ * To check equality, prefer <tt>RtChar_StringEqualsString</tt>.
+ * </p>
+ *
+ */
+RT_N RT_API RtChar_CompareStrings(RT_ARRAY* lpString1, RT_ARRAY* lpString2);
+
+RT_N RT_API RtChar_CompareCStrings(RT_CHAR* lpString1, RT_CHAR* lpString2);
+
+/* 1337 */
 
 /**
  * Return 0 if the Strings are equals, a negative value if the first string is less than the second one, a positive value otherwise.<br>
  * Characters are compared as unsigned characters.
  */
-RT_N RT_API RtChar_CompareStrings(RT_CHAR* lpString1, RT_CHAR* lpString2);
+RT_N RT_API RtChar1337_CompareStrings(RT_CHAR* lpString1, RT_CHAR* lpString2);
 
 RT_N RT_API RtChar_CompareStringsWithSize(RT_CHAR* lpString1, RT_CHAR* lpString2, RT_UN unSize);
 
@@ -47,12 +114,10 @@ RT_N RT_API RtChar_CompareStringsWithSize(RT_CHAR* lpString1, RT_CHAR* lpString2
  */
 RT_N RT_API RtChar_CompareNullStrings(RT_CHAR* lpString1, RT_CHAR* lpString2);
 
-RT_UN RT_API RtChar_GetStringSize(RT_CHAR* lpInput);
-
 /**
  * @return The index of the searched string in given string, or RT_TYPE_MAX_UN if not found.
  */
-RT_UN RT_API RtChar_SearchString(RT_CHAR* lpString, RT_CHAR* lpSearched);
+RT_UN RT_API RtChar1337_SearchString(RT_CHAR* lpString, RT_CHAR* lpSearched);
 
 /**
  * @return Count occurrences of <tt>lpSearched</tt> in <tt>lpString</tt>.
@@ -167,6 +232,6 @@ RT_UN RT_API RtChar_SearchStringInStrings(RT_CHAR* lpStrings[], RT_CHAR* lpSearc
  * @param lpString Can be RT_NULL.
  * @return index of <tt>nSearched</tt> in <tt>lpString</tt> or RT_TYPE_MAX_UN if not found.
  */
-RT_UN RT_API RtChar_Search(RT_CHAR* lpString, RT_CHAR nSearched);
+RT_UN RT_API RtChar1337_Search(RT_CHAR* lpString, RT_CHAR nSearched);
 
 #endif /* RT_CHAR_H */

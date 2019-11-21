@@ -90,6 +90,8 @@ void* __cdecl memset(void*, int, size_t);
  * <p>
  * Like for memcmp, values inside areas are considered unsigned chars.
  * </p>
+ *
+ * @return RT_N32 (memcmp returns an int).
  */
 #define RT_MEMORY_COMPARE(AREA1, AREA2, SIZE) memcmp(AREA1, AREA2, SIZE)
 
@@ -124,7 +126,7 @@ void* __cdecl memset(void*, int, size_t);
 
 #define RT_MEMORY_ZERO(AREA, SIZE) memset(AREA, 0, SIZE)
 
-RT_N RT_API RtMemory_Compare(void* lpArea1, void* lpArea2, RT_UN unSize);
+RT_N32 RT_API RtMemory_Compare(void* lpArea1, void* lpArea2, RT_UN unSize);
 void* RT_API RtMemory_Copy(void* lpSource, void* lpDestination, RT_UN unSize);
 void* RT_API RtMemory_Move(void* lpSource, void* lpDestination, RT_UN unSize);
 void* RT_API RtMemory_Set(void* lpArea, RT_N32 nValue, RT_UN unSize);

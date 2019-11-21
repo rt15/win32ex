@@ -30,12 +30,12 @@ RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 
   bResult = RT_SUCCESS;
 free_resources:
-  RtConsole_WriteString(_R("Pause."));
+  RtConsole_WriteCString(_R("Pause."));
   RtConsole_Pause();
   return bResult;
 
 handle_error:
-  RtConsole_WriteString(_R("Error.\n\n"));
+  RtConsole_WriteCString(_R("Error.\n\n"));
   bResult = RT_FAILURE;
   goto free_resources;
 }

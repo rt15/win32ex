@@ -65,10 +65,10 @@ RT_B RT_API RtSystemInfo_GetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpP
 
     /* Find first dot. */
     while (*lpEnd != _R('.')) lpEnd++;
-    /* Replace dot with null to call RtChar_ConvertStringToUInteger. */
+    /* Replace dot with null to call RtChar1337_ConvertStringToUnsignedInteger. */
     *lpEnd = 0;
 
-    if (!RtChar_ConvertStringToUInteger(lpStart, &rt_unMajorOsVersion)) goto handle_initialization_error;
+    if (!RtChar1337_ConvertStringToUnsignedInteger(lpStart, &rt_unMajorOsVersion)) goto handle_initialization_error;
 
     /* Goto next version number. */
     lpStart = ++lpEnd;
@@ -78,10 +78,10 @@ RT_B RT_API RtSystemInfo_GetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpP
     /* Is there a patch version? */
     bPatchVersion = (*lpEnd == _R('.'));
 
-    /* Replace dot with null to call RtChar_ConvertStringToUInteger. */
+    /* Replace dot with null to call RtChar1337_ConvertStringToUnsignedInteger. */
     *lpEnd = 0;
 
-    if (!RtChar_ConvertStringToUInteger(lpStart, &rt_unMinorOsVersion)) goto handle_initialization_error;
+    if (!RtChar1337_ConvertStringToUnsignedInteger(lpStart, &rt_unMinorOsVersion)) goto handle_initialization_error;
 
     if (bPatchVersion)
     {
@@ -90,10 +90,10 @@ RT_B RT_API RtSystemInfo_GetOsVersion(RT_UN* lpMajor, RT_UN* lpMinor, RT_UN* lpP
 
       while ((*lpEnd >= _R('0')) && (*lpEnd <= _R('9'))) lpEnd++;
 
-      /* Replace dot with null to call RtChar_ConvertStringToUInteger. */
+      /* Replace dot with null to call RtChar1337_ConvertStringToUnsignedInteger. */
       *lpEnd = 0;
 
-      if (!RtChar_ConvertStringToUInteger(lpStart, &rt_unPatchOsVersion)) goto handle_initialization_error;
+      if (!RtChar1337_ConvertStringToUnsignedInteger(lpStart, &rt_unPatchOsVersion)) goto handle_initialization_error;
     }
     else
     {

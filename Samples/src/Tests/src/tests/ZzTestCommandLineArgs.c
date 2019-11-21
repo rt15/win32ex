@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_B RT_CALL ZzCheckCommandLineArg(RT_UN unExpectedArgType, RT_B bExpectedValid, RT_CHAR nExpectedShortOption, RT_CHAR* lpExpectedLongOption, RT_UN unExpectedValueCardinality, RT_CHAR* lpExpectedValue,
                                    RT_UN unArgType, RT_B bValid, RT_CHAR nShortOption, RT_CHAR* lpLongOption, RT_UN unValueCardinality, RT_CHAR* lpValue)
@@ -122,6 +122,7 @@ RT_B RT_CALL ZzTestCommandLineArgs()
   RT_CHAR* lpLongOptionsWithOptionalArg[4];
   RT_CHAR* lpLongOptionsWithArg[4];
   RT_CHAR* lpNonOptions[4];
+  RT_ARRAY zzNonOption;
   RT_UN unArgumentIndex;
   RT_N32 nNonOptionsIndex;
   RT_N32 nI;
@@ -182,7 +183,8 @@ RT_B RT_CALL ZzTestCommandLineArgs()
   unJ = 0;
   for (nI = nNonOptionsIndex; nI < nArgC; nI++)
   {
-    if (RtChar_CompareStrings(lpArgV[nI], lpNonOptions[unJ])) goto handle_error;
+    RtChar_CreateString(&zzNonOption, lpNonOptions[unJ]);
+    if (!RtChar_StringEqualsCString(&zzNonOption, lpArgV[nI])) goto handle_error;
     unJ++;
   }
 

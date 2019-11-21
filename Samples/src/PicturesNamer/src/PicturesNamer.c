@@ -19,7 +19,7 @@ FILE_INFO;
 
 RT_UN16 DisplayHelp(RT_UN32 unResult)
 {
-  RtConsole_WriteString(_R("Rename jpg files by date.\nUsage:\nPicturesNamer directory\n"));
+  RtConsole_WriteCString(_R("Rename jpg files by date.\nUsage:\nPicturesNamer directory\n"));
   return unResult;
 }
 
@@ -69,6 +69,7 @@ the_end:
 
 RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
 {
+  RT_ARRAY zzExtension;
   RT_CHAR lpExtension[5];
   RT_UN unPathSize;
   RT_UN unOutputSize;
@@ -77,13 +78,13 @@ RT_B RT_CALL BrowseProc(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
 
   if (unType == RT_FILE_SYSTEM_TYPE_FILE)
   {
-    unPathSize = RtChar_GetStringSize(lpPath);
+    unPathSize = RtChar_GetCStringSize(lpPath);
     if (unPathSize > 4)
     {
       /* Extract extension. */
       RtChar_CopyString(&lpPath[unPathSize - 4], lpExtension, 5, &unOutputSize);
       RtChar_FastLowerString(lpExtension);
-      if (!RtChar_CompareStrings(_R(".jpg"), lpExtension))
+      if (RtChar_StringEqualsCString(RtChar_CreateString(&zzExtension, lpExtension), _R(".jpg")))
       {
         if (!RtArray_NewItem((void**)lpContext, (void**)&lpFileInfo))
         {
@@ -107,12 +108,35 @@ RT_B RT_CALL CompareFileInfos(void* lpItem1, void* lpItem2, void* lpContext, RT_
 {
   FILE_INFO* lpFileInfo1;
   FILE_INFO* lpFileInfo2;
+  RT_ARRAY zzOriginalDate1;
+  RT_ARRAY zzOriginalDate2;
 
   lpFileInfo1 = (FILE_INFO*)lpItem1;
   lpFileInfo2 = (FILE_INFO*)lpItem2;
 
-  *lpComparisonResult = RtChar_CompareStrings(lpFileInfo1->lpOriginalDate, lpFileInfo2->lpOriginalDate);
+  RtChar_CreateString(&zzOriginalDate1, lpFileInfo1->lpOriginalDate);
+  RtChar_CreateString(&zzOriginalDate2, lpFileInfo2->lpOriginalDate);
+
+  *lpComparisonResult = RtChar_CompareStrings(&zzOriginalDate1, &zzOriginalDate2);
   return RT_TRUE;
+}
+
+RT_B RT_CALL ZzConvertUnsignedIntegerToString(RT_UN unInput, RT_CHAR* lpBuffer)
+{
+  RT_ARRAY rtConversionBuffer;
+  RT_B bResult;
+
+  RtArray_Create(&rtConversionBuffer, lpBuffer, sizeof(RT_CHAR), 64);
+
+  if (RtChar_ConvertUnsignedIntegerToString(unInput, &rtConversionBuffer)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }
 
 RT_UN16 Perform(RT_CHAR* lpPath)
@@ -121,9 +145,9 @@ RT_UN16 Perform(RT_CHAR* lpPath)
   RT_CHAR lpMessage[RT_FILE_SYSTEM_MAX_FILE_PATH + 200];
   RT_CHAR lpNewFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_CHAR lpOldFilePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
+  RT_CHAR lpConversionBuffer[64];
   RT_UN unWritten;
   RT_UN unOutputSize;
-  RT_UN unInputSize;
   FILE_INFO* lpFileInfos;
   RtRuntimeHeap runtimeHeap;
   RT_UN32 unArraySize;
@@ -158,10 +182,12 @@ RT_UN16 Perform(RT_CHAR* lpPath)
 
   unArraySize = RtArray_GetSize(lpFileInfos);
 
+  ZzConvertUnsignedIntegerToString(unArraySize, lpConversionBuffer);
+
   unWritten = 0;
-  RtChar_CopyString(_R("Files count: "),     &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_ConvertIntegerToString(unArraySize, &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_CopyStringWithSize(_R("\n"), 1,     &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_CopyString(_R("Files count: "),         &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_CopyString(lpConversionBuffer,          &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
+  RtChar_CopyStringWithSize(_R("\n"), 1,         &lpMessage[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH + 200 - unWritten, &unOutputSize); unWritten += unOutputSize;
   RtConsole_WriteStringWithSize(lpMessage, unWritten);
 
   RtSortableArray_Sort(lpFileInfos);
@@ -169,10 +195,11 @@ RT_UN16 Perform(RT_CHAR* lpPath)
   for (nI = 0; nI < unArraySize; nI++)
   {
     /* Compute the new file name. */
-    RtChar_ConvertIntegerToString((nI + 1) * 5, lpNewFileName, 20, &unInputSize);
+    ZzConvertUnsignedIntegerToString((nI + 1) * 5, lpNewFileName);
+
     unWritten = 0;
-    RtChar_LeftPadString(lpNewFileName, unInputSize, _R('0'), 5, &lpNewFileName[unWritten], 20 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtChar_CopyString(_R(".jpg"),                                &lpNewFileName[unWritten], 20 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_LeftPadString(lpNewFileName, RtChar_GetCStringSize(lpNewFileName), _R('0'), 5, &lpNewFileName[unWritten], 20 - unWritten, &unOutputSize); unWritten += unOutputSize;
+    RtChar_CopyString(_R(".jpg"),                                                         &lpNewFileName[unWritten], 20 - unWritten, &unOutputSize); unWritten += unOutputSize;
 
     /* Display a log message. */
     unWritten = 0;
@@ -205,7 +232,7 @@ RT_UN16 Perform(RT_CHAR* lpPath)
   unResult = 0;
 
 close_array:
-  if (!RtArray_Free((void**)&lpFileInfos))
+  if (!RtArray1337_Free((void**)&lpFileInfos))
   {
     RtErrorMessage_WriteLast(_R("Failed to close array: "));
     unResult = 1;
@@ -223,6 +250,7 @@ the_end:
 
 RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
 {
+  RT_ARRAY zzFirstArgument;
   RT_UN32 unResult;
 
   if (nArgC != 2)
@@ -232,9 +260,10 @@ RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
   }
   else
   {
-    if ((!RtChar_CompareStrings(_R("/?"), lpArgV[1])) ||
-        (!RtChar_CompareStrings(_R("-h"), lpArgV[1])) ||
-        (!RtChar_CompareStrings(_R("--help"), lpArgV[1])))
+    RtChar_CreateString(&zzFirstArgument, lpArgV[1]);
+    if (RtChar_StringEqualsCString(&zzFirstArgument, _R("/?")) ||
+        RtChar_StringEqualsCString(&zzFirstArgument, _R("-h")) ||
+        RtChar_StringEqualsCString(&zzFirstArgument, _R("--help")))
     {
       unResult = DisplayHelp(0);
       goto the_end;

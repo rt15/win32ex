@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 #define ZZ_IS_UNSIGNED(a) (a>=0 && ((a=~a)>=0 ? (a=~a, 1) : (a=~a, 0)))
 
@@ -31,17 +31,24 @@ void RT_CALL ZzTestFlags()
 
 RT_B RT_CALL ZzTestType(RT_CHAR* lpTypeName, RT_UN unSize, RT_B bSigned, RT_UN unExpectedSize, RT_B bExpectedSignedness)
 {
-  RT_CHAR lpBuffer[RT_CHAR_THIRD_BIG_STRING_SIZE];
-  RT_UN unWritten;
-  RT_UN unOutputSize;
+  RT_ARRAY rtMessage;
+  RT_CHAR lpMessage[512];
+  RT_ARRAY rtConversionBuffer;
+  RT_CHAR lpConversionBuffer[64];
   RT_B bResult;
 
-  unWritten = 0;
-  RtChar_CopyString(lpTypeName,                                        &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_CopyString(_R(" size = "),                                    &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_ConvertIntegerToString(unSize,                                &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_CopyString(bSigned ? _R(", signed.\n") : _R(", unsigned.\n"), &lpBuffer[unWritten], RT_CHAR_THIRD_BIG_STRING_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
+  RtArray_Create(&rtMessage, lpMessage, sizeof(RT_CHAR), 512);
+  RtArray_Create(&rtConversionBuffer, lpConversionBuffer, sizeof(RT_CHAR), 64);
+
+  if (!RtChar_AppendCString(&rtMessage, lpTypeName)) goto handle_error;
+
+  /* Size. */
+  if (!RtChar_AppendCString(&rtMessage, _R(" size = "))) goto handle_error;
+  if (!RtChar_ConvertUnsignedIntegerToString(unSize, &rtConversionBuffer)) goto handle_error;
+  if (!RtArray_Append(&rtMessage, &rtConversionBuffer)) goto handle_error;
+
+  if (!RtChar_AppendCString(&rtMessage, bSigned ? _R(", signed.\n") : _R(", unsigned.\n"))) goto handle_error;
+  if (!RtConsole_WriteString(&rtMessage)) goto handle_error;
 
   if (unSize != unExpectedSize) goto handle_error;
   if ((bExpectedSignedness && !bSigned) || (!bExpectedSignedness && bSigned)) goto handle_error;

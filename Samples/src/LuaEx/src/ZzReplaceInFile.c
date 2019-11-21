@@ -39,13 +39,13 @@ RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpF
   nOcurrencesCount = RtChar_CountStringOccurrences(lpFileContent, lpSearched);
   if (nOcurrencesCount > 0)
   {
-    nDelta = (RtChar_GetStringSize(lpReplacement) - RtChar_GetStringSize(lpSearched)) * nOcurrencesCount;
+    nDelta = (RtChar_GetCStringSize(lpReplacement) - RtChar_GetCStringSize(lpSearched)) * nOcurrencesCount;
     nNewFileContentSize = nFileContentSize + nDelta;
     if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpNewFileContent, (nNewFileContentSize + 1) * sizeof(RT_CHAR), _R("New file content as string."))) goto handle_error;
 
-    if (!RtChar_ReplaceString(lpFileContent, RtChar_GetStringSize(lpFileContent),
-                              lpSearched, RtChar_GetStringSize(lpSearched),
-                              lpReplacement, RtChar_GetStringSize(lpReplacement),
+    if (!RtChar_ReplaceString(lpFileContent, RtChar_GetCStringSize(lpFileContent),
+                              lpSearched, RtChar_GetCStringSize(lpSearched),
+                              lpReplacement, RtChar_GetCStringSize(lpReplacement),
                               lpNewFileContent, nNewFileContentSize + 1, &unOutputSize)) goto handle_error;
 
     unNewFileSize = RtEncoding_EncodeWithHeap(lpNewFileContent, unOutputSize, 0, &lpNewFileContent8, lpHeap);

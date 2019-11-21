@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 /**
  * <tt>lpArea1</tt> should be the same as <tt>lpArea2</tt>.
@@ -138,7 +138,7 @@ RT_B RT_CALL ZzDoTestMoveMemory(RT_CHAR8* lpInput, RT_UN unSourceSize, RT_UN unD
 
   for (unTest = 0; unTest < 2; unTest++)
   {
-    /* Copy input into editable memory. */
+    /* Copy input into mutable memory. */
     if (unSize > RT_CHAR_THIRD_BIG_STRING_SIZE)
     {
       RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);

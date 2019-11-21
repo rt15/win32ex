@@ -20,7 +20,7 @@ RT_B RT_CALL ZzVConcatLines(va_list lpVaList, RT_HEAP** lpHeap, void** lpBuffer)
     lpLine = va_arg(lpVaList, RT_CHAR*);
     if (lpLine)
     {
-      unReferenceSize += RtChar_GetStringSize(lpLine);
+      unReferenceSize += RtChar_GetCStringSize(lpLine);
       unReferenceSize++; /* End of line. */
     }
     else
@@ -92,7 +92,7 @@ RT_B RT_CALL ZzVCheckTextFile(va_list lpVaList, RT_CHAR* lpFilePath, RT_HEAP** l
   unContentSize = RtEncoding_DecodeWithHeap(lpRawFileContent, unFileSize, RT_ENCODING_US_ASCII, &lpFileContent, lpHeap);
   if (unContentSize == -1) goto handle_error;
 
-  if (RtChar_GetStringSize(lpReference) != unContentSize) goto handle_error;
+  if (RtChar_GetCStringSize(lpReference) != unContentSize) goto handle_error;
 
   if (RT_MEMORY_COMPARE(lpFileContent, lpReference, unContentSize)) goto handle_error;
 
@@ -188,44 +188,32 @@ handle_error:
   goto free_resources;
 }
 
-RT_N RT_CALL ZzCompareStringsArrays(RT_CHAR** lpStrings1, RT_CHAR** lpStrings2)
+RT_B RT_CALL ZzDisplayEnvVar(RT_CHAR* lpEnvVarName)
 {
-  RT_CHAR** lpInStrings1;
-  RT_CHAR** lpInStrings2;
-  RT_N nResult;
+  RT_ARRAY zzValue;
+  RT_CHAR lpValueBuffer[256];
+  RT_ARRAY zzMessage;
+  RT_CHAR lpMessageBuffer[512];
+  RT_B bResult;
 
-  lpInStrings1 = lpStrings1;
-  lpInStrings2 = lpStrings2;
+  RtArray_Create(&zzValue, lpValueBuffer, sizeof(RT_CHAR), 256);
+  RtArray_Create(&zzMessage, lpMessageBuffer, sizeof(RT_CHAR), 512);
 
-  nResult = 0;
-  while (*lpInStrings1 && *lpInStrings2)
-  {
-    nResult = RtChar_CompareStrings(*lpInStrings1, *lpInStrings2);
-    if (nResult)
-    {
-      break;
-    }
-    (*lpInStrings1)++;
-    (*lpInStrings2)++;
-  }
-  if (!nResult)
-  {
-    if (!*lpInStrings1)
-    {
-      if (!*lpInStrings2)
-      {
-        nResult = 0;
-      }
-      else
-      {
-        nResult = 1;
-      }
-    }
-    else
-    {
-      /* *lpInStrings1 is not RT_NULL so *lpInStrings2 is. */
-      nResult = -1;
-    }
-  }
-  return nResult;
+  /* Retrieve the value. */
+  if (!RtEnvVar_Get(lpEnvVarName, &zzValue)) goto handle_error;
+
+  /* Write the value. */
+  if (!RtChar_AppendCString(&zzMessage, lpEnvVarName)) goto handle_error;
+  if (!RtChar_Append(&zzMessage, _R('='))) goto handle_error;
+  if (!RtArray_Append(&zzMessage, &zzValue)) goto handle_error;
+  if (!RtChar_Append(&zzMessage, _R('\n'))) goto handle_error;
+  if (!RtConsole_WriteString(&zzMessage)) goto handle_error;
+
+  bResult = RT_SUCCESS;
+free_resources:
+  return bResult;
+
+handle_error:
+  bResult = RT_FAILURE;
+  goto free_resources;
 }

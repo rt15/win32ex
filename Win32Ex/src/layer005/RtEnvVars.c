@@ -75,7 +75,7 @@ RT_B RT_API RtEnvVars_Create(RT_ENV_VARS* lpEnvVars)
   unBlockSize = 0;
   while (*lpEnvVarsArray)
   {
-    unBlockSize += RtChar_GetStringSize(*lpEnvVarsArray);
+    unBlockSize += RtChar_GetCStringSize(*lpEnvVarsArray);
     unBlockSize++; /* Null character for the variable. */
     lpEnvVarsArray++;
   }
@@ -255,7 +255,7 @@ RT_B RT_CALL RtEnvVars_GetPointer(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName,
       RtChar_FastUpperString(lpCurrentEnvVarName);
 #endif
       /* Check if we found the variable. */
-      if (!RtChar_CompareStrings(lpCurrentEnvVarName, lpLocalEnvVarName))
+      if (!RtChar1337_CompareStrings(lpCurrentEnvVarName, lpLocalEnvVarName))
       {
         *lpResult = lpEnvVarsBlock;
         break;
@@ -312,7 +312,7 @@ handle_error:
   goto free_resources;
 }
 
-RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
+RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, RT_ARRAY* lpBuffer)
 {
   RT_CHAR* lpEnvVar;
   RT_B bResult;
@@ -325,7 +325,7 @@ RT_B RT_API RtEnvVars_GetEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
   }
 
   /* Copy the value, after the name and '='. */
-  if (!RtChar_CopyString(&lpEnvVar[RtChar_GetStringSize(lpEnvVarName) + 1], lpBuffer, unBufferSize, lpOutputSize)) goto handle_error;
+  if (!RtChar_CopyCString(lpBuffer, &lpEnvVar[RtChar_GetCStringSize(lpEnvVarName) + 1])) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -425,9 +425,9 @@ RT_B RT_API RtEnvVars_AddEnvVar(RT_ENV_VARS* lpEnvVars, RT_CHAR* lpEnvVarName, R
 
   unNewEnvVarsBlockSize = unOldEnvVarsBlockSize;
 
-  unNewEnvVarsBlockSize += RtChar_GetStringSize(lpEnvVarName);
+  unNewEnvVarsBlockSize += RtChar_GetCStringSize(lpEnvVarName);
   unNewEnvVarsBlockSize++; /* Equals. */
-  unNewEnvVarsBlockSize += RtChar_GetStringSize(lpValue);
+  unNewEnvVarsBlockSize += RtChar_GetCStringSize(lpValue);
   unNewEnvVarsBlockSize++; /* Terminating null. */
 
 #ifdef RT_DEFINE_WINDOWS

@@ -1,32 +1,12 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 RT_B RT_CALL ZzTestDoGetLastSeparator(RT_CHAR* lpPath, RT_UN unExpected)
 {
-  RT_CHAR lpBuffer[512];
-  RT_UN unWritten;
-  RT_UN unOutputSize;
   RT_UN unIndex;
   RT_B bResult;
 
-  unWritten = 0;
-  RtChar_CopyString(_R("Testing RtFileSystem_GetLastSeparator with \""), &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_CopyString(lpPath,                                              &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_CopyString(_R("\" expecting "),                                 &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_ConvertUIntegerToString(unExpected,                             &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtChar_CopyString(_R(".\n"),                                           &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-  RtConsole_WriteStringWithSize(lpBuffer, unWritten);
-
-  unIndex = RtFileSystem_GetLastSeparator(lpPath, RtChar_GetStringSize(lpPath));
-
-  if (unIndex != unExpected)
-  {
-    unWritten = 0;
-    RtChar_CopyString(_R("Wrong result: "), &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtChar_ConvertUIntegerToString(unIndex, &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtChar_CopyString(_R(".\n"),            &lpBuffer[unWritten], 512 - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtConsole_WriteStringWithSize(lpBuffer, unWritten);
-    goto handle_error;
-  }
+  unIndex = RtFileSystem_GetLastSeparator(lpPath, RtChar_GetCStringSize(lpPath));
+  if (unIndex != unExpected) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -66,8 +46,8 @@ RT_B RT_CALL ZzTestDoRemoveTrailingSeparators(RT_CHAR* lpPath, RT_CHAR* lpExpect
   RtChar_CopyString(lpPath, lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unInputSize);
 
   RtFileSystem_RemoveTrailingSeparators(lpBuffer, unInputSize, &unOutputSize);
-  if (RtChar_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
-  if (unOutputSize != RtChar_GetStringSize(lpExpected)) goto handle_error;
+  if (RtChar1337_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
+  if (unOutputSize != RtChar_GetCStringSize(lpExpected)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -113,7 +93,7 @@ RT_B RT_CALL ZzTestDoGetFileName(RT_CHAR* lpPath, RT_CHAR* lpExpected)
   RT_UN unOutputSize;
   RT_B bResult;
 
-  unPathSize = RtChar_GetStringSize(lpPath);
+  unPathSize = RtChar_GetCStringSize(lpPath);
 
   unWritten = 0;
   if (!RtChar_CopyString(_R("Testing RtFileSystem_GetFileName on \""), &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
@@ -126,8 +106,8 @@ RT_B RT_CALL ZzTestDoGetFileName(RT_CHAR* lpPath, RT_CHAR* lpExpected)
   RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
   if (!RtFileSystem_GetFileName(lpPath, unPathSize, lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
-  if (unOutputSize != RtChar_GetStringSize(lpBuffer)) goto handle_error;
-  if (RtChar_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
+  if (unOutputSize != RtChar_GetCStringSize(lpBuffer)) goto handle_error;
+  if (RtChar1337_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -179,13 +159,13 @@ RT_B RT_CALL ZzTestDoGetParentPath(RT_CHAR* lpPath, RT_CHAR* lpExpected)
   if (!RtChar_CopyString(_R("\", expecting \""),                         &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtChar_CopyString(lpExpected,                                     &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtChar_CopyString(_R("\", found \""),                             &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
-  if (!RtFileSystem_GetParentPath(lpPath, RtChar_GetStringSize(lpPath),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (!RtFileSystem_GetParentPath(lpPath, RtChar_GetCStringSize(lpPath),  &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   if (!RtChar_CopyString(_R("\"\n"),                                     &lpBuffer[unWritten], RT_FILE_SYSTEM_MAX_FILE_PATH - unWritten, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
   RtConsole_WriteStringWithSize(lpBuffer, unWritten);
 
-  if (!RtFileSystem_GetParentPath(lpPath, RtChar_GetStringSize(lpPath), lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
-  if (unOutputSize != RtChar_GetStringSize(lpBuffer)) goto handle_error;
-  if (RtChar_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
+  if (!RtFileSystem_GetParentPath(lpPath, RtChar_GetCStringSize(lpPath), lpBuffer, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error; unWritten += unOutputSize;
+  if (unOutputSize != RtChar_GetCStringSize(lpBuffer)) goto handle_error;
+  if (RtChar1337_CompareStrings(lpBuffer, lpExpected)) goto handle_error;
 
   bResult = RT_SUCCESS;
 free_resources:
@@ -307,7 +287,7 @@ RT_B RT_CALL ZzTestDirectories(RT_CHAR* lpTempDirectory, RT_UN unTempDirectoryPa
   RT_B bResult;
 
   if (!RtFileSystem_BuildPath(lpTempDirectory, unTempDirectoryPathSize, _R("empty_dir"), lpDirectoryPath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
-  if (unOutputSize != RtChar_GetStringSize(lpDirectoryPath)) goto handle_error;
+  if (unOutputSize != RtChar_GetCStringSize(lpDirectoryPath)) goto handle_error;
 
   if (!RtFileSystem_CreateDirectories(lpDirectoryPath)) goto handle_error;
   if (!RtFileSystem_CreateDirectories(lpDirectoryPath)) goto handle_error;
@@ -384,13 +364,20 @@ handle_error:
 
 RT_B RT_CALL ZzTestMisc()
 {
+  RT_ARRAY zzTempDirectory;
+
+
   RT_CHAR lpTempDirectory[RT_FILE_SYSTEM_MAX_FILE_PATH];
   RT_UN unOutputSize;
   RT_B bResult;
 
-  if (!RtFileSystem_GetTempDirectory(lpTempDirectory, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
+  RtArray_Create(&zzTempDirectory, lpTempDirectory, sizeof(RT_CHAR), RT_FILE_SYSTEM_MAX_FILE_PATH);
+
+  if (!RtFileSystem_GetTempDirectory(&zzTempDirectory)) goto handle_error;
+  unOutputSize = zzTempDirectory.unSize;
+  if (!RtChar_Append(&zzTempDirectory, 0)) goto handle_error;
   if (!RtFileSystem_BuildPath(lpTempDirectory, unOutputSize, _R("ttest"), lpTempDirectory, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize)) goto handle_error;
-  if (unOutputSize != RtChar_GetStringSize(lpTempDirectory)) goto handle_error;
+  if (unOutputSize != RtChar_GetCStringSize(lpTempDirectory)) goto handle_error;
 
   if (!RtFileSystem_CheckDirectory(lpTempDirectory))
   {

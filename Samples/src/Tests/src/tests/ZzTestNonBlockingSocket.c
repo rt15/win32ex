@@ -1,4 +1,4 @@
-#include "ZzTests.h"
+#include <RtWin32Ex.h>
 
 #include "ZzTools.h"
 
@@ -111,7 +111,7 @@ RT_B RT_CALL ZzTestNonBlockingSockets()
   {
     if (RtError_WouldBlock())
     {
-      RtConsole_WriteString(_R("Would block"));
+      RtConsole_WriteCString(_R("Would block"));
     }
     else
     {

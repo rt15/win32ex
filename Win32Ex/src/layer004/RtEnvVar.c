@@ -1,12 +1,12 @@
-#include "layer003/RtEnvVar.h"
+#include "layer004/RtEnvVar.h"
 
 #include "layer001/RtWin32ExOsHeaders.h"
 #include "layer002/RtError.h"
 
-RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize)
+RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_ARRAY* lpBuffer)
 {
 #ifdef RT_DEFINE_WINDOWS
-  DWORD nReturnedValue;
+  DWORD unReturnedValue;
 #else /* NOT RT_DEFINE_WINDOWS */
   char* lpReturnedValue;
   size_t nLength;
@@ -14,30 +14,41 @@ RT_B RT_API RtEnvVar_Get(RT_CHAR* lpEnvVarName, RT_CHAR* lpBuffer, RT_UN unBuffe
   RT_B bResult;
 
 #ifdef RT_DEFINE_WINDOWS
-  /* Ensure that the 32 or 64 bits signed integer will fit into a DWORD. */
-  if (unBufferSize < 0 || unBufferSize > RT_TYPE_MAX_N32)
+  unReturnedValue = GetEnvironmentVariable(lpEnvVarName, lpBuffer->lpData, lpBuffer->unCapacity);
+  if (!unReturnedValue)
   {
-    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
-    goto handle_error;
-  }
-  nReturnedValue = GetEnvironmentVariable(lpEnvVarName, lpBuffer, (DWORD)unBufferSize);
-  if (!nReturnedValue)
-  {
-    goto handle_error;
-  }
-  if (nReturnedValue > RT_TYPE_MAX_N)
-  {
-    RtError_SetLast(RT_ERROR_ARITHMETIC_OVERFLOW);
     goto handle_error;
   }
 
   /* If buffer is too small GetEnvironmentVariable return the required buffer size and lpBuffer is unknown. */
-  if (nReturnedValue > unBufferSize)
+  if (unReturnedValue > lpBuffer->unCapacity)
   {
-    RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
-    goto handle_error;
+    if (lpBuffer->unFlags && RT_ARRAY_FLAG_DYNAMIC)
+    {
+      /* Try to allocate the required size. */
+      if (!RtArray_SetSize(lpBuffer, unReturnedValue)) goto handle_error;
+
+      /* Try again. */
+      unReturnedValue = GetEnvironmentVariable(lpEnvVarName, lpBuffer->lpData, lpBuffer->unCapacity);
+      if (!unReturnedValue)
+      {
+        goto handle_error;
+      }
+
+      /* Should not happen as we provided an array with sufficient size. */
+      if (unReturnedValue > lpBuffer->unCapacity)
+      {
+        RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
+        goto handle_error;
+      }
+    }
+    else
+    {
+      RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
+      goto handle_error;
+    }
   }
-  *lpOutputSize = nReturnedValue;
+  if (!RtArray_SetSize(lpBuffer, unReturnedValue)) goto handle_error;
 
 #else /* NOT RT_DEFINE_WINDOWS */
   lpReturnedValue = getenv(lpEnvVarName);
@@ -66,14 +77,9 @@ free_resources:
   return bResult;
 
 handle_error:
-  if (unBufferSize > 0)
-  {
-    lpBuffer[0] = 0;
-  }
   bResult = RT_FAILURE;
   goto free_resources;
 }
-
 
 RT_B RT_API RtEnvVar_Set(RT_CHAR* lpEnvVarName, RT_CHAR* lpValue)
 {

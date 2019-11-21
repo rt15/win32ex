@@ -181,9 +181,9 @@ RT_B RT_API RtFileSystem_DeleteDirectoryRecursively(RT_CHAR* lpPath);
 
 RT_B RT_API RtFileSystem_GetExecutableFilePath(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
 
-RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
+RT_B RT_API RtFileSystem_GetApplicationDataDirectory(RT_CHAR* lpApplicationName, RT_ARRAY* lpBuffer);
 
-RT_B RT_API RtFileSystem_GetTempDirectory(RT_CHAR* lpBuffer, RT_UN unBufferSize, RT_UN* lpOutputSize);
+RT_B RT_API RtFileSystem_GetTempDirectory(RT_ARRAY* lpBuffer);
 
 /**
  * Append a separator to <tt>lpPath</tt> if there is not already one.<br>
