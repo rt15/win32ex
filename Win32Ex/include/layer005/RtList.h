@@ -1,9 +1,9 @@
 #ifndef RT_LIST_H
 #define RT_LIST_H
 
-#include "layer000/RtWin32ExTypes.h"
-#include "layer001/RtHeap.h"
-#include "layer004/RtArray.h"
+#include "layer000/rt_types.h"
+#include "layer003/rt_heap.h"
+#include "layer004/rt_array.h"
 
 /**
  * A list is maintained as a set of arrays.<br>
@@ -12,52 +12,51 @@
  * the current one is full.
  */
 
-typedef struct _RT_LIST_HEADER
-{
-  RT_UN unSize;                     /* Count of items. The rtArrayHeader contains the count of chunks. */
-  RT_UN unChunkSize;
-  RT_UN unItemSize;               /* Size of an item in the list. The rtArrayHeader unItemSize is sizeof(void*).  */
-  RT_ARRAY_HEADER rtArrayHeader;
+typedef struct _RT_LIST_HEADER {
+	rt_un size;										 /* Count of items. The array_header contains the count of chunks. */
+	rt_un chunk_size;
+	rt_un item_size;							 /* Size of an item in the list. The array_header item_size is sizeof(void*).	*/
+	struct rt_array_header array_header;
 }
 RT_LIST_HEADER;
 
 /**
  * Allocate a list using given parameters.
  *
- * @param unSize Total items count in the list.
- * @param unItemSize Size of an item.
- * @param unChunkSize Maximum items count in a chunk. Must be a power of two.
+ * @param size Total items count in the list.
+ * @param item_size Size of an item.
+ * @param chunk_size Maximum items count in a chunk. Must be a power of two.
  */
-void* RT_API RtList_Create(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_UN unChunkSize);
+void *rt_list_Create(void **lpList, struct rt_heap **heap, rt_un size, rt_un item_size, rt_un chunk_size);
 
 /**
  * @return Total items count in the list.
  */
-RT_UN RT_API RtList_GetSize(void* lpList);
+rt_un rt_list_GetSize(void *lpList);
 
-void* RT_API RtList_GetItem(void* lpList, RT_UN unItemIndex, void** lpItem);
+void *rt_list_GetItem(void *lpList, rt_un item_index, void **item);
 
-void* RT_API RtList_SetSize(void** lpList, RT_UN unSize);
+void *rt_list_SetSize(void **lpList, rt_un size);
 
 /**
  * This function moves the last item if it is not the item to delete.
  * As a result, indexes on the list items might become invalid.
  */
-void* RT_API RtList_DeleteItemIndex(void** lpList, RT_UN unItemIndex);
+void *rt_list_DeleteItemIndex(void **lpList, rt_un item_index);
 
-void* RT_API RtList_NewItem(void** lpList, void** lpItem);
+void *rt_list_NewItem(void **lpList, void **item);
 
 /**
  *
  * @return RT_TYPE_MAX_UN in case of failure.
  */
-RT_UN RT_API RtList_NewItemIndex(void** lpList, RT_UN* lpItemIndex);
+rt_un rt_list_NewItemIndex(void **lpList, rt_un *item_index);
 
 /**
  * <p>
  * Set the list to RT_NULL.
  * </p>
  */
-RT_B RT_API RtList_Free(void** lpList);
+rt_s rt_list_Free(void **lpList);
 
 #endif /* RT_LIST_H */

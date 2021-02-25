@@ -2,192 +2,173 @@
 
 #include "layer000/RtWin32ExGuiOsDefines.h"
 
-RT_FAST_INITIALIZATION rt_gdipInitialization = RT_FAST_INITIALIZATION_STATIC_INIT;
+struct rt_fast_initialization rt_gdipInitialization = RT_FAST_INITIALIZATION_STATIC_INIT;
 
-RT_UN rt_nGdipToken;
+rt_un rt_nGdipToken;
 
-RT_B RT_API RtGdipInitialize()
+rt_s RtGdipInitialize()
 {
-  GdiplusStartupInput gdipStartupInput;
-  GpStatus nStatus;
-  RT_B bResult;
+	GdiplusStartupInput gdipStartupInput;
+	GpStatus status;
+	rt_s ret;
 
-  if (RtFastInitialization_IsRequired(&rt_gdipInitialization))
-  {
-    gdipStartupInput.GdiplusVersion = 1;
-    gdipStartupInput.DebugEventCallback  = RT_NULL;
-    gdipStartupInput.SuppressBackgroundThread = RT_FALSE;
-    gdipStartupInput.SuppressExternalCodecs = RT_FALSE;
-    nStatus = GdiplusStartup(&rt_nGdipToken, &gdipStartupInput, RT_NULL);
-    if (nStatus != Ok)
-    {
-      RtGdipSetLastErrorFromGpStatus(nStatus);
-      bResult = RT_FAILURE;
-    }
-    else
-    {
-      bResult = RT_SUCCESS;
-    }
+	if (rt_fast_initialization_is_required(&rt_gdipInitialization)) {
+		gdipStartupInput.GdiplusVersion = 1;
+		gdipStartupInput.DebugEventCallback	= RT_NULL;
+		gdipStartupInput.SuppressBackgroundThread = RT_FALSE;
+		gdipStartupInput.SuppressExternalCodecs = RT_FALSE;
+		status = GdiplusStartup(&rt_nGdipToken, &gdipStartupInput, RT_NULL);
+		if (status != Ok) {
+			RtGdipSetLastErrorFromGpStatus(status);
+			ret = RT_FAILED;
+		} else {
+			ret = RT_OK;
+		}
 
-    RtFastInitialization_NotifyDone(&rt_gdipInitialization);
-  }
-  else
-  {
-    bResult = RT_SUCCESS;
-  }
-  return bResult;
+		rt_fast_initialization_notify_done(&rt_gdipInitialization);
+	} else {
+		ret = RT_OK;
+	}
+	return ret;
 }
 
-RT_B RT_API RtGdipCleanUp()
+rt_s RtGdipCleanUp()
 {
-  if (RtFastInitialization_IsDone(&rt_gdipInitialization))
-  {
-    /* Returns void. */
-    GdiplusShutdown(rt_nGdipToken);
-  }
-  return RT_TRUE;
+	if (rt_fast_initialization_is_done(&rt_gdipInitialization)) {
+		/* Returns void. */
+		GdiplusShutdown(rt_nGdipToken);
+	}
+	return RT_TRUE;
 }
 
-void RT_API RtGdipSetLastErrorFromGpStatus(RT_UN unStatus)
+void RtGdipSetLastErrorFromGpStatus(rt_un unStatus)
 {
-  switch (unStatus)
-  {
-    case Ok:
-      SetLastError(ERROR_SUCCESS);
-      break;
-    case InvalidParameter:
-      RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
-      break;
-    case OutOfMemory:
-      SetLastError(ERROR_OUTOFMEMORY);
-      break;
-    case ObjectBusy:
-      SetLastError(ERROR_BUSY);
-      break;
-    case InsufficientBuffer:
-      RtError_SetLast(RT_ERROR_INSUFFICIENT_BUFFER);
-      break;
-    case FileNotFound:
-      SetLastError(ERROR_FILE_NOT_FOUND);
-      break;
-    case ValueOverflow:
-      RtError_SetLast(RT_ERROR_ARITHMETIC_OVERFLOW);
-      break;
-    case AccessDenied:
-      SetLastError(ERROR_ACCESS_DENIED);
-      break;
-    case Win32Error:
-    case NotImplemented:
-    case WrongState:
-    case Aborted:
-    case UnknownImageFormat:
-    case FontFamilyNotFound:
-    case FontStyleNotFound:
-    case GdiplusNotInitialized:
-    case PropertyNotFound:
-    case PropertyNotSupported:
-    case GenericError:
-    case NotTrueTypeFont:
-    case UnsupportedGdiplusVersion:
-    default:
-       RtError_SetLast(RT_ERROR_FUNCTION_FAILED);
-  }
+	switch (unStatus)
+	{
+		case Ok:
+			SetLastError(ERROR_SUCCESS);
+			break;
+		case InvalidParameter:
+			rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+			break;
+		case OutOfMemory:
+			SetLastError(ERROR_OUTOFMEMORY);
+			break;
+		case ObjectBusy:
+			SetLastError(ERROR_BUSY);
+			break;
+		case InsufficientBuffer:
+			rt_error_set_last(RT_ERROR_INSUFFICIENT_BUFFER);
+			break;
+		case FileNotFound:
+			SetLastError(ERROR_FILE_NOT_FOUND);
+			break;
+		case ValueOverflow:
+			rt_error_set_last(RT_ERROR_ARITHMETIC_OVERFLOW);
+			break;
+		case AccessDenied:
+			SetLastError(ERROR_ACCESS_DENIED);
+			break;
+		case Win32Error:
+		case NotImplemented:
+		case WrongState:
+		case Aborted:
+		case UnknownImageFormat:
+		case FontFamilyNotFound:
+		case FontStyleNotFound:
+		case GdiplusNotInitialized:
+		case PropertyNotFound:
+		case PropertyNotSupported:
+		case GenericError:
+		case NotTrueTypeFont:
+		case UnsupportedGdiplusVersion:
+		default:
+			 rt_error_set_last(RT_ERROR_FUNCTION_FAILED);
+	}
 }
 
-RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode)
+rt_s RtGdipStretchBitmap(rt_h hBitmap, rt_h hDc, rt_n32 nWidth, rt_n32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode)
 {
-  GpGraphics* lpGraphics;
-  GpBitmap* lpBitmap;
-  GpBrush* lpBrush;
-  GpStatus nStatus;
-  RT_B bResult;
+	GpGraphics *lpGraphics;
+	GpBitmap *lpBitmap;
+	GpBrush *lpBrush;
+	GpStatus status;
+	rt_s ret;
 
-  lpGraphics = RT_NULL;
-  lpBitmap = RT_NULL;
-  lpBrush = RT_NULL;
+	lpGraphics = RT_NULL;
+	lpBitmap = RT_NULL;
+	lpBrush = RT_NULL;
 
-  /* Create destination graphics hDc. */
-  nStatus = GdipCreateFromHDC(hDc, &lpGraphics);
-  if (nStatus)
-  {
-    RtGdipSetLastErrorFromGpStatus(nStatus);
-    goto handle_error;
-  }
+	/* Create destination graphics hDc. */
+	status = GdipCreateFromHDC(hDc, &lpGraphics);
+	if (status) {
+		RtGdipSetLastErrorFromGpStatus(status);
+		goto error;
+	}
 
-  /* Adjust quality. */
-  nStatus = GdipSetInterpolationMode(lpGraphics, (InterpolationMode)nInterpolationMode);
-  if (nStatus)
-  {
-    RtGdipSetLastErrorFromGpStatus(nStatus);
-    goto handle_error;
-  }
+	/* Adjust quality. */
+	status = GdipSetInterpolationMode(lpGraphics, (InterpolationMode)nInterpolationMode);
+	if (status) {
+		RtGdipSetLastErrorFromGpStatus(status);
+		goto error;
+	}
 
-  /* Create a brush to fill the background. */
-  nStatus = GdipCreateSolidFill(0xFFFFFFFF, &lpBrush);
-  if (nStatus)
-  {
-    RtGdipSetLastErrorFromGpStatus(nStatus);
-    goto handle_error;
-  }
+	/* Create a brush to fill the background. */
+	status = GdipCreateSolidFill(0xFFFFFFFF, &lpBrush);
+	if (status) {
+		RtGdipSetLastErrorFromGpStatus(status);
+		goto error;
+	}
 
-  /* Fill the destination DC with a background. Necessary to avoid edges artifacts. */
-  nStatus = GdipFillRectangleI(lpGraphics, lpBrush, 0, 0, nWidth, nHeight);
-  if (nStatus)
-  {
-    RtGdipSetLastErrorFromGpStatus(nStatus);
-    goto handle_error;
-  }
+	/* Fill the destination DC with a background. Necessary to avoid edges artifacts. */
+	status = GdipFillRectangleI(lpGraphics, lpBrush, 0, 0, nWidth, nHeight);
+	if (status) {
+		RtGdipSetLastErrorFromGpStatus(status);
+		goto error;
+	}
 
-  /* Create source image/bitmap from hBitmap. */
-  nStatus = GdipCreateBitmapFromHBITMAP(hBitmap, RT_NULL, &lpBitmap);
-  if (nStatus)
-  {
-    RtGdipSetLastErrorFromGpStatus(nStatus);
-    goto handle_error;
-  }
+	/* Create source image/bitmap from hBitmap. */
+	status = GdipCreateBitmapFromHBITMAP(hBitmap, RT_NULL, &lpBitmap);
+	if (status) {
+		RtGdipSetLastErrorFromGpStatus(status);
+		goto error;
+	}
 
-  /* Stretch. */
-  nStatus = GdipDrawImageRectI(lpGraphics, lpBitmap, 0, 0, nWidth, nHeight);
-  if (nStatus)
-  {
-    RtGdipSetLastErrorFromGpStatus(nStatus);
-    goto handle_error;
-  }
+	/* Stretch. */
+	status = GdipDrawImageRectI(lpGraphics, lpBitmap, 0, 0, nWidth, nHeight);
+	if (status) {
+		RtGdipSetLastErrorFromGpStatus(status);
+		goto error;
+	}
 
-  bResult = RT_SUCCESS;
-  goto free_resources;
-handle_error:
-  bResult = RT_FAILURE;
-free_resources:
-  if (lpGraphics)
-  {
-    nStatus = GdipDeleteGraphics(lpGraphics);
-    lpGraphics = RT_NULL;
-    if (nStatus && bResult)
-    {
-      RtGdipSetLastErrorFromGpStatus(nStatus);
-      goto handle_error;
-    }
-  }
-  if (lpBitmap)
-  {
-    nStatus = GdipDisposeImage(lpBitmap);
-    lpBitmap = RT_NULL;
-    if (nStatus && bResult)
-    {
-      RtGdipSetLastErrorFromGpStatus(nStatus);
-      goto handle_error;
-    }
-  }
-  if (lpBrush)
-  {
-    nStatus = GdipDeleteBrush(lpBrush);
-    lpBrush = RT_NULL;
-    if (nStatus && bResult)
-    {
-      RtGdipSetLastErrorFromGpStatus(nStatus);
-      goto handle_error;
-    }
-  }
-  return bResult;
+	ret = RT_OK;
+	goto free;
+error:
+	ret = RT_FAILED;
+free:
+	if (lpGraphics) {
+		status = GdipDeleteGraphics(lpGraphics);
+		lpGraphics = RT_NULL;
+		if (status && ret) {
+			RtGdipSetLastErrorFromGpStatus(status);
+			goto error;
+		}
+	}
+	if (lpBitmap) {
+		status = GdipDisposeImage(lpBitmap);
+		lpBitmap = RT_NULL;
+		if (status && ret) {
+			RtGdipSetLastErrorFromGpStatus(status);
+			goto error;
+		}
+	}
+	if (lpBrush) {
+		status = GdipDeleteBrush(lpBrush);
+		lpBrush = RT_NULL;
+		if (status && ret) {
+			RtGdipSetLastErrorFromGpStatus(status);
+			goto error;
+		}
+	}
+	return ret;
 }

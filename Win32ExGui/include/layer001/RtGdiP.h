@@ -1,7 +1,7 @@
 #ifndef RT_GDIP_H
 #define RT_GDIP_H
 
-#include <RtWin32Ex.h>
+#include <rpr.h>
 
 /**
  * @file
@@ -30,13 +30,13 @@ typedef enum RT_GDIP_INTERPOLATION_MODE {
  * Must be called before using gdi+.<br>
  * Can be called several times without issue.
  */
-RT_B RT_API RtGdipInitialize();
+rt_s RtGdipInitialize();
 
 /**
  * Must be called once when gdi+ will not be used anymore.<br>
  * Can be called even if RtGdipInitialize has never been called.<br>
  */
-RT_B RT_API RtGdipCleanUp();
+rt_s RtGdipCleanUp();
 
 /**
  * Draw <tt>hBitmap</tt> into <tt>hDc</tt> with the given size.
@@ -45,15 +45,15 @@ RT_B RT_API RtGdipCleanUp();
  * hBitmap must not be in use in a device context.
  * </p>
  */
-RT_B RT_API RtGdipStretchBitmap(RT_H hBitmap, RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode);
+rt_s RtGdipStretchBitmap(rt_h hBitmap, rt_h hDc, rt_n32 nWidth, rt_n32 nHeight, RT_GDIP_INTERPOLATION_MODE nInterpolationMode);
 
 /**
- * Call RtError_SetLast/SetLastError with similar error code from GpStatus <tt>unStatus</tt> value.
+ * Call rt_error_set_last/SetLastError with similar error code from GpStatus <tt>unStatus</tt> value.
  *
  * <p>
  * Can be uses when there is a gdi+ error to align the behavior with win32 errors.
  * </p>
  */
-void RT_API RtGdipSetLastErrorFromGpStatus(RT_UN unStatus);
+void RtGdipSetLastErrorFromGpStatus(rt_un unStatus);
 
 #endif /* RT_GDIP_H */

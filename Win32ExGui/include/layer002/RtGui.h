@@ -1,7 +1,7 @@
 #ifndef RT_GUI_H
 #define RT_GUI_H
 
-#include <RtWin32Ex.h>
+#include <rpr.h>
 
 /**
  * @file
@@ -16,9 +16,8 @@
 /**
  * Abstract super class for RT_GUI_COMMAND_MENU_ITEM/RT_GUI_SUB_MENU_MENU_ITEM/RT_GUI_SEPARATOR_MENU_ITEM.
  */
-typedef struct _RT_GUI_MENU_ITEM
-{
-  RT_UN unType;
+typedef struct _RT_GUI_MENU_ITEM {
+	rt_un type;
 }
 RT_GUI_MENU_ITEM;
 
@@ -38,56 +37,52 @@ RT_GUI_MENU_ITEM;
 /**
  * A RT_GUI_MENU_ITEM that allows the user to perform a command.
  */
-typedef struct _RT_GUI_COMMAND_MENU_ITEM
-{
-  RT_GUI_MENU_ITEM menuItem;
-  RT_CHAR* lpText;
-  RT_UN32 unCommandType;       /* RT_GUI_COMMAND_MENU_ITEM_TYPE_BUTTON/RT_GUI_COMMAND_MENU_ITEM_TYPE_CHECK_BOX. */
-  RT_UN32 unId;                /* WM_COMMAND id. */
-  RT_H hIcon;                  /* Optional icon. If RT_NULL, and unSystemImageList == RT_TYPE_MAX_UN, then lpText is used in toolbars. */
-  RT_H hBitmap;                /* PARGB bitmap for menu rendering in version above XP. */
-  RT_UN32 unSystemImageList;   /* RT_TYPE_MAX_UN/IDB_STD_SMALL_COLOR/IDB_VIEW_SMALL_COLOR/IDB_HIST_SMALL_COLOR. */
-  RT_UN32 unSystemImageIndex;  /* Index in nSystemImageList. */
-  RT_UN32 unImageIndex;        /* Index of the image in the imagelist. Filled by RtCreateToolBarImageList. */
+typedef struct _RT_GUI_COMMAND_MENU_ITEM {
+	RT_GUI_MENU_ITEM menuItem;
+	rt_char *lpText;
+	rt_un32 unCommandType;			 /* RT_GUI_COMMAND_MENU_ITEM_TYPE_BUTTON/RT_GUI_COMMAND_MENU_ITEM_TYPE_CHECK_BOX. */
+	rt_un32 unId;								/* WM_COMMAND id. */
+	rt_h hIcon;									/* Optional icon. If RT_NULL, and unSystemImageList == RT_TYPE_MAX_UN, then lpText is used in toolbars. */
+	rt_h hBitmap;								/* PARGB bitmap for menu rendering in version above XP. */
+	rt_un32 unSystemImageList;	 /* RT_TYPE_MAX_UN/IDB_STD_SMALL_COLOR/IDB_VIEW_SMALL_COLOR/IDB_HIST_SMALL_COLOR. */
+	rt_un32 unSystemImageIndex;	/* Index in nSystemImageList. */
+	rt_un32 unImageIndex;				/* Index of the image in the imagelist. Filled by RtCreateToolBarImageList. */
 }
 RT_GUI_COMMAND_MENU_ITEM;
 
 /**
  * A RT_GUI_MENU_ITEM that contains other RT_GUI_MENU_ITEMs.
  */
-typedef struct _RT_GUI_SUB_MENU_MENU_ITEM
-{
-  RT_GUI_MENU_ITEM menuItem;
-  RT_CHAR* lpText;
-  RT_H hSubMenu;
+typedef struct _RT_GUI_SUB_MENU_MENU_ITEM {
+	RT_GUI_MENU_ITEM menuItem;
+	rt_char *lpText;
+	rt_h hSubMenu;
 }
 RT_GUI_SUB_MENU_MENU_ITEM;
 
 /**
  * A RT_GUI_MENU_ITEM that separates RT_GUI_MENU_ITEMs.
  */
-typedef struct _RT_GUI_SEPARATOR_MENU_ITEM
-{
-  RT_GUI_MENU_ITEM menuItem;
-  RT_N32 nSeparatorSize;   /* Used for toolbars only. */
+typedef struct _RT_GUI_SEPARATOR_MENU_ITEM {
+	RT_GUI_MENU_ITEM menuItem;
+	rt_n32 nSeparatorSize;	 /* Used for toolbars only. */
 }
 RT_GUI_SEPARATOR_MENU_ITEM;
 
 /**
  * RT_GUI_COMMAND_MENU_ITEM are managed as a pool that can be used for menus and toolbars.
  */
-typedef struct _RT_GUI_COMMAND_MENU_ITEM_MANAGER
-{
-  RT_GUI_COMMAND_MENU_ITEM* lpCommandMenuItems;
-  RT_UN unCommandMenuItemsCount;
-  RT_H hToolBarImageList;
+typedef struct _RT_GUI_COMMAND_MENU_ITEM_MANAGER {
+	RT_GUI_COMMAND_MENU_ITEM *lpCommandMenuItems;
+	rt_un unCommandMenuItemsCount;
+	rt_h hToolBarImageList;
 }
 RT_GUI_COMMAND_MENU_ITEM_MANAGER;
 
 /**
  * Center hWindow in hParentWindow;
  */
-void RT_API RtCenterWindow(RT_H hWindow, int nWidth, int nHeight, RT_H hParentWindow);
+void RtCenterWindow(rt_h hWindow, int nWidth, int nHeight, rt_h hParentWindow);
 
 /**
  * Used as a buffer in RtCreateToolBar.
@@ -95,18 +90,18 @@ void RT_API RtCenterWindow(RT_H hWindow, int nWidth, int nHeight, RT_H hParentWi
 typedef struct _RT_GUI_TB_BUTTON {
 	int iBitmap;
 	int idCommand;
-	RT_UCHAR8 fsState;
-	RT_UCHAR8 fsStyle;
-	RT_UCHAR8 bReserved[2];
-	RT_UN32 dwData;
+	rt_uchar8 fsState;
+	rt_uchar8 fsStyle;
+	rt_uchar8 bReserved[2];
+	rt_un32 dwData;
 	int iString;
 } RT_GUI_TB_BUTTON;
 
 typedef struct _RT_GUI_RECT {
-	RT_N32 nX;
-	RT_N32 nY;
-	RT_N32 nWidth;
-	RT_N32 nHeight;
+	rt_n32 nX;
+	rt_n32 nY;
+	rt_n32 nWidth;
+	rt_n32 nHeight;
 } RT_GUI_RECT;
 
 /**
@@ -117,23 +112,23 @@ typedef struct _RT_GUI_RECT {
  * </p>
  *
  * <li>
- *   <ul>ICC_ANIMATE_CLASS      Load animate control class.</ul>
- *   <ul>ICC_BAR_CLASSES        Load toolbar, status bar, trackbar, and tooltip control classes.</ul>
- *   <ul>ICC_COOL_CLASSES       Load rebar control class.</ul>
- *   <ul>ICC_DATE_CLASSES       Load date and time picker control class.</ul>
- *   <ul>ICC_HOTKEY_CLASS       Load hot key control class.</ul>
- *   <ul>ICC_INTERNET_CLASSES   Load IP address class.</ul>
- *   <ul>ICC_LINK_CLASS         Load a hyperlink control class.</ul>
- *   <ul>ICC_LISTVIEW_CLASSES   Load list-view and header control classes.</ul>
+ *   <ul>ICC_ANIMATE_CLASS			Load animate control class.</ul>
+ *   <ul>ICC_BAR_CLASSES				Load toolbar, status bar, trackbar, and tooltip control classes.</ul>
+ *   <ul>ICC_COOL_CLASSES			 Load rebar control class.</ul>
+ *   <ul>ICC_DATE_CLASSES			 Load date and time picker control class.</ul>
+ *   <ul>ICC_HOTKEY_CLASS			 Load hot key control class.</ul>
+ *   <ul>ICC_INTERNET_CLASSES	 Load IP address class.</ul>
+ *   <ul>ICC_LINK_CLASS				 Load a hyperlink control class.</ul>
+ *   <ul>ICC_LISTVIEW_CLASSES	 Load list-view and header control classes.</ul>
  *   <ul>ICC_NATIVEFNTCTL_CLASS Load a native font control class.</ul>
  *   <ul>ICC_PAGESCROLLER_CLASS Load pager control class.</ul>
- *   <ul>ICC_PROGRESS_CLASS     Load progress bar control class.</ul>
- *   <ul>ICC_STANDARD_CLASSES   Load one of the intrinsic User32 control classes. The user controls include button, edit, static, listbox, combobox, and scroll bar.</ul>
- *   <ul>ICC_TAB_CLASSES        Load tab and tooltip control classes.</ul>
- *   <ul>ICC_TREEVIEW_CLASSES   Load tree-view and tooltip control classes.</ul>
- *   <ul>ICC_UPDOWN_CLASS       Load up-down control class.</ul>
- *   <ul>ICC_USEREX_CLASSES     Load ComboBoxEx class.</ul>
- *   <ul>ICC_WIN95_CLASSES      Load animate control, header, hot key, list-view, progress bar, status bar, tab, tooltip, toolbar, trackbar, tree-view, and up-down control classes.</ul>
+ *   <ul>ICC_PROGRESS_CLASS		 Load progress bar control class.</ul>
+ *   <ul>ICC_STANDARD_CLASSES	 Load one of the intrinsic User32 control classes. The user controls include button, edit, static, listbox, combobox, and scroll bar.</ul>
+ *   <ul>ICC_TAB_CLASSES				Load tab and tooltip control classes.</ul>
+ *   <ul>ICC_TREEVIEW_CLASSES	 Load tree-view and tooltip control classes.</ul>
+ *   <ul>ICC_UPDOWN_CLASS			 Load up-down control class.</ul>
+ *   <ul>ICC_USEREX_CLASSES		 Load ComboBoxEx class.</ul>
+ *   <ul>ICC_WIN95_CLASSES			Load animate control, header, hot key, list-view, progress bar, status bar, tab, tooltip, toolbar, trackbar, tree-view, and up-down control classes.</ul>
  * </li>
  *
  * <p>
@@ -141,7 +136,7 @@ typedef struct _RT_GUI_RECT {
  * </p>
  *
  */
-RT_B RT_API RtInitCommonControls(RT_UN32 nClasses);
+rt_s RtInitCommonControls(rt_un32 nClasses);
 
 /**
  * Initialize a command menu item manager given an array of RT_GUI_COMMAND_MENU_ITEM.
@@ -150,14 +145,14 @@ RT_B RT_API RtInitCommonControls(RT_UN32 nClasses);
  * Must be called prior to create menus and toolbars.
  * </p>
  */
-RT_B RT_API RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* lpGuiCommandMenuItemManager, RT_GUI_COMMAND_MENU_ITEM* lpCommandMenuItems, RT_UN unCommandMenuItemsCount, RT_H hInstance);
+rt_s RtCreateGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER *lpGuiCommandMenuItemManager, RT_GUI_COMMAND_MENU_ITEM *lpCommandMenuItems, rt_un unCommandMenuItemsCount, rt_h hInstance);
 
-RT_B RT_API RtFreeGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER* lpGuiCommandMenuItemManager);
+rt_s RtFreeGuiCommandMenuItemManager(RT_GUI_COMMAND_MENU_ITEM_MANAGER *lpGuiCommandMenuItemManager);
 
 /**
  * @param lpButtons Buffer.
  */
-RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[], RT_GUI_TB_BUTTON* lpButtons, RT_H hImageList, RT_H hParentWindow, RT_UN unControlId, RT_H hInstance);
+rt_h RtCreateToolBar(rt_un unMenuItemsCount, RT_GUI_MENU_ITEM *lpMenuItems[], RT_GUI_TB_BUTTON *lpButtons, rt_h hImageList, rt_h hParentWindow, rt_un unControlId, rt_h hInstance);
 
 /**
  * GetClientRect returns the size of the client area.<br>
@@ -168,14 +163,14 @@ RT_H RT_API RtCreateToolBar(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItem
  * Zero is returned for nX and nY.
  * </p>
  */
-RT_B RT_API RtGetWindowSize(RT_H hWindow, RT_GUI_RECT* lpRect);
+rt_s RtGetWindowSize(rt_h hWindow, RT_GUI_RECT *lpRect);
 
 /**
  * <tt>nRight</tt> is width and <tt>nBottom</tt> is height.
  */
-RT_B RT_API RtMoveWindow(RT_H hWindow, RT_GUI_RECT* lpRect);
+rt_s RtMoveWindow(rt_h hWindow, RT_GUI_RECT *lpRect);
 
-RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT_UN unControlId, RT_H hInstance);
+rt_h RtCreateStaticWindow(RT_GUI_RECT *lpPosition, rt_h hParentWindow, rt_un unControlId, rt_h hInstance);
 
 /**
  * Returns an handle to the application instance (hInstance).
@@ -184,13 +179,13 @@ RT_H RT_API RtCreateStaticWindow(RT_GUI_RECT* lpPosition, RT_H hParentWindow, RT
  * This is also an handle to the main module (.exe) of the application.
  * </p>
  */
-RT_H RT_API RtGetInstance();
+rt_h RtGetInstance();
 
-RT_H RT_API RtCreateMenu(RT_UN unMenuItemsCount, RT_GUI_MENU_ITEM* lpMenuItems[]);
+rt_h RtCreateMenu(rt_un unMenuItemsCount, RT_GUI_MENU_ITEM *lpMenuItems[]);
 
-typedef RT_N (RT_CALL *RT_WINDOW_PROC_CALLBACK)(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N nLParam);
+typedef rt_n (RT_CALL *RT_WINDOW_PROC_CALLBACK)(rt_h hWindow, rt_un32 unMsg, rt_un unWParam, rt_n nLParam);
 
-typedef RT_B (RT_CALL *RT_DIALOG_PROC_CALLBACK)(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N nLParam);
+typedef rt_b (RT_CALL *RT_DIALOG_PROC_CALLBACK)(rt_h hWindow, rt_un32 unMsg, rt_un unWParam, rt_n nLParam);
 
 /**
  *
@@ -199,7 +194,7 @@ typedef RT_B (RT_CALL *RT_DIALOG_PROC_CALLBACK)(RT_H hWindow, RT_UN32 unMsg, RT_
  * In other cases, call DestroyMenu.
  * </p>
  */
-RT_H RT_API RtCreateMenuBar(RT_UN unMenusCount, RT_CHAR* lpTexts[], RT_H* hMenus);
+rt_h RtCreateMenuBar(rt_un unMenusCount, rt_char *lpTexts[], rt_h *hMenus);
 
 /**
  *
@@ -216,7 +211,7 @@ RT_H RT_API RtCreateMenuBar(RT_UN unMenusCount, RT_CHAR* lpTexts[], RT_H* hMenus
  * @param lpUserData Associated to the window using SetWindowLongPtr/GWLP_USERDATA.
  * @return RT_NULL in case of error, the window handle otherwise. Not need to call CloseHandle on it.
  */
-RT_H RT_API RtCreateMainWindow(RT_CHAR* lpText, RT_CHAR* lpClassName, RT_UN32 unStyle, RT_UN32 unExStyle, RT_GUI_RECT* lpRect, RT_WINDOW_PROC_CALLBACK lpWindowProc, RT_H hIcon, RT_H hMenuBar, void* lpUserData, RT_H hInstance);
+rt_h RtCreateMainWindow(rt_char *lpText, rt_char *lpClassName, rt_un32 unStyle, rt_un32 unExStyle, RT_GUI_RECT *lpRect, RT_WINDOW_PROC_CALLBACK lpWindowProc, rt_h hIcon, rt_h hMenuBar, void *lpUserData, rt_h hInstance);
 
 /**
  * Create a dialog box, that is a secondary window.
@@ -232,27 +227,27 @@ RT_H RT_API RtCreateMainWindow(RT_CHAR* lpText, RT_CHAR* lpClassName, RT_UN32 un
  * If it is not closable, you will have to intercept WM_CLOSE.
  * </p>
  */
-RT_H RT_API RtCreateDialogBox(RT_CHAR* lpText, RT_CHAR* lpClassName, RT_B bSizable, RT_B bClosable, RT_N32 nWidth, RT_N32 nHeight, RT_WINDOW_PROC_CALLBACK lpWindowProc, void* lpUserData, RT_H hParentWindow, RT_H hInstance);
+rt_h RtCreateDialogBox(rt_char *lpText, rt_char *lpClassName, rt_b bSizable, rt_b bClosable, rt_n32 nWidth, rt_n32 nHeight, RT_WINDOW_PROC_CALLBACK lpWindowProc, void *lpUserData, rt_h hParentWindow, rt_h hInstance);
 
 
 /**
  * Be sure to dispatch the WM_SIZE to the status bar in the parent window proc.
  */
-RT_H RT_API RtCreateStatusBar(RT_B bSimple, RT_CHAR* lpText, RT_H hParentWindow, RT_UN unControlId, RT_H hInstance);
+rt_h RtCreateStatusBar(rt_b bSimple, rt_char *lpText, rt_h hParentWindow, rt_un unControlId, rt_h hInstance);
 
-void RT_API RtSetSimpleStatusBarText(RT_H hStatusBar, RT_CHAR* lpText);
+void RtSetSimpleStatusBarText(rt_h hStatusBar, rt_char *lpText);
 
 /**
  * Post a WM_QUIT so that GetMessage will returns 0.
  */
-void RT_API RtQuitMessageLoop(RT_UN32 unExitCode);
+void RtQuitMessageLoop(rt_un32 exit_code);
 
 /**
  * Perform default message loop.<br>
  * Returns when a WM_QUIT message is posted.<br>
  * This message can be posted using RtQuitMessageLoop.
  */
-RT_UN16 RT_API RtDefaultMessageLoop();
+rt_un16 RtDefaultMessageLoop();
 
 /**
  * Retrieve the lpUserData pointer given to RtCreateMainWindow or RtCreateDialogBox.
@@ -261,7 +256,7 @@ RT_UN16 RT_API RtDefaultMessageLoop();
  * Use SetWindowLongPtr/GWLP_USERDATA internally.
  * </p>
  */
-void* RT_API RtGetWindowUserData(RT_H hWindow);
+void *RtGetWindowUserData(rt_h hWindow);
 
 /**
  * Set the user data associated with the given window.
@@ -270,6 +265,6 @@ void* RT_API RtGetWindowUserData(RT_H hWindow);
  * Use SetWindowLongPtr/GWLP_USERDATA internally.
  * </p>
  */
-RT_B RT_API RtSetWindowUserData(RT_H hWindow, void* lpUserData);
+rt_s RtSetWindowUserData(rt_h hWindow, void *lpUserData);
 
 #endif /* RT_GUI_H */

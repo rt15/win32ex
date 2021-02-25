@@ -1,189 +1,165 @@
-#include <RtWin32Ex.h>
+#include <rpr.h>
 #include <RtWin32ExMain.h>
 #include <RtWin32ExMem.h>
 
 
-RT_UN16 ZzDisplayHelp(RT_UN32 unResult)
+rt_un16 ZzDisplayHelp(rt_un32 result)
 {
-  RtConsole_WriteCString(_R("Replace all occurrences of a String by another.\nUsage:\nReplaceInFile searched replacement file\n"));
-  return unResult;
+	rt_console_WriteCString(_R("Replace all occurrences of a String by another.\nUsage:\nReplaceInFile searched replacement file\n"));
+	return result;
 }
 
-RT_B ZzPerformWithHeap(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpFilePath, RT_HEAP** lpHeap)
+rt_b ZzPerformWithHeap(rt_char *lpSearched, rt_char *replacement, rt_char *file_path, struct rt_heap **heap)
 {
-  RT_CHAR8* lpFileContent;
-  RT_CHAR* lpFileContentAsString;
-  RT_N nFileContentAsStringSize;
-  RT_CHAR* lpNewFileContentAsString;
-  RT_CHAR8* lpNewFileContent;
-  RT_N nNewFileContentAsStringSize;
-  RT_N nDelta;
+	rt_char8 *lpFileContent;
+	rt_char *lpFileContentAsString;
+	rt_n nFileContentAsStringSize;
+	rt_char *lpNewFileContentAsString;
+	rt_char8 *lpNewFileContent;
+	rt_n nNewFileContentAsStringSize;
+	rt_n nDelta;
 
-  RT_UN unOutputSize;
-  RT_UN unFileSize;
-  RT_UN unNewFileSize;
-  RT_N nOcurrencesCount;
-  RT_B bResult;
+	rt_un output_size;
+	rt_un file_size;
+	rt_un unNewFileSize;
+	rt_n nOcurrencesCount;
+	rt_s ret;
 
-  lpFileContent = RT_NULL;
-  lpFileContentAsString = RT_NULL;
-  lpNewFileContentAsString = RT_NULL;
-  lpNewFileContent = RT_NULL;
+	lpFileContent = RT_NULL;
+	lpFileContentAsString = RT_NULL;
+	lpNewFileContentAsString = RT_NULL;
+	lpNewFileContent = RT_NULL;
 
-  /* Check file path. */
-  if (!RtFileSystem_CheckPath(lpFilePath, RT_FILE_SYSTEM_TYPE_FILE))
-  {
-    RtErrorMessage_WriteLast(_R("Issue with input file: "));
-    goto handle_error;
-  }
+	/* Check file path. */
+	if (!rt_file_system_CheckPath(file_path, RT_FILE_PATH_TYPE_FILE)) {
+		rt_error_message_write_last(_R("Issue with input file: "));
+		goto error;
+	}
 
-  /* Read input file content. */
-  unFileSize = RtSmallFile_Read(lpFilePath, &lpFileContent, lpHeap);
-  if (unFileSize == RT_TYPE_MAX_UN)
-  {
-    RtErrorMessage_WriteLast(_R("Failed to read input file: "));
-    goto handle_error;
-  }
+	/* Read input file content. */
+	file_size = rt_small_file_read(file_path, &lpFileContent, heap);
+	if (file_size == RT_TYPE_MAX_UN) {
+		rt_error_message_write_last(_R("Failed to read input file: "));
+		goto error;
+	}
 
-  /* Decode input file content. */
-  nFileContentAsStringSize = RtEncoding_DecodeWithHeap(lpFileContent, unFileSize, 0, &lpFileContentAsString, lpHeap);
-  if (nFileContentAsStringSize == -1)
-  {
-    RtErrorMessage_WriteLast(_R("Failed to decode input file: "));
-    goto handle_error;
-  }
+	/* Decode input file content. */
+	nFileContentAsStringSize = rt_encoding_decode_with_heap(lpFileContent, file_size, 0, &lpFileContentAsString, heap);
+	if (nFileContentAsStringSize == -1) {
+		rt_error_message_write_last(_R("Failed to decode input file: "));
+		goto error;
+	}
 
-  nOcurrencesCount = RtChar_CountStringOccurrences(lpFileContentAsString, lpSearched);
-  if (nOcurrencesCount > 0)
-  {
-    nDelta = (RtChar_GetCStringSize(lpReplacement) - RtChar_GetCStringSize(lpSearched)) * nOcurrencesCount;
-    nNewFileContentAsStringSize = nFileContentAsStringSize + nDelta;
-    if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpNewFileContentAsString, (nNewFileContentAsStringSize + 1) * sizeof(RT_CHAR), _R("New file content as string.")))
-    {
-      RtErrorMessage_WriteLast(_R("Failed to allocate result buffer: "));
-      goto handle_error;
-    }
-    if (!RtChar_ReplaceString(lpFileContentAsString, RtChar_GetCStringSize(lpFileContentAsString),
-                              lpSearched, RtChar_GetCStringSize(lpSearched),
-                              lpReplacement, RtChar_GetCStringSize(lpReplacement),
-                              lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &unOutputSize))
-    {
-      RtErrorMessage_WriteLast(_R("Replacement failed: "));
-      goto handle_error;
-    }
+	nOcurrencesCount = rt_char_count_occurrences(lpFileContentAsString, lpSearched);
+	if (nOcurrencesCount > 0) {
+		nDelta = (rt_char_GetCStringSize(replacement) - rt_char_GetCStringSize(lpSearched)) * nOcurrencesCount;
+		nNewFileContentAsStringSize = nFileContentAsStringSize + nDelta;
+		if (!(*heap)->alloc(heap, (void**)&lpNewFileContentAsString, (nNewFileContentAsStringSize + 1) * sizeof(rt_char), _R("New file content as string."))) {
+			rt_error_message_write_last(_R("Failed to allocate result buffer: "));
+			goto error;
+		}
+		if (!rt_char_replace(lpFileContentAsString, rt_char_GetCStringSize(lpFileContentAsString),
+															lpSearched, rt_char_GetCStringSize(lpSearched),
+															replacement, rt_char_GetCStringSize(replacement),
+															lpNewFileContentAsString, nNewFileContentAsStringSize + 1, &output_size))
+		{
+			rt_error_message_write_last(_R("Replacement failed: "));
+			goto error;
+		}
 
-    unNewFileSize = RtEncoding_EncodeWithHeap(lpNewFileContentAsString, unOutputSize, 0, &lpNewFileContent, lpHeap);
-    if (unNewFileSize == -1)
-    {
-      RtErrorMessage_WriteLast(_R("Failed to encode output file: "));
-      goto handle_error;
-    }
+		unNewFileSize = rt_encoding_encode_with_heap(lpNewFileContentAsString, output_size, 0, &lpNewFileContent, heap);
+		if (unNewFileSize == -1) {
+			rt_error_message_write_last(_R("Failed to encode output file: "));
+			goto error;
+		}
 
-    RtSmallFile_Write(lpNewFileContent, unNewFileSize, lpFilePath, RT_SMALL_FILE_MODE_TRUNCATE);
-  }
+		rt_small_file_write(lpNewFileContent, unNewFileSize, file_path, RT_SMALL_FILE_MODE_TRUNCATE);
+	}
 
-  bResult = RT_SUCCESS;
-  goto free_resources;
-handle_error:
-  bResult = RT_FAILURE;
-free_resources:
-  if (lpNewFileContent)
-  {
-    if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpNewFileContent))
-    {
-      RtErrorMessage_WriteLast(_R("Failed free new file content: "));
-      goto handle_error;
-    }
-  }
-  if (lpNewFileContentAsString)
-  {
-    if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpNewFileContentAsString))
-    {
-      RtErrorMessage_WriteLast(_R("Failed free new file content as string: "));
-      goto handle_error;
-    }
-  }
-  if (lpFileContentAsString)
-  {
-    if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContentAsString))
-    {
-      RtErrorMessage_WriteLast(_R("Failed free file content as string: "));
-      goto handle_error;
-    }
-  }
-  if (lpFileContent)
-  {
-    if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
-    {
-      RtErrorMessage_WriteLast(_R("Failed free file content: "));
-      goto handle_error;
-    }
-  }
-  return bResult;
+	ret = RT_OK;
+	goto free;
+error:
+	ret = RT_FAILED;
+free:
+	if (lpNewFileContent) {
+		if (!(*heap)->free(heap, (void**)&lpNewFileContent)) {
+			rt_error_message_write_last(_R("Failed free new file content: "));
+			goto error;
+		}
+	}
+	if (lpNewFileContentAsString) {
+		if (!(*heap)->free(heap, (void**)&lpNewFileContentAsString)) {
+			rt_error_message_write_last(_R("Failed free new file content as string: "));
+			goto error;
+		}
+	}
+	if (lpFileContentAsString) {
+		if (!(*heap)->free(heap, (void**)&lpFileContentAsString)) {
+			rt_error_message_write_last(_R("Failed free file content as string: "));
+			goto error;
+		}
+	}
+	if (lpFileContent) {
+		if (!(*heap)->free(heap, (void**)&lpFileContent)) {
+			rt_error_message_write_last(_R("Failed free file content: "));
+			goto error;
+		}
+	}
+	return ret;
 }
 
-RT_B ZzPerform(RT_CHAR* lpSearched, RT_CHAR* lpReplacement, RT_CHAR* lpFilePath)
+rt_b ZzPerform(rt_char *lpSearched, rt_char *replacement, rt_char *file_path)
 {
-  RtRuntimeHeap runtimeHeap;
-  RT_B bCloseRuntimeHeap;
-  RT_B bResult;
+	struct rt_runtime_heap runtimeHeap;
+	rt_b bCloseRuntimeHeap;
+	rt_s ret;
 
-  bCloseRuntimeHeap = RT_FALSE;
+	bCloseRuntimeHeap = RT_FALSE;
 
-  if (!RtRuntimeHeap_Create(&runtimeHeap))
-  {
-    RtErrorMessage_WriteLast(_R("Runtime heap creation failed: "));
-    goto handle_error;
-  }
-  bCloseRuntimeHeap = RT_TRUE;
+	if (!rt_runtime_heap_create(&runtimeHeap)) {
+		rt_error_message_write_last(_R("Runtime heap creation failed: "));
+		goto error;
+	}
+	bCloseRuntimeHeap = RT_TRUE;
 
-  bResult = ZzPerformWithHeap(lpSearched, lpReplacement, lpFilePath, &runtimeHeap.lpHeap);
+	ret = ZzPerformWithHeap(lpSearched, replacement, file_path, &runtimeHeap.heap);
 
-  goto free_resources;
-handle_error:
-  bResult = RT_FAILURE;
-free_resources:
-  if (bCloseRuntimeHeap)
-  {
-    if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
-    {
-      RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
-      bCloseRuntimeHeap = RT_FALSE;
-      goto handle_error;
-    }
-    bCloseRuntimeHeap = RT_FALSE;
-  }
-  return bResult;
+	goto free;
+error:
+	ret = RT_FAILED;
+free:
+	if (bCloseRuntimeHeap) {
+		if (!runtimeHeap.heap->close(&runtimeHeap)) {
+			rt_error_message_write_last(_R("Failed to close runtime heap: "));
+			bCloseRuntimeHeap = RT_FALSE;
+			goto error;
+		}
+		bCloseRuntimeHeap = RT_FALSE;
+	}
+	return ret;
 }
 
-RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+rt_un16 RT_CALL RtMain(rt_n32 argc, rt_char *argv[])
 {
-  RT_ARRAY zzFirstArgument;
-  RT_UN32 unResult;
+	RT_ARRAY zzFirstArgument;
+	rt_un32 result;
 
-  if (nArgC == 4)
-  {
-    unResult = !ZzPerform(lpArgV[1], lpArgV[2], lpArgV[3]);
-  }
-  else if (nArgC == 2)
-  {
-    RtChar_CreateString(&zzFirstArgument, lpArgV[1]);
-    if (RtChar_StringEqualsCString(&zzFirstArgument, _R("/?")) ||
-        RtChar_StringEqualsCString(&zzFirstArgument, _R("-h")) ||
-        RtChar_StringEqualsCString(&zzFirstArgument, _R("--help")))
-    {
-      unResult = 0;
-    }
-    else
-    {
-      unResult = 1;
-    }
-    unResult = ZzDisplayHelp(unResult);
-  }
-  else
-  {
-    unResult = ZzDisplayHelp(1);
-  }
+	if (argc == 4) {
+		result = !ZzPerform(argv[1], argv[2], argv[3]);
+	} else if (argc == 2) {
+		rt_char_CreateString(&zzFirstArgument, argv[1]);
+		if (rt_char_StringEqualsCString(&zzFirstArgument, _R("/?")) ||
+				rt_char_StringEqualsCString(&zzFirstArgument, _R("-h")) ||
+				rt_char_StringEqualsCString(&zzFirstArgument, _R("--help")))
+		{
+			result = 0;
+		} else {
+			result = 1;
+		}
+		result = ZzDisplayHelp(result);
+	} else {
+		result = ZzDisplayHelp(1);
+	}
 
-  return unResult;
+	return result;
 }

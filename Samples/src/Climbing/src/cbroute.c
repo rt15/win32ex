@@ -5,139 +5,124 @@
 
 #include "cbcompetition.h"
 
-RT_UN16 RT_CALL CbAddRoute(void* lpContext)
+rt_un16 RT_CALL CbAddRoute(void *context)
 {
-  CB_COMPETITION* lpCompetition;
-  CB_ROUTE* lpRoute;
-  RT_CHAR lpName[256];
-  RT_N nRead;
-  RT_UN32 unResult;
+	CB_COMPETITION *lpCompetition;
+	CB_ROUTE *lpRoute;
+	rt_char lpName[256];
+	rt_n read_bytes;
+	rt_un32 result;
 
-  while (RT_TRUE)
-  {
-    RtWriteStringToConsole(_R("\nEnter a name or nothing to quit:\n"));
-    nRead = RtReadLineFromConsole(lpName, 256);
+	while (RT_TRUE) {
+		RtWriteStringToConsole(_R("\nEnter a name or nothing to quit:\n"));
+		read_bytes = RtReadLineFromConsole(lpName, 256);
 
-    /* Error. */
-    if (nRead == -1)
-    {
-      nResult = 1;
-      break;
-    }
+		/* Error. */
+		if (read_bytes == -1) {
+			ret = 1;
+			break;
+		}
 
-    /* Exit. */
-    if (nRead == 0)
-    {
-      nResult = 0;
-      break;
-    }
+		/* Exit. */
+		if (read_bytes == 0) {
+			ret = 0;
+			break;
+		}
 
-    /* Too long name. */
-    if (nRead >= CB_ROUTE_NAME_SIZE)
-    {
-      RtWriteStringToConsole(_R("Too long name.\n"));
-    }
-    else
-    {
-      lpCompetition = (CB_COMPETITION*)lpContext;
-      if (!RtNewArrayItem((void**)&lpCompetition->lpRoutes, (void**)&lpRoute))
-      {
-        nResult = 1;
-        break;
-      }
-      RtCopyStringWithSize(lpRoute->lpName, CB_ROUTE_NAME_SIZE, lpName, nRead);
-    }
-  }
-  return nResult;
+		/* Too long name. */
+		if (read_bytes >= CB_ROUTE_NAME_SIZE) {
+			RtWriteStringToConsole(_R("Too long name.\n"));
+		} else {
+			lpCompetition = (CB_COMPETITION*)context;
+			if (!RtNewArrayItem((void**)&lpCompetition->lpRoutes, (void**)&lpRoute)) {
+				ret = 1;
+				break;
+			}
+			RtCopyStringWithSize(lpRoute->lpName, CB_ROUTE_NAME_SIZE, lpName, read_bytes);
+		}
+	}
+	return ret;
 }
 
-RT_UN16 RT_CALL CbDeleteRoute(void* lpContext)
+rt_un16 RT_CALL CbDeleteRoute(void *context)
 {
-  CB_COMPETITION* lpCompetition;
-  RT_N nRoutesCount;
-  RT_CHAR lpBuffer[16];
-  RT_CHAR lpIndex[256];
-  RT_N nIndex;
-  RT_N nRead;
-  RT_N nI;
-  RT_UN32 unResult;
+	CB_COMPETITION *lpCompetition;
+	rt_n nRoutesCount;
+	rt_char buffer[16];
+	rt_char lpIndex[256];
+	rt_n nIndex;
+	rt_n read_bytes;
+	rt_n i;
+	rt_un32 result;
 
-  lpCompetition = (CB_COMPETITION*)lpContext;
+	lpCompetition = (CB_COMPETITION*)context;
 
-  while (RT_TRUE)
-  {
-    RtWriteStringToConsole(_R("\nEnter an index or nothing to quit\n"));
+	while (RT_TRUE) {
+		RtWriteStringToConsole(_R("\nEnter an index or nothing to quit\n"));
 
-    CbWriteSeparator();
-    nRoutesCount = RtGetArraySize(lpCompetition->lpRoutes);
-    for (nI = 0; nI < nRoutesCount; nI++)
-    {
-      RtConvertNToString(nI + 1, lpBuffer, 16);
-      RtWriteStringsToConsole(4, lpBuffer, _R(": "), lpCompetition->lpRoutes[nI].lpName, _R("\n"));
-    }
-    CbWriteSeparator();
+		CbWriteSeparator();
+		nRoutesCount = RtGetArraySize(lpCompetition->lpRoutes);
+		for (i = 0; i < nRoutesCount; i++) {
+			RtConvertNToString(i + 1, buffer, 16);
+			RtWriteStringsToConsole(4, buffer, _R(": "), lpCompetition->lpRoutes[i].lpName, _R("\n"));
+		}
+		CbWriteSeparator();
 
-    nRead = RtReadLineFromConsole(lpIndex, 256);
+		read_bytes = RtReadLineFromConsole(lpIndex, 256);
 
-    /* Error. */
-    if (nRead == -1)
-    {
-      nResult = 1;
-      break;
-    }
+		/* Error. */
+		if (read_bytes == -1) {
+			ret = 1;
+			break;
+		}
 
-    /* Exit. */
-    if (nRead == 0)
-    {
-      nResult = 0;
-      break;
-    }
+		/* Exit. */
+		if (read_bytes == 0) {
+			ret = 0;
+			break;
+		}
 
-    /* Parse index. */
-    if (RtParseNFromString(lpIndex, &nIndex))
-    {
-      if ((nIndex >= 1) && (nIndex <= nRoutesCount))
-      {
-        if (!RtDeleteArrayItemIndex((void**)&lpCompetition->lpRoutes, nIndex - 1))
-        {
-          nResult = 1;
-          break;
-        }
-      }
-    }
-  }
+		/* Parse index. */
+		if (RtParseNFromString(lpIndex, &nIndex)) {
+			if ((nIndex >= 1) && (nIndex <= nRoutesCount)) {
+				if (!RtDeleteArrayItemIndex((void**)&lpCompetition->lpRoutes, nIndex - 1)) {
+					ret = 1;
+					break;
+				}
+			}
+		}
+	}
 
-  return nResult;
+	return ret;
 }
 
 CB_MENU_ITEM cb_lpRoutesMenuItems[2] = {{_R("Add"), &CbAddRoute}, {_R("Delete"), &CbDeleteRoute}};
 
 
-RT_UN16 RT_CALL CbRoutesHeaderCallback(void* lpContext)
+rt_un16 RT_CALL CbRoutesHeaderCallback(void *context)
 {
-  CB_COMPETITION* lpCompetition;
-  RT_N nRoutesCount;
-  RT_N nI;
+	CB_COMPETITION *lpCompetition;
+	rt_n nRoutesCount;
+	rt_n i;
 
-  CbWriteMenuTitle(_R("Routes"));
-  lpCompetition = (CB_COMPETITION*)lpContext;
+	CbWriteMenuTitle(_R("Routes"));
+	lpCompetition = (CB_COMPETITION*)context;
 
-  CbWriteSeparator();
-  nRoutesCount = RtGetArraySize(lpCompetition->lpRoutes);
-  for (nI = 0; nI < nRoutesCount; nI++)
-  {
-    RtWriteStringsToConsole(2, lpCompetition->lpRoutes[nI].lpName, _R("\n"));
-  }
-  CbWriteSeparator();
+	CbWriteSeparator();
+	nRoutesCount = RtGetArraySize(lpCompetition->lpRoutes);
+	for (i = 0; i < nRoutesCount; i++) {
+		RtWriteStringsToConsole(2, lpCompetition->lpRoutes[i].lpName, _R("\n"));
+	}
+	CbWriteSeparator();
 
-  return 0;
+	return 0;
 }
 
-RT_UN16 RT_CALL CbRoutes(void* lpContext)
+rt_un16 RT_CALL CbRoutes(void *context)
 {
-  RT_UN32 unResult;
+	rt_un32 result;
 
-  nResult = CbManageMenu(&CbRoutesHeaderCallback, cb_lpRoutesMenuItems, 2, lpContext);
+	ret = CbManageMenu(&CbRoutesHeaderCallback, cb_lpRoutesMenuItems, 2, context);
 
-  return nResult;
+	return ret;
 }

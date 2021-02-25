@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include <rpr.h>
 #include <RtWin32ExGui.h>
 #include <RtWin32ExMain.h>
 #include <RtWin32ExMem.h>
@@ -18,321 +18,305 @@
 /**
  * Generate a new resource name.
  */
-RT_B RT_CALL ZzGenerateResourceName(RT_CHAR* lpBuffer)
+rt_s RT_CALL ZzGenerateResourceName(rt_char *buffer)
 {
-  RT_ARRAY zzResourceName;
-  RT_ARRAY zzConversionBuffer;
-  RT_CHAR lpConversionBuffer[64];
-  RT_UN unResourceIndex;
-  RT_B bResult;
+	RT_ARRAY zzResourceName;
+	RT_ARRAY zzConversionBuffer;
+	rt_char lpConversionBuffer[64];
+	rt_un unResourceIndex;
+	rt_s ret;
 
-  RtArray_Create(&zzResourceName, lpBuffer, sizeof(RT_CHAR), ZZ_RESOURCES_NAME_SIZE);
+	rt_array_Create(&zzResourceName, buffer, sizeof(rt_char), ZZ_RESOURCES_NAME_SIZE);
 
-  if (!RtRandom_GetUnsignedIntegerWithBoundaries(1, 20, &unResourceIndex)) goto handle_error;
+	if (!rt_random_get_unsigned_integer_with_boundaries(1, 20, &unResourceIndex)) goto error;
 
-  RtArray_Create(&zzConversionBuffer, lpConversionBuffer, sizeof(RT_CHAR), 64);
-  if (!RtChar_ConvertUnsignedIntegerToString(unResourceIndex, &zzConversionBuffer)) goto handle_error;
+	rt_array_Create(&zzConversionBuffer, lpConversionBuffer, sizeof(rt_char), 64);
+	if (!rt_char_append_un(unResourceIndex, &zzConversionBuffer)) goto error;
 
-  if (!RtChar_AppendCString(&zzResourceName, _R("New item "))) goto handle_error;
-  if (!RtArray_Append(&zzResourceName, &zzConversionBuffer)) goto handle_error;
-  if (!RtChar_Append(&zzResourceName, 0)) goto handle_error;
+	if (!rt_char_AppendCString(&zzResourceName, _R("New item "))) goto error;
+	if (!rt_array_Append(&zzResourceName, &zzConversionBuffer)) goto error;
+	if (!rt_char_Append(&zzResourceName, 0)) goto error;
 
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
+	ret = RT_OK;
+free:
+	return ret;
 
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
+error:
+	ret = RT_FAILED;
+	goto free;
 }
 
 /**
- * Load into the list-box the content of the RtList.
+ * Load into the list-box the content of the rt_list.
  */
-void RT_CALL ZzRefreshList(ZZ_APP_CONTEXT* lpAppContext)
+void RT_CALL ZzRefreshList(ZZ_APP_CONTEXT *lpAppContext)
 {
-  RT_UN unListSize;
-  RT_CHAR* lpItem;
-  RT_UN unI;
+	rt_un unListSize;
+	rt_char *item;
+	rt_un i;
 
-  /* Clear the list. */
-  SendMessage(lpAppContext->hListBox, LB_RESETCONTENT, 0, 0);
+	/* Clear the list. */
+	SendMessage(lpAppContext->hListBox, LB_RESETCONTENT, 0, 0);
 
-  /* Fill the list. */
-  unListSize = RtList_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
-  for (unI = 0; unI < unListSize; unI++)
-  {
-    RtList_GetItem(lpAppContext->lpLists[lpAppContext->unCurrentEntity], unI, (void**)&lpItem);
-    SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)lpItem);
-  }
+	/* Fill the list. */
+	unListSize = rt_list_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
+	for (i = 0; i < unListSize; i++) {
+		rt_list_GetItem(lpAppContext->lpLists[lpAppContext->unCurrentEntity], i, (void**)&item);
+		SendMessage(lpAppContext->hListBox, LB_ADDSTRING, 0, (LPARAM)item);
+	}
 
-  /* Nothing selected, disable delete button. */
-  EnableWindow(lpAppContext->hDeleteButton, FALSE);
+	/* Nothing selected, disable delete button. */
+	EnableWindow(lpAppContext->hDeleteButton, FALSE);
 }
 
-void RT_CALL ZzItemSelected(ZZ_APP_CONTEXT* lpAppContext)
+void RT_CALL ZzItemSelected(ZZ_APP_CONTEXT *lpAppContext)
 {
-  /* An item is selected, enable delete button. */
-  EnableWindow(lpAppContext->hDeleteButton, TRUE);
+	/* An item is selected, enable delete button. */
+	EnableWindow(lpAppContext->hDeleteButton, TRUE);
 }
 
-RT_N RT_CALL ZzMainWindowProc(RT_H hWindow, RT_UN32 unMsg, RT_UN unWParam, RT_N nLParam)
+rt_n RT_CALL ZzMainWindowProc(rt_h hWindow, rt_un32 unMsg, rt_un unWParam, rt_n nLParam)
 {
-  ZZ_APP_CONTEXT* lpAppContext;
-  RT_B bCallDefault;
-  MINMAXINFO* lpMinMaxInfo;
-  RT_GUI_RECT rtRect;
-  POINT rtCursorPosition;
-  LONG_PTR nSelectedItem;
-  RT_UN unListSize;
-  RT_CHAR* lpItem;
-  NMHDR* lpNotifyMessageInfo;
-  RT_H hChild;
-  RT_N nResult;
+	ZZ_APP_CONTEXT *lpAppContext;
+	rt_b bCallDefault;
+	MINMAXINFO *lpMinMaxInfo;
+	RT_GUI_RECT rtRect;
+	POINT rtCursorPosition;
+	LONG_PTR nSelectedItem;
+	rt_un unListSize;
+	rt_char *item;
+	NMHDR *lpNotifyMessageInfo;
+	rt_h hChild;
+	rt_n ret;
 
-  lpAppContext = (ZZ_APP_CONTEXT*)RtGetWindowUserData(hWindow);
+	lpAppContext = (ZZ_APP_CONTEXT*)RtGetWindowUserData(hWindow);
 
-  bCallDefault = RT_TRUE;
-  switch (unMsg)
-  {
-    case WM_NOTIFY:
-      switch (unWParam)
-      {
-        case ZZ_RESOURCES_LEFT_TAB_CTRL_ID:
-          lpNotifyMessageInfo = (NMHDR*)nLParam;
-          switch (lpNotifyMessageInfo->code)
-          {
-            case TCN_SELCHANGE:
-              /* Set current entity in context. */
-              lpAppContext->unCurrentEntity = TabCtrl_GetCurSel(lpAppContext->hLeftTab);
+	bCallDefault = RT_TRUE;
+	switch (unMsg)
+	{
+		case WM_NOTIFY:
+			switch (unWParam)
+			{
+				case ZZ_RESOURCES_LEFT_TAB_CTRL_ID:
+					lpNotifyMessageInfo = (NMHDR*)nLParam;
+					switch (lpNotifyMessageInfo->code)
+					{
+						case TCN_SELCHANGE:
+							/* Set current entity in context. */
+							lpAppContext->unCurrentEntity = TabCtrl_GetCurSel(lpAppContext->hLeftTab);
 
-              /* Load list content. */
-              ZzRefreshList(lpAppContext);
-              break;
-          }
-          break;
-      }
-      break;
-    case WM_COMMAND:
-      switch (HIWORD(unWParam))
-      {
-        case BN_CLICKED:
-          switch (LOWORD(unWParam))
-          {
-            case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
-              RtList_NewItem(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], (void**)&lpItem);
-              ZzGenerateResourceName(lpItem);
-              ZzRefreshList(lpAppContext);
+							/* Load list content. */
+							ZzRefreshList(lpAppContext);
+							break;
+					}
+					break;
+			}
+			break;
+		case WM_COMMAND:
+			switch (HIWORD(unWParam))
+			{
+				case BN_CLICKED:
+					switch (LOWORD(unWParam))
+					{
+						case ZZ_RESOURCES_ADD_BUTTON_CTRL_ID:
+							rt_list_NewItem(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], (void**)&item);
+							ZzGenerateResourceName(item);
+							ZzRefreshList(lpAppContext);
 
-              /* Select created entity. */
-              unListSize = RtList_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
-              SendMessage(lpAppContext->hListBox, LB_SETCURSEL, unListSize - 1, 0);
-              ZzItemSelected(lpAppContext);
-              break;
-            case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
-              nSelectedItem = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
-              if (nSelectedItem != LB_ERR)
-              {
-                RtList_DeleteItemIndex(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], nSelectedItem);
-                ZzRefreshList(lpAppContext);
+							/* Select created entity. */
+							unListSize = rt_list_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
+							SendMessage(lpAppContext->hListBox, LB_SETCURSEL, unListSize - 1, 0);
+							ZzItemSelected(lpAppContext);
+							break;
+						case ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID:
+							nSelectedItem = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+							if (nSelectedItem != LB_ERR) {
+								rt_list_DeleteItemIndex(&lpAppContext->lpLists[lpAppContext->unCurrentEntity], nSelectedItem);
+								ZzRefreshList(lpAppContext);
 
-                unListSize = RtList_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
+								unListSize = rt_list_GetSize(lpAppContext->lpLists[lpAppContext->unCurrentEntity]);
 
-                /* Select last item if it has been removed. */
-                if ((RT_UN32)nSelectedItem >= unListSize) nSelectedItem = unListSize - 1;
+								/* Select last item if it has been removed. */
+								if ((rt_un32)nSelectedItem >= unListSize) nSelectedItem = unListSize - 1;
 
-                /* Select next/last item if available. */
-                if (nSelectedItem >= 0)
-                {
-                  SendMessage(lpAppContext->hListBox, LB_SETCURSEL, nSelectedItem, 0);
-                  ZzItemSelected(lpAppContext);
-                }
-              }
-              break;
-          }
-          break;
-        case LBN_SELCHANGE:
-          nSelectedItem = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
-          if (nSelectedItem != LB_ERR)
-          {
-            ZzItemSelected(lpAppContext);
-          }
-          break;
-      }
-      break;
-    case WM_GETMINMAXINFO:
-      /* Apply a minimum size to the window. */
-      lpMinMaxInfo = (MINMAXINFO*)nLParam;
-      lpMinMaxInfo->ptMinTrackSize.x = ZZ_RESOURCES_MIN_WINDOW_WIDTH;
-      lpMinMaxInfo->ptMinTrackSize.y = ZZ_RESOURCES_MIN_WINDOW_HEIGHT;
-      break;
+								/* Select next/last item if available. */
+								if (nSelectedItem >= 0) {
+									SendMessage(lpAppContext->hListBox, LB_SETCURSEL, nSelectedItem, 0);
+									ZzItemSelected(lpAppContext);
+								}
+							}
+							break;
+					}
+					break;
+				case LBN_SELCHANGE:
+					nSelectedItem = SendMessage(lpAppContext->hListBox, LB_GETCURSEL, 0, 0);
+					if (nSelectedItem != LB_ERR) {
+						ZzItemSelected(lpAppContext);
+					}
+					break;
+			}
+			break;
+		case WM_GETMINMAXINFO:
+			/* Apply a minimum size to the window. */
+			lpMinMaxInfo = (MINMAXINFO*)nLParam;
+			lpMinMaxInfo->ptMinTrackSize.x = ZZ_RESOURCES_MIN_WINDOW_WIDTH;
+			lpMinMaxInfo->ptMinTrackSize.y = ZZ_RESOURCES_MIN_WINDOW_HEIGHT;
+			break;
 
-    case WM_SIZE:
-      /* Resize status bar. */
-      SendMessage(lpAppContext->hStatusBar, WM_SIZE, unWParam, nLParam);
+		case WM_SIZE:
+			/* Resize status bar. */
+			SendMessage(lpAppContext->hStatusBar, WM_SIZE, unWParam, nLParam);
 
-      RtMoveWindow(lpAppContext->hLeftTab, ZzGetLeftTabPosition(&rtRect, lpAppContext));
-      RtMoveWindow(lpAppContext->hVerticalSplitter, ZzGetVerticalSplitterPosition(&rtRect, lpAppContext));
-      RtMoveWindow(lpAppContext->hListBox, ZzGetListBoxPosition(&rtRect, lpAppContext));
-      break;
+			RtMoveWindow(lpAppContext->hLeftTab, ZzGetLeftTabPosition(&rtRect, lpAppContext));
+			RtMoveWindow(lpAppContext->hVerticalSplitter, ZzGetVerticalSplitterPosition(&rtRect, lpAppContext));
+			RtMoveWindow(lpAppContext->hListBox, ZzGetListBoxPosition(&rtRect, lpAppContext));
+			break;
 
-    case WM_LBUTTONDOWN:
-      rtCursorPosition.x = LOWORD(nLParam);
-      rtCursorPosition.y = HIWORD(nLParam);
-      hChild = ChildWindowFromPoint(lpAppContext->hMainWindow, rtCursorPosition);
-      if (hChild == lpAppContext->hVerticalSplitter)
-      {
-        ZzGetVerticalSplitterPosition(&rtRect, lpAppContext);
-        lpAppContext->nSplitterCursorOffset = rtCursorPosition.x - rtRect.nX;
-        SetCursor(lpAppContext->hWestEastCursor);
-        lpAppContext->bUsingVerticalSplitter = RT_TRUE;
-        SetCapture(lpAppContext->hMainWindow);
-      }
-      break;
+		case WM_LBUTTONDOWN:
+			rtCursorPosition.x = LOWORD(nLParam);
+			rtCursorPosition.y = HIWORD(nLParam);
+			hChild = ChildWindowFromPoint(lpAppContext->hMainWindow, rtCursorPosition);
+			if (hChild == lpAppContext->hVerticalSplitter) {
+				ZzGetVerticalSplitterPosition(&rtRect, lpAppContext);
+				lpAppContext->nSplitterCursorOffset = rtCursorPosition.x - rtRect.nX;
+				SetCursor(lpAppContext->hWestEastCursor);
+				lpAppContext->bUsingVerticalSplitter = RT_TRUE;
+				SetCapture(lpAppContext->hMainWindow);
+			}
+			break;
 
-    case WM_LBUTTONUP:
-      if (lpAppContext->bUsingVerticalSplitter)
-      {
-        ReleaseCapture();
-        lpAppContext->bUsingVerticalSplitter = RT_FALSE;
-      }
-      break;
+		case WM_LBUTTONUP:
+			if (lpAppContext->bUsingVerticalSplitter) {
+				ReleaseCapture();
+				lpAppContext->bUsingVerticalSplitter = RT_FALSE;
+			}
+			break;
 
-    case WM_CAPTURECHANGED:
-      /* For a reason, we lost the capture. Abandon possible resizing. */
-      lpAppContext->bUsingVerticalSplitter = RT_FALSE;
-      break;
+		case WM_CAPTURECHANGED:
+			/* For a reason, we lost the capture. Abandon possible resizing. */
+			lpAppContext->bUsingVerticalSplitter = RT_FALSE;
+			break;
 
-    case WM_MOUSEMOVE:
-      rtCursorPosition.x = LOWORD(nLParam);
-      rtCursorPosition.y = HIWORD(nLParam);
-      if (lpAppContext->bUsingVerticalSplitter && rtCursorPosition.x < RT_TYPE_MAX_N16)
-      {
-        lpAppContext->nVerticalSplitterX = rtCursorPosition.x - lpAppContext->nSplitterCursorOffset;
-        RtMoveWindow(lpAppContext->hLeftTab, ZzGetLeftTabPosition(&rtRect, lpAppContext));
-        RtMoveWindow(lpAppContext->hVerticalSplitter, ZzGetVerticalSplitterPosition(&rtRect, lpAppContext));
-        RtMoveWindow(lpAppContext->hListBox, ZzGetListBoxPosition(&rtRect, lpAppContext));
-      }
-      else
-      {
-        hChild = ChildWindowFromPoint(lpAppContext->hMainWindow, rtCursorPosition);
-        if (hChild == lpAppContext->hVerticalSplitter)
-        {
-          SetCursor(lpAppContext->hWestEastCursor);
-        }
-        else
-        {
-          SetCursor(lpAppContext->hStandardCursor);
-        }
-      }
-      break;
+		case WM_MOUSEMOVE:
+			rtCursorPosition.x = LOWORD(nLParam);
+			rtCursorPosition.y = HIWORD(nLParam);
+			if (lpAppContext->bUsingVerticalSplitter && rtCursorPosition.x < RT_TYPE_MAX_N16) {
+				lpAppContext->nVerticalSplitterX = rtCursorPosition.x - lpAppContext->nSplitterCursorOffset;
+				RtMoveWindow(lpAppContext->hLeftTab, ZzGetLeftTabPosition(&rtRect, lpAppContext));
+				RtMoveWindow(lpAppContext->hVerticalSplitter, ZzGetVerticalSplitterPosition(&rtRect, lpAppContext));
+				RtMoveWindow(lpAppContext->hListBox, ZzGetListBoxPosition(&rtRect, lpAppContext));
+			} else {
+				hChild = ChildWindowFromPoint(lpAppContext->hMainWindow, rtCursorPosition);
+				if (hChild == lpAppContext->hVerticalSplitter) {
+					SetCursor(lpAppContext->hWestEastCursor);
+				} else {
+					SetCursor(lpAppContext->hStandardCursor);
+				}
+			}
+			break;
 
-    case WM_DESTROY:
-      /* Request end of message loop. */
-      RtQuitMessageLoop(lpAppContext->unWindowExitCode);
-      break;
-  }
+		case WM_DESTROY:
+			/* Request end of message loop. */
+			RtQuitMessageLoop(lpAppContext->unWindowExitCode);
+			break;
+	}
 
-  if (bCallDefault)
-  {
-    /* Default windows treatment. */
-    nResult = DefWindowProc(hWindow, unMsg, unWParam, nLParam);
-  }
-  return nResult;
+	if (bCallDefault) {
+		/* Default windows treatment. */
+		ret = DefWindowProc(hWindow, unMsg, unWParam, nLParam);
+	}
+	return ret;
 }
 
-RT_B RT_CALL ZzMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+rt_s RT_CALL ZzMain(rt_n32 argc, rt_char *argv[])
 {
-  ZZ_APP_CONTEXT rtAppContext;
-  RT_B bMainWindowCreated;
-  RT_B bAppContextCreated;
-  RT_GUI_RECT rtRect;
-  RT_B bResult;
+	ZZ_APP_CONTEXT rtAppContext;
+	rt_b bMainWindowCreated;
+	rt_b bAppContextCreated;
+	RT_GUI_RECT rtRect;
+	rt_s ret;
 
-  bAppContextCreated = RT_FALSE;
-  bMainWindowCreated = RT_FALSE;
+	bAppContextCreated = RT_FALSE;
+	bMainWindowCreated = RT_FALSE;
 
-  if (!RtInitCommonControls(ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES )) goto handle_error;
+	if (!RtInitCommonControls(ICC_BAR_CLASSES | ICC_LISTVIEW_CLASSES )) goto error;
 
-  if (!ZzCreateAppContext(&rtAppContext)) goto handle_error;
-  bAppContextCreated = RT_TRUE;
+	if (!ZzCreateAppContext(&rtAppContext)) goto error;
+	bAppContextCreated = RT_TRUE;
 
-  rtRect.nX = CW_USEDEFAULT;
-  rtRect.nY = 0;
-  rtRect.nWidth = ZZ_RESOURCES_DEFAULT_WINDOW_WIDTH;
-  rtRect.nHeight = ZZ_RESOURCES_DEFAULT_WINDOW_HEIGHT;
+	rtRect.nX = CW_USEDEFAULT;
+	rtRect.nY = 0;
+	rtRect.nWidth = ZZ_RESOURCES_DEFAULT_WINDOW_WIDTH;
+	rtRect.nHeight = ZZ_RESOURCES_DEFAULT_WINDOW_HEIGHT;
 
-  rtAppContext.hMainWindow = RtCreateMainWindow(ZzGetString(ZZ_STRINGS_APPLICATION_NAME), _R("MainWindow"),
-                                                WS_OVERLAPPEDWINDOW, WS_EX_COMPOSITED, &rtRect, &ZzMainWindowProc, RT_NULL, RT_NULL,
-                                                &rtAppContext, rtAppContext.hInstance);
-  if (!rtAppContext.hMainWindow) goto handle_error;
-  bMainWindowCreated = RT_TRUE;
+	rtAppContext.hMainWindow = RtCreateMainWindow(ZzGetString(ZZ_STRINGS_APPLICATION_NAME), _R("MainWindow"),
+																								WS_OVERLAPPEDWINDOW, WS_EX_COMPOSITED, &rtRect, &ZzMainWindowProc, RT_NULL, RT_NULL,
+																								&rtAppContext, rtAppContext.hInstance);
+	if (!rtAppContext.hMainWindow) goto error;
+	bMainWindowCreated = RT_TRUE;
 
-  /* Status bar. */
-  rtAppContext.hStatusBar = RtCreateStatusBar(RT_TRUE, _R(""), rtAppContext.hMainWindow, ZZ_RESOURCES_STATUS_BAR_CTRL_ID, rtAppContext.hInstance);
-  if (!rtAppContext.hStatusBar) goto handle_error;
+	/* Status bar. */
+	rtAppContext.hStatusBar = RtCreateStatusBar(RT_TRUE, _R(""), rtAppContext.hMainWindow, ZZ_RESOURCES_STATUS_BAR_CTRL_ID, rtAppContext.hInstance);
+	if (!rtAppContext.hStatusBar) goto error;
 
-  rtAppContext.hLeftTab = ZzCreateLeftTab(ZzGetLeftTabPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, rtAppContext.hInstance, rtAppContext.hFont);
-  if (!rtAppContext.hLeftTab) goto handle_error;
+	rtAppContext.hLeftTab = ZzCreateLeftTab(ZzGetLeftTabPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, rtAppContext.hInstance, rtAppContext.hFont);
+	if (!rtAppContext.hLeftTab) goto error;
 
-  rtAppContext.hVerticalSplitter = RtCreateStaticWindow(ZzGetVerticalSplitterPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, ZZ_RESOURCES_VERTICAL_SPLITTER_CTRL_ID, rtAppContext.hInstance);
-  if (!rtAppContext.hVerticalSplitter) goto handle_error;
+	rtAppContext.hVerticalSplitter = RtCreateStaticWindow(ZzGetVerticalSplitterPosition(&rtRect, &rtAppContext), rtAppContext.hMainWindow, ZZ_RESOURCES_VERTICAL_SPLITTER_CTRL_ID, rtAppContext.hInstance);
+	if (!rtAppContext.hVerticalSplitter) goto error;
 
-  rtAppContext.hListBox = ZzCreateListBox(ZzGetListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
-  if (!rtAppContext.hListBox) goto handle_error;
+	rtAppContext.hListBox = ZzCreateListBox(ZzGetListBoxPosition(&rtRect, &rtAppContext), _R("EntitesListBox"), ZZ_RESOURCES_ENTITIES_LIST_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
+	if (!rtAppContext.hListBox) goto error;
 
-  rtRect.nX = ZZ_GUI_BORDER;
-  rtRect.nY = ZZ_GUI_TAB_HEIGHT + ZZ_GUI_BORDER;
-  rtRect.nWidth = ZZ_GUI_BUTTON_WIDTH;
-  rtRect.nHeight = ZZ_GUI_BUTTON_HEIGHT;
+	rtRect.nX = ZZ_GUI_BORDER;
+	rtRect.nY = ZZ_GUI_TAB_HEIGHT + ZZ_GUI_BORDER;
+	rtRect.nWidth = ZZ_GUI_BUTTON_WIDTH;
+	rtRect.nHeight = ZZ_GUI_BUTTON_HEIGHT;
 
-  rtAppContext.hAddButton = ZzCreateButton(&rtRect, ZzGetString(ZZ_STRINGS_ADD), ZZ_RESOURCES_ADD_BUTTON_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
-  if (!rtAppContext.hAddButton) goto handle_error;
+	rtAppContext.hAddButton = ZzCreateButton(&rtRect, ZzGetString(ZZ_STRINGS_ADD), ZZ_RESOURCES_ADD_BUTTON_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
+	if (!rtAppContext.hAddButton) goto error;
 
-  rtRect.nX = ZZ_GUI_BORDER * 2 + ZZ_GUI_BUTTON_WIDTH;
+	rtRect.nX = ZZ_GUI_BORDER * 2 + ZZ_GUI_BUTTON_WIDTH;
 
-  rtAppContext.hDeleteButton = ZzCreateButton(&rtRect, ZzGetString(ZZ_STRINGS_DELETE), ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
-  if (!rtAppContext.hDeleteButton) goto handle_error;
+	rtAppContext.hDeleteButton = ZzCreateButton(&rtRect, ZzGetString(ZZ_STRINGS_DELETE), ZZ_RESOURCES_DELETE_BUTTON_CTRL_ID, rtAppContext.hLeftTab, rtAppContext.hInstance, rtAppContext.hFont);
+	if (!rtAppContext.hDeleteButton) goto error;
 
-  /* Delete button is disabled by default. */
-  EnableWindow(rtAppContext.hDeleteButton, FALSE);
+	/* Delete button is disabled by default. */
+	EnableWindow(rtAppContext.hDeleteButton, FALSE);
 
-  /* No way to check success of ShowWindow. */
-  ShowWindow(rtAppContext.hMainWindow, SW_SHOWNORMAL);
+	/* No way to check success of ShowWindow. */
+	ShowWindow(rtAppContext.hMainWindow, SW_SHOWNORMAL);
 
-  /* The main window is destroyed when it is closed. */
-  bMainWindowCreated = RT_FALSE;
+	/* The main window is destroyed when it is closed. */
+	bMainWindowCreated = RT_FALSE;
 
-  /* RtDefaultMessageLoop returns an exit code. */
-  bResult = !RtDefaultMessageLoop();
-free_resources:
-  if (bMainWindowCreated)
-  {
-    bMainWindowCreated = RT_FALSE;
-    if (!DestroyWindow(rtAppContext.hMainWindow) && bResult) goto handle_error;
-  }
-  if (bAppContextCreated)
-  {
-    bAppContextCreated = RT_FALSE;
-    if (!ZzFreeAppContext(&rtAppContext) && bResult) goto handle_error;
-  }
-  return bResult;
+	/* RtDefaultMessageLoop returns an exit code. */
+	ret = !RtDefaultMessageLoop();
+free:
+	if (bMainWindowCreated) {
+		bMainWindowCreated = RT_FALSE;
+		if (!DestroyWindow(rtAppContext.hMainWindow) && ret)
+			goto error;
+	}
+	if (bAppContextCreated) {
+		bAppContextCreated = RT_FALSE;
+		if (!ZzFreeAppContext(&rtAppContext) && ret)
+			goto error;
+	}
+	return ret;
 
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
+error:
+	ret = RT_FAILED;
+	goto free;
 }
 
-RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+rt_un16 RT_CALL RtMain(rt_n32 argc, rt_char *argv[])
 {
-  RT_UN16 unResult;
-  if (ZzMain(nArgC, lpArgV))
-  {
-    unResult = 0;
-  }
-  else
-  {
-    unResult = 1;
-  }
-  return unResult;
+	rt_un16 result;
+	if (ZzMain(argc, argv)) {
+		result = 0;
+	} else {
+		result = 1;
+	}
+	return result;
 }

@@ -1,16 +1,15 @@
 #ifndef CB_CLIMBER_H
 #define CB_CLIMBER_H
 
-#include <RtWin32Ex.h>
+#include <rpr.h>
 
 #define CB_CLIMBER_NAME_SIZE 64
 
-typedef struct _CB_CLIMBER
-{
-  RT_CHAR lpName[CB_CLIMBER_NAME_SIZE];
+typedef struct _CB_CLIMBER {
+	rt_char lpName[CB_CLIMBER_NAME_SIZE];
 }
 CB_CLIMBER;
 
-RT_UN16 RT_CALL CbClimbers(void* lpContext);
+rt_un16 RT_CALL CbClimbers(void *context);
 
 #endif /* CB_CLIMBER_H */

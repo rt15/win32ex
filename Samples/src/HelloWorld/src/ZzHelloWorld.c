@@ -1,19 +1,16 @@
-#include <RtWin32Ex.h>
+#include <rpr.h>
 #include <RtWin32ExMain.h>
 #include <RtWin32ExMem.h>
 
-RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+rt_un16 RT_CALL RtMain(rt_n32 argc, rt_char *argv[])
 {
-  RT_ARRAY zzMessage;
-  RT_UN16 unResult;
+	RT_ARRAY zzMessage;
+	rt_un16 result;
 
-  if (RtConsole_WriteString(RtChar_CreateString(&zzMessage, _R("Hello, world!\n"))))
-  {
-    unResult = 0;
-  }
-  else
-  {
-    unResult = 1;
-  }
-  return unResult;
+	if (rt_console_write_string(rt_char_CreateString(&zzMessage, _R("Hello, world!\n")))) {
+		result = 0;
+	} else {
+		result = 1;
+	}
+	return result;
 }

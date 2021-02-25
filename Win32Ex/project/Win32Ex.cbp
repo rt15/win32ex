@@ -96,7 +96,7 @@
 			</Target>
 			<Target title="Win64Debug">
 				<Option platforms="Windows;" />
-				<Option output="../lib/Win32Exd" prefix_auto="1" extension_auto="1" />
+				<Option output="../lib/libWin32Exd" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="../obj/Debug" />
 				<Option type="2" />
@@ -118,7 +118,7 @@
 			</Target>
 			<Target title="Win64Release">
 				<Option platforms="Windows;" />
-				<Option output="../lib/Win32Ex" prefix_auto="1" extension_auto="1" />
+				<Option output="../lib/libWin32Ex" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="../obj/Release" />
 				<Option type="2" />
@@ -147,196 +147,16 @@
 			<Add option="-mno-stack-arg-probe -fno-stack-check -fno-stack-protector -finput-charset=cp1252 -Wno-long-long -Wno-misleading-indentation" />
 			<Add directory="../include" />
 		</Compiler>
-		<Unit filename="../include/RtWin32Ex.h" />
-		<Unit filename="../include/RtWin32ExMain.h" />
-		<Unit filename="../include/RtWin32ExMem.h" />
-		<Unit filename="../include/layer000/RtWin32ExTypes.h" />
-		<Unit filename="../include/layer001/RtAtomic.h" />
-		<Unit filename="../include/layer001/RtComparison.h" />
-		<Unit filename="../include/layer001/RtHeap.h" />
-		<Unit filename="../include/layer001/RtInputStream.h" />
-		<Unit filename="../include/layer001/RtMemory.h" />
-		<Unit filename="../include/layer001/RtOutputStream.h" />
-		<Unit filename="../include/layer001/RtWin32ExOsHeaders.h" />
-		<Unit filename="../include/layer002/RtBinarySearch.h" />
-		<Unit filename="../include/layer002/RtChrono.h" />
-		<Unit filename="../include/layer002/RtCriticalSection.h" />
-		<Unit filename="../include/layer002/RtError.h" />
-		<Unit filename="../include/layer002/RtEvent.h" />
-		<Unit filename="../include/layer002/RtIoDevice.h" />
-		<Unit filename="../include/layer002/RtQuickSort.h" />
-		<Unit filename="../include/layer002/RtSleep.h" />
-		<Unit filename="../include/layer002/RtVirtualMemory.h" />
-		<Unit filename="../include/layer003/RtArray.h" />
-		<Unit filename="../include/layer003/RtChar.h" />
-		<Unit filename="../include/layer003/RtChar8.h" />
-		<Unit filename="../include/layer003/RtFastInitialization.h" />
-		<Unit filename="../include/layer003/RtFile.h" />
-		<Unit filename="../include/layer003/RtHeapHelper.h" />
-		<Unit filename="../include/layer003/RtInitialization.h" />
-		<Unit filename="../include/layer003/RtPipe.h" />
-		<Unit filename="../include/layer003/RtThread.h" />
-		<Unit filename="../include/layer004/RtArray.h" />
-		<Unit filename="../include/layer004/RtBase64.h" />
-		<Unit filename="../include/layer004/RtCommandLineArgs.h" />
-		<Unit filename="../include/layer004/RtEncoding.h" />
-		<Unit filename="../include/layer004/RtEnvVar.h" />
-		<Unit filename="../include/layer004/RtPageHeap.h" />
-		<Unit filename="../include/layer004/RtRandom.h" />
-		<Unit filename="../include/layer004/RtStaticHeap.h" />
-		<Unit filename="../include/layer004/RtSystemInfo.h" />
-		<Unit filename="../include/layer004/RtUrl.h" />
-		<Unit filename="../include/layer005/RtConsole.h" />
-		<Unit filename="../include/layer005/RtEnvVars.h" />
-		<Unit filename="../include/layer005/RtFileSystem.h" />
-		<Unit filename="../include/layer005/RtLinkedList.h" />
 		<Unit filename="../include/layer005/RtList.h" />
-		<Unit filename="../include/layer005/RtRuntimeHeap.h" />
-		<Unit filename="../include/layer005/RtSortableArray.h" />
-		<Unit filename="../include/layer006/RtErrorMessage.h" />
-		<Unit filename="../include/layer006/RtSmallFile.h" />
 		<Unit filename="../include/layer006/RtSocket.h" />
-		<Unit filename="../include/layer006/RtTableMetadata.h" />
-		<Unit filename="../include/layer006/RtTempFile.h" />
-		<Unit filename="../include/layer007/RtProcess.h" />
 		<Unit filename="../include/layer007/RtProperties.h" />
-		<Unit filename="../include/layer007/RtTable.h" />
-		<Unit filename="../src/RtWin32ExInternal.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/RtWin32ExMain.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer001/RtComparison.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer001/RtMemory.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtBinarySearch.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtChrono.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtCriticalSection.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtError.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtEvent.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtIoDevice.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtQuickSort.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtSleep.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer002/RtVirtualMemory.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtArray.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtChar.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtChar8.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtFastInitialization.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtFile.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtHeapHelper.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtInitialization.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtPipe.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer003/RtThread.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtArray.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtBase64.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtCommandLineArgs.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtEncoding.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtEnvVar.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtPageHeap.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtRandom.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtStaticHeap.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtSystemInfo.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer004/RtUrl.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer005/RtConsole.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer005/RtEnvVars.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer005/RtFileSystem.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer005/RtLinkedList.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/layer005/RtList.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer005/RtRuntimeHeap.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer005/RtSortableArray.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer006/RtErrorMessage.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer006/RtSmallFile.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/layer006/RtSocket.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/layer006/RtTempFile.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer007/RtProcess.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="../src/layer007/RtProperties.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/layer007/RtTable.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

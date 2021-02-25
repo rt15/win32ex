@@ -1,18 +1,17 @@
 #ifndef CB_MANAGER_H
 #define CB_MANAGER_H
 
-#include <RtWin32Ex.h>
+#include <rpr.h>
 
 #include "cbcompetition.h"
 
-typedef struct _CB_MANAGER_CONTEXT
-{
-  CB_COMPETITION* lpCompetition;
-  RT_N nClass;
-  RT_CHAR* lpClassName;
+typedef struct _CB_MANAGER_CONTEXT {
+	CB_COMPETITION *lpCompetition;
+	rt_n nClass;
+	rt_char *lpClassName;
 }
 CB_MANAGER_CONTEXT;
 
-RT_B RT_CALL CbManageEntities(CB_MANAGER_CONTEXT* lpContext);
+rt_s RT_CALL CbManageEntities(CB_MANAGER_CONTEXT *context);
 
 #endif /* CB_MANAGER_H */

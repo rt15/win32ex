@@ -1,4 +1,4 @@
-#include <RtWin32Ex.h>
+#include <rpr.h>
 #include <RtWin32ExMain.h>
 #include <RTWin32ExMem.h>
 
@@ -9,181 +9,161 @@ select XDBM_LOG_SCRIPT_NAME, XDBM_LOG_MODEL, XDBM_LOG_SCRIPT_VERSION from ITEM_V
 */
 
 #define XS_SCHEMAS_COUNT 3
-RT_CHAR* xs_lpSchemas[XS_SCHEMAS_COUNT] = { _R("Main"), _R("Cache"), _R("View") };
+rt_char *xs_lpSchemas[XS_SCHEMAS_COUNT] = { _R("Main"), _R("Cache"), _R("View") };
 
 #define XS_TAGS_COUNT 2
-RT_CHAR* xs_lpTagsNames[XS_TAGS_COUNT] = { _R("@model"), _R("@version") };
+rt_char *xs_lpTagsNames[XS_TAGS_COUNT] = { _R("@model"), _R("@version") };
 
 #define XS_BUFFER_SIZE 200
 
-typedef struct _XS_CONTEXT
-{
-  RT_HEAP** lpHeap;
+typedef struct _XS_CONTEXT {
+	struct rt_heap **heap;
 }
 XS_CONTEXT;
 
-RT_B RT_CALL XsManageTag(RT_CHAR* lpFileContent, RT_CHAR* lpTagName)
+rt_s RT_CALL XsManageTag(rt_char *lpFileContent, rt_char *lpTagName)
 {
-  RT_CHAR lpValue[XS_BUFFER_SIZE];
-  RT_N nBegin;
-  RT_N nEnd;
-  RT_N nI;
-  RT_N unJ;
-  RT_B bResult;
+	rt_char value[XS_BUFFER_SIZE];
+	rt_n nBegin;
+	rt_n nEnd;
+	rt_n i;
+	rt_n j;
+	rt_s ret;
 
-  nBegin = RtChar1337_SearchString(lpFileContent, lpTagName);
-  if (nBegin == -1)
-  {
-    RtConsole_WriteCString(_R("Tag not found"));
-    bResult = RT_FAILURE;
-    goto the_end;
-  }
-  nBegin += RtChar_GetCStringSize(lpTagName);
-  while (lpFileContent[nBegin] != _R(':'))
-  {
-    nBegin++;
-  }
-  nBegin++;
-  while (lpFileContent[nBegin] <= _R(' '))
-  {
-    nBegin++;
-  }
-  nEnd = nBegin;
-  while (lpFileContent[nEnd] > _R(' '))
-  {
-    nEnd++;
-  }
+	nBegin = rt_char_search(lpFileContent, lpTagName);
+	if (nBegin == -1) {
+		rt_console_WriteCString(_R("Tag not found"));
+		ret = RT_FAILED;
+		goto the_end;
+	}
+	nBegin += rt_char_GetCStringSize(lpTagName);
+	while (lpFileContent[nBegin] != _R(':')) {
+		nBegin++;
+	}
+	nBegin++;
+	while (lpFileContent[nBegin] <= _R(' ')) {
+		nBegin++;
+	}
+	nEnd = nBegin;
+	while (lpFileContent[nEnd] > _R(' ')) {
+		nEnd++;
+	}
 
-  unJ = 0;
-  for (nI = nBegin; nI < nEnd; nI++)
-  {
-    lpValue[unJ] = lpFileContent[nI];
-    unJ++;
-  }
-  lpValue[unJ] = 0;
+	j = 0;
+	for (i = nBegin; i < nEnd; i++) {
+		value[j] = lpFileContent[i];
+		j++;
+	}
+	value[j] = 0;
 
-  RtConsole_WriteStringsOrErrors(RT_TRUE, _R("\t"), lpValue, (RT_CHAR*)RT_NULL);
+	rt_console_WriteStringsOrErrors(RT_TRUE, _R("\t"), value, (rt_char*)RT_NULL);
 
-  bResult = RT_SUCCESS;
+	ret = RT_OK;
 
 the_end:
-  return bResult;
+	return ret;
 }
 
-RT_B RT_CALL XsBrowseCallback(RT_CHAR* lpPath, RT_UN unType, void* lpContext)
+rt_s RT_CALL XsBrowseCallback(rt_char *path, rt_un type, void *context)
 {
-  XS_CONTEXT* lpXsContext;
-  RT_HEAP** lpHeap;
-  RT_CHAR lpLowerCasePath[RT_FILE_SYSTEM_MAX_FILE_PATH];
-  RT_CHAR lpFileName[RT_FILE_SYSTEM_MAX_FILE_NAME];
-  RT_CHAR8* lpData;
-  RT_CHAR* lpFileContent;
-  RT_N nFileContentSize;
-  RT_N nDataSize;
-  RT_UN unOutputSize;
-  RT_N nI;
-  RT_B bResult;
+	XS_CONTEXT *lpXsContext;
+	struct rt_heap **heap;
+	rt_char lpLowerCasePath[RT_FILE_PATH_SIZE];
+	rt_char lpFileName[RT_FILE_PATH_NAME_SIZE];
+	rt_char8 *data;
+	rt_char *lpFileContent;
+	rt_n nFileContentSize;
+	rt_n nDataSize;
+	rt_un output_size;
+	rt_n i;
+	rt_s ret;
 
-  bResult = RT_SUCCESS;
+	ret = RT_OK;
 
-  if (unType == RT_FILE_SYSTEM_TYPE_FILE)
-  {
-    RtChar_CopyString(lpPath, lpLowerCasePath, RT_FILE_SYSTEM_MAX_FILE_PATH, &unOutputSize);
-    RtChar_FastLowerString(lpLowerCasePath);
-    if (RtChar_StringEndsWithWithSize(lpLowerCasePath, unOutputSize, _R(".sql"), 4))
-    {
-      RtFileSystem_GetFileName(lpPath, RtChar_GetCStringSize(lpPath), lpFileName, RT_FILE_SYSTEM_MAX_FILE_NAME, &unOutputSize);
-      /* Write file name without extension. */
-      RtConsole_WriteStringWithSize(lpFileName, unOutputSize - 4);
+	if (type == RT_FILE_PATH_TYPE_FILE) {
+		rt_char_CopyString(path, lpLowerCasePath, RT_FILE_PATH_SIZE, &output_size);
+		rt_char_fast_lower(lpLowerCasePath);
+		if (rt_char_ends_with(lpLowerCasePath, output_size, _R(".sql"), 4)) {
+			rt_file_path_get_name(path, rt_char_GetCStringSize(path), lpFileName, RT_FILE_PATH_NAME_SIZE, &output_size);
+			/* Write file name without extension. */
+			rt_console_write_string_with_size(lpFileName, output_size - 4);
 
-      lpXsContext = (XS_CONTEXT*)lpContext;
-      lpHeap = lpXsContext->lpHeap;
-      nDataSize = RtSmallFile_Read(lpPath, &lpData, lpHeap);
-      if (nDataSize == -1)
-      {
-        RtErrorMessage_WriteLast(_R("Failed to read file: "));
-        bResult = RT_FAILURE;
-      }
+			lpXsContext = (XS_CONTEXT*)context;
+			heap = lpXsContext->heap;
+			nDataSize = rt_small_file_read(path, &data, heap);
+			if (nDataSize == -1) {
+				rt_error_message_write_last(_R("Failed to read file: "));
+				ret = RT_FAILED;
+			}
 
-      nFileContentSize = RtEncoding_DecodeWithHeap(lpData, nDataSize, RT_ENCODING_UTF_8, &lpFileContent, lpHeap);
-      if (nFileContentSize == -1)
-      {
-        RtErrorMessage_WriteLast(_R("Failed to decode file content: "));
-        bResult = RT_FAILURE;
-      }
-      else
-      {
-        for (nI = 0; nI < XS_TAGS_COUNT; nI++)
-        {
-          if (!XsManageTag(lpFileContent, xs_lpTagsNames[nI]))
-          {
-            bResult = RT_FAILURE;
-            break;
-          }
-        }
+			nFileContentSize = rt_encoding_decode_with_heap(data, nDataSize, RT_ENCODING_UTF_8, &lpFileContent, heap);
+			if (nFileContentSize == -1) {
+				rt_error_message_write_last(_R("Failed to decode file content: "));
+				ret = RT_FAILED;
+			} else {
+				for (i = 0; i < XS_TAGS_COUNT; i++) {
+					if (!XsManageTag(lpFileContent, xs_lpTagsNames[i])) {
+						ret = RT_FAILED;
+						break;
+					}
+				}
 
-        if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpFileContent))
-        {
-          RtErrorMessage_WriteLast(_R("Failed to free decoded file content: "));
-          bResult = RT_FAILURE;
-        }
-      }
+				if (!(*heap)->free(heap, (void**)&lpFileContent)) {
+					rt_error_message_write_last(_R("Failed to free decoded file content: "));
+					ret = RT_FAILED;
+				}
+			}
 
-      if (!(*lpHeap)->lpFree(lpHeap, (void**)&lpData))
-      {
-        RtErrorMessage_WriteLast(_R("Failed to free file content: "));
-        bResult = RT_FAILURE;
-      }
+			if (!(*heap)->free(heap, (void**)&data)) {
+				rt_error_message_write_last(_R("Failed to free file content: "));
+				ret = RT_FAILED;
+			}
 
-      RtConsole_WriteStringWithSize(_R("\n"), 1);
-    }
-  }
+			rt_console_write_string_with_size(_R("\n"), 1);
+		}
+	}
 
-  return bResult;
+	return ret;
 }
 
-RT_UN16 RT_CALL RtMain(RT_N32 nArgC, RT_CHAR* lpArgV[])
+rt_un16 RT_CALL RtMain(rt_n32 argc, rt_char *argv[])
 {
-  RtRuntimeHeap runtimeHeap;
-  RT_UN unWritten;
-  RT_UN unOutputSize;
-  RT_CHAR* lpSchema;
-  RT_CHAR lpPath[XS_BUFFER_SIZE];
-  XS_CONTEXT context;
-  RT_N nI;
-  RT_UN32 unResult;
+	struct rt_runtime_heap runtimeHeap;
+	rt_un written;
+	rt_un output_size;
+	rt_char *lpSchema;
+	rt_char path[XS_BUFFER_SIZE];
+	XS_CONTEXT context;
+	rt_n i;
+	rt_un32 result;
 
-  if (!RtRuntimeHeap_Create(&runtimeHeap))
-  {
-    unResult = RtErrorMessage_WriteLast(_R("Runtime heap creation failed: "));
-    goto the_end;
-  }
+	if (!rt_runtime_heap_create(&runtimeHeap)) {
+		result = rt_error_message_write_last(_R("Runtime heap creation failed: "));
+		goto the_end;
+	}
 
-  context.lpHeap = &runtimeHeap.lpHeap;
+	context.heap = &runtimeHeap.heap;
 
-  for (nI = 0; nI < XS_SCHEMAS_COUNT; nI++)
-  {
-    lpSchema = xs_lpSchemas[nI];
+	for (i = 0; i < XS_SCHEMAS_COUNT; i++) {
+		lpSchema = xs_lpSchemas[i];
 
-    unWritten = 0;
-    RtChar_CopyString(_R("database/"),                &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtChar_CopyString(lpSchema,                       &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
-    RtChar_CopyString(_R("/database/oracle/scripts"), &lpPath[unWritten], XS_BUFFER_SIZE - unWritten, &unOutputSize); unWritten += unOutputSize;
+		written = 0;
+		rt_char_CopyString(_R("database/"),								&path[written], XS_BUFFER_SIZE - written, &output_size); written += output_size;
+		rt_char_CopyString(lpSchema,											 &path[written], XS_BUFFER_SIZE - written, &output_size); written += output_size;
+		rt_char_CopyString(_R("/database/oracle/scripts"), &path[written], XS_BUFFER_SIZE - written, &output_size); written += output_size;
 
-    if (!RtFileSystem_BrowsePath(lpPath, &XsBrowseCallback, RT_TRUE, RT_FALSE, &context))
-    {
-      unResult = 1;
-      goto close_heap;
-    }
-    RtConsole_WriteStringWithSize(_R("\n"), 1);
-  }
+		if (!rt_file_path_browse(path, &XsBrowseCallback, RT_TRUE, RT_FALSE, &context)) {
+			result = 1;
+			goto close_heap;
+		}
+		rt_console_write_string_with_size(_R("\n"), 1);
+	}
 
-  unResult = 0;
+	result = 0;
 close_heap:
-  if (!runtimeHeap.lpHeap->lpClose(&runtimeHeap))
-  {
-    unResult = RtErrorMessage_WriteLast(_R("Failed to close runtime heap: "));
-  }
+	if (!runtimeHeap.heap->close(&runtimeHeap)) {
+		result = rt_error_message_write_last(_R("Failed to close runtime heap: "));
+	}
 the_end:
-  return unResult;
+	return result;
 }

@@ -1,7 +1,7 @@
 #ifndef RT_IMAGE_H
 #define RT_IMAGE_H
 
-#include <RtWin32Ex.h>
+#include <rpr.h>
 
 /**
  * @file
@@ -17,22 +17,22 @@
  *
  * @return RT_NULL in case of error.
  */
-RT_H RT_API RtCreateDcFromBitmap(RT_H hBitmap);
+rt_h RtCreateDcFromBitmap(rt_h hBitmap);
 
 /**
  * Fill the DC with the given color.
  */
-RT_B RT_API RtFillDc(RT_H hDc, RT_N32 nWidth, RT_N32 nHeight, RT_UN32 unColor);
+rt_s RtFillDc(rt_h hDc, rt_n32 nWidth, rt_n32 nHeight, rt_un32 unColor);
 
 /**
  * Can be used to resize and image.
  */
-RT_B RT_API RtStretchImage(RT_H hSourceDc, RT_N32 nSourceWidth, RT_N32 nSourceHeight, RT_H hDestinationDc, RT_N32 nDestinationWidth, RT_N32 nDestinationHeight);
+rt_s RtStretchImage(rt_h hSourceDc, rt_n32 nSourceWidth, rt_n32 nSourceHeight, rt_h hDestinationDc, rt_n32 nDestinationWidth, rt_n32 nDestinationHeight);
 
 /**
  * Mainly for debugging purpose.
  */
-RT_B RT_API RtDrawImageList(RT_H hImageList, RT_H hDc, RT_N32 nX, RT_N32 nY);
+rt_s RtDrawImageList(rt_h hImageList, rt_h hDc, rt_n32 nX, rt_n32 nY);
 
 /**
  * <p>
@@ -41,16 +41,16 @@ RT_B RT_API RtDrawImageList(RT_H hImageList, RT_H hDc, RT_N32 nX, RT_N32 nY);
  * @param nWidth Both the width of the icon and the resulting bitmap.
  * @param nHeight Both the height of the icon and the resulting bitmap.
  */
-RT_H RT_API RtConvertIconToBitmap(RT_H hIcon, RT_N32 nWidth, RT_N32 nHeight, RT_UN32 unBackgroundColor);
+rt_h RtConvertIconToBitmap(rt_h hIcon, rt_n32 nWidth, rt_n32 nHeight, rt_un32 unBackgroundColor);
 
 /**
  * Retrieve the pixels of the given bitmap.
  *
  * <p>
- * The size of the buffer must be sizeof(RT_UN32) * nWidth * nHeight.
+ * The size of the buffer must be sizeof(rt_un32) * nWidth * nHeight.
  * </p>
  */
-RT_B RT_API RtGetPixels(RT_H hBitmap, RT_N32 nWidth, RT_N32 nHeight, RT_UN32* lpBuffer, RT_H hDc);
+rt_s RtGetPixels(rt_h hBitmap, rt_n32 nWidth, rt_n32 nHeight, rt_un32 *buffer, rt_h hDc);
 
 /**
  * Pre-multiply the color.
@@ -60,19 +60,19 @@ RT_B RT_API RtGetPixels(RT_H hBitmap, RT_N32 nWidth, RT_N32 nHeight, RT_UN32* lp
  * The color components are pre-multiplied by the alpha value.
  * </p>
  */
-RT_UN32 RT_API RtConvertArgbColorToPargbColor(RT_UN32 unColor);
+rt_un32 RtConvertArgbColorToPargbColor(rt_un32 unColor);
 
 /**
  *
  * <p>
- * The size of the buffer must be sizeof(RT_UN32) * nWidth * nHeight.
+ * The size of the buffer must be sizeof(rt_un32) * nWidth * nHeight.
  * </p>
  *
  * <p>
  * In a PARGB bitmap, RGB values are pre-multiplied by the transparency.
  * <p/>
  */
-RT_H RT_API RtConvertIconToPargbBitmap(RT_H hIcon, RT_N32 nWidth, RT_N32 nHeight, RT_UN32* lpMaskBuffer, RT_UN32* lpColorBuffer, RT_H hDc);
+rt_h RtConvertIconToPargbBitmap(rt_h hIcon, rt_n32 nWidth, rt_n32 nHeight, rt_un32 *lpMaskBuffer, rt_un32 *lpColorBuffer, rt_h hDc);
 
 /**
  * Load an icon.
@@ -82,6 +82,6 @@ RT_H RT_API RtConvertIconToPargbBitmap(RT_H hIcon, RT_N32 nWidth, RT_N32 nHeight
  * No need to destroy the returned icon.<br>
  * </p>
  */
-RT_H RT_API RtLoadIcon(RT_UN unResourceIndex, RT_H hInstance);
+rt_h RtLoadIcon(rt_un unResourceIndex, rt_h hInstance);
 
 #endif /* RT_IMAGE_H */

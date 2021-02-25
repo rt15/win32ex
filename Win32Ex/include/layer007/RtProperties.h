@@ -1,38 +1,36 @@
 #ifndef RT_PROPERTIES_H
 #define RT_PROPERTIES_H
 
-#include "layer000/RtWin32ExTypes.h"
-#include "layer001/RtHeap.h"
+#include "layer000/rt_types.h"
+#include "layer003/rt_heap.h"
 
 /**
  * @file
  * Properties file management.
  */
 
-typedef struct _RT_PROPERTY_ENTRY
-{
-  RT_UN unHash;
-  RT_CHAR* lpKey;
-  RT_CHAR* lpValue;
+typedef struct _RT_PROPERTY_ENTRY {
+	rt_un unHash;
+	rt_char *lpKey;
+	rt_char *value;
 }
 RT_PROPERTY_ENTRY;
 
-typedef struct _RT_PROPERTIES
-{
-  RT_PROPERTY_ENTRY* lpPropertiesEntries;
-  RT_CHAR* lpData;
-  RT_HEAP** lpHeap;
+typedef struct _RT_PROPERTIES {
+	RT_PROPERTY_ENTRY *lpPropertiesEntries;
+	rt_char *data;
+	struct rt_heap **heap;
 }
 RT_PROPERTIES;
 
-RT_B RT_API RtProperties_Create(RT_PROPERTIES* lpProperties, RT_CHAR* lpFilePath, RT_UN unEncoding, RT_HEAP** lpHeap);
+rt_s rt_properties_Create(RT_PROPERTIES *lpProperties, rt_char *file_path, enum rt_encoding encoding, struct rt_heap **heap);
 
-RT_CHAR* RT_API RtProperties_GetString(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_CHAR* lpDefaultValue);
+rt_char *rt_properties_GetString(RT_PROPERTIES *lpProperties, rt_char *lpKey, rt_char *lpDefaultValue);
 
-RT_UN RT_API RtProperties_GetUnsignedInteger(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_UN unDefaultValue);
+rt_un rt_properties_GetUnsignedInteger(RT_PROPERTIES *lpProperties, rt_char *lpKey, rt_un unDefaultValue);
 
-RT_B RT_API RtProperties_GetBoolean(RT_PROPERTIES* lpProperties, RT_CHAR* lpKey, RT_B bDefaultValue);
+rt_s rt_properties_GetBoolean(RT_PROPERTIES *lpProperties, rt_char *lpKey, rt_b bDefaultValue);
 
-RT_B RT_API RtProperties_Free(RT_PROPERTIES* lpProperties);
+rt_s rt_properties_Free(RT_PROPERTIES *lpProperties);
 
 #endif /* RT_PROPERTIES_H */

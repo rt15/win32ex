@@ -1,54 +1,48 @@
 #include "cbmenu.h"
 
-RT_B RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM* lpMenuItems, RT_UN unItemCounts, void* lpContext)
+rt_s RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM *lpMenuItems, rt_un unItemCounts, void *context)
 {
-  RT_ARRAY rtConversionBuffer;
-  RT_CHAR lpConversionBuffer[64];
-  RT_ARRAY rtMessage;
-  RT_CHAR lpMessage[256];
-  RT_CHAR nRead;
-  RT_N nI;
-  RT_B bResult;
+	RT_ARRAY rtConversionBuffer;
+	rt_char lpConversionBuffer[64];
+	RT_ARRAY rtMessage;
+	rt_char message[256];
+	rt_char read_bytes;
+	rt_n i;
+	rt_s ret;
 
-  while (RT_TRUE)
-  {
-    if (!lpHeaderCallback(lpContext)) goto handle_error;
+	while (RT_TRUE) {
+		if (!lpHeaderCallback(context)) goto error;
 
-    RtArray_Create(&rtMessage, lpMessage, sizeof(RT_CHAR), 256);
-    RtArray_Create(&rtConversionBuffer, lpConversionBuffer, sizeof(RT_CHAR), 64);
+		rt_array_Create(&rtMessage, message, sizeof(rt_char), 256);
+		rt_array_Create(&rtConversionBuffer, lpConversionBuffer, sizeof(rt_char), 64);
 
-    for (nI = 0; nI < unItemCounts; nI++)
-    {
-      if (!RtChar_ConvertIntegerToString(nI + 1, &rtConversionBuffer)) goto handle_error;
+		for (i = 0; i < unItemCounts; i++) {
+			if (!rt_char_append_n(i + 1, &rtConversionBuffer)) goto error;
 
-      if (!RtChar_AppendCString(&rtMessage, lpMenuItems[nI].lpTitle)) goto handle_error;
-      if (!RtChar_AppendCString(&rtMessage, _R(": "))) goto handle_error;
-      if (!RtArray_Append(&rtMessage, &rtConversionBuffer)) goto handle_error;
-      if (!RtChar_AppendCString(&rtMessage, _R("\n"))) goto handle_error;
-    }
-    if (!RtChar_AppendCString(&rtMessage, _R("\nExit: 0\n"))) goto handle_error;
-    RtConsole_WriteString(&rtMessage);
+			if (!rt_char_AppendCString(&rtMessage, lpMenuItems[i].lpTitle)) goto error;
+			if (!rt_char_AppendCString(&rtMessage, _R(": "))) goto error;
+			if (!rt_array_Append(&rtMessage, &rtConversionBuffer)) goto error;
+			if (!rt_char_AppendCString(&rtMessage, _R("\n"))) goto error;
+		}
+		if (!rt_char_AppendCString(&rtMessage, _R("\nExit: 0\n"))) goto error;
+		rt_console_write_string(&rtMessage);
 
-    nRead = RtConsole_ReadChar();
-    if (nRead == _R('0'))
-    {
-      break;
-    }
-    else if (nRead >= _R('1') && nRead <= _R('9'))
-    {
-      nRead = nRead - _R('0');
-      if (nRead <= unItemCounts)
-      {
-        if (!lpMenuItems[nRead - 1].lpMenuCallback(lpContext)) goto handle_error;
-      }
-    }
-  }
+		read_bytes = rt_console_read_char();
+		if (read_bytes == _R('0')) {
+			break;
+		} else if (read_bytes >= _R('1') && read_bytes <= _R('9')) {
+			read_bytes = read_bytes - _R('0');
+			if (read_bytes <= unItemCounts) {
+				if (!lpMenuItems[read_bytes - 1].lpMenuCallback(context)) goto error;
+			}
+		}
+	}
 
-  bResult = RT_SUCCESS;
-free_resources:
-  return bResult;
+	ret = RT_OK;
+free:
+	return ret;
 
-handle_error:
-  bResult = RT_FAILURE;
-  goto free_resources;
+error:
+	ret = RT_FAILED;
+	goto free;
 }

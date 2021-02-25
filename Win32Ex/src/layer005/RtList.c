@@ -1,316 +1,286 @@
-#include "layer005/RtList.h"
+#include "layer005/rt_list.h"
 
-#include "layer001/RtMemory.h"
-#include "layer002/RtError.h"
+#include "layer001/rt_memory.h"
+#include "layer002/rt_error.h"
 
-void* RT_API RtList_Create(void** lpList, RT_HEAP** lpHeap, RT_UN unSize, RT_UN unItemSize, RT_UN unChunkSize)
+void *rt_list_Create(void **lpList, struct rt_heap **heap, rt_un size, rt_un item_size, rt_un chunk_size)
 {
-  RT_LIST_HEADER* lpHeader;
-  RT_UN unChunksCount;
-  void** lpChunks;
-  RT_UN unI;
+	RT_LIST_HEADER *header;
+	rt_un unChunksCount;
+	void **lpChunks;
+	rt_un i;
 
-  lpChunks = RT_NULL;
-  unChunksCount = 0;
+	lpChunks = RT_NULL;
+	unChunksCount = 0;
 
-  if (!RT_MEMORY_IS_POWER_OF_TWO(unChunkSize))
-  {
-    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
-    goto handle_error;
-  }
+	if (!RT_MEMORY_IS_POWER_OF_TWO(chunk_size)) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		goto error;
+	}
 
-  /* Compute chunks count. */
-  unChunksCount = RT_MEMORY_GET_CHUNKS_COUNT(unSize, unChunkSize);
-  if (unChunksCount == RT_TYPE_MAX_UN)
-  {
-    goto handle_error;
-  }
+	/* Compute chunks count. */
+	unChunksCount = RT_MEMORY_GET_CHUNKS_COUNT(size, chunk_size);
+	if (unChunksCount == RT_TYPE_MAX_UN) {
+		goto error;
+	}
 
-  /* Create array of pointers on chunks. */
-  if (RtArray1337_Create(lpList, sizeof(RT_LIST_HEADER), lpHeap, unChunksCount, sizeof(void*)))
-  {
-    lpHeader = *lpList;
-    lpHeader--;
-    lpHeader->unSize = unSize;
-    lpHeader->unChunkSize = unChunkSize;
-    lpHeader->unItemSize = unItemSize;
-    lpChunks = (void**)*lpList;
-  }
-  else
-  {
-    goto handle_error;
-  }
+	/* Create array of pointers on chunks. */
+	if (rt_array_create(lpList, sizeof(RT_LIST_HEADER), heap, unChunksCount, sizeof(void*))) {
+		header = *lpList;
+		header--;
+		header->size = size;
+		header->chunk_size = chunk_size;
+		header->item_size = item_size;
+		lpChunks = (void**)*lpList;
+	} else {
+		goto error;
+	}
 
-  /* Initialize all pointers to be able to clean memory in case of issue. */
-  for (unI = 0; unI < unChunksCount; unI++)
-  {
-    lpChunks[unI] = RT_NULL;
-  }
+	/* Initialize all pointers to be able to clean memory in case of issue. */
+	for (i = 0; i < unChunksCount; i++) {
+		lpChunks[i] = RT_NULL;
+	}
 
-  /* Allocate all chunks. */
-  for (unI = 0; unI < unChunksCount; unI++)
-  {
-    if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpChunks[unI], unChunkSize * unItemSize, _R("Chunk")))
-    {
-      goto handle_error;
-    }
-  }
+	/* Allocate all chunks. */
+	for (i = 0; i < unChunksCount; i++) {
+		if (!(*heap)->alloc(heap, (void**)&lpChunks[i], chunk_size * item_size, _R("Chunk"))) {
+			goto error;
+		}
+	}
 
-  goto free_resources;
-handle_error:
-  if (lpChunks)
-  {
-    /* Some chunks might have been allocated. */
-    for (unI = 0; unI < unChunksCount; unI++)
-    {
-      if (lpChunks[unI])
-      {
-        /* Free chunk. */
-        (*lpHeap)->lpFree(lpHeap, &lpChunks[unI]);
-      }
-      else
-      {
-        /* All remaining chunks have not been allocated. */
-        break;
-      }
-    }
-    /* Free chunks pointers. */
-    RtArray1337_Free((void**)&lpChunks);
-  }
-  *lpList = RT_NULL;
-free_resources:
-  return *lpList;
+	goto free;
+error:
+	if (lpChunks) {
+		/* Some chunks might have been allocated. */
+		for (i = 0; i < unChunksCount; i++) {
+			if (lpChunks[i]) {
+				/* Free chunk. */
+				(*heap)->free(heap, &lpChunks[i]);
+			} else {
+				/* All remaining chunks have not been allocated. */
+				break;
+			}
+		}
+		/* Free chunks pointers. */
+		rt_array_free((void**)&lpChunks);
+	}
+	*lpList = RT_NULL;
+free:
+	return *lpList;
 }
 
-RT_UN RT_API RtList_GetSize(void* lpList)
+rt_un rt_list_GetSize(void *lpList)
 {
-  RT_LIST_HEADER* lpListHeader;
+	RT_LIST_HEADER *lpListHeader;
 
-  lpListHeader = lpList;
-  lpListHeader--;
-  return lpListHeader->unSize;
+	lpListHeader = lpList;
+	lpListHeader--;
+	return lpListHeader->size;
 }
 
-void* RT_API RtList_GetItem(void* lpList, RT_UN unItemIndex, void** lpItem)
+void *rt_list_GetItem(void *lpList, rt_un item_index, void **item)
 {
-  RT_LIST_HEADER* lpListHeader;
-  void** lpChunks;
-  RT_UN unChunksCount;
-  RT_UN unChunkIndex;
-  RT_UN unChunkSize;
-  RT_UN unItemSize;
-  RT_UN unItemIndexInChunk;
+	RT_LIST_HEADER *lpListHeader;
+	void **lpChunks;
+	rt_un unChunksCount;
+	rt_un unChunkIndex;
+	rt_un chunk_size;
+	rt_un item_size;
+	rt_un unItemIndexInChunk;
 
-  lpListHeader = lpList;
-  lpListHeader--;
+	lpListHeader = lpList;
+	lpListHeader--;
 
-  unChunksCount = lpListHeader->rtArrayHeader.unSize;
-  unChunkSize = lpListHeader->unChunkSize;
-  unItemSize = lpListHeader->unItemSize;
+	unChunksCount = lpListHeader->array_header.size;
+	chunk_size = lpListHeader->chunk_size;
+	item_size = lpListHeader->item_size;
 
-  /* Find the chunk index. */
-  unChunkIndex = unItemIndex / unChunkSize;
-  if (unChunkIndex >= unChunksCount)
-  {
-    RtError_SetLast(RT_ERROR_BAD_ARGUMENTS);
-    *lpItem = RT_NULL;
-    goto free_resources;
-  }
+	/* Find the chunk index. */
+	unChunkIndex = item_index / chunk_size;
+	if (unChunkIndex >= unChunksCount) {
+		rt_error_set_last(RT_ERROR_BAD_ARGUMENTS);
+		*item = RT_NULL;
+		goto free;
+	}
 
-  /* Find the item. */
-  unItemIndexInChunk = (RT_MEMORY_MODULO_POWER_OF_TWO(unItemIndex, unChunkSize));
-  lpChunks = (void**)lpList;
-  *lpItem = ((RT_UCHAR8*)lpChunks[unChunkIndex]) + unItemIndexInChunk * unItemSize;
-free_resources:
-  return *lpItem;
+	/* Find the item. */
+	unItemIndexInChunk = (RT_MEMORY_MODULO_POWER_OF_TWO(item_index, chunk_size));
+	lpChunks = (void**)lpList;
+	*item = ((rt_uchar8*)lpChunks[unChunkIndex]) + unItemIndexInChunk * item_size;
+free:
+	return *item;
 }
 
-void* RT_API RtList_SetSize(void** lpList, RT_UN unSize)
+void *rt_list_SetSize(void **lpList, rt_un size)
 {
-  RT_UN unCurrentChunksCount;
-  RT_LIST_HEADER* lpListHeader;
-  RT_UN unChunkSize;
-  RT_UN unNewChunksCount;
-  RT_UN unItemSize;
-  RT_HEAP** lpHeap;
-  void** lpChunks;
-  RT_UN unI;
+	rt_un unCurrentChunksCount;
+	RT_LIST_HEADER *lpListHeader;
+	rt_un chunk_size;
+	rt_un unNewChunksCount;
+	rt_un item_size;
+	struct rt_heap **heap;
+	void **lpChunks;
+	rt_un i;
 
-  lpListHeader = *lpList;
-  lpListHeader--;
-  unCurrentChunksCount = lpListHeader->rtArrayHeader.unSize;
-  unChunkSize = lpListHeader->unChunkSize;
-  lpHeap = lpListHeader->rtArrayHeader.lpHeap;
-  unItemSize = lpListHeader->unItemSize;
+	lpListHeader = *lpList;
+	lpListHeader--;
+	unCurrentChunksCount = lpListHeader->array_header.size;
+	chunk_size = lpListHeader->chunk_size;
+	heap = lpListHeader->array_header.heap;
+	item_size = lpListHeader->item_size;
 
-  /* Compute new chunks count. */
-  unNewChunksCount = RT_MEMORY_GET_CHUNKS_COUNT(unSize, unChunkSize);
-  if (unNewChunksCount == RT_TYPE_MAX_UN)
-  {
-    goto handle_error;
-  }
+	/* Compute new chunks count. */
+	unNewChunksCount = RT_MEMORY_GET_CHUNKS_COUNT(size, chunk_size);
+	if (unNewChunksCount == RT_TYPE_MAX_UN) {
+		goto error;
+	}
 
-  /* If we need to add or remove chunks. */
-  if (unCurrentChunksCount != unNewChunksCount)
-  {
-    /* Size reduced. */
-    if (unNewChunksCount < unCurrentChunksCount)
-    {
-      lpChunks = (void**)*lpList;
+	/* If we need to add or remove chunks. */
+	if (unCurrentChunksCount != unNewChunksCount) {
+		/* Size reduced. */
+		if (unNewChunksCount < unCurrentChunksCount) {
+			lpChunks = (void**)*lpList;
 
-      /* Remove existing chunks. */
-      for (unI = unNewChunksCount; unI < unCurrentChunksCount; unI++)
-      {
-        if (!(*lpHeap)->lpFree(lpHeap, &lpChunks[unI]))
-        {
-          lpChunks[unI] = RT_NULL;
-          goto handle_error;
-        }
-        lpChunks[unI] = RT_NULL;
-      }
+			/* Remove existing chunks. */
+			for (i = unNewChunksCount; i < unCurrentChunksCount; i++) {
+				if (!(*heap)->free(heap, &lpChunks[i])) {
+					lpChunks[i] = RT_NULL;
+					goto error;
+				}
+				lpChunks[i] = RT_NULL;
+			}
 
-      /* Reduce chunks array size. TODO: There can be a memory leak of chunks. */
-      if (!RtArray1337_SetSize(lpList, unNewChunksCount)) goto free_resources;
-    }
-    else
-    {
-      /* Size increased. We need more chunks. TODO: There can be a memory leak of chunks. */
-      if (!RtArray1337_SetSize(lpList, unNewChunksCount)) goto free_resources;
+			/* Reduce chunks array size. TODO: There can be a memory leak of chunks. */
+			if (!rt_array_set_size(lpList, unNewChunksCount))
+				goto free;
+		} else {
+			/* Size increased. We need more chunks. TODO: There can be a memory leak of chunks. */
+			if (!rt_array_set_size(lpList, unNewChunksCount))
+				goto free;
 
-      lpChunks = (void**)*lpList;
+			lpChunks = (void**)*lpList;
 
-      /* Allocate new chunks. */
-      for (unI = unCurrentChunksCount; unI < unNewChunksCount; unI++)
-      {
-        if (!(*lpHeap)->lpAlloc(lpHeap, (void**)&lpChunks[unI], unChunkSize * unItemSize, _R("Chunk")))
-        {
-          goto handle_error;
-        }
-      }
-    }
-  }
+			/* Allocate new chunks. */
+			for (i = unCurrentChunksCount; i < unNewChunksCount; i++) {
+				if (!(*heap)->alloc(heap, (void**)&lpChunks[i], chunk_size * item_size, _R("Chunk"))) {
+					goto error;
+				}
+			}
+		}
+	}
 
-  /* Set the new size. */
-  if (*lpList)
-  {
-    lpListHeader = *lpList;
-    lpListHeader--;
-    lpListHeader->unSize = unSize;
-  }
-  goto free_resources;
-handle_error:
-  if (*lpList)
-  {
-    RtList_Free(lpList);
-  }
-free_resources:
-  return *lpList;
+	/* Set the new size. */
+	if (*lpList) {
+		lpListHeader = *lpList;
+		lpListHeader--;
+		lpListHeader->size = size;
+	}
+	goto free;
+error:
+	if (*lpList) {
+		rt_list_Free(lpList);
+	}
+free:
+	return *lpList;
 }
 
-void* RT_API RtList_DeleteItemIndex(void** lpList, RT_UN unItemIndex)
+void *rt_list_DeleteItemIndex(void **lpList, rt_un item_index)
 {
-  RT_LIST_HEADER* lpListHeader;
-  RT_UN unItemSize;
-  RT_UN unLastItemIndex;
-  void* lpLastItem;
-  void* lpItemToDelete;
+	RT_LIST_HEADER *lpListHeader;
+	rt_un item_size;
+	rt_un last_item_index;
+	void *lpLastItem;
+	void *lpItemToDelete;
 
-  lpListHeader = *lpList;
-  lpListHeader--;
-  unItemSize = lpListHeader->unItemSize;
-  unLastItemIndex = lpListHeader->unSize - 1;
-  if (unItemIndex != unLastItemIndex)
-  {
-    /* Copy last item into item to delete. */
-    /* TODO: Manage errors in two next lines. */
-    RtList_GetItem(*lpList, unLastItemIndex, &lpLastItem);
-    RtList_GetItem(*lpList, unItemIndex, &lpItemToDelete);
-    RT_MEMORY_COPY(lpLastItem, lpItemToDelete, unItemSize);
-  }
+	lpListHeader = *lpList;
+	lpListHeader--;
+	item_size = lpListHeader->item_size;
+	last_item_index = lpListHeader->size - 1;
+	if (item_index != last_item_index) {
+		/* Copy last item into item to delete. */
+		/* TODO: Manage errors in two next lines. */
+		rt_list_GetItem(*lpList, last_item_index, &lpLastItem);
+		rt_list_GetItem(*lpList, item_index, &lpItemToDelete);
+		RT_MEMORY_COPY(lpLastItem, lpItemToDelete, item_size);
+	}
 
-  return RtList_SetSize(lpList, unLastItemIndex);
+	return rt_list_SetSize(lpList, last_item_index);
 }
 
-void* RT_API RtList_NewItem(void** lpList, void** lpItem)
+void *rt_list_NewItem(void **lpList, void **item)
 {
-  RT_LIST_HEADER* lpListHeader;
-  RT_UN unSize;
+	RT_LIST_HEADER *lpListHeader;
+	rt_un size;
 
-  lpListHeader = *lpList;
-  lpListHeader--;
+	lpListHeader = *lpList;
+	lpListHeader--;
 
-  /* Increase the size of the list. */
-  unSize = lpListHeader->unSize;
-  if (!RtList_SetSize(lpList, unSize + 1))
-  {
-    *lpItem = RT_NULL;
-    goto free_resources;
-  }
+	/* Increase the size of the list. */
+	size = lpListHeader->size;
+	if (!rt_list_SetSize(lpList, size + 1)) {
+		*item = RT_NULL;
+		goto free;
+	}
 
-  RtList_GetItem(*lpList, unSize, lpItem);
+	rt_list_GetItem(*lpList, size, item);
 
-free_resources:
-  return *lpItem;
+free:
+	return *item;
 }
 
-RT_UN RT_API RtList_NewItemIndex(void** lpList, RT_UN* lpItemIndex)
+rt_un rt_list_NewItemIndex(void **lpList, rt_un *item_index)
 {
-  RT_LIST_HEADER* lpListHeader;
-  RT_UN unSize;
+	RT_LIST_HEADER *lpListHeader;
+	rt_un size;
 
-  lpListHeader = *lpList;
-  lpListHeader--;
+	lpListHeader = *lpList;
+	lpListHeader--;
 
-  /* Increase the size of the list. */
-  unSize = lpListHeader->unSize;
-  if (!RtList_SetSize(lpList, unSize + 1))
-  {
-    *lpItemIndex = RT_TYPE_MAX_UN;
-    goto free_resources;
-  }
+	/* Increase the size of the list. */
+	size = lpListHeader->size;
+	if (!rt_list_SetSize(lpList, size + 1)) {
+		*item_index = RT_TYPE_MAX_UN;
+		goto free;
+	}
 
-  *lpItemIndex = unSize;
+	*item_index = size;
 
-free_resources:
-  return *lpItemIndex;
+free:
+	return *item_index;
 }
 
 
-RT_B RT_API RtList_Free(void** lpList)
+rt_s rt_list_Free(void **lpList)
 {
-  RT_LIST_HEADER* lpListHeader;
-  RT_UN unChunksCount;
-  void** lpChunks;
-  RT_HEAP** lpHeap;
-  RT_UN unI;
-  RT_B bResult;
+	RT_LIST_HEADER *lpListHeader;
+	rt_un unChunksCount;
+	void **lpChunks;
+	struct rt_heap **heap;
+	rt_un i;
+	rt_s ret;
 
-  bResult = RT_SUCCESS;
+	ret = RT_OK;
 
-  if (*lpList)
-  {
-    lpListHeader = *lpList;
-    lpListHeader--;
+	if (*lpList) {
+		lpListHeader = *lpList;
+		lpListHeader--;
 
-    unChunksCount = lpListHeader->rtArrayHeader.unSize;
-    lpHeap = lpListHeader->rtArrayHeader.lpHeap;
+		unChunksCount = lpListHeader->array_header.size;
+		heap = lpListHeader->array_header.heap;
 
-    /* Free all chunks. */
-    lpChunks = (void**)*lpList;
-    for (unI = 0; unI < unChunksCount; unI++)
-    {
-      if (!(*lpHeap)->lpFree(lpHeap, &lpChunks[unI]))
-      {
-        bResult = RT_FAILURE;
-      }
-    }
+		/* Free all chunks. */
+		lpChunks = (void**)*lpList;
+		for (i = 0; i < unChunksCount; i++) {
+			if (!(*heap)->free(heap, &lpChunks[i])) {
+				ret = RT_FAILED;
+			}
+		}
 
-    /* Free pointers array. */
-    if (!RtArray1337_Free(lpList))
-    {
-      bResult = RT_FAILURE;
-    }
-  }
+		/* Free pointers array. */
+		if (!rt_array_free(lpList)) {
+			ret = RT_FAILED;
+		}
+	}
 
-  return bResult;
+	return ret;
 }

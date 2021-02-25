@@ -1,20 +1,19 @@
 #ifndef CB_MENU_H
 #define CB_MENU_H
 
-#include <RtWin32Ex.h>
+#include <rpr.h>
 
-typedef RT_B (RT_CALL* CB_MENU_CALLBACK)(void* lpContext);
+typedef rt_b (RT_CALL *CB_MENU_CALLBACK)(void *context);
 
-typedef struct _CB_MENU_ITEM
-{
-  RT_CHAR* lpTitle;
-  CB_MENU_CALLBACK lpMenuCallback;
+typedef struct _CB_MENU_ITEM {
+	rt_char *lpTitle;
+	CB_MENU_CALLBACK lpMenuCallback;
 }
 CB_MENU_ITEM;
 
 /**
  * @param nItemCounts Must be strictly less than 10.
  */
-RT_B RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM* lpMenuItems, RT_UN unItemCounts, void* lpContext);
+rt_s RT_CALL CbManageMenu(CB_MENU_CALLBACK lpHeaderCallback, CB_MENU_ITEM *lpMenuItems, rt_un unItemCounts, void *context);
 
 #endif /* CB_MENU_H */

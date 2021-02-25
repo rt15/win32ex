@@ -1,17 +1,16 @@
 #ifndef CB_GRADE_H
 #define CB_GRADE_H
 
-#include <RtWin32Ex.h>
+#include <rpr.h>
 
 #define CB_GRADE_LABEL_SIZE 8
 
-typedef struct _CB_GRADE
-{
-  RT_CHAR lpLabel[CB_GRADE_LABEL_SIZE];
-  RT_UN32 unPoints;
+typedef struct _CB_GRADE {
+	rt_char lpLabel[CB_GRADE_LABEL_SIZE];
+	rt_un32 unPoints;
 }
 CB_GRADE;
 
-RT_UN16 RT_CALL CbGrades(void* lpContext);
+rt_un16 RT_CALL CbGrades(void *context);
 
 #endif /* CB_GRADE_H */

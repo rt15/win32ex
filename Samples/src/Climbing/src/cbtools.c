@@ -2,10 +2,10 @@
 
 void RT_CALL CbWriteSeparator()
 {
-  RtConsole_WriteCString(_R("============\n"));
+	rt_console_WriteCString(_R("============\n"));
 }
 
-void RT_CALL CbWriteMenuTitle(RT_CHAR* lpLabel)
+void RT_CALL CbWriteMenuTitle(rt_char *lpLabel)
 {
-    RtConsole_WriteStringsOrErrors(RT_TRUE, _R("\n"), lpLabel, _R(" menu\n\n"), (RT_CHAR*)RT_NULL);
+		rt_console_WriteStringsOrErrors(RT_TRUE, _R("\n"), lpLabel, _R(" menu\n\n"), (rt_char*)RT_NULL);
 }
